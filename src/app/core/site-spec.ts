@@ -162,6 +162,8 @@ export interface BuildingSpec {
   frame?: 'greenhouse';
   /** A greenhouse without its glass: only the steel skeleton is left (default: glazed, with a torn stretch). */
   glass?: boolean;
+  /** Optional measured greenhouse rib pitch in metres; absent keeps the original evenly spaced frame. */
+  ribSpacing?: number;
   /** How ruined it is, 0 (intact, the default) to 1 (a shell): broken walls, no roof from 0.35 (see core/ruin.ts). */
   ruin?: number;
   /** A different ruin level for some walls (building-local sides, as in `LevelSpec.sides`), 0..1: one fallen facade. */

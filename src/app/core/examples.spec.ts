@@ -93,3 +93,38 @@ describe('example releases', () => {
   });
 });
 const emptySpecLike = () => JSON.parse(JSON.stringify(chiari)) as Record<string, unknown>;
+
+describe('Villetta survey refinements', () => {
+  const v = sanitizeSpec(hidden)!;
+  const store = v.buildings.find((b) => b.name === 'Main store')!;
+  const greenhouse = v.buildings.find((b) => b.frame === 'greenhouse')!;
+  const annex = v.buildings.find((b) => b.name === 'Annex')!;
+  it('keeps the four store crowns at 8 m and surveyed façade openings', () => {
+    const l = store.levels[0]!;
+    expect(l.baseY + l.height + store.width / l.roofCount! / 2 * l.vaultK!).toBeCloseTo(8);
+    for (const o of Object.values(l.doors).flat()) {
+      if (o.kind === 'door') expect(o.w).toBe(4.64);
+      else expect(o.sill).toBe(2.69);
+    }
+    const rows = [...new Set(l.columns!.map((c) => c.z))].sort((a, b) => a - b);
+    expect(rows[2]! - rows[1]!).toBeCloseTo(1);
+  });
+  it('keeps the greenhouse footprint but uses the measured crown and rib pitch', () => {
+    expect(greenhouse.width).toBeCloseTo(20.289);
+    expect(greenhouse.width / 2 * greenhouse.levels[0]!.vaultK!).toBeCloseTo(9.3);
+    expect(greenhouse.ribSpacing).toBe(4.61);
+    expect(greenhouse.glass).toBe(false);
+  });
+  it('leaves a 3.11 m first-floor walkway, a central void and a 6.20 m slab underside', () => {
+    const g = annex.levels[0]!, u = annex.levels[1]!, hole = u.voids![0]!;
+    expect(u.baseY - 0.1).toBeCloseTo(6.2);
+    expect(g.height).toBe(u.baseY);
+    expect(u.roof).toBe('gable');
+    expect(hole.x0).toBe(3.11);
+    expect(hole.z0).toBe(3.11);
+    expect(annex.length - hole.x1).toBeCloseTo(3.11);
+    expect(annex.width - hole.z1).toBeCloseTo(3.11);
+    const row = g.columns!.filter((c) => c.z === 0.3).sort((a, b) => a.x - b.x);
+    for (let i = 1; i < row.length - 1; i++) expect(row[i]!.x - row[i - 1]!.x).toBeCloseTo(3.43);
+  });
+});
