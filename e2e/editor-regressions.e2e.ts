@@ -8,6 +8,7 @@ test('Welcome keeps the ASCII title, Features link and revised pose assets', asy
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'OpenBando', exact: true })).toBeVisible();
+  await expect(page.locator('app-stage app-camera-compass')).toBeVisible();
   await expect(page.locator('app-welcome-panel .wordmark')).toContainText('___');
   const asset = await page.request.get('/mascot/poses/16-confused-a.png');
   expect(asset.ok()).toBe(true);
@@ -96,4 +97,6 @@ test('basement controls and explicit roof choice update the selected building', 
       exact: true,
     }),
   ).toHaveCount(0);
+  await page.locator('[data-tour="view-3d"]').click();
+  await expect(page.locator('app-site-view app-camera-compass')).toBeVisible();
 });

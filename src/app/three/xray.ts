@@ -33,9 +33,9 @@ export class XRay {
   constructor(public site: SiteModel) {}
 
   /** `targets` are world positions of drones that must stay visible; `modelScale` is the site's scale. */
-  step(dt: number, camera: THREE.Camera, targets: readonly THREE.Vector3[], modelScale: number): void {
+  step(dt: number, camera: THREE.Camera, targets: readonly THREE.Vector3[], modelScale: number, allowNearCamera = true): void {
     const tg = this.enabled ? targets : [];
-    if (++this.frame % 2 === 0) this.search(camera.position, tg, modelScale);
+    if (++this.frame % 2 === 0) this.search(camera, tg, modelScale, allowNearCamera);
     this.faded.forEach((st, mesh) => {
       const want = this.wanted.has(mesh);
       st.value += ((want ? 0.12 : 1) - st.value) * Math.min(1, dt * 10);
@@ -88,7 +88,8 @@ export class XRay {
     this.hiddenTrees.clear();
   }
 
-  private search(cam: THREE.Vector3, targets: readonly THREE.Vector3[], k: number): void {
+  private search(camera: THREE.Camera, targets: readonly THREE.Vector3[], k: number, allowNearCamera: boolean): void {
+    const cam = camera.position;
     const want = new Set<THREE.Mesh>();
     const wantTrees = new Set<string>();
     for (const T of targets) {
@@ -115,6 +116,15 @@ export class XRay {
       };
       check('d', this.site.trees.dec);
       check('c', this.site.trees.con);
+    }
+    // During free inspection, fade only surfaces immediately in front of the camera.
+    // This retains close-up clipping relief without tracing to an unrelated parked drone.
+    if (this.enabled && allowNearCamera && targets.length === 0) {
+      const direction = camera.getWorldDirection(new THREE.Vector3());
+      this.raycaster.set(cam, direction);
+      this.raycaster.far = 2 * k;
+      const close = this.raycaster.intersectObjects(this.site.occluders, false)[0];
+      if (close) want.add(close.object as THREE.Mesh);
     }
     this.wanted = want;
     for (const key of wantTrees) {

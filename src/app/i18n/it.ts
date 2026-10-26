@@ -5,6 +5,7 @@
  * Voice as in English: short, direct, "tu", no exclamation marks. "Bando" stays (it is the app's word).
  */
 export const IT: Readonly<Record<string, string>> = {
+  "North direction": "Direzione nord",
   'Build it. Fly it. Share it.': 'Costruisci. Vola. Condividi.',
   'Turn your favourite places into your own FPV world.': 'Trasforma i tuoi luoghi preferiti nel tuo mondo FPV.',
   'Explore features': 'Scopri le funzioni',

@@ -1,3 +1,4 @@
+import { xraySubject } from '../core/xray-policy';
 import { RaceService } from './race.service';
 import { RaceRenderer } from '../three/race-renderer';
 import { Injectable, effect, inject, signal, untracked, type WritableSignal } from '@angular/core';
@@ -115,11 +116,6 @@ export class SceneService {
     effect(() => {
       const sat = this.view.satGround();
       if (this.ready()) this.host?.site.setGroundStyle(sat ? 'satellite' : 'natural');
-    });
-    effect(() => {
-      if (!this.ready()) return;
-      const rot = this.calibration.rot();
-      this.host?.setNorth(rot);
     });
     effect(() => {
       if (!this.ready()) return;
@@ -378,14 +374,10 @@ export class SceneService {
     const host = this.host;
     if (!host || !this.xray || !this.view.xray()) return;
     const view = this.view.cameraView();
-    const targets: THREE.Vector3[] = [];
-    if (view !== 'fpv') targets.push(new THREE.Vector3(this.sim.state.p.x, this.sim.state.p.y, this.sim.state.p.z));
-    const f = this.flights.active;
-    if (f && !(view === 'fpv' && this.followingReplay())) {
-      const p = this.playback.pose.p;
-      targets.push(new THREE.Vector3(p.x, p.y, p.z));
-    }
-    this.xray.step(dt, host.mainCamera, targets, this.calibration.modelScale());
+    const tracked = xraySubject(view, this.view.orbitFollow(), !!this.mainOrbit.manual, this.sim.state.armed, this.followingReplay());
+    const p = tracked === 'simulator' ? this.sim.state.p : tracked === 'replay' ? this.playback.pose.p : null;
+    const targets = p ? [new THREE.Vector3(p.x, p.y, p.z)] : [];
+    this.xray.step(dt, host.mainCamera, targets, this.calibration.modelScale(), view !== 'fpv');
   }
 
   /** Panels first, then the main page last (it stays in the shared canvas, which exports read from). */

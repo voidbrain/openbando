@@ -24,7 +24,7 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 
 ## Bando Villetta — Specs
 
-Measurements applied to `library/bandos/villetta-no-place.json` (release 4). Original footprint positions, dimensions and rotations remain; no geographic location is published. iPhone measurements are approximate, not survey-grade.
+Measurements applied to `library/bandos/villetta-no-place.json` (release 5). Original footprint positions, dimensions and rotations remain; no geographic location is published. iPhone measurements are approximate, not survey-grade.
 
 | # | Element | Applied measurement | Interpretation / evidence | Status |
 |---|---|---|---|---|
@@ -43,7 +43,7 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 4). Ori
 - `bando-img/IMG_4341.JPG`: broad steel greenhouse frame, approximated with a parabolic arch. Bare ribs remain intact; the artificial torn-glass deformation is only used on glazed frames.
 - `bando-img/IMG_4344.JPG`: tall annex colonnade and pitched terracotta roof. Replace the old barrel roof with a shallow gable; retain the upper storey's 3.60 m height and 2 m roof rise because no new dimensions establish them.
 - `bando-img/IMG_4352.DNG`: store interior, lower façade panels and the open blue ladder cage. Use the real ring/rail silhouette, not a solid tube or box hood.
-- Annex ground-floor support walls are inset behind the S/N/W colonnade; east remains open for access. Exact internal wall ends, roof pitch, column thicknesses and the east walkway require further measurements. The retained rectangular outer footprint is not claimed to be a full measured reconstruction.
+- Annex double solid partitions and short end returns were removed. The remaining door-bearing wall segments extend to the 6.20 m underside of the first-floor slab; the greenhouse-facing end is open with columns. Exact roof pitch, column thicknesses and the east walkway require further measurements. The retained rectangular outer footprint is not claimed to be a full measured reconstruction.
 - Fresh copies get this release; existing edited copies are not overwritten. Playground also places the upgraded shared ladder.
 
 ## Next Steps
@@ -94,4 +94,14 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 - The Welcome wordmark is a single-line ASCII wall; the Features button is labelled “Features”.
 - The pilot pokes the grounded quad twice after the perplexed pose, then sits as it takes off. The grounded quad and subsequent flight are shifted 20 px left. The poke keyframe is aligned so the finger reaches the drone.
 - Terrain triangles coplanar with a basement ceiling are removed; the road uses the rendered terrain triangles and depth bias, and building walls use depth bias to reduce surface flicker. Visual browser checks of the hill road and warehouse remain pending.
-- Villetta release 4 uses a parabolic greenhouse profile, retaining 9.30 m crown height, 4.61 m rib spacing and the current footprint. Open a fresh example copy to see release 4; existing edited copies are not overwritten.
+- Villetta release 5 uses a parabolic greenhouse profile, retaining 9.30 m crown height, 4.61 m rib spacing and the current footprint. Open a fresh example copy to see release 5; existing edited copies are not overwritten.
+
+### Villetta façade and annex correction
+
+- The greenhouse-facing end of the annex is open; the duplicate unbroken interior partitions and short end returns are removed. Door-bearing outer wall segments stop at the first-floor slab underside.
+- The main store's site-north facade is local `e` after the store rotation. Its covered section has two windows; its exposed eastern section has one 4.64 m door. Window positions are estimates within the covered section, pending precise measurements.
+- The store's roof uses the annex's terracotta colour. Existing edited copies remain unchanged; open a fresh Villetta release 5.
+
+- X-ray follows only the active tracked subject; free orbit, manual pan and a disarmed parked simulator no longer fade the annex based on a distant parked drone; surfaces immediately in front of the camera can still fade. Verify close-camera and flight behaviour visually.
+
+- Both the main 3D view and editor 3D view show a fixed compass widget that follows the camera and calibration; the old ground landmark was removed. Verify its placement and direction in the browser.

@@ -1,3 +1,4 @@
+import { CameraCompass } from '../widgets/camera-compass';
 import * as THREE from 'three';
 import {pickModel} from '../../three/site-pick';
 import { StudioService } from '../../services/studio.service';
@@ -19,8 +20,10 @@ import { ViewStore } from '../../state/view.store';
  */
 @Component({
   selector: 'app-stage',
+  imports: [CameraCompass],
   template: `
     <div #gl class="gl" [hidden]="view.mainSource() !== '3d'" [style.cursor]="scene.pin() ? 'crosshair' : null"></div>
+    @if (view.mainSource() === '3d') { <app-camera-compass [camera]="mainCamera" [view]="view.cameraView()" /> }
     <div #videoSlot class="vmain" [hidden]="view.mainSource() !== 'video'">
       @if (!video.loaded()) {
         <div class="dim">Main page: video — open the Video panel and load a file</div>
@@ -67,6 +70,7 @@ export class Stage {
   private readonly studio = inject(StudioService);
   private readonly layout = inject(LayoutStore);
   private readonly ray = new THREE.Raycaster();
+  protected readonly mainCamera = () => this.scene.host?.mainCamera ?? null;
   private readonly sim = inject(SimulatorService);
   private readonly flights = inject(FlightService);
   private readonly cal = inject(CalibrationStore);
