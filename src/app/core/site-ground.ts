@@ -1,4 +1,4 @@
-import { digWater, levelRoad, waterLevel } from './layers';
+import { digWater, levelRoads, waterLevel } from './layers';
 import { basementVolume, cutMask } from './underground';
 import { outlineOf } from './openings';
 import type { BuildingSpec, SiteSpec, UndergroundSpec, Vec2 } from './site-spec';
@@ -54,7 +54,7 @@ export function siteGround(spec: SiteSpec): SiteGround {
   if (memo?.key === key) return memo.out;
   const { grid } = buildHeights(t);
   const water = waters.map((w) => digWater(grid, w));
-  for (const r of spec.roads ?? []) levelRoad(grid, r);
+  levelRoads(grid, spec.roads ?? []);
   const ys = pads.map((p) => flattenPad(grid, p));
   const building = new Map(spec.buildings.map((b, i) => [b.id, ys[i] ?? 0]));
   const vols = [...(spec.underground ?? []), ...spec.buildings.map((b, i) => basementVolume(b, pads[i]!.poly, ys[i] ?? 0)).filter((v): v is UndergroundSpec => !!v)];
