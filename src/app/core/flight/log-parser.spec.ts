@@ -32,6 +32,17 @@ describe('log parser', () => {
     expect(c[29]!).toBeGreaterThan(5); // the climb is kept
   });
 
+  it('draws a jittery descent as a slope, not a staircase', () => {
+    // 2 m/s down, the barometer jittering ±1.2 m as it does in prop wash
+    const t = Array.from({ length: 40 }, (_, i) => i * 0.1);
+    const h = t.map((x, i) => 12 - 2 * x + [1.2, -1.1, 0.4, -1.2, 0.9, -0.3][i % 6]!);
+    const c = cleanHeights(h, t);
+    let flat = 0;
+    for (let i = 4; i < 36; i++) if (Math.abs(c[i]! - c[i - 1]!) < 0.02) flat++;
+    expect(flat).toBe(0); // no treads: every step goes down
+    for (let i = 4; i < 36; i++) expect(c[i]!).toBeLessThan(c[i - 1]! + 0.05);
+  });
+
   it('decimates telemetry to every 8th row and keeps the units', () => {
     const { tel } = parseLog(betaflightCsv(1600));
     expect(tel?.t.length).toBe(200);
