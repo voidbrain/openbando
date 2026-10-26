@@ -5,6 +5,40 @@
  * Voice as in English: short, direct, "tu", no exclamation marks. "Bando" stays (it is the app's word).
  */
 export const IT: Readonly<Record<string, string>> = {
+  'Build it. Fly it. Share it.': 'Costruisci. Vola. Condividi.',
+  'Turn your favourite places into your own FPV world.': 'Trasforma i tuoi luoghi preferiti nel tuo mondo FPV.',
+  'Explore features': 'Scopri le funzioni',
+  'Features': 'Funzioni',
+  'Build your worlds': 'Costruisci i tuoi mondi',
+  'Relive the thrill': 'Rivivi le emozioni',
+  'Share your adventures': 'Condividi le tue avventure',
+  'Keep control of your data': 'Mantieni il controllo dei tuoi dati',
+  'Challenge your friends': 'Sfida i tuoi amici',
+  'Take the controls': 'Prendi i comandi',
+  'See every detail': 'Osserva ogni dettaglio',
+  'Create your own blocks': 'Crea i tuoi blocchi',
+  'Fly your own places': 'Vola nei tuoi luoghi',
+
+  "Restore roof": "Ripristina tetto",
+  "Colour trails by speed": "Colora le tracce per velocità",
+  "Speed trails: blue slow → red fast. Drones and labels keep pilot colours.": "Tracce: blu lento → rosso veloce. Droni ed etichette mantengono i colori dei piloti.",
+  "Start X (m)": "X iniziale (m)",
+  "End X (m)": "X finale (m)",
+  "Start Z (m)": "Z iniziale (m)",
+  "End Z (m)": "Z finale (m)",
+  "Basement · −1": "Seminterrato · −1",
+  "Use building footprint": "Usa la sagoma dell’edificio",
+  "Basement wall coordinates start at its north-west corner.": "Le coordinate dei muri del seminterrato partono dal suo angolo nord-ovest.",
+  "Roof removed by ruin or open shell. Choosing a shape restores it.": "Tetto rimosso dal degrado o dalla struttura aperta. Scegli una forma per ripristinarlo.",
+  "Show the basement floor": "Mostra il piano seminterrato",
+  "Add basement wall": "Aggiungi muro nel seminterrato",
+  "Delete basement wall": "Elimina muro del seminterrato",
+  "Basement": "Seminterrato",
+  "North wall": "Muro nord",
+  "South wall": "Muro sud",
+  "East wall": "Muro est",
+  "West wall": "Muro ovest",
+
 
   "Relay token": "Token relay",
   // ---- multipath racing

@@ -1,4 +1,4 @@
-# OpenBando pixel mascot — character bible v1
+# OpenBando pixel mascot — character bible v2
 
 The two original sheets in [the working plan](../working-plan/mascotte-img/) are the starting references. The final generation uses the **coarse 16-bit pixel direction**, not the discarded smooth chibi passes. The latest brief explicitly requires an ergonomic mostly black radio, orange rather than red, a full circumferential goggle strap and a black cap emblem.
 
@@ -11,7 +11,7 @@ The two original sheets in [the working plan](../working-plan/mascotte-img/) are
 ## Identity that must stay fixed
 
 - Small cheerful FPV pilot, oversized head, dark messy hair, orange backwards cap. Keep head/body ratio consistent across additions; do not switch between a realistic adolescent and a round toy.
-- Warm orange cap and equipment accents, charcoal/black equipment, olive cargo shorts, white socks and black trainers with white soles. No red replacement accents.
+- Warm orange cap and equipment accents, charcoal/black equipment, olive cargo shorts, white socks and black trainers with white soles. No red replacement accents. The previous orange read too red; target a clear saturated orange (reference #ff7900), with darker orange shadows rather than red/brown. Palette approval remains a visual review item.
 - **Black** pixel alien emblem on the cap; **white** alien emblem on the black shirt. They are deliberately different colours. No text/brands on cap, goggles, radio or drone.
 - Goggles rest on the forehead. Dark elastic strap attaches at both side mounts and goes **360° around the head**, visibly continuing across the temples and back of the cap/head. It is not a crown strap or a floating side strip. Keep its path consistent in profile and back poses.
 - Radio is a compact two-handed **ergonomic gamepad transmitter**: mostly black, concave sides, sculpted downward palm grips, restrained orange seams. Never substitute a rectangular box. **No radio antennas.**
@@ -30,13 +30,16 @@ The two original sheets in [the working plan](../working-plan/mascotte-img/) are
 | Path | Purpose |
 |---|---|
 | `pilot-source.png` | Imagegen master with all 16 poses, unchanged |
+| `confused-source.png` | Separate imagegen export source for cross-legged confusion, hand to head and manga sweat drop |
+| `drone-right-source.png` | Right-facing quad used for the exit |
 | `drone-source.png` | Separate imagegen quad master, unchanged |
 | `turnaround.png` | Front/profile/back plus drone/radio design reference |
 | `../../public/mascot/poses/*.png` | Individual numbered 128×128 pose keyframes |
-| `../../public/mascot/keyframes.png` | Packed 4×4 keyframe preview |
+| `../../public/mascot/keyframes.png` | Packed 4×5 keyframe preview (17 poses) |
 | `../../public/mascot/poster.png` | Still fallback / reduced-motion art |
 | `../../public/mascot/drone.png` | Drone runtime sprite |
-| `../../public/mascot/timeline.json` | Authoritative 16-second choreography |
+| `../../public/mascot/drone-right.png` | Right-facing exit sprite |
+| `../../public/mascot/timeline.json` | Authoritative 18.1-second choreography |
 | `../../public/mascot/openbando-mascot.gif` | Portable 10 fps animated preview |
 
 ## Keyframes
@@ -59,14 +62,15 @@ Indices are zero-based. Names are stable API, not descriptions of an automatical
 | 13 | jump | Airborne celebration, strap supports radio |
 | 14 | victory | Landed celebration |
 | 15 | back | Full rear equipment/strap reference, reserved for future turns |
+| 16 | confused-a | Cross-legged, hand scratching head, manga sweat drop; held keyframe |
 
 The generated source is **not an exact regular atlas**: the jump fist crosses a nominal row boundary. `RECTS` in `tools/mascot/build.py` records reviewed sprite bounds, preventing stray shoes or a cropped fist. Every export uses one common scale and foot baseline; never scale each cropped pose to fill the square independently.
 
 ## Choreography
 
-0–2 s look left/right; 2–5 s run in place while the grounded drone shifts left; 5–6 s crouch; 6–7 s kneel; 7–9 s sit; 9–10 s rise; 10–11.2 s takeoff; 11.2–11.5 s anticipation; 11.5–12.3 s jump; 12.3–13.8 s landed victory; 13.8–15.4 s drone accelerates out to the right; 15.4–16 s reset, then repeat. A discrete reset returns the drone to its grounded start; this is a choreographed loop, not a physics simulation.
+0–2.4 s the pilot looks around while the drone is hidden; 2.4–4.8 s run in place as the grounded drone moves left; 4.8–7.2 s crouch, lower and sit; 7.2–9 s sit perplexed; 9–10.6 s the drone lifts off and its propellers start spinning; 10.6–12.6 s the pilot rises as the drone climbs; 12.6–13.6 s look up; 13.6–15.7 s jump and victory; 15.7–17.3 s the quad turns right and exits; 17.3–18.1 s return to idle. Both the canvas and GIF animate propeller highlights using the same 100 ms cycle.
 
-The canvas and GIF read the same JSON timeline. README uses the GIF beside `wordmark.svg`, a static stacked typographic banner; it links to a still alternative because GitHub does not offer a playback control for inline GIFs. The GIF is a portable preview; Welcome uses canvas so the pilot can pause it. It is decorative and hidden from assistive technology. Only Welcome animates; no mascot overlays the simulator, editing controls or flight instruments. Hidden/minimized Welcome and background tabs stop progress. Reduced-motion preference starts on a still and can be overridden with the Play control. Keep the visible pause control: the loop exceeds five seconds.
+The canvas and GIF read the same JSON timeline. README uses the GIF below the large ASCII OPENBANDO wall; Welcome uses the same wall (`core/wordmark.ts`) with an accessible text heading; it links to a still alternative because GitHub does not offer a playback control for inline GIFs. The GIF is a portable preview; Welcome uses canvas so the pilot can pause it. It is decorative and hidden from assistive technology. Only Welcome animates; no mascot overlays the simulator, editing controls or flight instruments. Hidden/minimized Welcome and background tabs stop progress. Reduced-motion preference starts on a still and can be overridden with the Play control. The Welcome pause control was removed at the project owner’s request. Reduced-motion preference still shows a still image. The exit uses a separate right-facing sprite; flight uses alternating propeller highlights. Browser visual review remains pending.
 
 ## Adding poses or actions
 

@@ -1,9 +1,16 @@
 # OpenBando
 
-<table><tr>
-<td width="50%"><img src="docs/mascot/wordmark.svg" alt="Open Bando — Build, Fly, Share." width="500" /></td>
-<td width="50%"><a href="docs/mascot/README.md"><img src="public/mascot/openbando-mascot.gif" alt="Pixel FPV pilot and black-and-orange freestyle drone: look around, run, sit, take off and celebrate." width="500" /></a></td>
-</tr></table>
+```text
+ ###   ####   #####  ##  #  ####    ###   ##  #  ####    ###
+## ##  ## ##  ##     ### #  ## ##  ## ##  ### #  ## ##  ## ##
+## ##  ## ##  ##     ### #  ## ##  ## ##  ### #  ## ##  ## ##
+## ##  ####   ####   ## ##  ####   #####  ## ##  ## ##  ## ##
+## ##  ##     ##     ## ##  ## ##  ## ##  ## ##  ## ##  ## ##
+## ##  ##     ##     ##  #  ## ##  ## ##  ##  #  ## ##  ## ##
+ ###   ##     #####  ##  #  ####   ## ##  ##  #  ####    ###
+```
+
+[![Pixel pilot and drone: look, sit, confusion, run, takeoff and fly away.](public/mascot/openbando-mascot.gif)](docs/mascot/README.md)
 
 [Still mascot](public/mascot/poster.png) · [Pose keyframes and character rules](docs/mascot/README.md)
 
@@ -207,3 +214,15 @@ Welcome includes the pixel pilot and freestyle quad with a pauseable animation a
 Flights → Racing and ghosts compares up to eight pilots in individual colours, with start delays, a separate race clock, simultaneous non-colliding ghosts and estimated lap / best-lap timing through a shared gate. Exchange local-coordinate race files without a server, connect several GPS WebSocket/SSE sources directly, or use the optional self-hosted room relay to exchange tracks between devices. Video/selected-flight replay keeps its own clock.
 
 [Setup, limits and the server decision](docs/racing/README.md). Shared rooms require a reachable relay; local recordings, file exchange and multiple direct streams do not require an additional race server. No relay is deployed automatically.
+
+### Terrain openings, basements and selection
+
+Tunnel linings and terrain/road cuts use the same upright cross-section, including rotated mouths. Terrain meets the lining without deleting whole surrounding grid cells. The coarse cut overlay is an editing aid, not the render boundary. Basements also create a cuttable flat terrain for older sites without terrain data.
+
+In the building inspector choose **−1** to inspect a basement. Change its depth, independent rectangular length/width, perimeter walls or interior wall endpoints; **Use building footprint** restores its inherited outline. Partitions use metres from the basement's north-west corner. Existing ground-floor voids remain the route down. Arbitrary polygon vertex editing is not yet exposed in this basement section.
+
+Ruin at 60% or an open shell removes the roof. Choosing a roof shape explicitly restores it and caps global ruin at 55%; wall damage may therefore lessen. With the editor open, clicking an element on the main 3D page selects and frames it in the editor.
+
+Racing can colour trails by speed while drones and pilot-name labels retain each pilot's identity colour. Disable **Colour trails by speed** for solid pilot-coloured trails.
+
+The mascot loop now includes the cross-legged confused keyframe and keeps the drone invisible until takeoff. Sources and timing are in [the character guide](docs/mascot/README.md). Browser visual verification of these changes is pending; local Chromium installation failed.

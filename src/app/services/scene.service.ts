@@ -127,9 +127,9 @@ export class SceneService {
       untracked(() => this.host?.paths.rebuild(this.flights.all, this.flights.speedMax));
     });
     effect(() => {
-      const on=this.race.enabled(),tracks=on?this.race.tracks():[],gate=on?this.race.gate():null;
+      const on=this.race.enabled(),tracks=on?this.race.tracks():[],gate=on?this.race.gate():null,speedTrails=this.race.speedTrails();
       this.ready();
-      if(this.raceRenderer) {this.raceRenderer.group.visible=on;this.raceRenderer.synchronize(on?tracks:[],on?gate:null);}
+      if(this.raceRenderer) {this.raceRenderer.group.visible=on;this.raceRenderer.synchronize(on?tracks:[],on?gate:null,speedTrails);}
       if(this.host)this.host.paths.group.visible=!on;
     });
     effect(() => {

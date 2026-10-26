@@ -110,6 +110,19 @@ export function floorUnder(vols: readonly UndergroundSpec[], x: number, z: numbe
 /** Collision boxes of a volume: its walls along every edge, cut into ~1 m pieces, and floor / ceiling slabs in ~2 m tiles. */
 export function volumeSolids(v: UndergroundSpec): SolidBox[] {
   const out: SolidBox[] = [];
+  const axis=tunnelAxis(v), section=tunnelSection(v);
+  if(axis && section) {
+    const dx=axis.b.x-axis.a.x,dz=axis.b.z-axis.a.z,len=Math.hypot(dx,dz), nx=-dz/len,nz=dx/len;
+    const count=Math.max(1,Math.ceil(len)), t=v.wall;
+    for(let i=0;i<section.length;i++) {
+      const a=section[i]!,b=section[(i+1)%section.length]!;
+      for(let j=0;j<count;j++) {
+        const pts=[j/count,(j+1)/count].flatMap(u=>[a,b].map(p=>({x:axis.a.x+dx*u+nx*p.x,z:axis.a.z+dz*u+nz*p.x})));
+        out.push([Math.min(...pts.map(p=>p.x))-t/2,Math.max(...pts.map(p=>p.x))+t/2,Math.min(a.y,b.y)-t/2,Math.max(a.y,b.y)+t/2,Math.min(...pts.map(p=>p.z))-t/2,Math.max(...pts.map(p=>p.z))+t/2,false]);
+      }
+    }
+    return out;
+  }
   const t = v.wall, y0 = v.floor - t, y1 = v.ceiling + t;
   for (let i = 0; i < v.outline.length; i++) {
     const a = v.outline[i]!, b = v.outline[(i + 1) % v.outline.length]!;
@@ -144,6 +157,21 @@ export function tunnelAxis(v: UndergroundSpec): { a: Vec2; b: Vec2; width: numbe
   // the axis runs along the longer side (a tunnel is longer than wide; a room drawn either way)
   return d01 >= d03 ? { a: mid(p0, p3), b: mid(p1, p2), width: d03 } : { a: mid(p0, p1), b: mid(p3, p2), width: d01 };
 }
+
+/** Convex tunnel cross-section, in width/height metres. Used by lining and terrain clipping. */
+export function tunnelSection(v: UndergroundSpec): {x:number;y:number}[] | null {
+  const a = tunnelAxis(v);
+  if (!a || v.shape === 'box') return null;
+  const r = a.width / 2, h = v.ceiling - v.floor;
+  if (v.shape === 'pipe') return Array.from({ length: 32 }, (_, i) => {
+    const t = i * 2 * Math.PI / 32;
+    return ({x:r * Math.cos(t), y:v.floor + h / 2 + h / 2 * Math.sin(t)});
+  });
+  const rise = Math.min(r, h), spring = v.ceiling - rise;
+  return [({x:-r,y:v.floor}), ({x:r,y:v.floor}),
+    ...Array.from({ length: 17 }, (_, i) => { const t = i * Math.PI / 16; return ({x:r * Math.cos(t), y:spring + rise * Math.sin(t)}); })];
+}
+
 
 /** A new tunnel `depth` metres below the ground at its start, `height` metres tall inside. */
 export function newTunnel(g: HeightGrid | null, a: Vec2, b: Vec2, o: { width: number; height: number; depth: number; shape: UndergroundSpec['shape']; id: string; name: string }): UndergroundSpec {

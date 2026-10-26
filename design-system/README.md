@@ -69,7 +69,7 @@ OpenBando is a dark, dense instrument for FPV pilots: a 3D map and site editor, 
 
 ## Logo
 
-Keep the wordmark in the system `sans` family. Welcome uses a bold stacked Open / Bando title next to the pixel mascot; instrument/window titles retain the existing small type. Do not add a separate vector logo.
+Welcome uses a large ASCII OPENBANDO wall in the system `mono` family next to the pixel mascot; instrument/window titles retain the existing small type. Do not add a separate vector logo.
 
 ## Components
 

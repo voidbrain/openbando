@@ -178,7 +178,7 @@ export interface BuildingSpec {
    */
   fixtures?: StructureSpec[];
   /** A basement under the ground floor, `height` metres deep inside (see core/underground.ts basementVolume). */
-  basement?: { height: number };
+  basement?: { height: number; outline?: Vec2[]; sides?: Partial<Record<'n'|'s'|'e'|'w', boolean>>; partitions?: [Vec2,Vec2][] };
   /** Placed from a library block. */
   block?: BlockRef;
   /** Its name came from the map data (a shop, a hospital): a copy shared without its place drops it. */
@@ -411,6 +411,15 @@ export function fixturesInSite(b: BuildingSpec): StructureSpec[] {
   return (b.fixtures ?? []).map((f) => ({ ...f, x: b.pos.x + f.x * c - f.z * s, z: b.pos.z + f.x * s + f.z * c, rotDeg: (((f.rotDeg + b.rotDeg) % 360) + 360) % 360 }));
 }
 
+function cleanBasement(raw: BuildingSpec['basement']): BuildingSpec['basement'] {
+  if (!raw || !Number.isFinite(raw.height)) return undefined;
+  const point=(p:Vec2):boolean=>!!p && Number.isFinite(p.x) && Number.isFinite(p.z) && Math.abs(p.x)<=300 && Math.abs(p.z)<=300;
+  const outline=Array.isArray(raw.outline) && raw.outline.length>=4 && raw.outline.length<=64 && raw.outline.every(point) ? raw.outline.map(p=>({x:p.x,z:p.z})) : undefined;
+  const sides=raw.sides ? Object.fromEntries((['n','s','e','w'] as const).map(k=>[k,raw.sides?.[k]!==false])) : undefined;
+  const partitions=Array.isArray(raw.partitions) ? raw.partitions.filter(w=>Array.isArray(w) && w.length===2 && w.every(point)).slice(0,100).map(([a,b])=>[{x:a.x,z:a.z},{x:b.x,z:b.z}] as [Vec2,Vec2]) : undefined;
+  return {height:Math.min(12,Math.max(2,raw.height)),...(outline?{outline}:{}),...(sides?{sides}:{}),...(partitions?{partitions}:{})};
+}
+
 export function sanitizeSpec(raw: unknown): SiteSpec | null {
   if (!raw || typeof raw !== 'object') return null;
   const s = raw as Partial<SiteSpec>;
@@ -442,7 +451,7 @@ export function sanitizeSpec(raw: unknown): SiteSpec | null {
     bearingDeg: typeof s.bearingDeg === 'number' ? s.bearingDeg : 0,
     genScale: typeof s.genScale === 'number' ? s.genScale : 1,
     groundColor: typeof s.groundColor === 'string' ? s.groundColor : '#789b52',
-    buildings: (s.buildings.filter((b) => b && typeof b.length === 'number') as BuildingSpec[]).map((b) => (Array.isArray(b.fixtures) ? { ...b, fixtures: cleanStructures(b.fixtures) } : b)),
+    buildings: (s.buildings.filter((b) => b && typeof b.length === 'number') as BuildingSpec[]).map((b) => {const {basement,...rest}=b;const clean=cleanBasement(basement);return {...rest,...(clean?{basement:clean}:{}),...(Array.isArray(b.fixtures)?{fixtures:cleanStructures(b.fixtures)}:{})};}),
     pads: Array.isArray(s.pads) ? (s.pads as PadSpec[]) : [],
     walls: Array.isArray(s.walls) ? (s.walls as WallSpec[]) : [],
     // a 'shapes' structure carries primitives from files or AI output: they are checked and capped like the rest

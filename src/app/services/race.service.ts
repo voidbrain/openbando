@@ -33,6 +33,7 @@ export class RaceService {
   private readonly cal = inject(CalibrationStore);
   private readonly view = inject(ViewStore);
   readonly enabled = signal(false);
+  readonly speedTrails = signal(true);
   readonly playing = signal(false);
   readonly repeat = signal(false);
   readonly gate = signal<Gate | null>(null);

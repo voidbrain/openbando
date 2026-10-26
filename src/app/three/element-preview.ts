@@ -1,3 +1,4 @@
+import { basementBuilding } from '../core/basement';
 import * as THREE from 'three';
 import type { OpenSeg } from '../core/openings';
 import { emptySpec, type BuildingSpec, type ColumnSpec, type StructureSpec, type TreeSpec, type VoidSpec, type WallSpec, type Vec2 } from '../core/site-spec';
@@ -62,10 +63,12 @@ export function ghost(root: THREE.Object3D, opacity = 0.13): void {
 
 /** The same building with only floor `li` in it (roof only if that is the top floor). */
 export function levelOnly(b: BuildingSpec, li: number): BuildingSpec {
+  if (li === -1) return basementBuilding(b);
   const c = JSON.parse(JSON.stringify(b)) as BuildingSpec;
   const lv = c.levels[Math.min(li, c.levels.length - 1)]!;
   if (li < b.levels.length - 1) lv.roof = 'none';
   c.levels = [lv];
+  delete c.basement;
   return c;
 }
 

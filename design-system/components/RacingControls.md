@@ -7,3 +7,5 @@ Use native labelled fields, `.btn` actions and `.check` toggles. Pilot rows show
 Keep local replay, imported files, direct live sources and optional shared room separate in the foldouts. Sharing must remain explicit. Relay credentials are password fields and are never persisted. The room text states which data leaves the device. The race clock has its own Play/Pause/Restart and does not control the video clock. On small panels wrap rows rather than clipping fields.
 
 Source: `src/app/ui/panels/racing-controls.ts`; behaviour and operational limits: `docs/racing/README.md`.
+
+Speed-coloured trails are optional; blue means slow and red means fast. Ghost bodies and floating pilot-name labels always retain the pilot identity colour, independent of trail mode. Names supplement colour.

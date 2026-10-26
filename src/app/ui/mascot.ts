@@ -10,7 +10,6 @@ import { LayoutStore } from '../state/layout.store';
   imports: [NgOptimizedImage],
   template: `
     <div class="stage" aria-hidden="true"><img ngSrc="mascot/poster.png" width="128" height="128" alt=""/><canvas #canvas width="320" height="160"></canvas></div>
-    <button class="btn" type="button" [attr.aria-pressed]="paused()" (click)="paused.set(!paused())">{{ paused() ? 'Play' : 'Pause' }}</button>
   `,
   styles: `
     :host { display: flex; flex-direction: column; align-items: flex-end; max-width: 100%; }
@@ -34,6 +33,7 @@ export class Mascot implements AfterViewInit {
     media.addEventListener('change', change);
     const images = MASCOT_POSES.map((name, i) => { const im = new Image(); im.src = `mascot/poses/${String(i).padStart(2, '0')}-${name}.png`; return im; });
     const drone = new Image(); drone.src = 'mascot/drone.png';
+    const droneRight = new Image(); droneRight.src = 'mascot/drone-right.png';
     let ms = 0, last = performance.now(), painted = false;
     const stop = this.loop.add(FrameOrder.widgets, () => {
       const now = performance.now(), dt = Math.min(100, now - last); last = now;
@@ -42,7 +42,8 @@ export class Mascot implements AfterViewInit {
       const still = this.paused();
       if (still && painted) return;
       const f = mascotFrame(ms), pilot = images[f.pose]!;
-      if (!pilot.complete || !pilot.naturalWidth || !drone.complete || !drone.naturalWidth) return;
+      const quad = f.droneRight ? droneRight : drone;
+      if (!pilot.complete || !pilot.naturalWidth || !quad.complete || !quad.naturalWidth) return;
       const g = this.cv()?.nativeElement.getContext('2d'); if (!g) return;
       g.imageSmoothingEnabled = false;
       g.clearRect(0, 0, 320, 160);
@@ -51,7 +52,18 @@ export class Mascot implements AfterViewInit {
       g.save();
       if (f.mirror) { g.translate(176, 0); g.scale(-1, 1); }
       g.drawImage(pilot, 24, 24 + f.y); g.restore();
-      g.drawImage(drone, f.droneX - drone.width / 2, f.droneY - drone.height / 2);
+      if (f.droneVisible) {
+        const x=f.droneX-quad.width/2, y=f.droneY-quad.height/2;
+        g.drawImage(quad,x,y);
+        if(f.propellersSpinning) {
+          g.fillStyle=f.propellerFrame ? '#ffad35' : '#ff7a00';
+          for(const [px,py] of [[0.23,0.16],[0.77,0.16],[0.23,0.59],[0.77,0.59]]) {
+            const cx=Math.round(x+quad.width*px),cy=Math.round(y+quad.height*py);
+            g.fillRect(cx-(f.propellerFrame?5:3),cy, f.propellerFrame?10:6,1);
+            g.fillRect(cx-2,cy-1,4,3);
+          }
+        }
+      }
       painted = true;
       if (!still) { ms += dt; painted = false; }
     });

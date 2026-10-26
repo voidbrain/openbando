@@ -1,3 +1,7 @@
+import * as THREE from 'three';
+import {pickModel} from '../../three/site-pick';
+import { StudioService } from '../../services/studio.service';
+import { LayoutStore } from '../../state/layout.store';
 import { SAT_ATTRIBUTION } from '../../core/satellite';
 import { Component, DestroyRef, ElementRef, afterNextRender, effect, inject, viewChild } from '@angular/core';
 import { attachOrbitControls } from '../../three/orbit-controls';
@@ -60,6 +64,9 @@ export class Stage {
   protected readonly satAttribution = SAT_ATTRIBUTION;
   protected readonly scene = inject(SceneService);
   protected readonly video = inject(VideoService);
+  private readonly studio = inject(StudioService);
+  private readonly layout = inject(LayoutStore);
+  private readonly ray = new THREE.Raycaster();
   private readonly sim = inject(SimulatorService);
   private readonly flights = inject(FlightService);
   private readonly cal = inject(CalibrationStore);
@@ -88,6 +95,13 @@ export class Stage {
           if (this.scene.pickSurface()) return;
           if (this.scene.pin()) this.scene.placePin(x, y, cam, { left: 0, top: 0, width: innerWidth, height: innerHeight });
           else if (alt) void this.site.altClick(x, y);
+          else if (this.layout.panels().studio.visible && this.studio.view() === 'zone') {
+            this.ray.setFromCamera(new THREE.Vector2(x / innerWidth * 2 - 1, 1 - y / innerHeight * 2), cam);
+            const model = this.scene.host?.site;
+            if (!model) return;
+            const p=pickModel(this.ray,model,this.site.active());
+            if(p)this.studio.focus.set(p);
+          }
         },
       });
       const onDragOver = (e: DragEvent): void => e.preventDefault();

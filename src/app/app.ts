@@ -18,6 +18,7 @@ import { CompassPanel } from './ui/panels/compass-panel';
 import { FlightsPanel } from './ui/panels/flights-panel';
 import { HelpPanel } from './ui/panels/help-panel';
 import { GuidePanel } from './ui/panels/guide-panel';
+import { FeaturesPanel } from './ui/panels/features-panel';
 import { WelcomePanel } from './ui/panels/welcome-panel';
 import { TourOverlay } from './ui/tour-overlay';
 import { LivePanel } from './ui/panels/live-panel';
@@ -40,7 +41,7 @@ import { ToastHost } from './ui/toast-host';
   selector: 'app-root',
   imports: [
     Stage, ViewsPanel, FlightsPanel, SimulatorPanel, RadioPanel, TimelinePanel, SpeedPanel, AttitudePanel, CompassPanel, PathPanel,
-    BlackboxPanel, VideoPanel, LivePanel, RenderPanel, HelpPanel, GuidePanel, WelcomePanel, ViewportPanel, VersionBadge, StudioPanel, ToastHost, TourOverlay,
+    BlackboxPanel, VideoPanel, LivePanel, RenderPanel, HelpPanel, GuidePanel, WelcomePanel, FeaturesPanel, ViewportPanel, VersionBadge, StudioPanel, ToastHost, TourOverlay,
   ],
   template: `
     <app-stage />
@@ -62,6 +63,7 @@ import { ToastHost } from './ui/toast-host';
     <app-help-panel />
     <app-guide-panel />
     <app-welcome-panel />
+    <app-features-panel />
     <app-viewport-panel type="orbit" />
     <app-viewport-panel type="chase" />
     <app-viewport-panel type="fpv" />

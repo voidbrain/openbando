@@ -23,7 +23,7 @@ const GROUPS: readonly { key: string; title: string; subs: readonly { title: str
   { key: 'tools', title: 'Tools', subs: [{ title: '', ids: ids((p) => p.group === 'tools') }] },
 ];
 function ids(f: (p: PanelDef) => boolean): PanelId[] {
-  return PANELS.filter((p) => p.id !== 'views' && f(p)).map((p) => p.id);
+  return PANELS.filter((p) => p.id !== 'views' && p.id !== 'features' && f(p)).map((p) => p.id);
 }
 
 const CLOSED_KEY = 'abando-float-views-closed';
@@ -311,7 +311,7 @@ export class ViewsPanel {
 
   /** Every panel at once; Views itself always stays, or there would be no way back. */
   protected setAll(on: boolean): void {
-    for (const p of PANELS) if (p.id !== 'views') this.layout.setVisible(p.id, on);
+    for (const p of PANELS) if (p.id !== 'views' && p.id !== 'features') this.layout.setVisible(p.id, on);
   }
 
   protected short(p: PanelDef): string {
