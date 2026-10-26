@@ -20,19 +20,51 @@ export function tunnelOutline(a: Vec2, b: Vec2, width: number): Vec2[] {
   ];
 }
 
-/** One flag per grid vertex: 1 = the ground there is cut (a portal or an open trench). */
+/** The outline shrunk towards its centre by `d` metres (the footprint a mesh actually covers, walls included). */
+function insetOutline(poly: readonly Vec2[], d: number): Vec2[] {
+  const cx = poly.reduce((s, p) => s + p.x, 0) / poly.length, cz = poly.reduce((s, p) => s + p.z, 0) / poly.length;
+  return poly.map((p) => {
+    const dx = p.x - cx, dz = p.z - cz, l = Math.hypot(dx, dz) || 1, k = Math.max(0, l - d) / l;
+    return { x: cx + dx * k, z: cz + dz * k };
+  });
+}
+
+/**
+ * One flag per grid vertex: 1 = the ground there is cut (a portal or an open trench).
+ *
+ * The opening is an *aligned block*, not a ragged diagonal: first the vertices inside the volume's footprint (its
+ * outline inset by half a cell plus the wall, so the hole never bleeds past the built tube) whose height lies
+ * between floor and ceiling — where the surface genuinely passes through the inside; then their bounding box in
+ * the grid, kept within the footprint. On a slope the crossing band runs diagonally, and dropping every cell that
+ * touches one flagged vertex tore the hillside open far around the tunnel: looking through the hole you saw the
+ * trough of the cut and the void where the hill should have carried on. The snapped block gives each mouth two
+ * straight, aligned edges flush with the tube. A ridge high enough over the tunnel crosses nothing and stays
+ * whole; basements (boxes with ceiling = pad) get one tidy rectangular opening instead of scattered cut cells.
+ */
 export function cutMask(g: HeightGrid, vols: readonly UndergroundSpec[]): Uint8Array {
   const m = new Uint8Array(g.nx * g.nz);
   if (!vols.length) return m;
+  const px = (i: number): number => g.x0 + i * g.cell, pz = (j: number): number => g.z0 + j * g.cell;
   for (const v of vols) {
     const xs = v.outline.map((p) => p.x), zs = v.outline.map((p) => p.z);
     const i0 = Math.max(0, Math.floor((Math.min(...xs) - g.x0) / g.cell)), i1 = Math.min(g.nx - 1, Math.ceil((Math.max(...xs) - g.x0) / g.cell));
     const j0 = Math.max(0, Math.floor((Math.min(...zs) - g.z0) / g.cell)), j1 = Math.min(g.nz - 1, Math.ceil((Math.max(...zs) - g.z0) / g.cell));
-    for (let j = j0; j <= j1; j++) {
-      for (let i = i0; i <= i1; i++) {
-        const k = j * g.nx + i, h = g.h[k]!;
-        if (h > v.floor && h < v.ceiling + v.wall && insidePolygon(v.outline, g.x0 + i * g.cell, g.z0 + j * g.cell)) m[k] = 1;
-      }
+    // the footprint actually covered by the built tube: the outline inset by half a cell (a vertex only counts when
+    // its cell lies on the tube) plus the wall thickness
+    const inner = insetOutline(v.outline, (g.cell * 3) / 2 + v.wall);
+    // the band the surface crosses: inside the footprint, the ground between floor and ceiling
+    let bi0 = Infinity, bj0 = Infinity, bi1 = -Infinity, bj1 = -Infinity;
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
+      const h = g.h[j * g.nx + i]!;
+      if (h <= v.floor || h >= v.ceiling) continue;
+      if (!insidePolygon(inner, px(i), pz(j))) continue;
+      bi0 = Math.min(bi0, i); bj0 = Math.min(bj0, j); bi1 = Math.max(bi1, i); bj1 = Math.max(bj1, j);
+    }
+    if (!isFinite(bi0)) continue; // nothing crosses the inside: the ridge stands over the tunnel, uncut
+    // snap the band to its bounding box, but keep only vertices still inside the footprint: the block fills the
+    // diagonal staircase into aligned portals without widening the hole past the tube
+    for (let j = bj0; j <= bj1; j++) for (let i = bi0; i <= bi1; i++) {
+      if (insidePolygon(inner, px(i), pz(j))) m[j * g.nx + i] = 1;
     }
   }
   return m;
