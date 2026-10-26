@@ -1,3 +1,5 @@
+import { RaceService } from './race.service';
+import { RaceRenderer } from '../three/race-renderer';
 import { Injectable, effect, inject, signal, untracked, type WritableSignal } from '@angular/core';
 import * as THREE from 'three';
 import type { CameraView } from '../core/models';
@@ -50,6 +52,8 @@ const LOOK_AROUND_IDLE_MS = 2500;
 
 @Injectable({ providedIn: 'root' })
 export class SceneService {
+  private readonly race = inject(RaceService);
+  private raceRenderer: RaceRenderer | null = null;
   private readonly view = inject(ViewStore);
   private readonly calibration = inject(CalibrationStore);
   private readonly layout = inject(LayoutStore);
@@ -123,6 +127,12 @@ export class SceneService {
       untracked(() => this.host?.paths.rebuild(this.flights.all, this.flights.speedMax));
     });
     effect(() => {
+      const on=this.race.enabled(),tracks=on?this.race.tracks():[],gate=on?this.race.gate():null;
+      this.ready();
+      if(this.raceRenderer) {this.raceRenderer.group.visible=on;this.raceRenderer.synchronize(on?tracks:[],on?gate:null);}
+      if(this.host)this.host.paths.group.visible=!on;
+    });
+    effect(() => {
       const v = this.view.cameraView();
       if (!this.ready() || !this.host) return;
       this.host.mainCamera.fov = fovFor(v);
@@ -151,6 +161,7 @@ export class SceneService {
     if (this.host) return;
     const host = new SceneHost(container);
     this.host = host;
+    this.raceRenderer = new RaceRenderer(host.scene);
     // The canvas must fill its container: three.js' default style is "display:block" without width/height, so on
     // HiDPI screens it renders at device pixels and covers only a top-left part of the page — the rest stays black.
     Object.assign(host.canvas.style, { position: 'absolute', inset: '0', width: '100%', height: '100%' } as CSSStyleDeclaration);
@@ -193,6 +204,8 @@ export class SceneService {
     this.stopTasks = [];
     if (this.resizeHandler) removeEventListener('resize', this.resizeHandler);
     this.xray?.reset();
+    this.raceRenderer?.dispose();
+    this.raceRenderer=null;
     this.host?.dispose();
     this.host = null;
     this.xray = null;
@@ -210,7 +223,7 @@ export class SceneService {
   }
 
   rigContext(): RigContext {
-    return { followingReplay: this.followingReplay(), flight: this.flights.active, simPosition: this.sim.state.p, replayPosition: this.playback.pose.p };
+    return { followingReplay: this.followingReplay(), flight: this.race.enabled() ? null : this.flights.active, simPosition: this.sim.state.p, replayPosition: this.playback.pose.p };
   }
 
   private placeOptions(): PlaceOptions {
@@ -349,7 +362,8 @@ export class SceneService {
     const host = this.host;
     if (!host) return;
     host.drones.syncSim(this.sim.state, dt);
-    host.drones.syncGhost(this.playback.pose.p, this.playback.pose.q, this.flights.active);
+    host.drones.syncGhost(this.playback.pose.p, this.playback.pose.q, this.race.enabled()?null:this.flights.active);
+    this.raceRenderer?.update(this.race.time,host.mainCamera,id=>this.race.stale(id));
     if (this.autoOrbit() && this.view.cameraView() === 'orbit') this.mainOrbit.th += dt * 0.07;
     // a look-around the pilot started from the chase camera ends by itself: idle for a moment, back to the chase
     // (its camera glides from where the orbit left it). A camera chosen in Views ends it too, and stays.
