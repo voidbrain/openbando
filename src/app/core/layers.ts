@@ -144,11 +144,30 @@ export function insidePolygon(poly: readonly Vec2[], x: number, z: number): bool
  * centre line (sampled before levelling), blending over 2 m beside it. Along the road the ground keeps its slope.
  */
 export function levelRoad(g: HeightGrid, r: RoadSpec): void {
-  if (r.pts.length < 2) return;
+  levelRoads(g, [r]);
+}
+
+/**
+ * Level the ground across every road at once. One pass per road used to fight the next: the second road blended
+ * towards heights the first had already written along its strip, and near a crossing those samples sit off the
+ * second road's own centre line — the two levellings carved a zig-zag trough where the roads overlapped instead of
+ * one flat crossing. Here every affected cell takes the height of the nearest point of the nearest road, all
+ * sampled from the untouched grid, so a crossing cannot contradict itself.
+ */
+export function levelRoads(g: HeightGrid, roads: readonly RoadSpec[]): void {
+  const live = roads.filter((r) => r.pts.length >= 2);
+  if (!live.length) return;
   const src = { ...g, h: g.h.slice() };
-  const half = r.width / 2, blend = 2;
-  cellsNear(g, r.pts, half + blend, (k, x, z) => {
-    const n = nearestOnPath(r.pts, x, z);
+  const blend = 2;
+  for (const r of live) cellsNear(g, r.pts, r.width / 2 + blend, (k, x, z) => {
+    let n = { d: Infinity, at: { x: 0, z: 0 } }, half = 0;
+    for (const q of live) {
+      const m = nearestOnPath(q.pts, x, z);
+      if (m.d < n.d) {
+        n = m;
+        half = q.width / 2;
+      }
+    }
     if (n.d > half + blend) return;
     const y = heightAt(src, n.at.x, n.at.z);
     const w = n.d <= half ? 1 : 1 - (n.d - half) / blend;
