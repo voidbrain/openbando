@@ -405,5 +405,5 @@ function passage(bd: BuildingSpec, a: Vec2, b: Vec2, w: number, h: number): numb
   // every block of the catalogue is somewhere in here
   const missing = cat.map((b) => (b as { id: string }).id).filter((id) => !used.has(id));
   if (missing.length) throw new Error('Playground does not use ' + missing.join(', '));
-  finish(s, 'example-playground', 'Playground', ROOT + '/library/bandos/playground.json', 'A made-up works on the edge of the fields, with no real place: a barrel-vault store, a warehouse with a basement, a ruined tower and farmhouse, a pond, hills with a tunnel, and every block of the library, from gates to cranes.');
+  finish(s, 'example-playground', 'Playground', ROOT + '/library/bandos/playground.json', 'A made-up works on the edge of the fields, with no real place: a barrel-vault store, a warehouse with a basement, a ruined tower and farmhouse, a pond, hills with a tunnel, and every block of the library, from gates to cranes.', 2);
 }

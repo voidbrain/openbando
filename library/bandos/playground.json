@@ -1,6 +1,6 @@
 {
  "about": "A made-up works on the edge of the fields, with no real place: a barrel-vault store, a warehouse with a basement, a ruined tower and farmhouse, a pond, hills with a tunnel, and every block of the library, from gates to cranes.",
- "release": 1,
+ "release": 2,
  "version": 1,
  "id": "example-playground",
  "name": "Playground",
@@ -2037,39 +2037,532 @@
    "x": -75.6,
    "z": 6,
    "rotDeg": 90,
-   "height": 21.2,
+   "height": 20.018,
    "size": 1,
    "shapes": [
     {
-     "prim": "cylinder",
+     "prim": "box",
      "at": {
-      "x": 0,
-      "y": 0,
-      "z": 0
+      "x": -0.24,
+      "y": 10,
+      "z": -0.4
      },
-     "radius": 0.45,
-     "height": 20,
-     "segments": 10,
+     "size": {
+      "x": 0.05,
+      "y": 20,
+      "z": 0.05
+     },
      "color": "#3f6fb5"
     },
     {
      "prim": "box",
      "at": {
+      "x": 0.24,
+      "y": 10,
+      "z": -0.4
+     },
+     "size": {
+      "x": 0.05,
+      "y": 20,
+      "z": 0.05
+     },
+     "color": "#3f6fb5"
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": 0,
+       "y": 0.15,
+       "z": -0.4
+      },
+      "size": {
+       "x": 0.48,
+       "y": 0.035,
+       "z": 0.05
+      },
+      "color": "#3f6fb5"
+     },
+     "count": 30,
+     "step": {
       "x": 0,
-      "y": 20.6,
+      "y": 0.667,
+      "z": 0
+     }
+    },
+    {
+     "prim": "box",
+     "at": {
+      "x": 0.45,
+      "y": 11,
       "z": 0
      },
      "size": {
-      "x": 1.1,
-      "y": 1.2,
-      "z": 1.1
+      "x": 0.035,
+      "y": 18,
+      "z": 0.035
      },
      "color": "#3f6fb5"
+    },
+    {
+     "prim": "box",
+     "at": {
+      "x": 0.225,
+      "y": 11,
+      "z": 0.39
+     },
+     "size": {
+      "x": 0.035,
+      "y": 18,
+      "z": 0.035
+     },
+     "color": "#3f6fb5"
+    },
+    {
+     "prim": "box",
+     "at": {
+      "x": -0.225,
+      "y": 11,
+      "z": 0.39
+     },
+     "size": {
+      "x": 0.035,
+      "y": 18,
+      "z": 0.035
+     },
+     "color": "#3f6fb5"
+    },
+    {
+     "prim": "box",
+     "at": {
+      "x": -0.45,
+      "y": 11,
+      "z": 0
+     },
+     "size": {
+      "x": 0.035,
+      "y": 18,
+      "z": 0.035
+     },
+     "color": "#3f6fb5"
+    },
+    {
+     "prim": "box",
+     "at": {
+      "x": -0.225,
+      "y": 11,
+      "z": -0.39
+     },
+     "size": {
+      "x": 0.035,
+      "y": 18,
+      "z": 0.035
+     },
+     "color": "#3f6fb5"
+    },
+    {
+     "prim": "box",
+     "at": {
+      "x": 0.225,
+      "y": 11,
+      "z": -0.39
+     },
+     "size": {
+      "x": 0.035,
+      "y": 18,
+      "z": 0.035
+     },
+     "color": "#3f6fb5"
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": 0.441,
+       "y": 2,
+       "z": 0.088
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 101.25,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": 0.374,
+       "y": 2,
+       "z": 0.25
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 123.75,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": 0.25,
+       "y": 2,
+       "z": 0.374
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 146.25,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": 0.088,
+       "y": 2,
+       "z": 0.441
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 168.75,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": -0.088,
+       "y": 2,
+       "z": 0.441
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 191.25,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": -0.25,
+       "y": 2,
+       "z": 0.374
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 213.75,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": -0.374,
+       "y": 2,
+       "z": 0.25
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 236.25,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": -0.441,
+       "y": 2,
+       "z": 0.088
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 258.75,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": -0.441,
+       "y": 2,
+       "z": -0.088
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 281.25,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": -0.374,
+       "y": 2,
+       "z": -0.25
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 303.75,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": -0.25,
+       "y": 2,
+       "z": -0.374
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 326.25,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": -0.088,
+       "y": 2,
+       "z": -0.441
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 348.75,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": 0.088,
+       "y": 2,
+       "z": -0.441
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 11.25,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": 0.25,
+       "y": 2,
+       "z": -0.374
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 33.75,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": 0.374,
+       "y": 2,
+       "z": -0.25
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 56.25,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
+    },
+    {
+     "prim": "array",
+     "of": {
+      "prim": "box",
+      "at": {
+       "x": 0.441,
+       "y": 2,
+       "z": -0.088
+      },
+      "size": {
+       "x": 0.176,
+       "y": 0.035,
+       "z": 0.035
+      },
+      "rotDeg": 78.75,
+      "color": "#3f6fb5"
+     },
+     "count": 6,
+     "step": {
+      "x": 0,
+      "y": 3.6,
+      "z": 0
+     }
     }
    ],
    "block": {
     "id": "abando/cage-ladder",
-    "v": 1,
+    "v": 2,
     "inst": "example-playground-blk-32",
     "params": {
      "h": 20

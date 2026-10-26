@@ -1,3 +1,6 @@
+import villetta from '../../../public/library/bandos/villetta-no-place.json';
+import { sanitizeSpec } from '../core/site-spec';
+import { expandShapes, shapeSolids } from '../core/shapes';
 import * as THREE from 'three';
 import { emptySpec, type BuildingSpec, type SiteSpec } from '../core/site-spec';
 import { buildSiteFromSpec } from './site-model';
@@ -409,5 +412,33 @@ describe('road overlap rendering', () => {
     const first = check();
     s.roads.reverse();
     expect(check()).toEqual(first);
+  });
+});
+
+describe('Villetta measured frame and ladder', () => {
+  it('builds the elliptical ribs at the measured pitch and crown, including the last end', () => {
+    const s = sanitizeSpec(villetta)!;
+    const b = s.buildings.find((b) => b.frame === 'greenhouse')!;
+    b.pos = { x: 0, z: 0 }; b.rotDeg = 0;
+    const m = buildSiteFromSpec({ ...s, buildings: [b] }, { bare: true });
+    const ribs: THREE.Mesh[] = [];
+    m.group.traverse((o) => { if (o instanceof THREE.Mesh && o.geometry.type === 'TorusGeometry') ribs.push(o); });
+    expect(ribs.length).toBe(Math.ceil(b.length / 4.61) + 1);
+    expect(ribs[1]!.position.x - ribs[0]!.position.x).toBeCloseTo(4.61);
+    expect(ribs.at(-1)!.position.x).toBeCloseTo(b.length / 2);
+    expect(ribs[0]!.scale.y * b.width / 2).toBeCloseTo(9.3);
+    expect(ribs.every((r) => r.scale.y === ribs[0]!.scale.y)).toBe(true); // bare steel is not randomly torn down
+  });
+  it('keeps the blue cage open and starts it 2 m above the floor', () => {
+    const s = sanitizeSpec(villetta)!;
+    const f = s.buildings.find((b) => b.name === 'Main store')!.fixtures![0]!;
+    expect(f.block).toMatchObject({ id: 'abando/cage-ladder', v: 2, params: { h: 9 } });
+    const shapes = expandShapes(f.shapes!);
+    expect(shapes.every((p) => p.prim === 'box')).toBe(true); // no solid cylinder or hood blocking the bore
+    const col = shapeSolids(shapes, 0, 0, 0);
+    expect(col.boxes.some((b) => b[0] < 0 && b[1] > 0 && b[4] < 0 && b[5] > 0 && b[2] < 4 && b[3] > 4)).toBe(false);
+    const cage = shapes.filter((p) => Math.hypot(p.at.x, p.at.z) > 0.44 && p.at.z > -0.39);
+    expect(cage.length).toBeGreaterThan(20);
+    for (const p of cage) if (p.prim === 'box') expect(p.at.y - p.size.y / 2).toBeGreaterThanOrEqual(1.98);
   });
 });

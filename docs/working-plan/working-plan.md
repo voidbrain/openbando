@@ -24,20 +24,28 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 
 ## Bando Villetta — Specs
 
-| # | Element | Measurement / specification | Notes | Status |
-|---|---|---|---|---|
-| 1 | Main store facade doors | 4.64 m | Approximate iPhone measurement | To verify |
-| 2 | Main store facade windows | 2.69 m | Height of the closed bottom section | To verify |
-| 3 | Greenhouse | 4.61 m | Distance between long sides; elliptical structure | To verify |
-| 4 | Annex house columns | 3.43 m | Distance between columns | To verify |
-| 5 | Annex perimeter walkway | 3.11 m | Columns to walls on S, N, and probably W sides; creates a walkable path around the large internal void on floor 1 | To verify |
-| 6 | Annex, first-floor basement | 6.20 m | Exact reference points to be confirmed | To verify |
-| 7 | Greenhouse height | 9.30 m | Elliptical; retain "greenhouse" as the working name | To verify |
-| 8 | Main store rounded upper sections | 8.00 m | Height above the indoor floor; four rounded sections | To verify |
-| 9 | Blue stair → blue ladder | Starts at 2.00 m | Open skeletal cylindrical structure | To verify |
-| 10 | Central columns | 1.00 m | Distance between the two central rows of columns | To verify |
+Measurements applied to `library/bandos/villetta-no-place.json` (release 3). Original footprint positions, dimensions and rotations remain; no geographic location is published. iPhone measurements are approximate, not survey-grade.
 
-**Measurement disclaimer:** iPhone measurements may be inaccurate. Apply reasonable tolerances and verify against photos or more reliable measurements before finalizing the geometry.
+| # | Element | Applied measurement | Interpretation / evidence | Status |
+|---|---|---|---|---|
+| 1 | Main store facade doors | 4.64 m width | Width confirmed by the pilot; existing heights and bay centres retained. | Applied |
+| 2 | Main store facade windows | 2.69 m sill | Closed lower panel height; keep the existing opening tops. | Applied |
+| 3 | Greenhouse ribs | 4.61 m pitch | Confirmed as rib spacing along the long sides, not full building width. Last bay is shorter to keep both end frames. | Applied |
+| 4 | Annex house columns | 3.43 m centres | Perimeter rows; a shorter terminal bay fits the retained footprint. | Applied |
+| 5 | Annex perimeter walkway | 3.11 m | First-floor central void leaves a walkable ring. S/N/W measured; equal east return is a modelling assumption. | Applied; east to verify |
+| 6 | Annex first-floor slab underside | 6.20 m | Interpretation confirmed by pilot. Existing 0.20 m slab is centred at 6.30 m, walking surface 6.40 m. | Applied |
+| 7 | Greenhouse crown | 9.30 m | Elliptical, open steel frame; existing 20.289 m width retained. `ribSpacing` is optional; old saved frames retain default pitch. | Applied |
+| 8 | Main store four crowns | 8.00 m | Existing 6 m wall height plus 2 m ellipse rise; roof count and orientation retained. | Applied |
+| 9 | Blue caged ladder | Cage starts at 2.00 m | Shared `abando/cage-ladder` v2: open hoops/rails/rungs, no solid cylinder. Villetta uses 9 m overall height (upper height retained as an estimate). | Applied |
+| 10 | Store central column rows | 1.00 m centres | Pair centred on the building width; outer rows unchanged. | Applied |
+
+### Photo interpretation and remaining uncertainty
+
+- `bando-img/IMG_4341.JPG`: broad half-ellipse steel greenhouse frame. Bare ribs remain intact; the artificial torn-glass deformation is only used on glazed frames.
+- `bando-img/IMG_4344.JPG`: tall annex colonnade and pitched terracotta roof. Replace the old barrel roof with a shallow gable; retain the upper storey's 3.60 m height and 2 m roof rise because no new dimensions establish them.
+- `bando-img/IMG_4352.DNG`: store interior, lower façade panels and the open blue ladder cage. Use the real ring/rail silhouette, not a solid tube or box hood.
+- Annex ground-floor support walls are inset behind the S/N/W colonnade; east remains open for access. Exact internal wall ends, roof pitch, column thicknesses and the east walkway require further measurements. The retained rectangular outer footprint is not claimed to be a full measured reconstruction.
+- Fresh copies get this release; existing edited copies are not overwritten. Playground is regenerated at release 2 because it also places the upgraded shared ladder.
 
 ## Next Steps
 
@@ -47,8 +55,8 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 | 2 | Redesign holes and underground areas | Review gallery, holes, underbasements, hills, geometry, and walkability. | High | TBC |
 | 3 | Verify flight descent | Compare the example CSV path with the video (bug 5). | High | Pending |
 | 4 | Finish road overlaps | Add road-class priority and remove overlap flicker; verify slopes in both drawing orders (bug 6). | High | Implemented — visual check pending |
-| 5 | Validate Bando Villetta dimensions | Compare measurements with photos and establish tolerances. | High | Pending |
-| 6 | Implement Bando geometry | Apply verified measurements to the 3D model. | Medium | Pending |
+| 5 | Validate Bando Villetta dimensions | Measurements applied with explicit photo interpretations above; check unmeasured east return, roof pitch and interior wall ends. | High | Further survey pending |
+| 6 | Implement Bando geometry | Survey refinement applied; compare a fresh release-3 copy with flight video and the reference photos. | Medium | Implemented — visual check pending |
 | 7 | Multipath racing mode | Plan and implement racing across multiple paths. | Future | Planned |
 | 8 | Upload support | 1 device version: Enable uploading of multiple paths; should be distincted so maybe ditch color as speed and use one foreach. "Closed loops" flag enable loop counting / best lap | Future | Planned |
 | 9 | Multiuser racing mode | Enable uploading of multiple paths from different devices on shared bando; should, should see others as ghosts | Future | Planned |

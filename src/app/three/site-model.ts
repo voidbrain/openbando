@@ -437,10 +437,11 @@ function buildGreenhouse(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, roof
     lp.push(-b.length / 2, y, z, b.length / 2, y, z);
   }
   const rnd = createRandom(ctx.seed);
-  const nRibs = Math.max(2, Math.round(b.length / 2.5));
+  const pitch = typeof b.ribSpacing === 'number' && Number.isFinite(b.ribSpacing) ? Math.max(0.5, Math.min(20, b.ribSpacing)) : null;
+  const nRibs = pitch ? Math.ceil(b.length / pitch) : Math.max(2, Math.round(b.length / 2.5));
   for (let i = 0; i <= nRibs; i++) {
-    const x = -b.length / 2 + (i * b.length) / nRibs;
-    const torn = x > TZ0 && x < TZ1;
+    const x = -b.length / 2 + (pitch ? Math.min(i * pitch, b.length) : (i * b.length) / nRibs);
+    const torn = glazed && x > TZ0 && x < TZ1;
     const t = new THREE.Mesh(new THREE.TorusGeometry(GW, 0.08, 4, 14, Math.PI), ctx.mat.steel);
     t.rotation.y = Math.PI / 2;
     t.scale.y = GK * (torn ? 1 - rnd() * 0.2 : 1);
