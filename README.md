@@ -143,9 +143,9 @@ No further configuration is required — the workflow uses the built-in
 
 ### How it works
 
-- Runs `npm ci` and `npm run build` (production build, with
+- Runs the reusable CI checks (catalogue, generated examples, unit tests, Italian translations, strict types and production build) before publishing. Browser e2e is optional; the current workflow input guard also skips it on pull requests (tracked in the working plan). The production build uses
   `"baseHref": "/openbando/"` set in `angular.json` so asset URLs
-  resolve correctly under the project-page subpath).
+  resolve correctly under the project-page subpath.
 - Adds a `.nojekyll` file so GitHub Pages does **not** process the bundle
   with Jekyll (without it, Pages renders the README instead of the app).
 - Uploads `dist/openbando/browser` as the Pages artifact.
@@ -174,6 +174,14 @@ of GitHub Actions.
 - Curved bridges become one straight deck; bell / observation towers are not imported.
 - The AI does not check for overlapping buildings.
 - Satellite tiles come from Esri World Imagery; check its terms before any bulk or automated use.
+
+## Project maintenance
+
+- [Working plan](docs/working-plan/working-plan.md): numbered bugs, verification evidence, Villetta measurements and ordered next steps.
+- [Agent instructions](AGENTS.md): architecture, conventions and required checks.
+- [User guide](docs/guide/README.md): generated feature walkthroughs.
+
+Terrain portals and road crossings have regression coverage, but slope-edge visuals, road class priority/flicker and the example flight descent still need the checks listed in the working plan.
 
 ## Additional Resources
 

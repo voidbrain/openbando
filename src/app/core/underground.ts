@@ -62,7 +62,8 @@ export function cutMask(g: HeightGrid, vols: readonly UndergroundSpec[]): Uint8A
     let any = false;
     for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
       const h = g.h[j * g.nx + i]!;
-      if (h <= v.floor || h >= v.ceiling) continue;
+      // Include the ceiling: a basement pad sits exactly there and must not seal its floor opening.
+      if (h <= v.floor || h > v.ceiling) continue;
       if (!coversVertex(v, px(i), pz(j), g.cell)) continue;
       band[j * g.nx + i] = 1;
       any = true;
