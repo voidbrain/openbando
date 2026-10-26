@@ -24,6 +24,17 @@ describe('underground volumes', () => {
     expect(mouths).toBe(2); // exactly two aligned blocks — one portal per flank — not a ragged diagonal band
   });
 
+  it('cuts terrain at the ceiling, but keeps terrain above it and at the floor', () => {
+    const g = emptyGrid({ cell: 1, half: { e: 8, n: 8 } });
+    const v = { ...tunnel(), floor: -3, ceiling: 0 };
+    const centre = 8 * g.nx + 8;
+    expect(cutMask(g, [v])[centre]).toBe(1); // flat basement pad
+    g.h.fill(0.01);
+    expect(cutMask(g, [v])[centre]).toBe(0); // ground above the ceiling stays intact
+    g.h.fill(-3);
+    expect(cutMask(g, [v])[centre]).toBe(0); // no opening below the floor
+  });
+
   it('a volume buried under a hill too high to cross leaves no cut at all', () => {
     const v = { ...tunnel(), outline: tunnelOutline({ x: -15, z: 0 }, { x: 15, z: 0 }, 4) }; // entirely under the mound
     const m = cutMask(hill(), [v]); // the hill is 10 m high there, nothing crosses the 3 m ceiling
