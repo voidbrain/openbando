@@ -59,6 +59,9 @@ export const LayoutStore = signalStore(
       if ((clean.h ?? 999) < 100 || (clean.w ?? 999) < 60) clean = { ...clean, h: null, w: null };
       panels[id] = { ...panels[id], ...clean };
     }
+    // opening the root URL always opens Welcome: whatever was saved (a session that closed it, or an old tour that
+    // restored an outdated snapshot), the entry screen shows the Welcome panel over the world
+    panels.welcome = { ...panels.welcome, visible: true };
     return { panels, zTop: saved.zTop ?? Z_START, v: LAYOUT_V };
   }),
   withMethods((store) => {

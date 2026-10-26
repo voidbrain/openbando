@@ -75,6 +75,14 @@ describe('stores', () => {
       expect(s.panels().welcome.visible).toBe(true); // panel absent from the save keeps its default
       expect(s.zTop()).toBe(40);
     });
+
+    it('opening the root URL always shows Welcome, whatever was saved', () => {
+      // a session that closed Welcome (or an old tour that restored a snapshot with it closed) must not hide it on the next visit
+      localStorage.setItem('abando-ng-layout', JSON.stringify({ v: 4, panels: { welcome: { visible: false, minimized: false, ghost: false, x: null, y: null, z: 10, w: null, h: null }, views: { visible: true, minimized: false, ghost: false, x: null, y: null, z: 10, w: null, h: null } }, zTop: 10 }));
+      const s = TestBed.inject(LayoutStore);
+      expect(s.panels().welcome.visible).toBe(true);
+      expect(s.panels().views.visible).toBe(true); // the rest of the save still applies
+    });
   });
 
   describe('ViewStore', () => {

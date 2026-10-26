@@ -86,6 +86,7 @@ export class TourService {
   private skip = false;
   /** Set by Back: the beat to play next. */
   private jump: number | null = null;
+  /** The last run was the showcase (`keepLayout`): stopping it must go back to the entry screen, not to the layout before it. */
 
   setTips(on: boolean): void {
     this.tips.set(on);
@@ -104,7 +105,8 @@ export class TourService {
 
   /** Stop the guide; a replay it was running stops with it (the guide's controls win over the timeline). */
   end(): void {
-    if (this.state()) this.haltReplay();
+    if (!this.state()) return; // not running: nothing to stop, and the layout must not be touched
+    this.haltReplay();
     this.stop = true;
   }
 
@@ -176,7 +178,13 @@ export class TourService {
     } catch (e) {
       if (!(e instanceof Stopped)) console.warn('tour', e);
     } finally {
-      if (!keepLayout || this.stop) this.layout.restore(before); // the showcase ends on its finished screen, unless stopped
+      if (this.stop && keepLayout) {
+        // stopped showcase: back to the entry screen — only Welcome over the empty world, turning — instead of the
+        // layout from before it started, which may have no panel open at all (a blank-looking screen)
+        this.entryScreen();
+      } else if (!keepLayout || this.stop) {
+        this.layout.restore(before); // the showcase ends on its finished screen, unless stopped
+      }
       this.ai.demo.set(false);
       this.state.set(null);
       this.cursor.set(null);
@@ -408,11 +416,7 @@ export class TourService {
         return;
       case 'layoutReset':
         // a clean screen: only Welcome over the empty world, turning (a showcase may run on a visit with a bando open)
-        this.site.showVoid();
-        this.layout.reset();
-        for (const id of Object.keys(this.layout.panels()) as PanelId[]) if (id !== 'welcome') this.layout.setVisible(id, false);
-        this.layout.setVisible('welcome', true);
-        this.scene.resetCamera();
+        this.entryScreen();
         return this.sleep(400);
       case 'orbit':
         this.scene.autoOrbit.set(arg === 'on');
@@ -494,6 +498,20 @@ export class TourService {
         this.playback.pause();
         return;
     }
+  }
+
+  /**
+   * The entry screen: only Welcome over the empty world, turning. Used by the showcase's first step and when the
+   * showcase is stopped — stopping must land here, never on the layout from before it started (which may show no
+   * panel at all), so the pilot always returns to a working app with Welcome open.
+   */
+  private entryScreen(): void {
+    this.site.showVoid();
+    this.layout.reset();
+    for (const id of Object.keys(this.layout.panels()) as PanelId[]) if (id !== 'welcome') this.layout.setVisible(id, false);
+    this.layout.setVisible('welcome', true);
+    this.scene.resetCamera();
+    this.scene.autoOrbit.set(true);
   }
 
   /** A fresh copy of an example under the tour's own id (it becomes the active bando); false when it could not be downloaded. */
