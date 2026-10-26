@@ -116,7 +116,9 @@ export function cutUnderground(
               outside.push(q);
             }
           }
-          if (outside.length >= 3) result.push(outside);
+          // A polygon entirely on this plane belongs to the interior; duplicating it as
+          // an outside fragment leaves terrain across a basement ceiling.
+          if (outside.length >= 3 && inside.some(q => distance(q) > 1e-7)) result.push(outside);
           inside = keep;
         }
       }

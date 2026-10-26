@@ -24,7 +24,7 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 
 ## Bando Villetta — Specs
 
-Measurements applied to `library/bandos/villetta-no-place.json` (release 3). Original footprint positions, dimensions and rotations remain; no geographic location is published. iPhone measurements are approximate, not survey-grade.
+Measurements applied to `library/bandos/villetta-no-place.json` (release 4). Original footprint positions, dimensions and rotations remain; no geographic location is published. iPhone measurements are approximate, not survey-grade.
 
 | # | Element | Applied measurement | Interpretation / evidence | Status |
 |---|---|---|---|---|
@@ -34,18 +34,17 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 3). Ori
 | 4 | Annex house columns | 3.43 m centres | Perimeter rows; a shorter terminal bay fits the retained footprint. | Applied |
 | 5 | Annex perimeter walkway | 3.11 m | First-floor central void leaves a walkable ring. S/N/W measured; equal east return is a modelling assumption. | Applied; east to verify |
 | 6 | Annex first-floor slab underside | 6.20 m | Interpretation confirmed by pilot. Existing 0.20 m slab is centred at 6.30 m, walking surface 6.40 m. | Applied |
-| 7 | Multipath racing mode | Separate race clock, per-pilot names/colours/offsets, simultaneous 3D ghosts and shared start gate. | Medium | Implemented — field verification pending |
-| 8 | Upload support | Existing multi-file log upload reused; closed-loop lap/best-lap estimates, local-coordinate race package export/import. | Medium | Implemented — field verification pending |
-| 9 | Multiuser racing mode | Server-free race-file exchange plus optional self-hosted HTTP/SSE room relay; same exported bando/model scale required. | Medium | Implemented — relay deployment and device verification pending |
-| 10 | Multiuser live racing mode | Multiple independent WS/SSE GPS sources, stale detection and retained recordings; opt-in room broadcast at ~1 Hz. SquirrelCast video URLs alone are not telemetry. | Medium | Implemented — real stream/device verification pending |
+| 7 | Greenhouse crown | 9.30 m | Parabolic approximation from the reference photograph; crown and rib pitch retained. | Applied; visual check pending |
+| 8 | Main store roof crowns | 8 m | Four barrel roofs, 6 m wall height and 2 m rise. | Applied |
+| 9 | Blue roof ladder | Open cage above 2 m | Shared `abando/cage-ladder` v2, mounted as a building fixture. | Applied |
 
 ### Photo interpretation and remaining uncertainty
 
-- `bando-img/IMG_4341.JPG`: broad half-ellipse steel greenhouse frame. Bare ribs remain intact; the artificial torn-glass deformation is only used on glazed frames.
+- `bando-img/IMG_4341.JPG`: broad steel greenhouse frame, approximated with a parabolic arch. Bare ribs remain intact; the artificial torn-glass deformation is only used on glazed frames.
 - `bando-img/IMG_4344.JPG`: tall annex colonnade and pitched terracotta roof. Replace the old barrel roof with a shallow gable; retain the upper storey's 3.60 m height and 2 m roof rise because no new dimensions establish them.
 - `bando-img/IMG_4352.DNG`: store interior, lower façade panels and the open blue ladder cage. Use the real ring/rail silhouette, not a solid tube or box hood.
 - Annex ground-floor support walls are inset behind the S/N/W colonnade; east remains open for access. Exact internal wall ends, roof pitch, column thicknesses and the east walkway require further measurements. The retained rectangular outer footprint is not claimed to be a full measured reconstruction.
-- Fresh copies get this release; existing edited copies are not overwritten. Playground is regenerated at release 2 because it also places the upgraded shared ladder.
+- Fresh copies get this release; existing edited copies are not overwritten. Playground also places the upgraded shared ladder.
 
 ## Next Steps
 
@@ -89,3 +88,10 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 - The root opens only Welcome; saved positions are preserved. `?panel=features` opens the nine-card Features panel, which is excluded from Views.
 - The mascot loop now searches, runs with the grounded drone, sits perplexed, watches takeoff, jumps and celebrates before the drone exits. The Welcome pause button was removed as requested; reduced-motion preference still shows a still image.
 - **Open:** visually verify the right-facing drone, propeller animation, complete sequence and responsive Features panel in a browser.
+
+### Follow-up — Welcome and underground surfaces
+
+- The Welcome wordmark is a single-line ASCII wall; the Features button is labelled “Features”.
+- The pilot pokes the grounded quad twice after the perplexed pose, then sits as it takes off. The grounded quad and subsequent flight are shifted 20 px left. The poke keyframe is aligned so the finger reaches the drone.
+- Terrain triangles coplanar with a basement ceiling are removed; the road uses the rendered terrain triangles and depth bias, and building walls use depth bias to reduce surface flicker. Visual browser checks of the hill road and warehouse remain pending.
+- Villetta release 4 uses a parabolic greenhouse profile, retaining 9.30 m crown height, 4.61 m rib spacing and the current footprint. Open a fresh example copy to see release 4; existing edited copies are not overwritten.

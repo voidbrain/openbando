@@ -8,10 +8,10 @@ test('Welcome keeps the ASCII title, Features link and revised pose assets', asy
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'OpenBando', exact: true })).toBeVisible();
-  await expect(page.locator('app-welcome-panel .wordmark')).toContainText('###');
+  await expect(page.locator('app-welcome-panel .wordmark')).toContainText('___');
   const asset = await page.request.get('/mascot/poses/16-confused-a.png');
   expect(asset.ok()).toBe(true);
-  await expect(page.getByRole('button', { name: 'Explore features' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Features' })).toBeVisible();
   const axe = await new AxeBuilder({ page })
     .include('app-welcome-panel')
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])

@@ -12,7 +12,7 @@ import { satelliteTexture } from './satellite-ground';
 import { type BuildingSpec, type LevelSpec, type RoadSpec, type SiteSpec, type SurfaceSpec, type TreeSpec, type UndergroundSpec, type WallSpec, createRandom, fixturesInSite } from '../core/site-spec';
 import { SiteCollider, type SolidBox, type TreeCylinder } from '../core/sim/collider';
 import { siteGround, type SiteGround } from '../core/site-ground';
-import { heightColor, heightRange, type HeightGrid } from '../core/terrain';
+import { heightColor, heightRange, meshHeightAt, type HeightGrid } from '../core/terrain';
 
 export type TreeKind = 'd' | 'c';
 
@@ -426,16 +426,30 @@ function buildGreenhouse(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, roof
   const glassMat = material('#9ec1b6', { transparent: true, opacity: 0.3, side: THREE.DoubleSide, roughness: 0.3, depthWrite: false });
   const TZ0 = -b.length / 2 + 0.66 * b.length, TZ1 = -b.length / 2 + 0.92 * b.length;
   const glazed = b.glass !== false; // false: only the steel skeleton is left
+  const parabolic = b.archShape === 'parabola';
+  const archY = (z: number): number => GS + GW * GK * Math.max(0, 1 - (z / GW) ** 2);
   for (const [f0, f1] of glazed ? ([[0, 0.37], [0.37, 0.66], [0.92, 1]] as const) : []) {
     const x0 = -b.length / 2 + f0 * b.length, x1 = -b.length / 2 + f1 * b.length;
-    const v = vault(x1 - x0, GW, GK, glassMat, 14);
-    v.castShadow = false;
-    v.rotation.y = Math.PI / 2;
-    ctx.addMesh(roofTarget, v, (x0 + x1) / 2, GS, 0);
+    if (parabolic) {
+      const positions: number[] = [], indices: number[] = [], segments = 32;
+      for (const x of [x0, x1]) for (let i = 0; i <= segments; i++) {
+        const z = -GW + 2 * GW * i / segments;
+        positions.push(x, archY(z), z);
+      }
+      for (let i = 0; i < segments; i++) indices.push(i, i + segments + 1, i + 1, i + 1, i + segments + 1, i + segments + 2);
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geo.setIndex(indices); geo.computeVertexNormals();
+      ctx.addMesh(roofTarget, new THREE.Mesh(geo, glassMat), 0, 0, 0);
+    } else {
+      const v = vault(x1 - x0, GW, GK, glassMat, 14);
+      v.castShadow = false; v.rotation.y = Math.PI / 2;
+      ctx.addMesh(roofTarget, v, (x0 + x1) / 2, GS, 0);
+    }
   }
   const lp: number[] = [];
   for (let a = 22.5; a < 180; a += 22.5) {
-    const r = (a * Math.PI) / 180, y = GS + GW * GK * Math.sin(r), z = GW * Math.cos(r);
+    const r = (a * Math.PI) / 180, z = GW * Math.cos(r), y = parabolic ? archY(z) : GS + GW * GK * Math.sin(r);
     lp.push(-b.length / 2, y, z, b.length / 2, y, z);
   }
   const rnd = createRandom(ctx.seed);
@@ -444,11 +458,22 @@ function buildGreenhouse(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, roof
   for (let i = 0; i <= nRibs; i++) {
     const x = -b.length / 2 + (pitch ? Math.min(i * pitch, b.length) : (i * b.length) / nRibs);
     const torn = glazed && x > TZ0 && x < TZ1;
-    const t = new THREE.Mesh(new THREE.TorusGeometry(GW, 0.08, 4, 14, Math.PI), ctx.mat.steel);
-    t.rotation.y = Math.PI / 2;
-    t.scale.y = GK * (torn ? 1 - rnd() * 0.2 : 1);
-    if (torn) t.rotation.x = (rnd() - 0.5) * 0.05;
-    ctx.addMesh(target, t, x, GS, 0);
+    if (parabolic) {
+      const points = Array.from({ length: 65 }, (_, i) => {
+        const z = -GW + 2 * GW * i / 64;
+        return new THREE.Vector3(0, archY(z) - GS, z);
+      });
+      const curve = new THREE.CatmullRomCurve3(points);
+      const rib = new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.08, 4, false), ctx.mat.steel);
+      rib.userData['greenhouseRib'] = true;
+      ctx.addMesh(target, rib, x, GS, 0);
+    } else {
+      const t = new THREE.Mesh(new THREE.TorusGeometry(GW, 0.08, 4, 14, Math.PI), ctx.mat.steel);
+      t.rotation.y = Math.PI / 2;
+      t.scale.y = GK * (torn ? 1 - rnd() * 0.2 : 1);
+      if (torn) t.rotation.x = (rnd() - 0.5) * 0.05;
+      ctx.addMesh(target, t, x, GS, 0);
+    }
     lp.push(x, 0, -GW, x, GS, -GW, x, 0, GW, x, GS, GW);
   }
   const g = new THREE.BufferGeometry();
@@ -654,7 +679,7 @@ function roadMesh(ground: SiteGround, r: RoadSpec, order: number): THREE.Mesh {
     for (let k = 0; k <= n; k++) for (let j = 0; j <= across; j++) {
       const side = -half + r.width * j / across;
       const x = a.x + dx * k / n + nx * side, z = a.z + dz * k / n + nz * side;
-      pos.push(x, ground.at(x, z) + 0.06, z);
+      pos.push(x, meshHeightAt(ground.grid, x, z) + 0.06, z);
     }
     for (let k = 0; k < n; k++) for (let j = 0; j < across; j++) {
       const v = base + k * (across + 1) + j, w = v + across + 1;
@@ -666,7 +691,7 @@ function roadMesh(ground: SiteGround, r: RoadSpec, order: number): THREE.Mesh {
   geo.setIndex(idx);
   geo.computeVertexNormals();
   const color = r.surface ? surfaceDef(r.surface).color : roadDef(r.kind).color;
-  const m = new THREE.Mesh(cutUnderground(geo, ground.vols, 0.06), material(color, { side: THREE.DoubleSide, depthWrite: false, depthTest: !!ground.grid }));
+  const m = new THREE.Mesh(cutUnderground(geo, ground.vols, 0.06), material(color, { side: THREE.DoubleSide, depthWrite: false, depthTest: !!ground.grid, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 }));
   m.receiveShadow = true;
   m.renderOrder = order;
   m.userData['roadKind'] = r.kind;
@@ -764,6 +789,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
   let terrain: THREE.Mesh | null = null;
 
   const mats: Record<string, THREE.MeshStandardMaterial> = {};
+  const wallMats: Record<string, THREE.MeshStandardMaterial> = {};
   const ctx: Ctx = {
     ruin: null,
     noSlabs: false,
@@ -891,7 +917,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     ctx.rot = b.rotDeg;
     const floorMat = material(b.floorColor ?? '#a9aaa0');
     const baseWall = ctx.mat.wall;
-    if (b.color) ctx.mat.wall = ctx.matFor(b.color); // the building's own wall colour
+    ctx.mat.wall = wallMats[b.color ?? '#d7d0bd'] ??= material(b.color ?? '#d7d0bd', { polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 });
     const ruin = Math.min(1, Math.max(0, b.ruin ?? 0));
     const open = !b.frame && (!!b.roofless || ruin >= ROOFLESS); // no roof left
     ctx.noSlabs = !b.frame && (!!b.roofless || ruin >= NO_SLABS);

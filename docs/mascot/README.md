@@ -30,16 +30,17 @@ The two original sheets in [the working plan](../working-plan/mascotte-img/) are
 | Path | Purpose |
 |---|---|
 | `pilot-source.png` | Imagegen master with all 16 poses, unchanged |
+| `poke-source.png` | Imagegen master for the grounded-drone poke |
 | `confused-source.png` | Separate imagegen export source for cross-legged confusion, hand to head and manga sweat drop |
 | `drone-right-source.png` | Right-facing quad used for the exit |
 | `drone-source.png` | Separate imagegen quad master, unchanged |
 | `turnaround.png` | Front/profile/back plus drone/radio design reference |
 | `../../public/mascot/poses/*.png` | Individual numbered 128×128 pose keyframes |
-| `../../public/mascot/keyframes.png` | Packed 4×5 keyframe preview (17 poses) |
+| `../../public/mascot/keyframes.png` | Packed 4×5 keyframe preview (18 poses) |
 | `../../public/mascot/poster.png` | Still fallback / reduced-motion art |
 | `../../public/mascot/drone.png` | Drone runtime sprite |
 | `../../public/mascot/drone-right.png` | Right-facing exit sprite |
-| `../../public/mascot/timeline.json` | Authoritative 18.1-second choreography |
+| `../../public/mascot/timeline.json` | Authoritative 19.7-second choreography |
 | `../../public/mascot/openbando-mascot.gif` | Portable 10 fps animated preview |
 
 ## Keyframes
@@ -63,6 +64,7 @@ Indices are zero-based. Names are stable API, not descriptions of an automatical
 | 14 | victory | Landed celebration |
 | 15 | back | Full rear equipment/strap reference, reserved for future turns |
 | 16 | confused-a | Cross-legged, hand scratching head, manga sweat drop; held keyframe |
+| 17 | poke | Seated, arm reaches downward to the grounded quad; used twice before takeoff |
 
 The generated source is **not an exact regular atlas**: the jump fist crosses a nominal row boundary. `RECTS` in `tools/mascot/build.py` records reviewed sprite bounds, preventing stray shoes or a cropped fist. Every export uses one common scale and foot baseline; never scale each cropped pose to fill the square independently.
 

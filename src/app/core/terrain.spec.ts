@@ -1,3 +1,4 @@
+import { meshHeightAt } from './terrain';
 import { describe, expect, it } from 'vitest';
 import { siteGround, siteOutline } from './site-ground';
 import { emptySpec, sanitizeSpec, type BuildingSpec } from './site-spec';
@@ -214,5 +215,14 @@ describe('sculpting and construction lines', () => {
     expect(r.slope).toBe(25);
     expect(r.outline).toEqual([{ x: 0, z: 3 }, { x: 20, z: 3 }, { x: 20, z: -3 }, { x: 0, z: -3 }]);
     expect(r.arrow[1]).toEqual({ x: 20, z: 0 });
+  });
+});
+
+
+describe('rendered terrain height', () => {
+  it('matches the two triangles instead of bilinear interpolation at a grid saddle', () => {
+    const g = { x0: 0, z0: 0, nx: 2, nz: 2, cell: 1, h: new Float32Array([0, 0, 0, 10]) };
+    expect(meshHeightAt(g, 0.25, 0.25)).toBe(0);
+    expect(meshHeightAt(g, 0.75, 0.75)).toBe(5);
   });
 });

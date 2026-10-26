@@ -134,6 +134,19 @@ export function heightAt(g: HeightGrid | null | undefined, x: number, z: number)
   return (h[k]! * (1 - u) + h[k + 1]! * u) * (1 - v) + (h[k + g.nx]! * (1 - u) + h[k + g.nx + 1]! * u) * v;
 }
 
+/** Height of the rendered terrain triangles (which do not use bilinear interpolation). */
+export function meshHeightAt(g: HeightGrid | null | undefined, x: number, z: number): number {
+  if (!g) return 0;
+  const step = g.nx * g.nz > 250_000 ? 2 : 1;
+  const nx = Math.floor((g.nx - 1) / step) + 1, nz = Math.floor((g.nz - 1) / step) + 1;
+  const fx = Math.min(nx - 1, Math.max(0, (x - g.x0) / (g.cell * step)));
+  const fz = Math.min(nz - 1, Math.max(0, (z - g.z0) / (g.cell * step)));
+  const i = Math.min(nx - 2, Math.floor(fx)), j = Math.min(nz - 2, Math.floor(fz));
+  const u = fx - i, v = fz - j, k = j * step * g.nx + i * step;
+  const a = g.h[k]!, b = g.h[k + step]!, c = g.h[k + step * g.nx]!, d = g.h[k + step * g.nx + step]!;
+  return u + v <= 1 ? a * (1 - u - v) + b * u + c * v : b * (1 - v) + c * (1 - u) + d * (u + v - 1);
+}
+
 function bbox(pts: readonly Vec2[], r: number): { x0: number; z0: number; x1: number; z1: number } {
   let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity;
   for (const p of pts) {

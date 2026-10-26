@@ -1,4 +1,5 @@
 import villetta from '../../../public/library/bandos/villetta-no-place.json';
+import { meshHeightAt } from '../core/terrain';
 import { sanitizeSpec } from '../core/site-spec';
 import { expandShapes, shapeSolids } from '../core/shapes';
 import * as THREE from 'three';
@@ -402,12 +403,13 @@ describe('road overlap rendering', () => {
       expect(roads.map((r) => r.userData['roadKind'])).toEqual(['path', 'track', 'road']);
       for (let i = 0; i < roads.length; i++) {
         const r = roads[i]!, mat = r.material as THREE.MeshStandardMaterial;
+        expect(mat.polygonOffset).toBe(true);
         expect(mat.depthWrite).toBe(false); // overlap cannot reject the higher-class road
         expect(mat.depthTest).toBe(terrain); // hills still occlude roads
         if (terrain) expect(r.renderOrder).toBeGreaterThan(0); // after the terrain depth pass
         if (i) expect(r.renderOrder).toBeGreaterThan(roads[i - 1]!.renderOrder);
         const p = r.geometry.getAttribute('position');
-        for (let j = 0; j < p.count; j++) expect(p.getY(j)).toBeCloseTo(m.ground.at(p.getX(j), p.getZ(j)) + 0.06, 4);
+        for (let j = 0; j < p.count; j++) expect(p.getY(j)).toBeCloseTo(meshHeightAt(m.ground.grid, p.getX(j), p.getZ(j)) + 0.06, 4);
       }
       return roads.map((r) => Array.from(r.geometry.getAttribute('position').array));
     };
@@ -418,17 +420,19 @@ describe('road overlap rendering', () => {
 });
 
 describe('Villetta measured frame and ladder', () => {
-  it('builds the elliptical ribs at the measured pitch and crown, including the last end', () => {
+  it('builds the parabolic ribs at the measured pitch and crown, including the last end', () => {
     const s = sanitizeSpec(villetta)!;
     const b = s.buildings.find((b) => b.frame === 'greenhouse')!;
     b.pos = { x: 0, z: 0 }; b.rotDeg = 0;
     const m = buildSiteFromSpec({ ...s, buildings: [b] }, { bare: true });
     const ribs: THREE.Mesh[] = [];
-    m.group.traverse((o) => { if (o instanceof THREE.Mesh && o.geometry.type === 'TorusGeometry') ribs.push(o); });
+    m.group.traverse((o) => { if (o instanceof THREE.Mesh && o.userData['greenhouseRib']) ribs.push(o); });
     expect(ribs.length).toBe(Math.ceil(b.length / 4.61) + 1);
     expect(ribs[1]!.position.x - ribs[0]!.position.x).toBeCloseTo(4.61);
     expect(ribs.at(-1)!.position.x).toBeCloseTo(b.length / 2);
-    expect(ribs[0]!.scale.y * b.width / 2).toBeCloseTo(9.3);
+    const path = (ribs[0]!.geometry as THREE.TubeGeometry).parameters.path;
+    expect(path.getPoint(0.5).y).toBeCloseTo(9.3);
+    expect(path.getPoint(0.25).y).toBeCloseTo(9.3 * 0.75, 1);
     expect(ribs.every((r) => r.scale.y === ribs[0]!.scale.y)).toBe(true); // bare steel is not randomly torn down
   });
   it('keeps the blue cage open and starts it 2 m above the floor', () => {
