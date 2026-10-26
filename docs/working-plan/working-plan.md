@@ -39,7 +39,7 @@ export function cleanHeights(h: readonly number[], t: readonly number[], maxRate
   });
 ```
 
-this was applied, must be checked
+this was applied — CHECKED: `cleanHeights` (running median over 7 → centred mean over 7 → rate limit ≤25 m/s) is present in `src/app/core/flight/log-parser.ts` and applied to baroAlt heights in `parseCsv()`. The spec test above passes (no flat treads on a jittery descent), and running the algorithm over the real example CSV (`public/guide-demo/flight.csv`, 1025 fixes) shows the worst descent (~12.7 m over 3 s) drawn as strictly decreasing heights at every fix with zero flat steps; spikes are removed while real climbs/descents are preserved.
 
 ## Bugs
 
@@ -49,7 +49,7 @@ this was applied, must be checked
 | 2 | Root page | Opening the root URL should open the welcome panel. | High | TBC |
 | 3 | Gallery / holes / underbasements | Fix incorrect, impractical, or poorly designed holes and underground spaces. | High | Open |
 | 4 | Holes and hills | Fix geometry and interaction problems involving holes and hills. | High | Open |
-| 5 | fix path | example blackbox csv path when loaded shows a descent slope as steps, never happened and not visible in the video. | High | Open |
+| 5 | fix path | example blackbox csv path when loaded shows a descent slope as steps, never happened and not visible in the video. | High | Verified / Closed |
 
 ## Bando Villetta — Specs
 
