@@ -1,6 +1,6 @@
 ## To be completed and verified
 
-example blackbox csv path whne loaded shows a descent slope as steps, never happened and not visible in the video.
+Bug 5: example blackbox csv path when loaded shows a descent slope as steps, never happened and not visible in the video.
 This was the point:
 
 ```
@@ -49,6 +49,7 @@ this was applied, must be checked
 | 2 | Root page | Opening the root URL should open the welcome panel. | High | TBC |
 | 3 | Gallery / holes / underbasements | Fix incorrect, impractical, or poorly designed holes and underground spaces. | High | Open |
 | 4 | Holes and hills | Fix geometry and interaction problems involving holes and hills. | High | Open |
+| 5 | fix path | example blackbox csv path when loaded shows a descent slope as steps, never happened and not visible in the video. | High | Open |
 
 ## Bando Villetta — Specs
 
@@ -71,8 +72,8 @@ this was applied, must be checked
 
 | Task | Details | Priority | Status |
 |---|---|---|---|
-| 1 | Fix welcome flow | Correct welcome tour termination and root-page behavior. | High | Pending |
-| 2 | Redesign holes and underground areas | Review gallery, holes, underbasements, hills, geometry, and walkability. | High | Pending |
+| 1 | Fix welcome flow | Correct welcome tour termination and root-page behavior. | High | TBC |
+| 2 | Redesign holes and underground areas | Review gallery, holes, underbasements, hills, geometry, and walkability. | High | TBC |
 | 3 | Validate Bando Villetta dimensions | Compare measurements with photos and establish tolerances. | High | Pending |
 | 4 | Implement Bando geometry | Apply verified measurements to the 3D model. | Medium | Pending |
 | 5 | Multipath racing mode | Plan and implement racing across multiple paths. | Future | Planned |
