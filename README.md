@@ -201,3 +201,9 @@ The place-hidden Villetta example now includes the measured façade widths and p
 ### Pixel mascot
 
 Welcome includes the pixel pilot and freestyle quad with a pauseable animation and reduced-motion still. [Character bible and keyframes](docs/mascot/README.md) define equipment orientation, the 360° goggle strap, palette, choreography and rules for new poses. The [animated GIF](public/mascot/openbando-mascot.gif) is generated from the same timeline as the app.
+
+## Multipath racing
+
+Flights → Racing and ghosts compares up to eight pilots in individual colours, with start delays, a separate race clock, simultaneous non-colliding ghosts and estimated lap / best-lap timing through a shared gate. Exchange local-coordinate race files without a server, connect several GPS WebSocket/SSE sources directly, or use the optional self-hosted room relay to exchange tracks between devices. Video/selected-flight replay keeps its own clock.
+
+[Setup, limits and the server decision](docs/racing/README.md). Shared rooms require a reachable relay; local recordings, file exchange and multiple direct streams do not require an additional race server. No relay is deployed automatically.

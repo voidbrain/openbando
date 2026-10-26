@@ -1,3 +1,5 @@
+import { RaceService } from './race.service';
+import { raceFrameKey } from '../core/racing/race';
 import { Injectable, computed, effect, inject, signal, untracked, type WritableSignal } from '@angular/core';
 import { ELEVATION_ATTRIBUTION } from '../core/elevation';
 import type { Calibration, GeoPoint } from '../core/models';
@@ -54,6 +56,7 @@ export interface GenerateOptions {
  */
 @Injectable({ providedIn: 'root' })
 export class SiteService {
+  private readonly race = inject(RaceService);
   private readonly geo = inject(GeoService);
   private readonly library = inject(SiteLibraryService);
   private readonly scene = inject(SceneService);
@@ -489,6 +492,7 @@ export class SiteService {
   private groundGrid: HeightGrid | null = null;
 
   private applySpec(spec: SiteSpec, resetView: boolean, remember = true): void {
+    this.race.siteKey.set(raceFrameKey(spec));
     this.active.set(spec);
     // adopt the spec as the new draft, unless the caller is applying the draft itself (live preview)
     if (!sameSpec(this.editor.draft(), spec)) this.editor.load(spec);

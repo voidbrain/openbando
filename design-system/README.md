@@ -74,7 +74,7 @@ Keep the wordmark in the system `sans` family. Welcome uses a bold stacked Open 
 ## Components
 
 Guidelines per component in `components/`: WelcomePanel, Button, SegmentedControl, FormControls, InspectorSection, Panel, FloatBox,
-ToolPalette, OptionsBar, PickMenu, BlocksPanel, ContextMenu, Readout, Notice, Toast, Spinner, ElementsList, VersionBadge. Reuse these (the global
+ToolPalette, OptionsBar, PickMenu, BlocksPanel, ContextMenu, Readout, Notice, Toast, Spinner, ElementsList, VersionBadge, RacingControls. Reuse these (the global
 classes in `src/styles.scss`, `app-panel`, `app-float-box`) before inventing a new control. In the app the elements-list row
 is `.row` scoped to `ElementsBox`; the guideline calls it `.el-row` to keep it apart from the global `.row`.
 

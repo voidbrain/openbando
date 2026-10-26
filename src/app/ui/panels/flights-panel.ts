@@ -1,3 +1,5 @@
+import { RaceService } from '../../services/race.service';
+import { RacingControls } from './racing-controls';
 import { Component, computed, inject } from '@angular/core';
 import { FlightService } from '../../services/flight.service';
 import { FlightStore } from '../../state/flight.store';
@@ -6,7 +8,7 @@ import { Panel } from '../panel/panel';
 
 @Component({
   selector: 'app-flights-panel',
-  imports: [Panel],
+  imports: [Panel, RacingControls],
   template: `
     <app-panel id="flights">
       <div class="row">
@@ -23,9 +25,10 @@ import { Panel } from '../panel/panel';
           <div class="dim small">Drop a Betaflight Blackbox CSV, GPX or JSON log on the page (or Upload) to see the flight path.</div>
         }
       </div>
-      @if (store.count()) {
+      @if (store.count() && !race.enabled()) {
         <div class="dim small">blue = slow → red = {{ topSpeed() }} km/h</div>
       }
+      <app-racing-controls />
     </app-panel>
   `,
   styles: `
@@ -56,6 +59,7 @@ import { Panel } from '../panel/panel';
   `,
 })
 export class FlightsPanel {
+  protected readonly race = inject(RaceService);
   protected readonly store = inject(FlightStore);
   protected readonly flights = inject(FlightService);
   protected readonly playback = inject(PlaybackService);

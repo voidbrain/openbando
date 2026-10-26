@@ -34,10 +34,10 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 3). Ori
 | 4 | Annex house columns | 3.43 m centres | Perimeter rows; a shorter terminal bay fits the retained footprint. | Applied |
 | 5 | Annex perimeter walkway | 3.11 m | First-floor central void leaves a walkable ring. S/N/W measured; equal east return is a modelling assumption. | Applied; east to verify |
 | 6 | Annex first-floor slab underside | 6.20 m | Interpretation confirmed by pilot. Existing 0.20 m slab is centred at 6.30 m, walking surface 6.40 m. | Applied |
-| 7 | Greenhouse crown | 9.30 m | Elliptical, open steel frame; existing 20.289 m width retained. `ribSpacing` is optional; old saved frames retain default pitch. | Applied |
-| 8 | Main store four crowns | 8.00 m | Existing 6 m wall height plus 2 m ellipse rise; roof count and orientation retained. | Applied |
-| 9 | Blue caged ladder | Cage starts at 2.00 m | Shared `abando/cage-ladder` v2: open hoops/rails/rungs, no solid cylinder. Villetta uses 9 m overall height (upper height retained as an estimate). | Applied |
-| 10 | Store central column rows | 1.00 m centres | Pair centred on the building width; outer rows unchanged. | Applied |
+| 7 | Multipath racing mode | Separate race clock, per-pilot names/colours/offsets, simultaneous 3D ghosts and shared start gate. | Medium | Implemented — field/browser verification pending |
+| 8 | Upload support | Existing multi-file log upload reused; closed-loop lap/best-lap estimates, local-coordinate race package export/import. | Medium | Implemented — field/browser verification pending |
+| 9 | Multiuser racing mode | Server-free race-file exchange plus optional self-hosted HTTP/SSE room relay; same exported bando/model scale required. | Medium | Implemented — relay deployment and device verification pending |
+| 10 | Multiuser live racing mode | Multiple independent WS/SSE GPS sources, stale detection and retained recordings; opt-in room broadcast at ~1 Hz. SquirrelCast video URLs alone are not telemetry. | Medium | Implemented — real stream/device verification pending |
 
 ### Photo interpretation and remaining uncertainty
 
@@ -57,13 +57,19 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 3). Ori
 | 4 | Finish road overlaps | Add road-class priority and remove overlap flicker; verify slopes in both drawing orders (bug 6). | High | Implemented — visual check pending |
 | 5 | Validate Bando Villetta dimensions | Measurements applied with explicit photo interpretations above; check unmeasured east return, roof pitch and interior wall ends. | High | Further survey pending |
 | 6 | Implement Bando geometry | Survey refinement applied; compare a fresh release-3 copy with flight video and the reference photos. | Medium | Implemented — visual check pending |
-| 7 | Multipath racing mode | Plan and implement racing across multiple paths. | Future | Planned |
-| 8 | Upload support | 1 device version: Enable uploading of multiple paths; should be distincted so maybe ditch color as speed and use one foreach. "Closed loops" flag enable loop counting / best lap | Future | Planned |
-| 9 | Multiuser racing mode | Enable uploading of multiple paths from different devices on shared bando; should, should see others as ghosts | Future | Planned |
-| 10 | Multiuser live racing mode | Enable multiple paths from different devices on shared bando using live multiple stream links; (example 3 squirrelcast broadcast on diff urls. ) | Future | Planned |
+| 7 | Multipath racing mode | Separate race clock, per-pilot names/colours/offsets, simultaneous 3D ghosts and shared start gate. | Medium | Implemented — field/browser verification pending |
+| 8 | Upload support | Existing multi-file log upload reused; closed-loop lap/best-lap estimates, local-coordinate race package export/import. | Medium | Implemented — field/browser verification pending |
+| 9 | Multiuser racing mode | Server-free race-file exchange plus optional self-hosted HTTP/SSE room relay; same exported bando/model scale required. | Medium | Implemented — relay deployment and device verification pending |
+| 10 | Multiuser live racing mode | Multiple independent WS/SSE GPS sources, stale detection and retained recordings; opt-in room broadcast at ~1 Hz. SquirrelCast video URLs alone are not telemetry. | Medium | Implemented — real stream/device verification pending |
 | 11 | Mascotte | Pixel pilot/drone, 16 keyframe PNGs, 16-second GIF, Welcome animation and stacked title. Character/equipment rules and extension workflow: [character bible](../mascot/README.md). | Future | Implemented — visual review pending |
 
 ## Visual references
 
 - `bugs/bug1.jpg`: holes, terrain, basement and tunnel edges (bugs 3–4).
 - `bugs/bug2.jpg`: overlapping roads, class priority and flicker (bug 6).
+
+## Racing verification and remaining field work
+
+See [racing setup and server decision](../racing/README.md). No server is needed for local multipath comparison, exported race-file exchange, or several directly reachable GPS streams. Different devices exchanging tracks over the network use the optional in-memory relay; no service has been deployed automatically.
+
+Before declaring field-ready: open the same exported hidden bando on two devices, align separate pilots, compare offsets/lap estimates with a known clock, connect two real GPS/SquirrelCast-associated telemetry bridges, stop one feed and verify stale hiding, test relay disconnect/rejoin and GPS loss, and inspect crowded ghost paths in every camera. Shared sessions are for trusted token holders, not public ranked races. The selected-flight/video and simulator flows still require a manual regression check. Local Chromium installation failed with a truncated download; the focused race-browser PR check is the browser verification path.
