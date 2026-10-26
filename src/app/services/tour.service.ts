@@ -87,7 +87,6 @@ export class TourService {
   /** Set by Back: the beat to play next. */
   private jump: number | null = null;
   /** The last run was the showcase (`keepLayout`): stopping it must go back to the entry screen, not to the layout before it. */
-  private lastRunKeptLayout = false;
 
   setTips(on: boolean): void {
     this.tips.set(on);
@@ -152,7 +151,6 @@ export class TourService {
     while (this.state()) await new Promise((r) => setTimeout(r, 50));
     this.stop = this.paused = this.skip = false;
     this.jump = null;
-    this.lastRunKeptLayout = keepLayout;
     this.firsts = beats.map((b) => b.first);
     // the layout before the guide: the panels it opens or moves go back when it ends
     const before = Object.fromEntries(Object.entries(this.layout.panels()).map(([id, p]) => [id, { visible: p.visible, x: p.x, y: p.y, minimized: p.minimized }]));
