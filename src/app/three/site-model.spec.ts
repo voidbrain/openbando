@@ -399,6 +399,7 @@ describe('road overlap rendering', () => {
         const r = roads[i]!, mat = r.material as THREE.MeshStandardMaterial;
         expect(mat.depthWrite).toBe(false); // overlap cannot reject the higher-class road
         expect(mat.depthTest).toBe(terrain); // hills still occlude roads
+        if (terrain) expect(r.renderOrder).toBeGreaterThan(0); // after the terrain depth pass
         if (i) expect(r.renderOrder).toBeGreaterThan(roads[i - 1]!.renderOrder);
         const p = r.geometry.getAttribute('position');
         for (let j = 0; j < p.count; j++) expect(p.getY(j)).toBeCloseTo(m.ground.at(p.getX(j), p.getZ(j)) + 0.06, 4);

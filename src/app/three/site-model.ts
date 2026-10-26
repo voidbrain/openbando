@@ -829,7 +829,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     const outer = spec.extent * 1.1;
     if (outer > Math.min(-g.x0, -g.z0)) group.add(skirtMesh(g, outer, material(spec.groundColor)));
     for (const pd of spec.pads) group.add(drapedPad(ground, pd.x, pd.z, pd.w, pd.d, pd.rotDeg ?? 0, material(pd.color ?? '#a9aaa0')));
-    for (const [i, r] of orderedRoads(spec.roads ?? []).entries()) group.add(roadMesh(ground, r, DECAL_ORDER + 600 + i));
+    for (const [i, r] of orderedRoads(spec.roads ?? []).entries()) group.add(roadMesh(ground, r, 1 + i));
     const start = new THREE.Mesh(new THREE.BoxGeometry(4, 0.04, 4), material('#e8c65a'));
     start.position.set(spec.droneStart.x, ground.start + 0.2, spec.droneStart.z);
     start.receiveShadow = true;
