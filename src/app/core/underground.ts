@@ -20,26 +20,34 @@ export function tunnelOutline(a: Vec2, b: Vec2, width: number): Vec2[] {
   ];
 }
 
-/** The outline shrunk towards its centre by `d` metres (the footprint a mesh actually covers, walls included). */
-function insetOutline(poly: readonly Vec2[], d: number): Vec2[] {
-  const cx = poly.reduce((s, p) => s + p.x, 0) / poly.length, cz = poly.reduce((s, p) => s + p.z, 0) / poly.length;
-  return poly.map((p) => {
-    const dx = p.x - cx, dz = p.z - cz, l = Math.hypot(dx, dz) || 1, k = Math.max(0, l - d) / l;
-    return { x: cx + dx * k, z: cz + dz * k };
-  });
+/** Distance from a point to a segment, in metres. */
+function distToSegment(x: number, z: number, a: Vec2, b: Vec2): number {
+  const dx = b.x - a.x, dz = b.z - a.z, l2 = dx * dx + dz * dz;
+  const t = l2 ? Math.max(0, Math.min(1, ((x - a.x) * dx + (z - a.z) * dz) / l2)) : 0;
+  return Math.hypot(x - (a.x + t * dx), z - (a.z + t * dz));
+}
+
+/** The volume's footprint at a vertex: inside the outline, or within half a cell of it — vertices on the border count. */
+function coversVertex(v: UndergroundSpec, x: number, z: number, cell: number): boolean {
+  if (insidePolygon(v.outline, x, z)) return true;
+  const n = v.outline.length;
+  for (let i = 0; i < n; i++) if (distToSegment(x, z, v.outline[i]!, v.outline[(i + 1) % n]!) <= cell / 2) return true;
+  return false;
 }
 
 /**
  * One flag per grid vertex: 1 = the ground there is cut (a portal or an open trench).
  *
- * The opening is an *aligned block*, not a ragged diagonal: first the vertices inside the volume's footprint (its
- * outline inset by half a cell plus the wall, so the hole never bleeds past the built tube) whose height lies
- * between floor and ceiling — where the surface genuinely passes through the inside; then their bounding box in
- * the grid, kept within the footprint. On a slope the crossing band runs diagonally, and dropping every cell that
- * touches one flagged vertex tore the hillside open far around the tunnel: looking through the hole you saw the
- * trough of the cut and the void where the hill should have carried on. The snapped block gives each mouth two
- * straight, aligned edges flush with the tube. A ridge high enough over the tunnel crosses nothing and stays
- * whole; basements (boxes with ceiling = pad) get one tidy rectangular opening instead of scattered cut cells.
+ * The opening is an *aligned block*, not a ragged diagonal. First the band where the surface genuinely passes
+ * through the inside: vertices on the volume's footprint (inside the outline, or within half a cell of it — the
+ * tube always covers its own border vertices) whose height lies between floor and ceiling. On a slope that band
+ * runs diagonally, and dropping every mesh cell that touches one flagged vertex tore the hillside open far around
+ * the tunnel: looking through the hole you saw the trough of the cut and the void where the hill should have
+ * carried on. So each contiguous stretch of the band is snapped to its bounding box in the grid, kept within the
+ * footprint: every cell touching a flagged vertex then lies inside the block too, the staircase fills into straight
+ * aligned portals flush with the tube, and the hole never bleeds past it. A ridge high enough over the tunnel
+ * crosses nothing and stays whole; basements (boxes with ceiling = pad) get one tidy rectangular opening instead of
+ * scattered cut cells.
  */
 export function cutMask(g: HeightGrid, vols: readonly UndergroundSpec[]): Uint8Array {
   const m = new Uint8Array(g.nx * g.nz);
@@ -49,22 +57,41 @@ export function cutMask(g: HeightGrid, vols: readonly UndergroundSpec[]): Uint8A
     const xs = v.outline.map((p) => p.x), zs = v.outline.map((p) => p.z);
     const i0 = Math.max(0, Math.floor((Math.min(...xs) - g.x0) / g.cell)), i1 = Math.min(g.nx - 1, Math.ceil((Math.max(...xs) - g.x0) / g.cell));
     const j0 = Math.max(0, Math.floor((Math.min(...zs) - g.z0) / g.cell)), j1 = Math.min(g.nz - 1, Math.ceil((Math.max(...zs) - g.z0) / g.cell));
-    // the footprint actually covered by the built tube: the outline inset by half a cell (a vertex only counts when
-    // its cell lies on the tube) plus the wall thickness
-    const inner = insetOutline(v.outline, (g.cell * 3) / 2 + v.wall);
-    // the band the surface crosses: inside the footprint, the ground between floor and ceiling
-    let bi0 = Infinity, bj0 = Infinity, bi1 = -Infinity, bj1 = -Infinity;
+    // the band the surface crosses: on the footprint, the ground between floor and ceiling
+    const band = new Uint8Array(g.nx * g.nz);
+    let any = false;
     for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
       const h = g.h[j * g.nx + i]!;
       if (h <= v.floor || h >= v.ceiling) continue;
-      if (!insidePolygon(inner, px(i), pz(j))) continue;
-      bi0 = Math.min(bi0, i); bj0 = Math.min(bj0, j); bi1 = Math.max(bi1, i); bj1 = Math.max(bj1, j);
+      if (!coversVertex(v, px(i), pz(j), g.cell)) continue;
+      band[j * g.nx + i] = 1;
+      any = true;
     }
-    if (!isFinite(bi0)) continue; // nothing crosses the inside: the ridge stands over the tunnel, uncut
-    // snap the band to its bounding box, but keep only vertices still inside the footprint: the block fills the
-    // diagonal staircase into aligned portals without widening the hole past the tube
-    for (let j = bj0; j <= bj1; j++) for (let i = bi0; i <= bi1; i++) {
-      if (insidePolygon(inner, px(i), pz(j))) m[j * g.nx + i] = 1;
+    if (!any) continue; // nothing crosses the inside: the ridge stands over the tunnel, uncut
+    // snap every 4-connected stretch of the band to its bounding box, clipped to the footprint: aligned quads
+    const seen = new Uint8Array(g.nx * g.nz);
+    const stack: number[] = [];
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
+      const s = j * g.nx + i;
+      if (!band[s] || seen[s]) continue;
+      let bi0 = i, bj0 = j, bi1 = i, bj1 = j;
+      seen[s] = 1;
+      stack.push(s);
+      while (stack.length) {
+        const k = stack.pop()!;
+        const ki = k % g.nx, kj = (k - ki) / g.nx;
+        bi0 = Math.min(bi0, ki); bi1 = Math.max(bi1, ki);
+        bj0 = Math.min(bj0, kj); bj1 = Math.max(bj1, kj);
+        for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const ni = ki + di, nj = kj + dj;
+          if (ni < i0 || ni > i1 || nj < j0 || nj > j1) continue;
+          const nk = nj * g.nx + ni;
+          if (band[nk] && !seen[nk]) { seen[nk] = 1; stack.push(nk); }
+        }
+      }
+      for (let j2 = bj0; j2 <= bj1; j2++) for (let i2 = bi0; i2 <= bi1; i2++) {
+        if (coversVertex(v, px(i2), pz(j2), g.cell)) m[j2 * g.nx + i2] = 1;
+      }
     }
   }
   return m;
