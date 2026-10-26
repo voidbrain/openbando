@@ -81,3 +81,8 @@ this was applied — needs human verification (TBC). Automated checks so far: `c
 | 7 | Multiuser racing mode | Enable uploading of multiple paths from different devices on shared bando; should, should see others as ghosts | Future | Planned |
 | 8 | Multiuser live racing mode | Enable multiple paths from different devices on shared bando using live multiple stream links; (example 3 squirrelcast broadcast on diff urls. ) | Future | Planned |
 | 9 | Mascotte | Complete mascotte animated gif and update title: title should be big block wall of text as popular today. Mascotte (use the pixel guy in mascotte images folder, radio remove antenna, please note in animation radio must be facing guy, not ground). Mascotte should: - look around (left right)<br>  - run right (on place while drone at ground shifting left)<br>  - low,drone at ground - sit, drone at ground<br>  - drone up<br>  - jump winning pose<br>  - drone flies away right.<br> repeat. | Future | Planned |
+
+* new note: digest it and then remove after updating.
+i added /docs/bugs/ folder, including:
+- bug1.jpg visual clue of holes: terrain not correctly closing around voids (on ground or hills), basement and tunnels, should be related to "basement volumes may carve visible notches on slopes, and the void tool lacks minimum size checks."
+- bug2.jpg new bug "overlapping roads": roads (roads, tracks, paths) wrong overlap: if conflicting greater class roads should stay on top. overlapping flickering too.
