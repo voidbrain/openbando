@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { digWater, insertPoint, layerShape, nearestEdge, removePoint, levelRoad, padsToRoads, pathLength, sanitizeLayers, simplifyPath, waterLevel } from './layers';
+import { digWater, insertPoint, layerShape, nearestEdge, removePoint, levelRoad, levelRoads, padsToRoads, pathLength, sanitizeLayers, simplifyPath, waterLevel } from './layers';
 import { siteGround } from './site-ground';
 import { emptySpec, sanitizeSpec } from './site-spec';
 import { applyStroke, emptyGrid, heightAt } from './terrain';
@@ -41,6 +41,21 @@ describe('layers on the ground', () => {
     levelRoad(g, { pts: [{ x: -30, z: 0 }, { x: 30, z: 0 }], width: 6, kind: 'road' });
     expect(heightAt(g, 0, 2.5)).toBeCloseTo(heightAt(g, 0, 0), 1); // flat across
     expect(heightAt(g, 20, 0) - heightAt(g, -20, 0)).toBeCloseTo(2, 1); // still climbs east
+  });
+
+  it('levels two crossing roads flat at the crossing, no zig-zag trough', () => {
+    const g = emptyGrid({ cell: 1, half: { e: 40, n: 40 } });
+    for (let j = 0; j < g.nz; j++) for (let i = 0; i < g.nx; i++) g.h[j * g.nx + i] = (j - 40) * 0.2 + i * 0.05;
+    const eW = { pts: [{ x: -30, z: 0 }, { x: 30, z: 0 }], width: 6, kind: 'road' as const };
+    const nS = { pts: [{ x: 0, z: -30 }, { x: 0, z: 30 }], width: 6, kind: 'road' as const };
+    levelRoads(g, [eW, nS]);
+    const y = heightAt(g, 0, 0); // the crossing sits at the common level both roads take there
+    expect(heightAt(g, 2, 0)).toBeGreaterThan(y - 0.05); // no dip carved along the east road
+    expect(heightAt(g, -2, 0)).toBeLessThan(y + 0.05); // and no hump either: the crossing is flat
+    expect(heightAt(g, 0, 2)).toBeGreaterThan(y - 0.05); // same along the north-south road
+    expect(heightAt(g, 0, -2)).toBeLessThan(y + 0.05);
+    expect(heightAt(g, 20, 0) - heightAt(g, -20, 0)).toBeCloseTo(2, 1); // east road keeps its slope
+    expect(heightAt(g, 0, 20) - heightAt(g, 0, -20)).toBeCloseTo(8, 1); // north-south road too
   });
 
   it('digs a basin below the lowest bank and reports the water level', () => {

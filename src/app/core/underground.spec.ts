@@ -9,13 +9,25 @@ const tunnel = (): UndergroundSpec => ({ id: 't', name: 'T', outline: tunnelOutl
 
 describe('underground volumes', () => {
   it('cuts the ground only where it passes through the inside: the portals open, the hill stays over the tunnel', () => {
-    const g = hill(), v = tunnel();
+    // a mound from x=-25 to x=25 (10 m high at its top), so the tunnel outcrops on both flanks and is buried under the crest
+    const g = buildHeights({ cell: 1, half: { e: 80, n: 80 }, strokes: [{ op: 'raise', pts: [{ x: 0, z: 0 }], radius: 25, strength: 10 }] }).grid;
+    const v = tunnel();
     const m = cutMask(g, [v]);
     const at = (x: number, z: number): number => m[(z + 80) * g.nx + (x + 80)]!;
-    expect(at(-44, 0)).toBe(1); // the west mouth: the ground is between floor and ceiling
-    expect(at(44, 0)).toBe(1);
-    expect(at(0, 0)).toBe(0); // under the top of the hill: covered
+    expect(at(-24, 0)).toBe(1); // the west portal: where the ground first crosses the inside
+    expect(at(24, 0)).toBe(1); // the east portal
+    expect(at(-20, 0)).toBe(1); // the trench across the flank
+    expect(at(0, 0)).toBe(0); // under the top of the hill (10 m over a 3 m ceiling): covered, never cut
     expect(at(0, 10)).toBe(0); // beside the tunnel: never cut
+    let mouths = 0;
+    for (let i = 0; i < g.nx; i++) if (at(i - 80, 0) && !at(i - 79, 0)) mouths++; // end of a run along the axis
+    expect(mouths).toBe(2); // exactly two aligned blocks — one portal per flank — not a ragged diagonal band
+  });
+
+  it('a volume buried under a hill too high to cross leaves no cut at all', () => {
+    const v = { ...tunnel(), outline: tunnelOutline({ x: -15, z: 0 }, { x: 15, z: 0 }, 4) }; // entirely under the mound
+    const m = cutMask(hill(), [v]); // the hill is 10 m high there, nothing crosses the 3 m ceiling
+    expect(m.some((c) => c === 1)).toBe(false);
   });
 
   it('a point inside the tunnel stands on its floor, above the ceiling it does not', () => {
