@@ -1,4 +1,5 @@
 import { Component, DestroyRef, ElementRef, afterNextRender, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core';
+import { CameraCompass } from '../widgets/camera-compass';
 import type { Flight } from '../../core/models';
 import type { SiteSpec } from '../../core/site-spec';
 import { SiteViewRenderer, type SitePick } from '../../three/site-view';
@@ -7,8 +8,10 @@ import type { GroundStyle } from '../../three/site-model';
 /** The editor's 3D mode: the whole bando, orbit with the mouse. Editing happens in 2D; this is for looking. */
 @Component({
   selector: 'app-site-view',
+  imports: [CameraCompass],
   template: `
     <canvas #cv></canvas>
+    @if (!failed()) { <app-camera-compass [camera]="compassCamera" /> }
     @if (failed()) {
       <div class="fail dim">3D view unavailable (WebGL could not start).</div>
     } @else {
@@ -66,6 +69,7 @@ export class SiteView {
   protected readonly failed = signal(false);
   private readonly cv = viewChild.required<ElementRef<HTMLCanvasElement>>('cv');
   private r: SiteViewRenderer | null = null;
+  protected readonly compassCamera = () => this.r?.compassCamera ?? null;
   private timer: ReturnType<typeof setTimeout> | undefined;
 
   constructor() {

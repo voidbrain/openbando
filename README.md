@@ -203,7 +203,7 @@ For more information on using the Angular CLI, including detailed command refere
 
 ### Villetta survey model
 
-The place-hidden Villetta example now includes the measured façade widths and panel heights, 8 m store roof crowns, a 9.30 m elliptical greenhouse with 4.61 m rib spacing, and the tall annex with a first-floor walkway around its central void. The blue ladder uses the reusable open-cage library block. Open a fresh example copy for release 3; edited copies remain yours. Measurements, photo interpretations and unmeasured details are recorded in the [working plan](docs/working-plan/working-plan.md).
+The place-hidden Villetta example now includes the measured façade widths and panel heights, 8 m store roof crowns, a 9.30 m parabolic greenhouse with 4.61 m rib spacing, and the tall annex with a first-floor walkway around its central void. The blue ladder uses the reusable open-cage library block. Open a fresh example copy for release 5; edited copies remain yours. Measurements, photo interpretations and unmeasured details are recorded in the [working plan](docs/working-plan/working-plan.md).
 
 ### Pixel mascot
 
@@ -226,3 +226,5 @@ Ruin at 60% or an open shell removes the roof. Choosing a roof shape explicitly 
 Racing can colour trails by speed while drones and pilot-name labels retain each pilot's identity colour. Disable **Colour trails by speed** for solid pilot-coloured trails.
 
 The mascot loop now includes the cross-legged confused keyframe and keeps the drone invisible until takeoff. Sources and timing are in [the character guide](docs/mascot/README.md). Browser visual verification of these changes is pending; local Chromium installation failed.
+
+The main 3D view and the editor’s 3D view show a fixed north compass that follows the camera. X-ray fades obstructions for the active followed drone and for surfaces immediately in front of the camera, rather than tracking an inactive parked drone while orbiting.
