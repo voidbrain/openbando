@@ -44,6 +44,7 @@ describe('editable basement join', () => {
     expect(mini.length).toBe(6);
     expect(mini.basement).toBeUndefined();
     const s = emptySpec();
+    s.extent = 60; // Keep the terrain small while exercising the complete scene and collider.
     s.buildings = [b];
     s.pads = [];
     const model = buildSiteFromSpec(s);
