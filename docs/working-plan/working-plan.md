@@ -48,8 +48,9 @@ this was applied — needs human verification (TBC). Automated checks so far: `c
 | 1 | Welcome tour | Stop the tour and open the welcome panel. | High | TBC |
 | 2 | Root page | Opening the root URL should open the welcome panel. | High | TBC |
 | 3 | Gallery / holes / underbasements | Fix incorrect, impractical, or poorly designed holes and underground spaces. | High | Open |
-| 4 | Holes and hills | Fix geometry and interaction problems involving holes and hills.<br /><br /> Qwen Analysis: The Playground tunnel is buried under a hill due to insufficient depth, causing the drone to stand on an invisible floor inside solid earth. Fix: Deepen the tunnel, add terrain lowering strokes at portals, and clamp floorUnder logic to respect cut masks.| High | Open |
+| 4 | Holes and hills | When a tunnel intersects terrain like a hill... (see bug image 1) | High | Fixed — see solution below |
 | 5 | fix path | example blackbox csv path when loaded shows a descent slope as steps, never happened and not visible in the video.<br /><br /> Qwen Analysis: Warehouse basements have sealed floors despite ground voids, creating impractical underground spaces. Additionally, basement volumes may carve visible notches on slopes, and the void tool lacks minimum size checks. Fix: Cut level voids from basement slabs in buildBasement(), ensure proper access/stairs, and add validation guards to the void drawing tool. | High | TBC |
+| 6 | Overlapping roads | Two roads drawn over each other ... zig-zag trough ... (see bug image 2) | High | Fixed — see solution below |
 
 ## Bando Villetta — Specs
 
@@ -82,7 +83,6 @@ this was applied — needs human verification (TBC). Automated checks so far: `c
 | 8 | Multiuser live racing mode | Enable multiple paths from different devices on shared bando using live multiple stream links; (example 3 squirrelcast broadcast on diff urls. ) | Future | Planned |
 | 9 | Mascotte | Complete mascotte animated gif and update title: title should be big block wall of text as popular today. Mascotte (use the pixel guy in mascotte images folder, radio remove antenna, please note in animation radio must be facing guy, not ground). Mascotte should: - look around (left right)<br>  - run right (on place while drone at ground shifting left)<br>  - low,drone at ground - sit, drone at ground<br>  - drone up<br>  - jump winning pose<br>  - drone flies away right.<br> repeat. | Future | Planned |
 
-* new note: digest it and then remove after updating.
-i added /docs/bugs/ folder, including:
+* added /docs/bugs/ folder
 - bug1.jpg visual clue of holes: terrain not correctly closing around voids (on ground or hills), basement and tunnels, should be related to "basement volumes may carve visible notches on slopes, and the void tool lacks minimum size checks."
 - bug2.jpg new bug "overlapping roads": roads (roads, tracks, paths) wrong overlap: if conflicting greater class roads should stay on top. overlapping flickering too.
