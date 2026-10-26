@@ -143,7 +143,7 @@ No further configuration is required — the workflow uses the built-in
 
 ### How it works
 
-- Runs the reusable CI checks (catalogue, generated examples, unit tests, Italian translations, strict types and production build) before publishing. Browser e2e tests run on pull requests. The production build uses
+- Runs the reusable CI checks (catalogue, generated examples, unit tests, Italian translations, strict types and production build) before publishing. Browser e2e is optional; the current workflow input guard also skips it on pull requests (tracked in the working plan). The production build uses
   `"baseHref": "/openbando/"` set in `angular.json` so asset URLs
   resolve correctly under the project-page subpath.
 - Adds a `.nojekyll` file so GitHub Pages does **not** process the bundle

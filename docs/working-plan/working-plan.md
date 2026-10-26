@@ -9,6 +9,8 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 - **Bug 6 — partial:** `levelRoads` samples the untouched terrain for all roads and has a crossing regression test. Class priority and flicker are not fully solved: road strips still share the same height offset, terrain roads use depth testing, and no class sorting is applied. Check crossing roads/tracks/paths on slopes in both insertion orders before closing it.
 - **CI failure:** run `40339576161` failed only the basement cut assertion (412 other tests passed). The fix includes ceiling equality; terrain strictly above the ceiling remains intact. No tests are skipped.
 
+- **Browser CI follow-up:** PR #69 skips the e2e job under the current `inputs.e2e != false` guard. Explicitly include pull-request events in that condition before claiming browser tests run on every PR. No browser verification was performed in this review.
+
 ## Bugs
 
 | # | Issue | Details | Priority | Status |
