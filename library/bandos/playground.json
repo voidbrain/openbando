@@ -1,6 +1,6 @@
 {
  "about": "A made-up works on the edge of the fields, with no real place: a barrel-vault store, a warehouse with a basement, a ruined tower and farmhouse, a pond, hills with a tunnel, and every block of the library, from gates to cranes.",
- "release": 2,
+ "release": 3,
  "version": 1,
  "id": "example-playground",
  "name": "Playground",
@@ -1212,7 +1212,7 @@
    "length": 13,
    "width": 9,
    "color": "#d9d0bd",
-   "ruin": 0.7,
+   "ruin": 0.45,
    "levels": [
     {
      "baseY": 0,

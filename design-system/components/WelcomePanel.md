@@ -5,7 +5,7 @@ The first thing a visitor sees, over the empty world turning slowly: what OpenBa
 
 ## Use
 
-- Head: the stacked **Open / Bando** title (responsive 42–88 px, 900), the tagline "Build, Fly, Share." in `accent` (18 px, 600), one `dim`
+- Head: the large ASCII **OPENBANDO** wall in `mono` (responsive, unwrapped, 900; accessible heading text hides decorative ASCII from screen readers), the tagline "Build, Fly, Share." in `accent` (18 px, 600), one `dim`
   line under it.
 - Three columns, Build / Fly / Share (one column under 760 px): a bordered card (`line`, `radius`) with a 16:10 film
   (muted, looped, no controls; dimmed until its column is in focus), a 17 px title, two or three lines of text, and

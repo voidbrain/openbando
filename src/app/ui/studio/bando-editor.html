@@ -754,6 +754,7 @@
               <div class="sec">
                 <div class="st">Floors</div>
                 <div class="row">
+                  @if (bd.basement) { <button class="btn" [class.on]="basementFocus()" (click)="pickBasement()" title="Show the basement floor">−1</button> }
                   @for (l of bd.levels; track $index) {
                     <button class="btn" [class.on]="$index === level() && floorFocus()" [class.cur]="$index === level()" (click)="pickLevel($index)" title="Show only this floor solid, the rest of the building ghosted (click again for the whole building)">{{ levelName($index) }}</button>
                   }
@@ -774,9 +775,30 @@
                 }
                 <label class="fld" title="A basement under the ground floor: the ground is cut under the building; reach it through a void in the ground floor">basement m <input type="number" min="0" max="12" step="0.5" [value]="bd.basement?.height ?? 0" (change)="mutate(setBasement, num($event))" /></label>
               </div>
+              @if (bd.basement && basementFocus()) {
+                <div class="sec">
+                  <div class="st">Basement · −1</div>
+                  <label class="fld">length m <input type="number" min="2" max="300" [value]="basementSize().length" (change)="resizeBasement('length',num($event))" /></label>
+                  <label class="fld">width m <input type="number" min="2" max="300" [value]="basementSize().width" (change)="resizeBasement('width',num($event))" /></label>
+                  <button class="btn span2" (click)="resetBasementShape()">Use building footprint</button>
+                  @for (sd of wallSides; track sd.k) {
+                    <label class="chk"><input type="checkbox" [checked]="bd.basement.sides?.[sd.k] !== false" (change)="basementWall(sd.k,checked($event))" />{{ sd.label }} wall</label>
+                  }
+                  <div class="dim small span2">Basement wall coordinates start at its north-west corner.</div>
+                  @for (wall of bd.basement.partitions ?? []; track $index; let i = $index) {
+                    @for (end of [0,1]; track end) {
+                      <label class="fld">{{ end === 0 ? 'Start X (m)' : 'End X (m)' }}<input type="number" step="0.5" [value]="wall[end].x" (change)="editBasementWall(i,end === 0 ? 0 : 1,'x',num($event))" /></label>
+                      <label class="fld">{{ end === 0 ? 'Start Z (m)' : 'End Z (m)' }}<input type="number" step="0.5" [value]="wall[end].z" (change)="editBasementWall(i,end === 0 ? 0 : 1,'z',num($event))" /></label>
+                    }
+                    <button class="btn danger span2" (click)="removeBasementWall(i)">Delete basement wall</button>
+                  }
+                  <button class="btn span2" (click)="addBasementWall()">Add basement wall</button>
+                </div>
+              }
               @if (topLevel(); as tl) {
                 <div class="sec">
                   <div class="st">Roof</div>
+                  @if (bd.roofless || (bd.ruin ?? 0) >= 0.6) { <div class="dim small span2">Roof removed by ruin or open shell. Choosing a shape restores it.</div><button class="btn span2" (click)="editTop(setRoof,tl.roof === 'none' ? 'gable' : tl.roof)">Restore roof</button> }
                   @if (!bd.footprint) {
                     <label class="fld">shape <select (change)="editTop(setRoof, roofOf($event))"><option value="gable" [selected]="tl.roof === 'gable'">gable</option><option value="vault" [selected]="tl.roof === 'vault'">vault</option><option value="flat" [selected]="tl.roof === 'flat'">flat</option></select></label>
                     <label class="fld">repeat × <input type="number" min="1" max="12" step="1" [value]="tl.roofCount ?? tl.vaultCount ?? 1" (change)="editTop(setCount, num($event))" /></label>

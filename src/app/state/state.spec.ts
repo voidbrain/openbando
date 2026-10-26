@@ -81,7 +81,7 @@ describe('stores', () => {
       localStorage.setItem('abando-ng-layout', JSON.stringify({ v: 4, panels: { welcome: { visible: false, minimized: false, ghost: false, x: null, y: null, z: 10, w: null, h: null }, views: { visible: true, minimized: false, ghost: false, x: null, y: null, z: 10, w: null, h: null } }, zTop: 10 }));
       const s = TestBed.inject(LayoutStore);
       expect(s.panels().welcome.visible).toBe(true);
-      expect(s.panels().views.visible).toBe(true); // the rest of the save still applies
+      expect(s.panels().views.visible).toBe(false); // root starts with Welcome alone
     });
   });
 

@@ -232,17 +232,19 @@ describe('site model underground', () => {
     s.structures = [];
     s.terrain = { cell: 1, half: { e: 120, n: 120 }, strokes: [{ op: 'hill', pts: [{ x: 0, z: -60 }], radius: 35, strength: 10 }] };
     const outline = [{ x: -45, z: -62 }, { x: 45, z: -62 }, { x: 45, z: -58 }, { x: -45, z: -58 }];
-    const flatTris = (): number => {
-      let n = 0;
-      buildSiteFromSpec(s).group.traverse((o) => {
-        if (o instanceof THREE.Mesh && o.geometry.getAttribute('color') && o.geometry.index) n = o.geometry.index.count;
+    const terrainArea = (): number => {
+      let area = 0;
+      buildSiteFromSpec(s).group.traverse(o => {
+        if (!(o instanceof THREE.Mesh) || !o.geometry.getAttribute('color')) return;
+        const g=o.geometry,p=g.getAttribute('position'),count=g.index?.count ?? p.count;
+        for(let i=0;i<count;i+=3){const ids=[0,1,2].map(j=>g.index?g.index.getX(i+j):i+j);const [a,b,c]=ids as [number,number,number];area+=Math.abs((p.getX(b)-p.getX(a))*(p.getZ(c)-p.getZ(a))-(p.getZ(b)-p.getZ(a))*(p.getX(c)-p.getX(a)))/2;}
       });
-      return n;
+      return area;
     };
-    const before = flatTris();
+    const before = terrainArea();
     s.underground = [{ id: 'u', name: 'Tunnel', outline, floor: -0.5, ceiling: 3, shape: 'box', wall: 0.4 }];
     const m = buildSiteFromSpec(s);
-    expect(flatTris()).toBeLessThan(before); // the portals are holes in the ground
+    expect(terrainArea()).toBeLessThan(before); // the portals are holes in the ground
     let found = false;
     m.group.traverse((o) => {
       if ((o.userData['pick'] as { kind?: string } | undefined)?.kind === 'underground') found = true;

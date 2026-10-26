@@ -6,8 +6,8 @@ import { PathRenderer } from './path-renderer';
 import { buildSiteFromSpec, type GroundStyle, type SiteModel } from './site-model';
 import { rayGround } from '../core/terrain';
 
-/** What a click on the 3D model selects. */
-export type SitePick = { kind: 'building'; id: string } | { kind: 'column'; id: string; li: number; i: number } | { kind: 'wall'; id: string; li: number; i: number } | { kind: 'structure'; id: string } | { kind: 'fence'; i: number } | { kind: 'tree'; i: number };
+import {pickModel,type SitePick} from './site-pick';
+export type {SitePick} from './site-pick';
 
 /**
  * The whole bando in 3D inside the editor: the same model the main view builds, with a mouse-orbit camera.
@@ -163,7 +163,7 @@ export class SiteViewRenderer {
   /** One floor of a building in focus: the building turns see-through and that floor is drawn solid in place. */
   private focusFloor(spec: SiteSpec, f: { id: string; li: number }): void {
     const b = spec.buildings.find((x) => x.id === f.id);
-    if (!b || b.levels.length < 2 || !this.model) return;
+    if (!b || (b.levels.length < 2 && f.li !== -1) || !this.model) return;
     this.model.group.traverse((o) => {
       const p = o.userData['pick'] as SitePick | undefined;
       if (p && p.kind === 'building' && p.id === f.id) ghost(o);
@@ -189,27 +189,18 @@ export class SiteViewRenderer {
     if (!this.model || !this.spec) return null;
     const r = this.canvas.getBoundingClientRect();
     this.ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
-    for (const hit of this.ray.intersectObject(this.model.group, true)) {
-      for (let o: THREE.Object3D | null = hit.object; o; o = o.parent) {
-        const p = o.userData['pick'] as SitePick | undefined;
-        if (p) return p;
-      }
-    }
-    const g = this.groundPoint(e);
-    if (g) {
-      let best = -1, bd = Infinity;
-      this.spec.trees.forEach((t, i) => {
-        const d = Math.hypot(t.x - g.x, t.z - g.z) - t.r;
-        if (d < 1.5 && d < bd) { bd = d; best = i; }
-      });
-      if (best >= 0) return { kind: 'tree', i: best };
-    }
-    return null;
+    return pickModel(this.ray,this.model,this.spec);
+
+
   }
 
   setSelection(sel: SitePick | null): void {
     this.selection = sel;
     this.refreshSelection();
+    if (this.box) {
+      this.box.box.getCenter(this.target);
+      this.dist=Math.max(25,Math.min(300,this.box.box.getSize(new THREE.Vector3()).length()*2));
+    }
   }
 
   /** A yellow box around the selected thing. */

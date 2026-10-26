@@ -1,7 +1,7 @@
 /** Every floating panel in the app: identity, title and where it first appears. */
 export type PanelId =
   | 'views' | 'flights' | 'simulator' | 'radio' | 'timeline' | 'speed' | 'attitude' | 'compass'
-  | 'path' | 'studio' | 'blackbox' | 'video' | 'live' | 'render' | 'help' | 'guide' | 'welcome' | 'vpOrbit' | 'vpChase' | 'vpFpv' | 'vpTop';
+  | 'features' | 'path' | 'studio' | 'blackbox' | 'video' | 'live' | 'render' | 'help' | 'guide' | 'welcome' | 'vpOrbit' | 'vpChase' | 'vpFpv' | 'vpTop';
 
 export interface PanelDef {
   id: PanelId;
@@ -45,6 +45,7 @@ export const PANELS: readonly PanelDef[] = [
   { id: 'vpChase', title: 'Chase view', group: 'views', visible: false, anchor: { right: 360, top: 12 }, width: 380, resizable: true, height: 270 },
   { id: 'vpFpv', title: 'FPV view', group: 'views', visible: false, anchor: { right: 360, top: 12 }, width: 380, resizable: true, height: 270 },
   { id: 'vpTop', title: 'Top view · north up', group: 'views', visible: false, anchor: { right: 360, top: 12 }, width: 380, resizable: true, height: 270 },
+  { id: 'features', title: 'Features', group: 'tools', visible: false, anchor: { center: true, top: 64 }, width: 1000, maxHeight: 850 },
   { id: 'welcome', title: 'Welcome', group: 'tools', visible: true, anchor: { center: true, top: 64 }, width: 1080 },
 ];
 

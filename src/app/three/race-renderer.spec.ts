@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { RaceRenderer } from './race-renderer';
 import type { RaceTrack } from '../core/racing/race';
 describe('simultaneous racing ghosts', () => {
@@ -21,7 +21,15 @@ describe('simultaneous racing ghosts', () => {
     const scene = new THREE.Scene(),
       r = new RaceRenderer(scene),
       camera = new THREE.PerspectiveCamera();
+    const context = vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
     r.rebuild([a, b], null);
+    const lines = r.group.children.filter((o) => o instanceof THREE.Line) as THREE.Line[];
+    expect(lines[0]!.geometry.getAttribute('color')).toBeDefined();
+    const labelNames: string[] = [];
+    r.group.traverse((o) => {
+      if (o instanceof THREE.Sprite) labelNames.push(o.userData['pilotName'] as string);
+    });
+    expect(labelNames).toEqual([a.name, b.name]);
     r.update(1, camera, () => false);
     const ghosts = r.group.children.filter((o) => o.userData['raceId']);
     expect(ghosts.map((g) => g.position.x)).toEqual([5, 0]);
@@ -31,7 +39,12 @@ describe('simultaneous racing ghosts', () => {
     expect(materials.map((m) => `#${m.color.getHexString()}`)).toEqual([a.color, b.color]);
     r.update(1, camera, (id) => id === 'b');
     expect(ghosts[1]!.visible).toBe(false);
+    r.rebuild([a, b], null, false);
+    const plain = r.group.children.find((o) => o instanceof THREE.Line) as THREE.Line;
+    expect(plain.geometry.getAttribute('color')).toBeUndefined();
+    expect((plain.material as THREE.LineBasicMaterial).color.getHexString()).toBe(a.color.slice(1));
     r.dispose();
+    context.mockRestore();
     expect(scene.children).toHaveLength(0);
   });
 });

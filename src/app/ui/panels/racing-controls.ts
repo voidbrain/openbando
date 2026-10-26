@@ -21,6 +21,9 @@ import { checkedFrom, numberFrom, textFrom } from '../dom';
         />Show racing ghosts</label
       >
       @if (race.enabled()) {
+        <label class="check"><input type="checkbox" [checked]="race.speedTrails()"
+          (change)="race.speedTrails.set(check($event))" />Colour trails by speed</label>
+        <p class="dim small">Speed trails: blue slow → red fast. Drones and labels keep pilot colours.</p>
         <div class="row">
           <button class="btn" (click)="race.playing() ? race.playing.set(false) : race.start()">
             {{ race.playing() ? 'Pause race' : 'Play race' }}

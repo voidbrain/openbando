@@ -4,7 +4,7 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 
 ## Verification — 26 October 2026
 
-- **Bug 4 — partial:** portal/hill tests cover two openings and an intact hill crest. Fixed the CI regression where terrain exactly at a basement ceiling was left uncut (`cutMask`); the existing scene/collider test stays enabled. Visual confirmation against `docs/working-plan/bugs/bug1.jpg` is still required. General basement access and void usability remain bug 3.
+- **Bug 4 — reopened after user screenshots:** portal/hill tests cover two openings and an intact hill crest. Fixed the CI regression where terrain exactly at a basement ceiling was left uncut (`cutMask`); the existing scene/collider test stays enabled. Visual confirmation against `docs/working-plan/bugs/bug1.jpg` is still required. General basement access and void usability remain bug 3.
 - **Bug 5 — implemented, visual check pending:** `cleanHeights` applies median → centred mean → rate limiting to CSV barometer heights; the jittery-descent regression checks for no flat treads. Load `public/guide-demo/flight.csv` with its video and inspect the descent before closing it. Basement notes belong to bug 3, not this flight-path bug.
 - **Bug 6 — implemented:** terrain vertices are levelled once from the original grid; higher road classes own overlapping strips. Draw order is railway > road > track > path, with stable same-class ties independent of insertion order. Road decals do not write depth, so one cannot flicker against another; terrain depth testing stays on so hills/buildings occlude them. Meshes sample ground across their full width instead of using only the centre height. Regression tests cover reversed order, crossing heights, priorities and full-width draping on flat/hilly sites. Browser visual confirmation remains pending (no local Chromium available).
 - **CI failure:** run `40339576161` failed only the basement cut assertion (412 other tests passed). The fix includes ceiling equality; terrain strictly above the ceiling remains intact. No tests are skipped.
@@ -18,7 +18,7 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 | 1 | Welcome tour | Stop the tour and open the welcome panel. | High | TBC |
 | 2 | Root page | Opening the root URL should open the welcome panel. | High | TBC |
 | 3 | Gallery / holes / underbasements | Fix incorrect, impractical, or poorly designed holes and underground spaces. | High | Open |
-| 4 | Holes and hills | When a tunnel intersects terrain like a hill... (see bug image 1) | High | Partial — see verification above |
+| 4 | Holes and hills | Upright vault cross-section; exact terrain/road cuts and open curved-tunnel shell collisions. User screenshots showed the previous fix was insufficient. | High | Revised implementation — multi-angle visual verification pending |
 | 5 | Flight descent | Example Blackbox CSV descent appears as steps rather than a slope. Smoothing is implemented; compare the rendered path with the video. | High | Implemented — visual check pending |
 | 6 | Overlapping roads | Two roads drawn over each other ... zig-zag trough ... (see bug image 2) | High | Implemented — visual check pending |
 
@@ -61,7 +61,7 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 3). Ori
 | 8 | Upload support | Existing multi-file log upload reused; closed-loop lap/best-lap estimates, local-coordinate race package export/import. | Medium | Implemented — field/browser verification pending |
 | 9 | Multiuser racing mode | Server-free race-file exchange plus optional self-hosted HTTP/SSE room relay; same exported bando/model scale required. | Medium | Implemented — relay deployment and device verification pending |
 | 10 | Multiuser live racing mode | Multiple independent WS/SSE GPS sources, stale detection and retained recordings; opt-in room broadcast at ~1 Hz. SquirrelCast video URLs alone are not telemetry. | Medium | Implemented — real stream/device verification pending |
-| 11 | Mascotte | Pixel pilot/drone, 16 keyframe PNGs, 16-second GIF, Welcome animation and stacked title. Character/equipment rules and extension workflow: [character bible](../mascot/README.md). | Future | Implemented — visual review pending |
+| 11 | Mascotte | Pixel pilot/drone, 17 keyframe PNGs, 18.1-second GIF, Welcome animation and large ASCII wall. Confused seated pose added; drone hidden until takeoff. Character/equipment rules and extension workflow: [character bible](../mascot/README.md). | Future | Implemented — visual review pending |
 
 ## Visual references
 
@@ -73,3 +73,19 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 3). Ori
 See [racing setup and server decision](../racing/README.md). No server is needed for local multipath comparison, exported race-file exchange, or several directly reachable GPS streams. Different devices exchanging tracks over the network use the optional in-memory relay; no service has been deployed automatically.
 
 Before declaring field-ready: open the same exported hidden bando on two devices, align separate pilots, compare offsets/lap estimates with a known clock, connect two real GPS/SquirrelCast-associated telemetry bridges, stop one feed and verify stale hiding, test relay disconnect/rejoin and GPS loss, and inspect crowded ghost paths in every camera. Shared sessions are for trusted token holders, not public ranked races. The selected-flight/video and simulator flows still require a manual regression check. Local Chromium installation failed with a truncated download; the focused race-browser PR check is the browser verification path.
+
+## Follow-up regression work — 26 October 2026
+
+1. **Hills / holes (bugs 3–4):** replace the flattened vault rotation with an extruded upright section; cut terrain and roads precisely against the interior rather than removing whole surrounding cells. Shell colliders follow the curved section and leave its ends open. Verify Playground from above, front, rear and both sides before closing.
+2. **Basement:** selectable −1 preview, depth, independent rectangle dimensions, perimeter and interior walls; changes survive save/import. Exact terrain boundary removes the old moat. Arbitrary polygon vertex manipulation and full indoor-tool parity remain open.
+3. **Farmhouse:** its 70% ruin hides the roof by design; inspector now explains this and choosing a roof restores it, reducing global ruin to at most 55%. Playground release 3 lowers its default farmhouse ruin to 45% so its gable is visible. Existing copies can use Restore roof. Verify gable/flat/vault visually.
+4. **Main page → editor:** nearest visible picks, merged buildings and instanced trees share a picker; select and frame the element while the editor is open.
+5. **Mascot / title / racing:** ASCII OPENBANDO wall; held confused seated frame; revised loop; optional speed trails with stable drone colours and pilot-name labels. The earlier orange read too red: true-orange palette approval remains pending.
+
+Local checks and CI results are recorded in the associated PR. Chromium installation failed locally; no browser or multi-angle visual pass is claimed here. No tests are skipped.
+
+### Welcome and Features follow-up
+
+- The root opens only Welcome; saved positions are preserved. `?panel=features` opens the nine-card Features panel, which is excluded from Views.
+- The mascot loop now searches, runs with the grounded drone, sits perplexed, watches takeoff, jumps and celebrates before the drone exits. The Welcome pause button was removed as requested; reduced-motion preference still shows a still image.
+- **Open:** visually verify the right-facing drone, propeller animation, complete sequence and responsive Features panel in a browser.

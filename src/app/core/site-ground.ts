@@ -1,8 +1,9 @@
+import { basementOutline } from './basement';
 import { digWater, levelRoads, waterLevel } from './layers';
 import { basementVolume, cutMask } from './underground';
 import { outlineOf } from './openings';
 import type { BuildingSpec, SiteSpec, UndergroundSpec, Vec2 } from './site-spec';
-import { buildHeights, flattenPad, hasTerrainBase, heightAt, type FlatPad, type HeightGrid } from './terrain';
+import { buildHeights, defaultTerrain, flattenPad, hasTerrainBase, heightAt, type FlatPad, type HeightGrid } from './terrain';
 
 /** The ground of a site: the height grid (null = flat at y = 0) and where each building and the take-off pad stand. */
 export interface SiteGround {
@@ -41,15 +42,15 @@ let memo: { key: string; out: SiteGround } | null = null;
  * the scene is rebuilt on every edit, the ground rarely changes.
  */
 export function siteGround(spec: SiteSpec): SiteGround {
-  const t = spec.terrain;
+  const t = spec.terrain ?? ((spec.underground?.length || spec.buildings.some(b=>b.basement && !b.frame)) ? defaultTerrain(spec.extent) : undefined);
   const waters = spec.waters ?? [];
   if (!t) {
     const water = waters.map((w) => waterLevel(null, w));
-    const vols = [...(spec.underground ?? []), ...spec.buildings.map((b) => basementVolume(b, siteOutline(b), 0)).filter((v): v is UndergroundSpec => !!v)];
+    const vols = [...(spec.underground ?? []), ...spec.buildings.map((b) => basementVolume(b, siteOutline({...b,footprint:basementOutline(b)}), 0)).filter((v): v is UndergroundSpec => !!v)];
     return { grid: null, building: new Map(), start: 0, water, cut: null, vols, at: () => 0 };
   }
   const pads: FlatPad[] = [...spec.buildings.map((b) => ({ poly: siteOutline(b) })), { poly: square(spec.droneStart, 3) }];
-  const basements = spec.buildings.map((b) => b.basement?.height ?? 0);
+  const basements = spec.buildings.map((b) => b.basement ?? null);
   const key = JSON.stringify([t, pads, spec.roads ?? [], waters, spec.underground ?? [], basements, t.base ? hasTerrainBase(t.base.key) : false]);
   if (memo?.key === key) return memo.out;
   const { grid } = buildHeights(t);
@@ -57,7 +58,7 @@ export function siteGround(spec: SiteSpec): SiteGround {
   levelRoads(grid, spec.roads ?? []);
   const ys = pads.map((p) => flattenPad(grid, p));
   const building = new Map(spec.buildings.map((b, i) => [b.id, ys[i] ?? 0]));
-  const vols = [...(spec.underground ?? []), ...spec.buildings.map((b, i) => basementVolume(b, pads[i]!.poly, ys[i] ?? 0)).filter((v): v is UndergroundSpec => !!v)];
+  const vols = [...(spec.underground ?? []), ...spec.buildings.map((b, i) => basementVolume(b, siteOutline({...b,footprint:basementOutline(b)}), ys[i] ?? 0)).filter((v): v is UndergroundSpec => !!v)];
   const cut = vols.length ? cutMask(grid, vols) : null;
   const out: SiteGround = { grid, building, start: ys[ys.length - 1] ?? 0, water, cut, vols, at: (x, z) => heightAt(grid, x, z) };
   memo = { key, out };

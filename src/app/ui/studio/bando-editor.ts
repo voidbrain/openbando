@@ -15,6 +15,7 @@ import { areaCorners } from '../../core/areas';
 import { roadDef, surfaceDef } from '../../core/layers';
 import { blockCategory } from '../../core/catalog';
 import { siteGround } from '../../core/site-ground';
+import { basementOutline } from '../../core/basement';
 import { PickMenu, type PickOption } from './pick-menu';
 import { BlocksBox } from './blocks-box';
 import { paramValues, type BlockSpec, type ParamValue } from '../../core/blocks';
@@ -252,6 +253,8 @@ export class BandoEditor {
   protected readonly gateId = signal('abando/race-gate');
   protected readonly gateRot = signal(0);
   protected readonly structOptions: readonly PickOption[] = this.structKinds.map((k) => ({ id: k.id, label: k.label, icon: STRUCT_ICON[k.id] }));
+  protected readonly basementFocus = signal(false);
+  private readonly basementFocusId = signal('');
   protected readonly indoor = signal(false);
   protected readonly level = signal(0);
   protected readonly pick = signal<Pick>(null);
@@ -521,6 +524,7 @@ export class BandoEditor {
       return w ? { kind: 'fence', w } : null;
     }
     if (!bd) return null;
+    if (this.basementFocus() && bd.basement) return {kind:'floor',b:bd,li:-1};
     if (p?.t === 'opening') {
       const o = this.op();
       return o ? { kind: 'part', b: bd, li, part: { t: 'opening', seg: o } } : null;
@@ -544,9 +548,11 @@ export class BandoEditor {
   protected readonly floorFocus = signal(false);
   protected readonly focus3d = computed(() => {
     const bd = this.b();
+    if (this.basementFocus() && bd?.basement) return {id:bd.id,li:-1};
     return this.floorFocus() && bd && bd.levels.length > 1 ? { id: bd.id, li: Math.min(this.level(), bd.levels.length - 1) } : null;
   });
   protected pickLevel(i: number): void {
+    this.basementFocus.set(false);
     if (this.level() === i && this.floorFocus()) this.floorFocus.set(false);
     else {
       this.level.set(i);
@@ -560,6 +566,7 @@ export class BandoEditor {
   });
   protected readonly previewCaption = computed(() => {
     const t = this.previewTarget();
+    if (this.basementFocus()) return 'Basement · −1';
     if (t?.kind === 'part' || t?.kind === 'floor') return `floor ${this.levelName(this.level())} · the rest is ghosted · drag to rotate`;
     return 'drag to rotate · wheel to zoom';
   });
@@ -805,13 +812,35 @@ export class BandoEditor {
     });
     effect(() => {
       this.ed.selectedId(); // another building: back to the whole building
-      untracked(() => this.floorFocus.set(false));
+      untracked(() => { this.floorFocus.set(false); if(this.ed.selectedId()!==this.basementFocusId())this.basementFocus.set(false); });
     });
     effect(() => this.applyBase(this.placeHidden() ? 'off' : this.studio.basemap(), this.studio.mapOpacity()));
     effect(() => {
       // a tool that is no longer offered (nothing selected, left the floor ...) falls back to Select
       const t = this.tool(), visible = this.visibleTools();
       if (!visible.some((x) => x.id === t)) untracked(() => this.tool.set('select'));
+    });
+    effect(() => {
+      const p = this.studio.focus();
+      if (!p || !this.mapOn()) return;
+      untracked(() => {
+        this.mode.set('model');
+        this.tool.set('select');
+        if (this.indoor()) this.exitIndoor();
+        this.onPick3d(p);
+        const s = this.ed.draft();
+        const b = 'id' in p ? s.buildings.find(b => b.id === p.id) : undefined;
+        const st = p.kind === 'structure' ? s.structures?.find(x => x.id === p.id) : undefined;
+        if (b) this.flyTo(b.pos.x,b.pos.z,Math.max(b.length,b.width));
+        else if (st) this.flyTo(st.x,st.z,30);
+        else if (p.kind==='tree') {const t=s.trees[p.i];if(t)this.flyTo(t.x,t.z,t.r*4);}
+        else if(p.kind==='fence'){const w=s.walls?.[p.i];if(w)this.flyTo((w.a.x+w.b.x)/2,(w.a.z+w.b.z)/2,Math.hypot(w.b.x-w.a.x,w.b.z-w.a.z));}
+        else {
+          const pts=p.kind==='underground'?s.underground?.find(v=>v.id===p.id)?.outline:p.kind==='road'?s.roads?.[p.i]?.pts:p.kind==='surface'?s.surfaces?.[p.i]?.pts:p.kind==='water'?s.waters?.[p.i]?.pts:undefined;
+          if(pts?.length)this.flyTo(pts.reduce((n,p)=>n+p.x,0)/pts.length,pts.reduce((n,p)=>n+p.z,0)/pts.length,30);
+        }
+        this.studio.focus.set(null);
+      });
     });
     effect(() => {
       // after the assistant edited something: show it. Select the building; for interior work take the roof off.
@@ -1326,6 +1355,7 @@ export class BandoEditor {
   /** A click on the 3D model: select what it hit (or nothing). */
   /** A click on a column / wall inside the inspector's 3D preview selects it in the editor too. */
   protected onPreviewPick(p: { kind: 'column' | 'wall'; i: number }): void {
+    if (this.basementFocus()) return;
     this.colSet.set([]);
     this.pick.set(p.kind === 'column' ? { t: 'column', i: p.i } : { t: 'wall', i: p.i });
   }
@@ -1336,8 +1366,14 @@ export class BandoEditor {
       this.ed.select('');
       return;
     }
-    if (p.kind === 'building') {
+    if (p.kind === 'basement') {
       this.ed.select(p.id);
+      this.basementFocusId.set(p.id);
+      this.basementFocus.set(true);
+      this.pick.set({t:'building'});
+    } else if (p.kind === 'building') {
+      this.ed.select(p.id);
+      this.basementFocus.set(false);
       this.level.set(0);
       this.pick.set({ t: 'building' });
     } else if (p.kind === 'structure') {
@@ -1349,8 +1385,11 @@ export class BandoEditor {
       this.level.set(p.li);
       this.colSet.set([]);
       this.pick.set(p.kind === 'column' ? { t: 'column', i: p.i } : { t: 'wall', i: p.i });
-    } else if (p.kind === 'fence') this.pick.set({ t: 'fence', i: p.i });
-    else this.pick.set({ t: 'tree', i: p.i });
+    } else if (p.kind === 'underground') {
+      const i=(this.ed.draft().underground??[]).findIndex(v=>v.id===p.id);if(i>=0)this.pick.set({t:'under',i});
+    } else if(p.kind === 'road'||p.kind === 'surface'||p.kind === 'water') this.pick.set({t:p.kind,i:p.i});
+    else if (p.kind === 'fence') this.pick.set({ t: 'fence', i: p.i });
+    else if(p.kind==='tree') this.pick.set({ t: 'tree', i: p.i });
   }
 
   /** A drag / click on the ground in 3D with a tool active: the same code path as in 2D, with the ground point as the pointer. */
@@ -2354,8 +2393,40 @@ export class BandoEditor {
     else delete b.ruin;
   };
     /** 0 removes the basement; otherwise its inside height (2 – 12 m). */
+  private editBasement(fn:(b:BuildingSpec)=>void):void {
+    this.ed.commitSite(s=>{const b=s.buildings.find(b=>b.id===this.ed.selectedId());if(b)fn(b);});
+  }
+  protected pickBasement(): void {
+    this.basementFocusId.set(this.ed.selectedId());
+    if (this.indoor()) this.exitIndoor();
+    this.pick.set({t:'building'});
+    this.basementFocus.update(v=>!v);
+  }
+  protected readonly basementSize = computed(() => {
+    const b=this.b(); if (!b) return {length:0,width:0};
+    const p=basementOutline(b);
+    return {length:Math.max(...p.map(p=>p.x))-Math.min(...p.map(p=>p.x)),width:Math.max(...p.map(p=>p.z))-Math.min(...p.map(p=>p.z))};
+  });
+  protected resizeBasement(axis:'length'|'width',value:number):void {
+    if (!Number.isFinite(value)) return;
+    const size={...this.basementSize(),[axis]:Math.max(2,Math.min(300,value))};
+    this.editBasement(b=>{if(b.basement)b.basement.outline=[{x:-size.length/2,z:-size.width/2},{x:size.length/2,z:-size.width/2},{x:size.length/2,z:size.width/2},{x:-size.length/2,z:size.width/2}];});
+    this.applyNow();
+  }
+  protected basementWall(side:'n'|'s'|'e'|'w',on:boolean):void {
+    this.editBasement(b=>{if(b.basement)(b.basement.sides??={})[side]=on;}); this.applyNow();
+  }
+  protected resetBasementShape():void {this.editBasement(b=>{if(b.basement)delete b.basement.outline;});this.applyNow();}
+  protected addBasementWall():void {
+    this.editBasement(b=>{if(b.basement)(b.basement.partitions??=[]).push([{x:1,z:1},{x:Math.max(2,this.basementSize().length-1),z:1}]);});this.applyNow();
+  }
+  protected editBasementWall(i:number,end:0|1,axis:'x'|'z',v:number):void {
+    if(!Number.isFinite(v))return;
+    this.editBasement(b=>{const w=b.basement?.partitions?.[i];if(w)w[end][axis]=Math.max(0,Math.min(axis==='x'?this.basementSize().length:this.basementSize().width,v));});this.applyNow();
+  }
+  protected removeBasementWall(i:number):void {this.editBasement(b=>b.basement?.partitions?.splice(i,1));this.applyNow();}
   protected readonly setBasement = (b: BuildingSpec, v: number): void => {
-    if (v > 0) b.basement = { height: Math.min(12, Math.max(2, v)) };
+    if (v > 0) b.basement = { ...b.basement, height: Math.min(12, Math.max(2, v)) };
     else delete b.basement;
   };
   protected readonly toRectangle = (b: BuildingSpec): void => resetToRect(b);
@@ -2427,7 +2498,16 @@ export class BandoEditor {
   protected editTop<T>(fn: (l: LevelSpec, v: T) => void, v: T): void {
     const bd = this.b();
     if (!bd) return;
-    this.ed.editSelectedLevel((l) => fn(l, v), bd.levels.length - 1);
+    if (fn === this.setRoof) {
+      this.ed.commitSite(s => {
+        const b=s.buildings.find(b=>b.id===bd.id)!;
+        fn(b.levels[b.levels.length-1]!,v);
+        // Choosing a roof explicitly restores it; wall damage remains below the roof-removal threshold.
+        delete b.roofless;
+        if ((b.ruin ?? 0) >= 0.6) b.ruin=0.55;
+      });
+      this.view.setRoofHidden(false);
+    } else this.ed.editSelectedLevel((l) => fn(l, v), bd.levels.length - 1);
     this.applyNow();
   }
 

@@ -14,3 +14,5 @@ InspectorSection groups the selected element's properties: an uppercase caption,
 The caption, the fields and their bindings. Keep each section to one concern (Size, Floors, Openings, Modules).
 
 Source: `src/app/ui/studio/bando-editor.scss (.sec, .st, .fld)`.
+
+Basements expose a −1 button in Floors, a dedicated preview and a separate section for height, independent rectangular dimensions, footprint reset, perimeter walls and internal wall endpoints. Choosing a roof when ruin/open shell removed it explicitly restores the roof (and lowers global ruin below the roof-removal threshold); explain that effect beside the selector.

@@ -1,4 +1,5 @@
 import { Service, computed, inject, signal } from '@angular/core';
+import type { SitePick } from '../three/site-view';
 import type { SiteSpec } from '../core/site-spec';
 import { boundingZone, sameArea } from '../core/areas';
 import { MAX_HALF_EXTENT, SiteService } from './site.service';
@@ -31,6 +32,8 @@ const DEFAULT_START: MapStart = { lat: 45.4642, lon: 9.19, zoom: 15 }; // Milan 
 export class StudioService {
   private readonly site = inject(SiteService);
   private readonly toast = inject(ToastService);
+
+  readonly focus = signal<SitePick | null>(null);
 
   readonly view = signal<'list' | 'zone'>('list');
   /** The bando being edited; null while creating a new one. */

@@ -13,12 +13,17 @@ describe('mascot timeline', () => {
     expect(end).toBe(MASCOT_DURATION);
     expect(mascotFrame(MASCOT_DURATION)).toEqual(mascotFrame(0));
   });
-  it('runs in place while the grounded drone shifts left, then takes off and exits right', () => {
-    expect(mascotFrame(4900).droneX).toBeLessThan(mascotFrame(2100).droneX);
-    expect(mascotFrame(4900).droneY).toBe(132);
-    expect(mascotFrame(11000).droneY).toBeLessThan(mascotFrame(10100).droneY);
-    expect(mascotFrame(15200).droneX).toBeGreaterThan(320);
-    expect(mascotFrame(11900).y).toBe(-18);
-    expect(mascotFrame(13000).y).toBe(0);
+  it('searches, runs with the drone, sits perplexed and watches it take off', () => {
+    expect(mascotFrame(0).droneVisible).toBe(false);
+    expect(mascotFrame(3000).phase).toBe('run');
+    expect(mascotFrame(3000).droneVisible).toBe(true);
+    expect(mascotFrame(4300).droneX).toBeLessThan(mascotFrame(2600).droneX);
+    expect(mascotFrame(8000).pose).toBe(16);
+    const takeoff=timeline.phases.find(p=>p.name==='takeoff')!;
+    const flight=timeline.phases.find(p=>p.name==='fly-out')!;
+    expect(mascotFrame(takeoff.start).propellersSpinning).toBe(true);
+    expect(mascotFrame(flight.start).droneRight).toBe(true);
+    expect(mascotFrame(3000).propellersSpinning).toBe(false);
+    expect(timeline.phases.map(p=>p.name)).toEqual(expect.arrayContaining(['takeoff','rise','higher','look-up','jump','victory','fly-out']));
   });
 });

@@ -43,6 +43,8 @@ export const LayoutStore = signalStore(
   { providedIn: 'root' },
   withState(() => {
     const d = defaults();
+    const requested = new URLSearchParams(location.search).get('panel');
+    if (requested === 'features') { d.panels.welcome.visible = false; d.panels.features.visible = true; return d; }
     // a showcase link starts like a first visit (only Welcome); the tour arranges the rest itself
     if (showcaseLink(location.search, location.hash)) return d;
     const saved = savedState<LayoutState>(KEY, d);
@@ -61,7 +63,10 @@ export const LayoutStore = signalStore(
     }
     // opening the root URL always opens Welcome: whatever was saved (a session that closed it, or an old tour that
     // restored an outdated snapshot), the entry screen shows the Welcome panel over the world
-    panels.welcome = { ...panels.welcome, visible: true };
+    if (!location.search && !location.hash) {
+      for (const id of Object.keys(panels) as PanelId[]) panels[id] = { ...panels[id], visible: false };
+    }
+    panels.welcome = { ...panels.welcome, visible: true, minimized: false };
     return { panels, zTop: saved.zTop ?? Z_START, v: LAYOUT_V };
   }),
   withMethods((store) => {

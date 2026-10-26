@@ -1,8 +1,10 @@
+import { basementBuilding } from '../core/basement';
+import { cutUnderground } from './underground-cut';
 import { cutRect, edgesOf, slabs } from '../core/footprint';
 import { buildStructure } from './structures';
 import { fenceDef, hedgeLumps, postsAlong, wireSag, type FenceDef } from '../core/fences';
 import { WATER_COLOR, insidePolygon, orderedRoads, roadDef, surfaceDef } from '../core/layers';
-import { BASEMENT_WALL, tunnelAxis, volumeSolids } from '../core/underground';
+import { tunnelAxis, tunnelSection, volumeSolids } from '../core/underground';
 import { NO_SLABS, ROOFLESS, roofCells, roofRuns, ruinRandom, wallPieces, wallTop } from '../core/ruin';
 import * as THREE from 'three';
 import { mergeUnit } from './merge';
@@ -394,7 +396,7 @@ function buildFloorAndColumns(ctx: Ctx, b: BuildingSpec, l: LevelSpec, inner: TH
   for (const v of voids) rects = rects.flatMap((r) => cutRect(r, v));
   for (const r of rects) {
     const cx = (r.x0 + r.x1) / 2, cz = (r.z0 + r.z1) / 2, w = r.x1 - r.x0, d = r.z1 - r.z0;
-    if (l.baseY === 0) ctx.addBox(inner, cx, 0.05, cz, w, 0.1, d, floorMat, false, false);
+    if (l.baseY === 0) ctx.addBox(inner, cx, 0.05, cz, w, 0.1, d, floorMat, !!b.basement, false);
     else if (!ctx.noSlabs) ctx.addBox(inner, cx, l.baseY, cz, w, 0.2, d, floorMat, false, false); // a deep ruin has lost its upper floors
   }
   if (l.baseY === 0) {
@@ -482,7 +484,7 @@ const PATCH_COLORS = ['#6f9350', '#86a35a', '#8a8656', '#7d7a52', '#98a262', '#9
  * The terrain as one mesh (a vertex per grid point, or every other one on a big grid), coloured like the old meadow:
  * the ground colour with the same seeded patches baked into the vertex colours, so they follow the slopes.
  */
-function terrainMesh(g: HeightGrid, color: string, rnd: () => number, surfaces: readonly SurfaceSpec[] = [], cut: Uint8Array | null = null): THREE.Mesh {
+function terrainMesh(g: HeightGrid, color: string, rnd: () => number, surfaces: readonly SurfaceSpec[] = [], volumes: readonly UndergroundSpec[] = []): THREE.Mesh {
   const step = g.nx * g.nz > 250_000 ? 2 : 1;
   const nx = Math.floor((g.nx - 1) / step) + 1, nz = Math.floor((g.nz - 1) / step) + 1;
   const pos = new Float32Array(nx * nz * 3);
@@ -538,11 +540,6 @@ function terrainMesh(g: HeightGrid, color: string, rnd: () => number, surfaces: 
   let n = 0;
   for (let j = 0; j < nz - 1; j++) {
     for (let i = 0; i < nx - 1; i++) {
-      // the ground is cut where an underground volume passes through it: drop the cells touching a cut vertex
-      if (cut) {
-        const gi = j * step * g.nx + i * step, s1 = step, s2 = step * g.nx;
-        if (cut[gi] || cut[gi + s1] || cut[gi + s2] || cut[gi + s1 + s2]) continue;
-      }
       const a = j * nx + i, b = a + 1, c = a + nx, e = c + 1;
       idx[n++] = a; idx[n++] = c; idx[n++] = b;
       idx[n++] = b; idx[n++] = c; idx[n++] = e;
@@ -557,7 +554,7 @@ function terrainMesh(g: HeightGrid, color: string, rnd: () => number, surfaces: 
   geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   geo.setIndex(new THREE.BufferAttribute(idx.subarray(0, n), 1));
   geo.computeVertexNormals();
-  const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95 }));
+  const m = new THREE.Mesh(cutUnderground(geo, volumes), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95 }));
   m.receiveShadow = true;
   return m;
 }
@@ -669,7 +666,7 @@ function roadMesh(ground: SiteGround, r: RoadSpec, order: number): THREE.Mesh {
   geo.setIndex(idx);
   geo.computeVertexNormals();
   const color = r.surface ? surfaceDef(r.surface).color : roadDef(r.kind).color;
-  const m = new THREE.Mesh(geo, material(color, { side: THREE.DoubleSide, depthWrite: false, depthTest: !!ground.grid }));
+  const m = new THREE.Mesh(cutUnderground(geo, ground.vols, 0.06), material(color, { side: THREE.DoubleSide, depthWrite: false, depthTest: !!ground.grid }));
   m.receiveShadow = true;
   m.renderOrder = order;
   m.userData['roadKind'] = r.kind;
@@ -695,33 +692,18 @@ function buildUnderground(v: UndergroundSpec): THREE.Group {
   const h = v.ceiling - v.floor;
   if (axis && v.shape !== 'box') {
     const dx = axis.b.x - axis.a.x, dz = axis.b.z - axis.a.z, len = Math.hypot(dx, dz);
-    const ang = -Math.atan2(dz, dx);
-    if (v.shape === 'pipe') {
-      const r = Math.min(axis.width, h) / 2 + v.wall / 2;
-      const g = new THREE.CylinderGeometry(r, r, len, 20, 1, true);
-      g.rotateZ(Math.PI / 2); // along x
-      const m = new THREE.Mesh(g, UNDER_MAT);
-      m.position.set((axis.a.x + axis.b.x) / 2, v.floor + r - v.wall / 2, (axis.a.z + axis.b.z) / 2);
-      m.rotation.y = ang;
-      out.add(m);
-    } else {
-      // vault: straight walls up to the springing line, a half cylinder over them
-      const r = axis.width / 2, wallH = Math.max(0.3, h - r);
-      for (const side of [-1, 1]) {
-        const w = new THREE.Mesh(new THREE.BoxGeometry(len, wallH, v.wall), UNDER_MAT);
-        const off = side * (r + v.wall / 2); // along the tunnel's normal (-dz, dx) / len
-        w.position.set((axis.a.x + axis.b.x) / 2 + (-dz / len) * off, v.floor + wallH / 2, (axis.a.z + axis.b.z) / 2 + (dx / len) * off);
-        w.rotation.y = ang;
-        out.add(w);
-      }
-      const g = new THREE.CylinderGeometry(r + v.wall / 2, r + v.wall / 2, len, 16, 1, true, 0, Math.PI);
-      g.rotateZ(Math.PI / 2);
-      g.rotateX(Math.PI / 2);
-      const m = new THREE.Mesh(g, UNDER_MAT);
-      m.position.set((axis.a.x + axis.b.x) / 2, v.floor + wallH, (axis.a.z + axis.b.z) / 2);
-      m.rotation.y = ang;
-      out.add(m);
-    }
+    const section = tunnelSection(v)!.map(p=>new THREE.Vector2(p.x,p.y));
+    // Extrude a real cross-section along the axis. No cylinder Euler rotations that flatten the vault.
+    const centre = section.reduce((c,p) => c.add(p), new THREE.Vector2()).multiplyScalar(1/section.length);
+    const outer = section.map(p => { const d=p.clone().sub(centre); return p.clone().add(d.normalize().multiplyScalar(v.wall)); });
+    const shell = new THREE.Shape(outer);
+    shell.holes.push(new THREE.Path([...section].reverse()));
+    const geo = new THREE.ExtrudeGeometry(shell, {depth:len,bevelEnabled:false,steps:1});
+    // local x = cross-section width, local y = world height, extrusion z = tunnel axis
+    const transform = new THREE.Matrix4().set(-dz/len,0,dx/len,axis.a.x, 0,1,0,0, dx/len,0,dz/len,axis.a.z, 0,0,0,1);
+    geo.applyMatrix4(transform);
+    out.add(new THREE.Mesh(geo, UNDER_MAT));
+
   } else {
     for (let i = 0; i < v.outline.length; i++) {
       const a = v.outline[i]!, b = v.outline[(i + 1) % v.outline.length]!;
@@ -751,18 +733,16 @@ function buildUnderground(v: UndergroundSpec): THREE.Group {
  * Building-local (the group carries the position, turn and pad height); the outline's edges are axis-aligned there.
  */
 function buildBasement(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, floorMat: THREE.Material): void {
-  const h = Math.min(12, Math.max(2, b.basement!.height)), t = BASEMENT_WALL;
-  const poly = b.footprint ?? [{ x: -b.length / 2, z: -b.width / 2 }, { x: b.length / 2, z: -b.width / 2 }, { x: b.length / 2, z: b.width / 2 }, { x: -b.length / 2, z: b.width / 2 }];
-  for (let i = 0; i < poly.length; i++) {
-    const p = poly[i]!, q = poly[(i + 1) % poly.length]!;
-    const along = Math.abs(q.x - p.x) > Math.abs(q.z - p.z);
-    const len = along ? Math.abs(q.x - p.x) : Math.abs(q.z - p.z);
-    if (len < 0.05) continue;
-    ctx.addBox(target, (p.x + q.x) / 2, -h / 2, (p.z + q.z) / 2, along ? len + t : t, h, along ? t : len + t, ctx.mat.conc, true, false);
+  const basement = basementBuilding(b);
+  const level = basement.levels[0]!;
+  const room = new THREE.Group();
+  room.userData['pick'] = {kind:'basement',id:b.id};
+  target.add(room);
+  for (const r of basement.footprint ? slabs(basement.footprint) : [{x0:-basement.length/2,x1:basement.length/2,z0:-basement.width/2,z1:basement.width/2}]) {
+    ctx.addBox(room,(r.x0+r.x1)/2,level.baseY-0.15,(r.z0+r.z1)/2,r.x1-r.x0,0.3,r.z1-r.z0,floorMat,true,false);
   }
-  for (const r of b.footprint ? slabs(b.footprint) : [{ x0: -b.length / 2, z0: -b.width / 2, x1: b.length / 2, z1: b.width / 2 }]) {
-    ctx.addBox(target, (r.x0 + r.x1) / 2, -h - t / 2, (r.z0 + r.z1) / 2, r.x1 - r.x0, t, r.z1 - r.z0, floorMat, true, false);
-  }
+  buildWalls(ctx, basement, level, room);
+  room.traverse(o=>{if(o.userData['pick'])o.userData['pick']={kind:'basement',id:b.id};});
 }
 
 /** Build the whole site from a {@link SiteSpec}. Deterministic: the same spec always produces the same scene. */
@@ -824,13 +804,13 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
   if (!opts.bare && ground.grid) {
     // ---- terrain: the height grid, flat ground around it, roads laid on it
     const g = ground.grid;
-    terrain = terrainMesh(g, spec.groundColor, rnd, spec.surfaces, ground.cut);
+    terrain = terrainMesh(g, spec.groundColor, rnd, spec.surfaces, ground.vols);
     group.add(terrain);
     // around the grid the ground carries on at the height of its edge, out to the site's extent
     const outer = spec.extent * 1.1;
     if (outer > Math.min(-g.x0, -g.z0)) group.add(skirtMesh(g, outer, material(spec.groundColor)));
     for (const pd of spec.pads) group.add(drapedPad(ground, pd.x, pd.z, pd.w, pd.d, pd.rotDeg ?? 0, material(pd.color ?? '#a9aaa0')));
-    for (const [i, r] of orderedRoads(spec.roads ?? []).entries()) group.add(roadMesh(ground, r, 1 + i));
+    for (const [i, r] of orderedRoads(spec.roads ?? []).entries()) {const m=roadMesh(ground,r,1+i);m.userData['pick']={kind:'road',i:spec.roads!.indexOf(r)};group.add(m);}
     const start = new THREE.Mesh(new THREE.BoxGeometry(4, 0.04, 4), material('#e8c65a'));
     start.position.set(spec.droneStart.x, ground.start + 0.2, spec.droneStart.z);
     start.receiveShadow = true;
@@ -870,7 +850,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
       m.renderOrder = order++;
       group.add(m);
     }
-    for (const r of orderedRoads(spec.roads ?? [])) group.add(roadMesh(ground, r, order++));
+    for (const r of orderedRoads(spec.roads ?? [])) {const m=roadMesh(ground,r,order++);m.userData['pick']={kind:'road',i:spec.roads!.indexOf(r)};group.add(m);}
     const start = new THREE.Mesh(new THREE.BoxGeometry(4, 0.04, 4), material('#e8c65a'));
     start.position.set(spec.droneStart.x, 0.2, spec.droneStart.z);
     start.receiveShadow = true;

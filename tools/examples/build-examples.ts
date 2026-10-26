@@ -325,7 +325,7 @@ function passage(bd: BuildingSpec, a: Vec2, b: Vec2, w: number, h: number): numb
   for (const l of tower.levels.slice(1)) l.voids = [{ x0: 2.5, z0: 2.5, x1: 5.5, z1: 5.5 }];
   tower.levels[0]!.doors = { s: [door(4, 2.2, 3)], e: [door(4, 1.4, 2.4)] };
   s.buildings.push(tower);
-  s.buildings.push({ id: 'b-farmhouse', name: 'Farmhouse', pos: { x: -30, z: 30 }, rotDeg: 8, length: 13, width: 9, color: '#d9d0bd', ruin: 0.7, levels: floors(2, 3.2, 'gable', { roofRise: 2.5, roofColor: '#a4553b' }) });
+  s.buildings.push({ id: 'b-farmhouse', name: 'Farmhouse', pos: { x: -30, z: 30 }, rotDeg: 8, length: 13, width: 9, color: '#d9d0bd', ruin: 0.45, levels: floors(2, 3.2, 'gable', { roofRise: 2.5, roofColor: '#a4553b' }) });
 
   // landmarks and the works' kit
   put('abando/chimney', { x: 98, z: -44 }, 0, { h: 34 });
@@ -405,5 +405,5 @@ function passage(bd: BuildingSpec, a: Vec2, b: Vec2, w: number, h: number): numb
   // every block of the catalogue is somewhere in here
   const missing = cat.map((b) => (b as { id: string }).id).filter((id) => !used.has(id));
   if (missing.length) throw new Error('Playground does not use ' + missing.join(', '));
-  finish(s, 'example-playground', 'Playground', ROOT + '/library/bandos/playground.json', 'A made-up works on the edge of the fields, with no real place: a barrel-vault store, a warehouse with a basement, a ruined tower and farmhouse, a pond, hills with a tunnel, and every block of the library, from gates to cranes.', 2);
+  finish(s, 'example-playground', 'Playground', ROOT + '/library/bandos/playground.json', 'A made-up works on the edge of the fields, with no real place: a barrel-vault store, a warehouse with a basement, a ruined tower and farmhouse, a pond, hills with a tunnel, and every block of the library, from gates to cranes.', 3);
 }

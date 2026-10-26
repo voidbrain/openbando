@@ -4,7 +4,7 @@ Source art stays unchanged; exports use nearest-neighbour scaling only.
 """
 import json, math
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'public/mascot'
 NAMES = ['idle','look-quarter-a','look-quarter-b','side','run-a','run-pass','run-b','crouch','low','sit','rise','look-up','anticipate','jump','victory','back']
@@ -24,12 +24,26 @@ for i,name in enumerate(NAMES):
     frame.alpha_composite(sprite,((128-sprite.width)//2,120-sprite.height))
     frame.save(OUT / 'poses' / f'{i:02}-{name}.png',optimize=True)
     poses.append(frame)
+# The reviewed confused source is separate from the original atlas.
+confused=Image.open(ROOT/'docs/mascot/confused-source.png').convert('RGBA')
+box=confused.getchannel('A').point(lambda a:255 if a>100 else 0).getbbox()
+confused=confused.crop(box)
+confused.thumbnail((78,86),Image.Resampling.NEAREST)
+for i,name in enumerate(['confused-a'],16):
+    frame=Image.new('RGBA',(128,128))
+    frame.alpha_composite(confused,((128-confused.width)//2,120-confused.height))
+    frame.save(OUT/'poses'/f'{i:02}-{name}.png',optimize=True)
+    poses.append(frame)
 drone=Image.open(ROOT/'docs/mascot/drone-source.png').convert('RGBA')
 drone=drone.crop(drone.getchannel('A').point(lambda a:255 if a>100 else 0).getbbox())
 drone.thumbnail((64,48),Image.Resampling.NEAREST)
 drone.save(OUT/'drone.png',optimize=True)
+right=Image.open(ROOT/'docs/mascot/drone-right-source.png').convert('RGBA')
+right=right.crop(right.getchannel('A').point(lambda a:255 if a>100 else 0).getbbox())
+right.thumbnail((64,48),Image.Resampling.NEAREST)
+right.save(OUT/'drone-right.png',optimize=True)
 poses[0].save(OUT/'poster.png',optimize=True)
-sheet=Image.new('RGBA',(512,512))
+sheet=Image.new('RGBA',(512,640))
 for i,p in enumerate(poses):sheet.alpha_composite(p,((i%4)*128,(i//4)*128))
 sheet.save(OUT/'keyframes.png',optimize=True)
 t=json.loads((OUT/'timeline.json').read_text()); frames=[]
@@ -41,7 +55,16 @@ for ms in range(0,t['duration'],100):
     frame=Image.new('RGBA',(320,160));jump=round(-18*math.sin(u*math.pi)) if phase.get('jump') else 0
     frame.alpha_composite(pilot,(24,24+jump))
     x,y,x1,y1=phase['drone'];dx=round(x+(x1-x)*u);dy=round(y+(y1-y)*u)
-    frame.alpha_composite(drone,(dx-drone.width//2,dy-drone.height//2))
+    if phase.get('droneVisible',True):
+        quad=right if phase['name']=='fly-out' else drone
+        qx=dx-quad.width//2; qy=dy-quad.height//2
+        frame.alpha_composite(quad,(qx,qy))
+        if phase['name'] in ('takeoff','rise','higher','look-up','jump','victory','fly-out'):
+            draw=ImageDraw.Draw(frame); flash=(ms//100)%2
+            for px,py in ((.23,.16),(.77,.16),(.23,.59),(.77,.59)):
+                cx=round(qx+quad.width*px);cy=round(qy+quad.height*py)
+                draw.rectangle((cx-(5 if flash else 3),cy,cx+(4 if flash else 2),cy),fill=('#ffad35' if flash else '#ff7a00'))
+                draw.rectangle((cx-2,cy-1,cx+1,cy+1),fill=('#ffad35' if flash else '#ff7a00'))
     frames.append(frame)
 # Transparent GIF uses a fixed palette to avoid per-frame colour pumping.
 palette=Image.new('RGB',(320,160*len(frames)))
@@ -52,4 +75,4 @@ for f in frames:
     q=f.convert('RGB').quantize(palette=palette,dither=Image.Dither.NONE)
     q.paste(255,mask=f.getchannel('A').point(lambda a:255 if a<128 else 0));q.info['transparency']=255;gif.append(q)
 gif[0].save(OUT/'openbando-mascot.gif',save_all=True,append_images=gif[1:],duration=100,loop=0,transparency=255,disposal=2,optimize=False)
-print('16 pose PNGs, poster, drone, contact sheet and 16-second GIF exported')
+print('17 pose PNGs, poster, drone, contact sheet and shared-timeline GIF exported')
