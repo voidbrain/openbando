@@ -48,8 +48,8 @@ this was applied — needs human verification (TBC). Automated checks so far: `c
 | 1 | Welcome tour | Stop the tour and open the welcome panel. | High | TBC |
 | 2 | Root page | Opening the root URL should open the welcome panel. | High | TBC |
 | 3 | Gallery / holes / underbasements | Fix incorrect, impractical, or poorly designed holes and underground spaces. | High | Open |
-| 4 | Holes and hills | Fix geometry and interaction problems involving holes and hills. | High | Open |
-| 5 | fix path | example blackbox csv path when loaded shows a descent slope as steps, never happened and not visible in the video. | High | TBC |
+| 4 | Holes and hills | Fix geometry and interaction problems involving holes and hills.<br /><br /> Qwen Analysis: The Playground tunnel is buried under a hill due to insufficient depth, causing the drone to stand on an invisible floor inside solid earth. Fix: Deepen the tunnel, add terrain lowering strokes at portals, and clamp floorUnder logic to respect cut masks.| High | Open |
+| 5 | fix path | example blackbox csv path when loaded shows a descent slope as steps, never happened and not visible in the video.<br /><br /> Qwen Analysis: Warehouse basements have sealed floors despite ground voids, creating impractical underground spaces. Additionally, basement volumes may carve visible notches on slopes, and the void tool lacks minimum size checks. Fix: Cut level voids from basement slabs in buildBasement(), ensure proper access/stairs, and add validation guards to the void drawing tool. | High | TBC |
 
 ## Bando Villetta — Specs
 
