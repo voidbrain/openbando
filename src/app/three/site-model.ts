@@ -1,7 +1,7 @@
 import { cutRect, edgesOf, slabs } from '../core/footprint';
 import { buildStructure } from './structures';
 import { fenceDef, hedgeLumps, postsAlong, wireSag, type FenceDef } from '../core/fences';
-import { WATER_COLOR, insidePolygon, roadDef, surfaceDef } from '../core/layers';
+import { WATER_COLOR, insidePolygon, orderedRoads, roadDef, surfaceDef } from '../core/layers';
 import { BASEMENT_WALL, tunnelAxis, volumeSolids } from '../core/underground';
 import { NO_SLABS, ROOFLESS, roofCells, roofRuns, ruinRandom, wallPieces, wallTop } from '../core/ruin';
 import * as THREE from 'three';
@@ -640,31 +640,38 @@ function flatShape(pts: readonly { x: number; z: number }[], mat: THREE.Material
   return m;
 }
 
-/** A road as a ribbon laid on the ground: a cross-section every ~2 m, 6 cm above the (levelled) ground. */
+/** A road draped across its full width, 6 cm above ground; ordered decals never write depth over one another. */
 function roadMesh(ground: SiteGround, r: RoadSpec, order: number): THREE.Mesh {
   const pos: number[] = [], idx: number[] = [];
   const half = r.width / 2;
-  const add = (x: number, z: number, nx: number, nz: number): void => {
-    const y = ground.at(x, z) + 0.06;
-    pos.push(x + nx * half, y, z + nz * half, x - nx * half, y, z - nz * half);
-  };
+  const step = Math.min(1, ground.grid?.cell ?? 1);
+  const across = Math.max(1, Math.ceil(r.width / step));
   for (let i = 1; i < r.pts.length; i++) {
     const a = r.pts[i - 1]!, b = r.pts[i]!;
     const dx = b.x - a.x, dz = b.z - a.z, len = Math.hypot(dx, dz);
     if (len < 0.01) continue;
     const nx = -dz / len, nz = dx / len;
-    const n = Math.max(1, Math.ceil(len / 2));
-    for (let k = i === 1 ? 0 : 1; k <= n; k++) add(a.x + (dx * k) / n, a.z + (dz * k) / n, nx, nz);
+    const n = Math.max(1, Math.ceil(len / step));
+    const base = pos.length / 3;
+    for (let k = 0; k <= n; k++) for (let j = 0; j <= across; j++) {
+      const side = -half + r.width * j / across;
+      const x = a.x + dx * k / n + nx * side, z = a.z + dz * k / n + nz * side;
+      pos.push(x, ground.at(x, z) + 0.06, z);
+    }
+    for (let k = 0; k < n; k++) for (let j = 0; j < across; j++) {
+      const v = base + k * (across + 1) + j, w = v + across + 1;
+      idx.push(v, w, v + 1, v + 1, w, w + 1);
+    }
   }
-  for (let v = 0; v + 3 < pos.length / 3; v += 2) idx.push(v, v + 2, v + 1, v + 1, v + 2, v + 3);
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   geo.setIndex(idx);
   geo.computeVertexNormals();
   const color = r.surface ? surfaceDef(r.surface).color : roadDef(r.kind).color;
-  const m = new THREE.Mesh(geo, material(color, { side: THREE.DoubleSide, ...(ground.grid ? {} : { depthWrite: false, depthTest: false }) }));
+  const m = new THREE.Mesh(geo, material(color, { side: THREE.DoubleSide, depthWrite: false, depthTest: !!ground.grid }));
   m.receiveShadow = true;
-  if (!ground.grid) m.renderOrder = order;
+  m.renderOrder = order;
+  m.userData['roadKind'] = r.kind;
   return m;
 }
 
@@ -822,7 +829,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     const outer = spec.extent * 1.1;
     if (outer > Math.min(-g.x0, -g.z0)) group.add(skirtMesh(g, outer, material(spec.groundColor)));
     for (const pd of spec.pads) group.add(drapedPad(ground, pd.x, pd.z, pd.w, pd.d, pd.rotDeg ?? 0, material(pd.color ?? '#a9aaa0')));
-    for (const r of spec.roads ?? []) group.add(roadMesh(ground, r, 0));
+    for (const [i, r] of orderedRoads(spec.roads ?? []).entries()) group.add(roadMesh(ground, r, 1 + i));
     const start = new THREE.Mesh(new THREE.BoxGeometry(4, 0.04, 4), material('#e8c65a'));
     start.position.set(spec.droneStart.x, ground.start + 0.2, spec.droneStart.z);
     start.receiveShadow = true;
@@ -862,7 +869,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
       m.renderOrder = order++;
       group.add(m);
     }
-    for (const r of spec.roads ?? []) group.add(roadMesh(ground, r, order++));
+    for (const r of orderedRoads(spec.roads ?? [])) group.add(roadMesh(ground, r, order++));
     const start = new THREE.Mesh(new THREE.BoxGeometry(4, 0.04, 4), material('#e8c65a'));
     start.position.set(spec.droneStart.x, 0.2, spec.droneStart.z);
     start.receiveShadow = true;

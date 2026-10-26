@@ -381,3 +381,33 @@ describe('building fixtures', () => {
     expect(at!.z).toBeCloseTo(10, 0);
   });
 });
+
+describe('road overlap rendering', () => {
+  for (const terrain of [false, true]) it(`orders crossing roads and drapes their full width (terrain=${terrain})`, () => {
+    const s = emptySpec();
+    if (terrain) s.terrain = { cell: 1, half: { e: 30, n: 30 }, strokes: [{ op: 'hill', pts: [{ x: 0, z: 0 }], radius: 25, strength: 8 }] };
+    s.roads = [
+      { kind: 'road', width: 8, pts: [{ x: -20, z: 0 }, { x: 20, z: 0 }] },
+      { kind: 'path', width: 2, pts: [{ x: 0, z: -20 }, { x: 0, z: 20 }] },
+      { kind: 'track', width: 4, pts: [{ x: -20, z: -10 }, { x: 20, z: 10 }] },
+    ];
+    const check = () => {
+      const m = buildSiteFromSpec(s);
+      const roads = m.group.children.filter((o) => o.userData['roadKind']) as THREE.Mesh[];
+      expect(roads.map((r) => r.userData['roadKind'])).toEqual(['path', 'track', 'road']);
+      for (let i = 0; i < roads.length; i++) {
+        const r = roads[i]!, mat = r.material as THREE.MeshStandardMaterial;
+        expect(mat.depthWrite).toBe(false); // overlap cannot reject the higher-class road
+        expect(mat.depthTest).toBe(terrain); // hills still occlude roads
+        if (terrain) expect(r.renderOrder).toBeGreaterThan(0); // after the terrain depth pass
+        if (i) expect(r.renderOrder).toBeGreaterThan(roads[i - 1]!.renderOrder);
+        const p = r.geometry.getAttribute('position');
+        for (let j = 0; j < p.count; j++) expect(p.getY(j)).toBeCloseTo(m.ground.at(p.getX(j), p.getZ(j)) + 0.06, 4);
+      }
+      return roads.map((r) => Array.from(r.geometry.getAttribute('position').array));
+    };
+    const first = check();
+    s.roads.reverse();
+    expect(check()).toEqual(first);
+  });
+});

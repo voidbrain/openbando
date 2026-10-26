@@ -181,7 +181,7 @@ of GitHub Actions.
 - [Agent instructions](AGENTS.md): architecture, conventions and required checks.
 - [User guide](docs/guide/README.md): generated feature walkthroughs.
 
-Terrain portals and road crossings have regression coverage, but slope-edge visuals, road class priority/flicker and the example flight descent still need the checks listed in the working plan.
+Road overlaps use class priority (railway > road > track > path), stable draw order and full-width terrain draping. Regression coverage checks reversed drawing order; browser visual confirmation, slope-edge visuals and the example flight descent remain in the working plan.
 
 ## Additional Resources
 

@@ -19,6 +19,15 @@ export const ROADS: readonly RoadDef[] = [
 ];
 export const roadDef = (k: RoadKind | undefined): RoadDef => ROADS.find((r) => r.id === k) ?? ROADS[0]!;
 
+/** Draw low classes first; a railway crosses above roads, then roads above tracks and paths. */
+export const roadPriority = (r: RoadSpec): number => ({ path: 0, track: 1, road: 2, rail: 3 })[r.kind];
+
+/** Stable tie-break for identical classes, independent of the order roads were drawn/imported. */
+export function orderedRoads(roads: readonly RoadSpec[]): RoadSpec[] {
+  const key = (r: RoadSpec): string => JSON.stringify([r.width, r.surface ?? '', r.pts]);
+  return [...roads].sort((a, b) => roadPriority(a) - roadPriority(b) || key(a).localeCompare(key(b)));
+}
+
 export interface SurfaceDef {
   id: SurfaceKind;
   label: string;
@@ -148,30 +157,32 @@ export function levelRoad(g: HeightGrid, r: RoadSpec): void {
 }
 
 /**
- * Level the ground across every road at once. One pass per road used to fight the next: the second road blended
- * towards heights the first had already written along its strip, and near a crossing those samples sit off the
- * second road's own centre line — the two levellings carved a zig-zag trough where the roads overlapped instead of
- * one flat crossing. Here every affected cell takes the height of the nearest point of the nearest road, all
- * sampled from the untouched grid, so a crossing cannot contradict itself.
+ * Level every affected vertex once from the untouched grid. Inside overlapping strips the higher class wins;
+ * otherwise use the nearest centre line, with a stable tie-break. Blending reads the original height too, so
+ * duplicate or reordered roads cannot deepen a trough or repeatedly flatten the shoulders.
  */
 export function levelRoads(g: HeightGrid, roads: readonly RoadSpec[]): void {
-  const live = roads.filter((r) => r.pts.length >= 2);
+  const live = orderedRoads(roads.filter((r) => r.pts.length >= 2));
   if (!live.length) return;
   const src = { ...g, h: g.h.slice() };
   const blend = 2;
+  const touched = new Set<number>();
   for (const r of live) cellsNear(g, r.pts, r.width / 2 + blend, (k, x, z) => {
-    let n = { d: Infinity, at: { x: 0, z: 0 } }, half = 0;
+    if (touched.has(k)) return;
+    touched.add(k);
+    let chosen: { d: number; at: Vec2; half: number; priority: number } | null = null;
     for (const q of live) {
-      const m = nearestOnPath(q.pts, x, z);
-      if (m.d < n.d) {
-        n = m;
-        half = q.width / 2;
+      const m = nearestOnPath(q.pts, x, z), half = q.width / 2;
+      if (m.d > half + blend) continue;
+      const priority = m.d <= half ? roadPriority(q) : -1;
+      if (!chosen || priority > chosen.priority || (priority === chosen.priority && m.d < chosen.d)) {
+        chosen = { ...m, half, priority };
       }
     }
-    if (n.d > half + blend) return;
-    const y = heightAt(src, n.at.x, n.at.z);
-    const w = n.d <= half ? 1 : 1 - (n.d - half) / blend;
-    g.h[k] = g.h[k]! + (y - g.h[k]!) * w;
+    if (!chosen) return;
+    const y = heightAt(src, chosen.at.x, chosen.at.z);
+    const w = chosen.d <= chosen.half ? 1 : 1 - (chosen.d - chosen.half) / blend;
+    g.h[k] = src.h[k]! + (y - src.h[k]!) * w;
   });
 }
 

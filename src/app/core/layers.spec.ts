@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { digWater, insertPoint, layerShape, nearestEdge, removePoint, levelRoad, levelRoads, padsToRoads, pathLength, sanitizeLayers, simplifyPath, waterLevel } from './layers';
+import { digWater, insertPoint, layerShape, nearestEdge, removePoint, levelRoad, levelRoads, orderedRoads, padsToRoads, pathLength, sanitizeLayers, simplifyPath, waterLevel } from './layers';
 import { siteGround } from './site-ground';
 import { emptySpec, sanitizeSpec } from './site-spec';
 import { applyStroke, emptyGrid, heightAt } from './terrain';
@@ -115,5 +115,30 @@ describe('editing outlines point by point', () => {
     expect(r.pts[1]).toEqual({ x: 5, z: 0 });
     expect(removePoint(r.pts, 1, 3)).toEqual(sq);
     expect(removePoint(sq.slice(0, 3), 0, 3)).toBeNull();
+  });
+});
+
+describe('road overlap priority', () => {
+  const roads = [
+    { kind: 'road' as const, width: 8, pts: [{ x: -20, z: 0 }, { x: 20, z: 0 }] },
+    { kind: 'path' as const, width: 2, pts: [{ x: 0, z: -20 }, { x: 0, z: 20 }] },
+  ];
+  it('uses the major road across a crossing, independent of insertion order', () => {
+    const make = () => {
+      const g = emptyGrid({ cell: 1, half: { e: 30, n: 30 } });
+      for (let j = 0; j < g.nz; j++) for (let i = 0; i < g.nx; i++) g.h[j * g.nx + i] = (j - 30) * 0.2;
+      return g;
+    };
+    const a = make(), b = make();
+    levelRoads(a, roads);
+    levelRoads(b, [...roads].reverse());
+    expect(a.h).toEqual(b.h);
+    expect(heightAt(a, 0, 3)).toBeCloseTo(0); // major road, not path centre-line height 0.6
+    expect(heightAt(a, 0, 10)).toBeCloseTo(2); // path keeps its slope away from crossing
+  });
+  it('orders classes consistently without mutating the saved spec', () => {
+    const all = [...roads, { ...roads[0]!, kind: 'track' as const }, { ...roads[0]!, kind: 'rail' as const }];
+    expect(orderedRoads(all).map((r) => r.kind)).toEqual(['path', 'track', 'road', 'rail']);
+    expect(all[0]!.kind).toBe('road');
   });
 });

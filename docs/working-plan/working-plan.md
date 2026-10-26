@@ -6,7 +6,7 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 
 - **Bug 4 — partial:** portal/hill tests cover two openings and an intact hill crest. Fixed the CI regression where terrain exactly at a basement ceiling was left uncut (`cutMask`); the existing scene/collider test stays enabled. Visual confirmation against `docs/working-plan/bugs/bug1.jpg` is still required. General basement access and void usability remain bug 3.
 - **Bug 5 — implemented, visual check pending:** `cleanHeights` applies median → centred mean → rate limiting to CSV barometer heights; the jittery-descent regression checks for no flat treads. Load `public/guide-demo/flight.csv` with its video and inspect the descent before closing it. Basement notes belong to bug 3, not this flight-path bug.
-- **Bug 6 — partial:** `levelRoads` samples the untouched terrain for all roads and has a crossing regression test. Class priority and flicker are not fully solved: road strips still share the same height offset, terrain roads use depth testing, and no class sorting is applied. Check crossing roads/tracks/paths on slopes in both insertion orders before closing it.
+- **Bug 6 — implemented:** terrain vertices are levelled once from the original grid; higher road classes own overlapping strips. Draw order is railway > road > track > path, with stable same-class ties independent of insertion order. Road decals do not write depth, so one cannot flicker against another; terrain depth testing stays on so hills/buildings occlude them. Meshes sample ground across their full width instead of using only the centre height. Regression tests cover reversed order, crossing heights, priorities and full-width draping on flat/hilly sites. Browser visual confirmation remains pending (no local Chromium available).
 - **CI failure:** run `40339576161` failed only the basement cut assertion (412 other tests passed). The fix includes ceiling equality; terrain strictly above the ceiling remains intact. No tests are skipped.
 
 - **Browser CI follow-up:** PR #69 skips the e2e job under the current `inputs.e2e != false` guard. Explicitly include pull-request events in that condition before claiming browser tests run on every PR. No browser verification was performed in this review.
@@ -20,7 +20,7 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 | 3 | Gallery / holes / underbasements | Fix incorrect, impractical, or poorly designed holes and underground spaces. | High | Open |
 | 4 | Holes and hills | When a tunnel intersects terrain like a hill... (see bug image 1) | High | Partial — see verification above |
 | 5 | Flight descent | Example Blackbox CSV descent appears as steps rather than a slope. Smoothing is implemented; compare the rendered path with the video. | High | Implemented — visual check pending |
-| 6 | Overlapping roads | Two roads drawn over each other ... zig-zag trough ... (see bug image 2) | High | Partial — see verification above |
+| 6 | Overlapping roads | Two roads drawn over each other ... zig-zag trough ... (see bug image 2) | High | Implemented — visual check pending |
 
 ## Bando Villetta — Specs
 
@@ -46,7 +46,7 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 | 1 | Fix welcome flow | Correct welcome tour termination and root-page behavior. | High | TBC |
 | 2 | Redesign holes and underground areas | Review gallery, holes, underbasements, hills, geometry, and walkability. | High | TBC |
 | 3 | Verify flight descent | Compare the example CSV path with the video (bug 5). | High | Pending |
-| 4 | Finish road overlaps | Add road-class priority and remove overlap flicker; verify slopes in both drawing orders (bug 6). | High | Open |
+| 4 | Finish road overlaps | Add road-class priority and remove overlap flicker; verify slopes in both drawing orders (bug 6). | High | Implemented — visual check pending |
 | 5 | Validate Bando Villetta dimensions | Compare measurements with photos and establish tolerances. | High | Pending |
 | 6 | Implement Bando geometry | Apply verified measurements to the 3D model. | Medium | Pending |
 | 7 | Multipath racing mode | Plan and implement racing across multiple paths. | Future | Planned |
