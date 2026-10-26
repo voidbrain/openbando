@@ -61,7 +61,7 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 3). Ori
 | 8 | Upload support | 1 device version: Enable uploading of multiple paths; should be distincted so maybe ditch color as speed and use one foreach. "Closed loops" flag enable loop counting / best lap | Future | Planned |
 | 9 | Multiuser racing mode | Enable uploading of multiple paths from different devices on shared bando; should, should see others as ghosts | Future | Planned |
 | 10 | Multiuser live racing mode | Enable multiple paths from different devices on shared bando using live multiple stream links; (example 3 squirrelcast broadcast on diff urls. ) | Future | Planned |
-| 11 | Mascotte | Complete mascotte animated gif and update title: title should be big block wall of text as popular today. Mascotte (use the pixel guy in mascotte images folder, radio remove antenna, please note in animation radio must be facing guy, not ground). Mascotte should: - look around (left right)<br>  - run right (on place while drone at ground shifting left)<br>  - low,drone at ground - sit, drone at ground<br>  - drone up<br>  - jump winning pose<br>  - drone flies away right.<br> repeat. | Future | Planned |
+| 11 | Mascotte | Pixel pilot/drone, 16 keyframe PNGs, 16-second GIF, Welcome animation and stacked title. Character/equipment rules and extension workflow: [character bible](../mascot/README.md). | Future | Implemented — visual review pending |
 
 ## Visual references
 

@@ -308,3 +308,9 @@ npm run check:i18n                        # every UI text has its Italian
 - Greenhouse `BuildingSpec.ribSpacing` optionally sets a measured pitch; absent = the old evenly spaced ~2.5 m ribs. `vaultK` sets the ellipse crown (`width / 2 * vaultK + baseY`), not `height`. Bare frames are intact; only glazed frames get a torn stretch.
 - Store vault crown is wall height + `(width / roofCount / 2) * vaultK` when `roofTurn` is true; `roofRise` alone does not set a barrel crown. Annex slabs are centred on `baseY` with thickness 0.20 m; a measured underside of 6.20 m means baseY 6.30 m.
 - `abando/cage-ladder` v2 is the reusable open cage, not a solid cylinder. Refresh Villetta's fixture from this block, never maintain an independent ladder shape list. Regenerate Playground and bump its release when this shared placement changes.
+
+## Pixel mascot
+
+- `docs/mascot/README.md` is the character bible. Do not replace the approved coarse pixel direction with smooth chibi art. Radio: ergonomic, mostly black, orange details, no antenna, controls face the pilot. Goggles: continuous 360° head strap. Cap emblem black; shirt emblem white. Drone: exposed-prop freestyle quad.
+- `public/mascot/timeline.json` drives `core/mascot.ts` and `tools/mascot/build.py` (Pillow). Keep generated poses/GIF in step. Preserve reviewed source rectangles: the imagegen master is not an exact grid.
+- `ui/mascot.ts` uses the shared frame loop only while Welcome is shown, with Play/Pause, reduced-motion and a still fallback. Decorative art never appears over the flight/editor work surfaces. Keep its design-system exception scoped to Welcome.
