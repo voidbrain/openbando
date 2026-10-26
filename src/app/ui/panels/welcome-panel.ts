@@ -83,7 +83,7 @@ const PILLARS: readonly Pillar[] = [
         <footer>
           <button class="btn primary" (click)="showcase()" data-tour="welcome-tour">▶ Watch <span translate="no">Welcome</span></button>
           <button class="btn" (click)="go(['guide'], false)">Guide me</button>
-          <button class="btn" (click)="layout.setVisible('features', true)">Explore features</button>
+          <button class="btn" (click)="layout.setVisible('features', true)">Features</button>
           <span class="grow"></span>
           <span class="dim small">No account needed. Your logs, videos and places stay on this computer.</span>
         </footer>
@@ -104,7 +104,7 @@ const PILLARS: readonly Pillar[] = [
       display: block;
       margin: 0;
       font-family: var(--mono);
-      font-size: clamp(9px, 1.55vw, 22px);
+      font-size: clamp(5px, 0.9vw, 15px);
       font-weight: 900;
       line-height: 1;
       white-space: pre;
@@ -113,7 +113,7 @@ const PILLARS: readonly Pillar[] = [
     @media (max-width: 760px) {
       .brand { flex-direction: column; align-items: stretch; }
       .brand app-mascot { flex-basis: auto; align-self: center; }
-      header h2 .wordmark { font-size: clamp(8px, 2.6vw, 18px); }
+      header h2 .wordmark { font-size: clamp(5px, 1.25vw, 10px); }
     }
     header p {
       margin: 4px 0 0;

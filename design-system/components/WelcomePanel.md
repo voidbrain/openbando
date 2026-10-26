@@ -21,4 +21,4 @@ themselves"), no feature lists, no superlatives.
 
 Source: `src/app/ui/panels/welcome-panel.ts` (films: `public/welcome/`, `npm run films`).
 
-The Welcome-only pixel mascot sits beside the title. This is the explicit decorative-motion exception requested by the mascot task: black/orange artwork, no new UI colours. Use the shared timeline, visible Play/Pause control, still fallback and reduced-motion support. On narrow panels keep the title readable and let the illustration shrink. Sources/rules: `docs/mascot/README.md`.
+The Welcome-only pixel mascot sits beside the title. This is the explicit decorative-motion exception requested by the mascot task: black/orange artwork, no new UI colours. Use the shared timeline, still fallback and reduced-motion support. On narrow panels keep the title readable and let the illustration shrink. Sources/rules: `docs/mascot/README.md`.

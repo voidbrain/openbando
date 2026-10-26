@@ -34,6 +34,13 @@ for i,name in enumerate(['confused-a'],16):
     frame.alpha_composite(confused,((128-confused.width)//2,120-confused.height))
     frame.save(OUT/'poses'/f'{i:02}-{name}.png',optimize=True)
     poses.append(frame)
+poke=Image.open(ROOT/'docs/mascot/poke-source.png').convert('RGBA')
+poke=poke.crop(poke.getchannel('A').point(lambda a:255 if a>100 else 0).getbbox())
+poke.thumbnail((110,86),Image.Resampling.NEAREST)
+frame=Image.new('RGBA',(128,128))
+frame.alpha_composite(poke,((128-poke.width)//2,120-poke.height))
+frame.save(OUT/'poses'/'17-poke.png',optimize=True)
+poses.append(frame)
 drone=Image.open(ROOT/'docs/mascot/drone-source.png').convert('RGBA')
 drone=drone.crop(drone.getchannel('A').point(lambda a:255 if a>100 else 0).getbbox())
 drone.thumbnail((64,48),Image.Resampling.NEAREST)
@@ -53,7 +60,7 @@ for ms in range(0,t['duration'],100):
     pilot=poses[idx]
     if phase.get('mirror'):pilot=pilot.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
     frame=Image.new('RGBA',(320,160));jump=round(-18*math.sin(u*math.pi)) if phase.get('jump') else 0
-    frame.alpha_composite(pilot,(24,24+jump))
+    frame.alpha_composite(pilot,((36 if phase['name'].startswith('poke-') else 24),24+jump))
     x,y,x1,y1=phase['drone'];dx=round(x+(x1-x)*u);dy=round(y+(y1-y)*u)
     if phase.get('droneVisible',True):
         quad=right if phase['name']=='fly-out' else drone
@@ -75,4 +82,4 @@ for f in frames:
     q=f.convert('RGB').quantize(palette=palette,dither=Image.Dither.NONE)
     q.paste(255,mask=f.getchannel('A').point(lambda a:255 if a<128 else 0));q.info['transparency']=255;gif.append(q)
 gif[0].save(OUT/'openbando-mascot.gif',save_all=True,append_images=gif[1:],duration=100,loop=0,transparency=255,disposal=2,optimize=False)
-print('17 pose PNGs, poster, drone, contact sheet and shared-timeline GIF exported')
+print('18 pose PNGs, poster, drone, contact sheet and shared-timeline GIF exported')

@@ -48,6 +48,15 @@ describe('exact underground cuts', () => {
       ),
     ).toBeCloseTo(376, 4);
   });
+  it('removes coplanar terrain at a basement ceiling without retaining green triangles', () => {
+    const v = volume();
+    v.ceiling = 0;
+    const out = cutUnderground(new THREE.PlaneGeometry(20, 20).rotateX(-Math.PI / 2), [v]);
+    expect(area(out)).toBeCloseTo(376, 4);
+    const mesh = new THREE.Mesh(out, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }));
+    const ray = new THREE.Raycaster(new THREE.Vector3(0, 10, 0), new THREE.Vector3(0, -1, 0));
+    expect(ray.intersectObject(mesh)).toHaveLength(0);
+  });
   it('clips rotated mouths by their real shape and preserves terrain outside them', () => {
     const v = volume();
     v.outline = tunnelOutline({ x: -3, z: -3 }, { x: 3, z: 3 }, 3);

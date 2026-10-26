@@ -19,6 +19,15 @@ describe('mascot timeline', () => {
     expect(mascotFrame(3000).droneVisible).toBe(true);
     expect(mascotFrame(4300).droneX).toBeLessThan(mascotFrame(2600).droneX);
     expect(mascotFrame(8000).pose).toBe(16);
+    const pokes = timeline.phases.filter(p => p.name.startsWith('poke-'));
+    expect(pokes.map(p => p.poses[0])).toEqual([17, 17]);
+    for (const p of pokes) {
+      const frame = mascotFrame(p.start);
+      expect(frame.droneY).toBe(132);
+      expect(frame.propellersSpinning).toBe(false);
+    }
+    const sit = timeline.phases.find(p => p.name === 'sit-before-takeoff')!;
+    expect(mascotFrame(sit.start).pose).toBe(9);
     const takeoff=timeline.phases.find(p=>p.name==='takeoff')!;
     const flight=timeline.phases.find(p=>p.name==='fly-out')!;
     expect(mascotFrame(takeoff.start).propellersSpinning).toBe(true);
