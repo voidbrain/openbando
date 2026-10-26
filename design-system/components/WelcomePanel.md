@@ -5,7 +5,7 @@ The first thing a visitor sees, over the empty world turning slowly: what OpenBa
 
 ## Use
 
-- Head: the name **OpenBando** (26 px, 600), the tagline "Build, Fly, Share." in `accent` (18 px, 600), one `dim`
+- Head: the stacked **Open / Bando** title (responsive 42–88 px, 900), the tagline "Build, Fly, Share." in `accent` (18 px, 600), one `dim`
   line under it.
 - Three columns, Build / Fly / Share (one column under 760 px): a bordered card (`line`, `radius`) with a 16:10 film
   (muted, looped, no controls; dimmed until its column is in focus), a 17 px title, two or three lines of text, and
@@ -20,3 +20,5 @@ Plain and concrete, for pilots: what you do and what you get ("Drop your Blackbo
 themselves"), no feature lists, no superlatives.
 
 Source: `src/app/ui/panels/welcome-panel.ts` (films: `public/welcome/`, `npm run films`).
+
+The Welcome-only pixel mascot sits beside the title. This is the explicit decorative-motion exception requested by the mascot task: black/orange artwork, no new UI colours. Use the shared timeline, visible Play/Pause control, still fallback and reduced-motion support. On narrow panels keep the title readable and let the illustration shrink. Sources/rules: `docs/mascot/README.md`.

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 330" role="img" aria-labelledby="title desc">
+  <title id="title">OpenBando</title>
+  <desc id="desc">Open and Bando stacked in large tightly spaced block lettering. Build, Fly, Share.</desc>
+  <rect width="600" height="330" rx="12" fill="#141715"/>
+  <g fill="#f2f4ef" font-family="Arial Black,Arial,Helvetica,sans-serif" font-weight="900" font-size="154" letter-spacing="-10">
+    <text x="28" y="139" textLength="530" lengthAdjust="spacingAndGlyphs">OPEN</text>
+    <text x="28" y="273" textLength="530" lengthAdjust="spacingAndGlyphs">BANDO</text>
+  </g>
+  <text x="34" y="310" fill="#f2f4ef" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700" letter-spacing="5">BUILD, FLY, SHARE.</text>
+</svg>

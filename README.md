@@ -1,5 +1,12 @@
 # OpenBando
 
+<table><tr>
+<td width="50%"><img src="docs/mascot/wordmark.svg" alt="Open Bando — Build, Fly, Share." width="500" /></td>
+<td width="50%"><a href="docs/mascot/README.md"><img src="public/mascot/openbando-mascot.gif" alt="Pixel FPV pilot and black-and-orange freestyle drone: look around, run, sit, take off and celebrate." width="500" /></a></td>
+</tr></table>
+
+[Still mascot](public/mascot/poster.png) · [Pose keyframes and character rules](docs/mascot/README.md)
+
 **Build, Fly, Share.** A browser app for **FPV pilots who fly abandoned places** ("bandos"): build the place in 3D from the
 map, fly it (replay your real flights from Betaflight Blackbox logs and their DVR, or the simulator with your radio), and
 share it, with or without its address.
@@ -190,3 +197,7 @@ For more information on using the Angular CLI, including detailed command refere
 ### Villetta survey model
 
 The place-hidden Villetta example now includes the measured façade widths and panel heights, 8 m store roof crowns, a 9.30 m elliptical greenhouse with 4.61 m rib spacing, and the tall annex with a first-floor walkway around its central void. The blue ladder uses the reusable open-cage library block. Open a fresh example copy for release 3; edited copies remain yours. Measurements, photo interpretations and unmeasured details are recorded in the [working plan](docs/working-plan/working-plan.md).
+
+### Pixel mascot
+
+Welcome includes the pixel pilot and freestyle quad with a pauseable animation and reduced-motion still. [Character bible and keyframes](docs/mascot/README.md) define equipment orientation, the 360° goggle strap, palette, choreography and rules for new poses. The [animated GIF](public/mascot/openbando-mascot.gif) is generated from the same timeline as the app.

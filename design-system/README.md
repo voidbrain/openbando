@@ -54,7 +54,7 @@ OpenBando is a dark, dense instrument for FPV pilots: a 3D map and site editor, 
 ### States and motion
 
 - Hover: one step lighter (`control-hover`) or a white wash. Disabled: 45% opacity. Selected: `accent` border or fill.
-- Motion is functional only: a panel's 0.7s fade and rise when it opens (where it appears is where it stays), the toast's 0.2s rise and fade, the 0.8s spinner, and the guided tour's cursor, click ring and target outline (they show where the action is). No decorative animation.
+- Motion is functional only: a panel's 0.7s fade and rise when it opens (where it appears is where it stays), the toast's 0.2s rise and fade, the 0.8s spinner, and the guided tour's cursor, click ring and target outline (they show where the action is). No decorative animation outside the explicitly requested Welcome mascot; that loop has a pause control and reduced-motion still.
 - Focus: the app relies on the browser's default focus ring today. New work should give interactive elements a visible 2px `accent` outline (about 11:1 on `panel-solid`) so it meets WCAG AA.
 
 ### Layering
@@ -65,11 +65,11 @@ OpenBando is a dark, dense instrument for FPV pilots: a 3D map and site editor, 
 
 - Tool icons are the app's own: plain outlines on a 24 × 24 grid, drawn at 20px, stroke 1.7, round caps and joins, `currentColor`. Dashed strokes (2.5 2.5) mean "area" or "to be added"; small filled dots mean trees or points. They are `TOOL_ICONS` in `src/app/ui/studio/tool-icon.ts`, drawn by `<app-tool-icon name="…">`; a new tool gets a new entry there.
 - Window chrome uses Unicode glyphs, not icons: ⠿ grip, ▾ / ▸ collapse, ◐ transparent, ▲ structure.
-- No emoji, no icon font, no illustration.
+- No emoji or icon font. The Welcome pixel mascot is the sole decorative illustration exception; see `docs/mascot/README.md`.
 
 ## Logo
 
-There is no logo in the codebase: set the name "OpenBando" in the `sans` family at 600 weight. Do not draw a mark.
+Keep the wordmark in the system `sans` family. Welcome uses a bold stacked Open / Bando title next to the pixel mascot; instrument/window titles retain the existing small type. Do not add a separate vector logo.
 
 ## Components
 

@@ -6,6 +6,7 @@ import { PanelPlacer } from '../../services/panel-placer.service';
 import { LayoutStore } from '../../state/layout.store';
 import type { PanelId } from '../panel-defs';
 import { Panel } from '../panel/panel';
+import { Mascot } from '../mascot';
 
 /** One of the three columns: what it is about, its short film, and where to start. */
 interface Pillar {
@@ -53,12 +54,12 @@ const PILLARS: readonly Pillar[] = [
  */
 @Component({
   selector: 'app-welcome-panel',
-  imports: [Panel],
+  imports: [Panel, Mascot],
   template: `
     <app-panel id="welcome">
       <div class="welcome">
         <header>
-          <h2>OpenBando</h2>
+          <div class="brand"><h2 translate="no"><span>Open</span><span>Bando</span></h2><app-mascot /></div>
           <p class="tag">Build, Fly, Share.</p>
           <p class="dim">Your bandos in 3D, and your flights back inside them.</p>
         </header>
@@ -94,10 +95,16 @@ const PILLARS: readonly Pillar[] = [
       gap: 14px;
       padding: 4px 6px 2px;
     }
+    .brand { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .brand app-mascot { flex: 0 1 320px; min-width: 0; }
+    header h2 span { display: block; }
     header h2 {
       margin: 0;
-      font-size: 26px;
-      letter-spacing: 0.01em;
+      font-size: clamp(42px, 7vw, 88px);
+      font-weight: 900;
+      line-height: 0.85;
+      text-transform: uppercase;
+      letter-spacing: -0.06em;
     }
     header p {
       margin: 4px 0 0;
