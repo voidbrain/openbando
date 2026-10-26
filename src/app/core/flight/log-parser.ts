@@ -140,19 +140,29 @@ function parseCsv(text: string): { pts: GeoSample[]; tel: Telemetry | null } {
 }
 
 /**
- * A barometer trace made usable: prop wash in flips throws spikes of tens of metres into it. A running median over 7
- * fixes (~0.7 s at 10 Hz) drops the spikes and keeps real climbs, then no step may be faster than `maxRate` m/s.
+ * A barometer trace made usable: prop wash in flips throws spikes of tens of metres into it, and it jitters a metre or
+ * two around any climb or descent. A running median over 7 fixes (~0.7 s at 10 Hz) drops the spikes, a centred mean
+ * over 7 then turns the median's flat runs into a slope (alone, the median drew a steady descent as a staircase), and
+ * no step may be faster than `maxRate` m/s.
  */
 export function cleanHeights(h: readonly number[], t: readonly number[], maxRate = 25): number[] {
+  // windows centred on the fix, narrower at the ends
+  const around = (a: readonly number[], i: number, half: number): number[] => {
+    const k = Math.min(half, i, a.length - 1 - i);
+    return a.slice(i - k, i + k + 1);
+  };
   const med = h.map((_, i) => {
-    const k = Math.min(3, i, h.length - 1 - i); // a window centred on the fix, narrower at the ends
-    const w = h.slice(i - k, i + k + 1).sort((a, b) => a - b);
+    const w = around(h, i, 3).sort((a, b) => a - b);
     return w[w.length >> 1]!;
   });
-  const out = [med[0]!];
-  for (let i = 1; i < med.length; i++) {
+  const mean = med.map((_, i) => {
+    const w = around(med, i, 3);
+    return w.reduce((s, v) => s + v, 0) / w.length;
+  });
+  const out = [mean[0]!];
+  for (let i = 1; i < mean.length; i++) {
     const lim = maxRate * Math.max(0.02, t[i]! - t[i - 1]!);
-    out.push(out[i - 1]! + Math.max(-lim, Math.min(lim, med[i]! - out[i - 1]!)));
+    out.push(out[i - 1]! + Math.max(-lim, Math.min(lim, mean[i]! - out[i - 1]!)));
   }
   return out;
 }
