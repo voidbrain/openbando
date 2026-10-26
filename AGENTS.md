@@ -295,4 +295,9 @@ npm run check:i18n                        # every UI text has its Italian
 
 ## Maintenance status
 
-- Keep numbered bug status and pending visual checks in [the working plan](docs/working-plan/working-plan.md). Bugs 4 and 6 are partial; bug 5 has automated coverage but awaits visual confirmation. Do not equate a passing unit test with a verified visual fix.
+- Keep numbered bug status and pending visual checks in [the working plan](docs/working-plan/working-plan.md). Bug 4 is partial; bugs 5 and 6 have automated coverage but await visual confirmation. Do not equate a passing unit test with a verified visual fix.
+
+## Road overlap rules
+
+- `orderedRoads` / `roadPriority` in `core/layers.ts` define railway > road > track > path, with stable same-class ties. Both `levelRoads` and the scene builder use this order. Each terrain vertex is written once from an untouched grid; overlapping core strips choose the higher class, shoulders blend from the original height.
+- Road meshes sample across their width at <=1 m spacing, use explicit draw order and `depthWrite: false`. On terrain keep `depthTest: true` so hills and buildings hide them; flat sites retain the existing decal depth-test policy. Never fix road-road flicker by disabling terrain occlusion or by accumulating arbitrary height offsets.
