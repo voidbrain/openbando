@@ -64,7 +64,7 @@ this was applied — needs human verification (TBC). Automated checks so far: `c
 - The mask is grown outwards by one ring of vertices that lie inside the un-inset outline and are crossed by the surface (the ground just outside is still between floor and ceiling). This turns the ragged diagonal band into aligned, contiguous portal quads whose edges follow the tunnel walls, so the hole lines up with the tube and the hill keeps its shape over and beside it.
 - Basements sit on their levelled pad (ceiling = pad height), so the same rule gives one tidy rectangular opening around each basement instead of scattered cut cells.
 
-**Tests:** `src/app/core/underground.spec.ts` — a tunnel through a hill now yields exactly two aligned portal blocks (west/east mouths, flush with the tube's ends and within its width), the hill top over the middle stays uncut, cells beside the tunnel are never cut, and a shallow buried box gets portals while a deep one under a high hill gets none.
+**Tests:** `src/app/core/underground.spec.ts` — a tunnel through a hill cuts only where the ground passes through the inside: exactly the two mouths (west/east) are flagged, the hill top over the middle stays uncut and cells beside the tunnel are never cut; a deep tunnel under the ridge gets no cut at all.
 
 ## Bug 6 — Solution (overlapping roads)
 
@@ -74,7 +74,7 @@ this was applied — needs human verification (TBC). Automated checks so far: `c
 
 **Fix:** all roads are now levelled together in a single pass (`levelRoads` in `src/app/core/layers.ts`): every affected cell takes the height of the nearest point of the nearest road (sampled from the untouched grid), blended over 2 m beside the strips. One crossing cannot contradict itself any more: both roads meet at a common, smooth level patch. `levelRoad` remains as the single-road wrapper.
 
-**Tests:** `src/app/core/layers.spec.ts` — levelling two crossing roads leaves the crossing flat (no dip below either centre line) and the ground still climbs along the roads away from it.
+**Tests:** `src/app/core/layers.spec.ts` — levelling two crossing roads in one pass leaves the crossing flat (no dip below the centre point along either road) and both roads keep their slope away from it. `siteGround` now calls `levelRoads` once for all roads.
 
 ## Bando Villetta — Specs
 
