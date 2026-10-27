@@ -18,11 +18,18 @@ test('warehouse terrain seam visual capture', async ({ page }, info) => {
   expect(box).not.toBeNull();
   // Let the scheduled rebuild and the software renderer complete before capturing each view.
   await page.waitForTimeout(1500);
+  // Frame the building closely and lower the camera so the wall/terrain join is visible.
+  await page.mouse.move(box!.x + box!.width * 0.2, box!.y + box!.height * 0.3);
+  await page.mouse.wheel(0, -450);
+  await page.mouse.down();
+  await page.mouse.move(box!.x + box!.width * 0.2, box!.y + box!.height * 0.3 - 65, { steps: 8 });
+  await page.mouse.up();
+  await page.waitForTimeout(500);
   for (let i = 0; i < 4; i++) {
     await info.attach(`warehouse-angle-${i + 1}`, { body: await canvas.screenshot(), contentType: 'image/png' });
-    await page.mouse.move(box!.x + box!.width * 0.5, box!.y + box!.height * 0.5);
+    await page.mouse.move(box!.x + box!.width * 0.2, box!.y + box!.height * 0.3);
     await page.mouse.down();
-    await page.mouse.move(box!.x + box!.width * 0.68, box!.y + box!.height * 0.5, { steps: 8 });
+    await page.mouse.move(box!.x + box!.width * 0.38, box!.y + box!.height * 0.3, { steps: 8 });
     await page.mouse.up();
     await page.waitForTimeout(500);
   }

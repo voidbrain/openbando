@@ -179,7 +179,7 @@ export const SNIPPETS: readonly Snippet[] = [
     hover: ['ai'],
     beats: [
       { say: 'The AI assistant edits from plain words. It runs in your browser, or on your own server.', actions: [hook('select', SHED), hook('ai', 'on'), click('ai'), wait(1400)] },
-      { say: 'Ask for a change to the selected building.', actions: [type('ai-input', 'a door in the middle of the north wall, and 8 windows on the east side'), press('ai-send'), hook('ai', 'door'), wait(1800)] },
+      { say: 'Ask for a change to the selected building.', actions: [type('ai-input', 'North door, 8 east windows'), press('ai-send'), hook('ai', 'door'), wait(1800)] },
       { say: 'What changed is listed for review, and Undo is one click. The app reports what it really did, not what the model claims.', actions: [p('ai-changes'), wait(3200), click('ai'), hook('ai', 'off')] },
     ],
   },
