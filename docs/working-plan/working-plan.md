@@ -201,3 +201,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — indoor browser regression
 
 - The focused browser suite now exercises placing a basement column in 2D, switching to 3D with −1 selected, an axe scan of the 3D view, and switching between G and −1 without leaking the column. The focused browser job passed in GitHub Actions run 40502283521; manual 3D placement, handles, lighting and gallery/warehouse visual checks remain open. The cloud browser could inspect the 2D basement controls but its WebGL could not start.
+
+### Follow-up — guide browser CI contention
+
+- The complete browser suite is distributed across four independent GitHub runners with one Playwright worker each, to reduce software-WebGL contention. All tests and existing timeouts remain enabled; reports are retained per shard on failure. Verify the next complete CI run before closing the reported guide and showcase timeouts.

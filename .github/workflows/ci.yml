@@ -58,6 +58,10 @@ jobs:
     if: ${{ github.event_name == 'pull_request' || inputs.e2e == true }}
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
 
@@ -74,13 +78,15 @@ jobs:
       - name: Install the browser
         run: npx playwright install --with-deps chromium
 
+      # WebGL uses software rendering on GitHub runners. Give each browser its own runner while distributing
+      # the complete suite across shards; the tests and their timeouts remain unchanged.
       - name: Guide steps and accessibility
-        run: npm run e2e
+        run: npx playwright test --shard=${{ matrix.shard }}/4 --workers=1
 
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shard }}
           path: playwright-report/
           retention-days: 7
 
