@@ -24,7 +24,7 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 
 ## Bando Villetta — Specs
 
-Measurements applied to `library/bandos/villetta-no-place.json` (release 5). Original footprint positions, dimensions and rotations remain; no geographic location is published. iPhone measurements are approximate, not survey-grade.
+Measurements applied to `library/bandos/villetta-no-place.json` (release 7). Original footprint positions, dimensions and rotations remain; no geographic location is published. iPhone measurements are approximate, not survey-grade.
 
 | # | Element | Applied measurement | Interpretation / evidence | Status |
 |---|---|---|---|---|
@@ -43,24 +43,24 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 5). Ori
 - `bando-img/IMG_4341.JPG`: broad steel greenhouse frame, approximated with a parabolic arch. Bare ribs remain intact; the artificial torn-glass deformation is only used on glazed frames.
 - `bando-img/IMG_4344.JPG`: tall annex colonnade and pitched terracotta roof. Replace the old barrel roof with a shallow gable; retain the upper storey's 3.60 m height and 2 m roof rise because no new dimensions establish them.
 - `bando-img/IMG_4352.DNG`: store interior, lower façade panels and the open blue ladder cage. Use the real ring/rail silhouette, not a solid tube or box hood.
-- Annex double solid partitions and short end returns were removed. The remaining door-bearing wall segments extend to the 6.20 m underside of the first-floor slab; the greenhouse-facing end is open with columns. Exact roof pitch, column thicknesses and the east walkway require further measurements. The retained rectangular outer footprint is not claimed to be a full measured reconstruction.
+- Release 6 restores the south interior partition, three eastern door-separated wall sections and the first-floor end wall; review their placement against the photos. The longer door-bearing wall segments extend to the 6.20 m underside of the first-floor slab. Exact roof pitch, column thicknesses and the east walkway require further measurements. The retained rectangular outer footprint is not claimed to be a full measured reconstruction.
 - Fresh copies get this release; existing edited copies are not overwritten. Playground also places the upgraded shared ladder.
 
 ## Next Steps
 
 | # | Task | Details | Priority | Status |
 |---|---|---|---|---|
-| 1 | Fix welcome flow | Correct welcome tour termination and root-page behavior. | High | TBC |
+| 1 | Fix welcome flow | Correct welcome tour termination and root-page behavior. | High | Implemented — browser check pending |
 | 2 | Redesign holes and underground areas | Review gallery, holes, underbasements, hills, geometry, and walkability. | High | TBC |
 | 3 | Verify flight descent | Compare the example CSV path with the video (bug 5). | High | Pending |
 | 4 | Finish road overlaps | Add road-class priority and remove overlap flicker; verify slopes in both drawing orders (bug 6). | High | Implemented — visual check pending |
 | 5 | Validate Bando Villetta dimensions | Measurements applied with explicit photo interpretations above; check unmeasured east return, roof pitch and interior wall ends. | High | Further survey pending |
-| 6 | Implement Bando geometry | Survey refinement applied; compare a fresh release-3 copy with flight video and the reference photos. | Medium | Implemented — visual check pending |
+| 6 | Implement Bando geometry | Survey refinement applied; compare a fresh release-7 copy with flight video and the reference photos. | Medium | Implemented — visual check pending |
 | 7 | Multipath racing mode | Separate race clock, per-pilot names/colours/offsets, simultaneous 3D ghosts and shared start gate. | Medium | Implemented — field verification pending |
 | 8 | Upload support | Existing multi-file log upload reused; closed-loop lap/best-lap estimates, local-coordinate race package export/import. | Medium | Implemented — field verification pending |
 | 9 | Multiuser racing mode | Server-free race-file exchange plus optional self-hosted HTTP/SSE room relay; same exported bando/model scale required. | Medium | Implemented — relay deployment and device verification pending |
 | 10 | Multiuser live racing mode | Multiple independent WS/SSE GPS sources, stale detection and retained recordings; opt-in room broadcast at ~1 Hz. SquirrelCast video URLs alone are not telemetry. | Medium | Implemented — real stream/device verification pending |
-| 11 | Mascotte | Pixel pilot/drone, 17 keyframe PNGs, 18.1-second GIF, Welcome animation and large ASCII wall. Confused seated pose added; drone hidden until takeoff. Character/equipment rules and extension workflow: [character bible](../mascot/README.md). | Future | Implemented — visual review pending |
+| 11 | Mascotte | Pixel pilot and drone, 19 poses, 19.7-second GIF, grounded pokes with a retraction frame, and approved concrete-and-brick pixel wordmark. [Character rules](../mascot/README.md) and [wordmark guide](../mascot/wordmark-style-guide.md). | Future | Implemented — browser visual review pending |
 
 ## Visual references
 
@@ -73,7 +73,7 @@ See [racing setup and server decision](../racing/README.md). No server is needed
 
 Before declaring field-ready: open the same exported hidden bando on two devices, align separate pilots, compare offsets/lap estimates with a known clock, connect two real GPS/SquirrelCast-associated telemetry bridges, stop one feed and verify stale hiding, test relay disconnect/rejoin and GPS loss, and inspect crowded ghost paths in every camera. Shared sessions are for trusted token holders, not public ranked races. The selected-flight/video and simulator flows still require a manual regression check. Local Chromium installation failed with a truncated download; GitHub CI run `40362635101` passed the focused race-browser tests (two-log export/import and two independent mocked telemetry URLs, including axe), all 434 unit/service/render tests, three relay integration tests, types, translations, example consistency and production build. The old full-guide job remains skipped by its existing guard.
 
-## Follow-up regression work — 26 October 2026
+## Follow-up regression work — 26 October 2026 (historical; later corrections below take precedence)
 
 1. **Hills / holes (bugs 3–4):** replace the flattened vault rotation with an extruded upright section; cut terrain and roads precisely against the interior rather than removing whole surrounding cells. Shell colliders follow the curved section and leave its ends open. Verify Playground from above, front, rear and both sides before closing.
 2. **Basement:** selectable −1 preview, depth, independent rectangle dimensions, perimeter and interior walls; changes survive save/import. Exact terrain boundary removes the old moat. Arbitrary polygon vertex manipulation and full indoor-tool parity remain open.
@@ -89,14 +89,14 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 - The mascot loop now searches, runs with the grounded drone, sits perplexed, watches takeoff, jumps and celebrates before the drone exits. The Welcome pause button was removed as requested; reduced-motion preference still shows a still image.
 - **Open:** visually verify the right-facing drone, propeller animation, complete sequence and responsive Features panel in a browser.
 
-### Follow-up — Welcome and underground surfaces
+### Follow-up — Welcome and underground surfaces (historical)
 
 - The Welcome wordmark is a single-line ASCII wall; the Features button is labelled “Features”.
 - The pilot pokes the grounded quad twice after the perplexed pose, then sits as it takes off. The grounded quad and subsequent flight are shifted 20 px left. The poke keyframe is aligned so the finger reaches the drone.
 - Terrain triangles coplanar with a basement ceiling are removed; the road uses the rendered terrain triangles and depth bias, and building walls use depth bias to reduce surface flicker. Visual browser checks of the hill road and warehouse remain pending.
 - Villetta release 5 uses a parabolic greenhouse profile, retaining 9.30 m crown height, 4.61 m rib spacing and the current footprint. Open a fresh example copy to see release 5; existing edited copies are not overwritten.
 
-### Villetta façade and annex correction
+### Villetta façade and annex correction (historical; see release 6 below)
 
 - The greenhouse-facing end of the annex is open; the duplicate unbroken interior partitions and short end returns are removed. Door-bearing outer wall segments stop at the first-floor slab underside.
 - The main store's site-north facade is local `e` after the store rotation. Its covered section has two windows; its exposed eastern section has one 4.64 m door. Window positions are estimates within the covered section, pending precise measurements.
@@ -114,10 +114,15 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 #### Outstanding requests from the 27 October review
 
-- Villetta: verify restored annex walls and their openings against photos; add the greenhouse east end, the 1 m centre roof strip, and an optional cabin for the blue ladder.
+- Villetta: verify restored annex walls and their openings against photos; verify the release 7 greenhouse east frame against IMG_4341 (support dimensions are estimates); add the 1 m centre roof strip and an optional cabin for the blue ladder.
 - Terrain: investigate the gallery road/terrain and warehouse perimeter/terrain flicker; investigate basement lighting. Verify fixes visually from multiple viewpoints.
 - Studio: use consistent compass styling; support indoor editing in 3D and exit indoors on editor close; add editor expansion and a full-height right-docked inspector.
-- Measures: compact expandable labels, selection outside the measure tool with distinct selected colour, and display/interaction in 3D. Review other 2D/3D feature differences.
+- Measures: 2D lines can now be selected in Select mode with a red highlight and compact expandable labels; verify interaction visually. Display and interaction in 3D remain open. Review other 2D/3D feature differences.
 - 3D placement: show the construction line for two-point objects. Add hedge and bramble to the trees tool with click and lasso placement.
 - Flight alignment: disable start/end pins and start angle except at the corresponding video position, and update their explanatory text.
 - Visually review the mascot loop, title, responsive Welcome and restored annex geometry in a browser. Space/Enter tool cancellation currently applies when the editor canvas has keyboard focus.
+
+### Follow-up — greenhouse end and 2D measures
+
+- Villetta release 7 adds an open steel east-end frame based on IMG_4341. Column spacing and rail heights are photo estimates; verify against the actual building. Existing edited copies remain unchanged.
+- In 2D, measure lines can be selected in Select mode, use a contrasting selected colour, and expose their terrain details through an expandable label. The 3D measure view is still open.

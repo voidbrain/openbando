@@ -13,7 +13,8 @@ export class MeasureTool {
   readonly sel = signal<number | null>(null);
   readonly selSeg = computed(() => (this.h.tool() === 'measure' && !this.chain().a ? (this.chain().segs[this.sel() ?? -1] ?? null) : null));
   /** Measure lines only take the pointer while no chain is open (then a click always adds a point). */
-  readonly hit = computed(() => (this.h.tool() === 'measure' && !this.chain().a ? 'stroke' : 'none'));
+  readonly hit = computed(() => ((this.h.tool() === 'measure' || this.h.tool() === 'select') && !this.chain().a ? 'stroke' : 'none'));
+  readonly expanded = signal<number | null>(null);
   /** What the pointer is magnetised to while measuring ('corner', 'tree' ...), or ''. */
   readonly snap = signal('');
   /** The point under the pointer while measuring (the live line follows it). */
@@ -31,6 +32,8 @@ export class MeasureTool {
     const g = this.h.ground();
     return measureLabel(m, g.grid ? g.at : null);
   };
+  readonly flat = (m: Seg): string => measureLabel(m, null);
+  toggleDetails(i: number): void { this.expanded.update((v) => v === i ? null : i); }
 
   /** Where a measure click or hover lands: magnet to elements within ~10 px, else straightened against the building axes. */
   point(raw: Pt): Pt {
@@ -66,6 +69,11 @@ export class MeasureTool {
     e.stopPropagation();
     const m = this.chain().segs[i];
     if (!m) return;
+    if (this.h.tool() !== 'measure') {
+      this.h.pick.set(null);
+      this.sel.set(i);
+      return;
+    }
     const p = this.h.toWorld(e);
     const r = 10 / Math.max(0.01, this.h.ppm());
     if (Math.hypot(p.x - m.a.x, p.z - m.a.z) < r || Math.hypot(p.x - m.b.x, p.z - m.b.z) < r) {
@@ -113,11 +121,13 @@ export class MeasureTool {
     if (i === null) return;
     this.chain.update((m) => ({ segs: m.segs.filter((_, k) => k !== i), a: null, start: null }));
     this.sel.set(null);
+    this.expanded.set(null);
   }
 
   clear(): void {
     this.chain.set({ segs: [], a: null, start: null });
     this.sel.set(null);
+    this.expanded.set(null);
     this.hover.set(null);
   }
 }
