@@ -209,3 +209,8 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — warehouse visual capture
 
 - Browser CI captures four 3D warehouse angles in its Playwright report to help inspect the terrain seam with WebGL. These captures require a completed GitHub run and visual review; they do not establish that the flicker is fixed.
+
+### Follow-up — guide CI and closer warehouse views
+
+- CI run 40504366300 passed the focused browser job and three of four full-suite shards, but the AI-assistant guide timed out twice on the remaining shard. A shorter example prompt retains the same door and window request and reduces simulated typing; this is a candidate mitigation that still needs browser CI verification.
+- The warehouse capture ran on that CI build, but the building was too distant to assess its ground seam. The capture now zooms in and lowers the camera before orbiting; the new views and the actual flicker still need review. Freeform diagonal basement outlines remain open.
