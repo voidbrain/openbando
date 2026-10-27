@@ -13,7 +13,9 @@ test('the showcase link plays to the end', async ({ page }) => {
   const shown = await page.locator('app-panel:not([hidden])').evaluateAll((els) => els.map((e) => `${e.getAttribute('data-id')}${e.classList.contains('ghost') ? '*' : ''}`));
   expect(shown).toEqual(['welcome']);
   await expect(page.getByRole('heading', { name: 'OpenBando', exact: true })).toBeVisible();
-  expect(await page.locator('video').evaluateAll((videos) => videos.every((video) => video.paused))).toBe(true);
+  const replayVideo = page.locator('app-video-panel video');
+  await expect(replayVideo).toHaveCount(1);
+  await expect.poll(() => replayVideo.evaluate((video) => (video as HTMLVideoElement).paused)).toBe(true);
   await page.waitForTimeout(2000);
   await expect(bar).toBeHidden();
   await expect(page.locator('app-panel[data-id=welcome]')).toBeVisible();

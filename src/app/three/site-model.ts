@@ -746,8 +746,12 @@ function buildUnderground(v: UndergroundSpec): THREE.Group {
     // Extrude a real cross-section along the axis. No cylinder Euler rotations that flatten the vault.
     const centre = section.reduce((c,p) => c.add(p), new THREE.Vector2()).multiplyScalar(1/section.length);
     const outer = section.map(p => { const d=p.clone().sub(centre); return p.clone().add(d.normalize().multiplyScalar(v.wall)); });
-    const shell = new THREE.Shape(outer);
-    shell.holes.push(new THREE.Path([...section].reverse()));
+    // A vault has a separate floor slab. Its bottom cross-section edge must not also be
+    // extruded as a shell face: the two coplanar floors produce z-fighting in the portal.
+    const shell = v.shape === 'vault'
+      ? new THREE.Shape([...section.slice(1), section[0]!, outer[0]!, ...outer.slice(1).reverse()])
+      : new THREE.Shape(outer);
+    if (v.shape !== 'vault') shell.holes.push(new THREE.Path([...section].reverse()));
     const geo = new THREE.ExtrudeGeometry(shell, {depth:len,bevelEnabled:false,steps:1});
     // local x = cross-section width, local y = world height, extrusion z = tunnel axis
     const transform = new THREE.Matrix4().set(-dz/len,0,dx/len,axis.a.x, 0,1,0,0, dx/len,0,dz/len,axis.a.z, 0,0,0,1);

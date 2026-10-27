@@ -227,6 +227,18 @@ describe('site model ground layers', () => {
 });
 
 describe('site model underground', () => {
+  it('draws only the slab at the vault floor while retaining the arch above', () => {
+    const s = emptySpec(); s.buildings = []; s.pads = [];
+    s.underground = [{ id: 'vault', name: 'Vault', outline: [{x:-10,z:-4},{x:10,z:-4},{x:10,z:4},{x:-10,z:4}], floor: 0, ceiling: 4.5, shape: 'vault', wall: 0.6 }];
+    const model = buildSiteFromSpec(s);
+    const group = model.group.children.find(o => (o.userData['pick'] as {id?: string} | undefined)?.id === 'vault')!;
+    group.updateMatrixWorld(true);
+    const down = new THREE.Raycaster(new THREE.Vector3(2, 1, 0.5), new THREE.Vector3(0, -1, 0));
+    const floor = down.intersectObject(group, true).filter(hit => Math.abs(hit.point.y) < 0.001);
+    expect(floor).toHaveLength(1);
+    const up = new THREE.Raycaster(new THREE.Vector3(2, 1, 0.5), new THREE.Vector3(0, 1, 0));
+    expect(up.intersectObject(group, true).length).toBeGreaterThan(0);
+  });
   it('cuts the terrain at a tunnel mouth, builds its walls, and the drone floor inside is the tunnel floor', () => {
     const s = spec();
     s.buildings = [];

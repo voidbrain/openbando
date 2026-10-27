@@ -1,5 +1,6 @@
 import { Component, DestroyRef, ElementRef, afterNextRender, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core';
 import { CameraCompass } from '../widgets/camera-compass';
+import { CalibrationStore } from '../../state/calibration.store';
 import type { Flight } from '../../core/models';
 import type { SiteSpec } from '../../core/site-spec';
 import { SiteViewRenderer, type SitePick } from '../../three/site-view';
@@ -20,7 +21,7 @@ import type { BuildingHandle } from '../../three/building-handles';
         }
       </div>
     }
-    @if (!failed()) { <app-camera-compass [camera]="compassCamera" /> }
+    @if (!failed()) { <app-camera-compass [camera]="compassCamera" (orient)="orientCompass($event)" /> }
     @if (failed()) {
       <div class="fail dim">3D view unavailable (WebGL could not start).</div>
     } @else {
@@ -44,7 +45,7 @@ import type { BuildingHandle } from '../../three/building-handles';
     .cap {
       position: absolute;
       left: 8px;
-      bottom: 6px;
+      bottom: 68px;
       background: rgba(10, 16, 12, 0.7);
       padding: 1px 7px;
       border-radius: 6px;
@@ -88,6 +89,8 @@ export class SiteView {
   protected readonly failed = signal(false);
   private readonly cv = viewChild.required<ElementRef<HTMLCanvasElement>>('cv');
   private r: SiteViewRenderer | null = null;
+  private readonly calibration = inject(CalibrationStore);
+  protected orientCompass(angle: number): void { this.r?.orientCompass(angle, this.calibration.rot()); }
   protected readonly compassCamera = () => this.r?.compassCamera ?? null;
   private timer: ReturnType<typeof setTimeout> | undefined;
 

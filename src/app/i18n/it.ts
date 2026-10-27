@@ -27,6 +27,7 @@ export const IT: Readonly<Record<string, string>> = {
   'Expand studio': 'Espandi studio',
   'Restore studio size': 'Ripristina dimensioni studio',
   "North direction": "Direzione nord",
+  "Orient camera: click for north, drag or use arrow keys to turn": "Orienta la camera: clicca per il nord, trascina o usa le frecce per ruotare",
   'Build it. Fly it. Share it.': 'Costruisci. Vola. Condividi.',
   'Turn your favourite places into your own FPV world.': 'Trasforma i tuoi luoghi preferiti nel tuo mondo FPV.',
   'Explore features': 'Scopri le funzioni',

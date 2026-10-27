@@ -1,6 +1,6 @@
 {
  "about": "The Villetta main store shared without its place: no map and no map data, its real ground travels inside. Open a copy, edit it, load your flights: they start on the take-off pad, and pins and the compass fit them.",
- "release": 9,
+ "release": 10,
  "version": 1,
  "id": "example-villetta-no-place",
  "name": "Villetta (place hidden)",
@@ -759,92 +759,92 @@
       },
       {
        "x": 15.02,
-       "z": 27.099,
+       "z": 26.699,
        "size": 0.8
       },
       {
        "x": 30.05,
-       "z": 27.099,
+       "z": 26.699,
        "size": 0.8
       },
       {
        "x": 45.07,
-       "z": 27.099,
+       "z": 26.699,
        "size": 0.8
       },
       {
        "x": 60.1,
-       "z": 27.099,
+       "z": 26.699,
        "size": 0.8
       },
       {
        "x": 75.12,
-       "z": 27.099,
+       "z": 26.699,
        "size": 0.8
       },
       {
        "x": 90.14,
-       "z": 27.099,
+       "z": 26.699,
        "size": 0.8
       },
       {
        "x": 105.17,
-       "z": 27.099,
+       "z": 26.699,
        "size": 0.8
       },
       {
        "x": 120.19,
-       "z": 27.099,
+       "z": 26.699,
        "size": 0.8
       },
       {
        "x": 135.22,
-       "z": 27.099,
+       "z": 26.699,
        "size": 0.8
       },
       {
        "x": 15.02,
-       "z": 28.099,
+       "z": 28.499,
        "size": 0.8
       },
       {
        "x": 30.05,
-       "z": 28.099,
+       "z": 28.499,
        "size": 0.8
       },
       {
        "x": 45.07,
-       "z": 28.099,
+       "z": 28.499,
        "size": 0.8
       },
       {
        "x": 60.1,
-       "z": 28.099,
+       "z": 28.499,
        "size": 0.8
       },
       {
        "x": 75.12,
-       "z": 28.099,
+       "z": 28.499,
        "size": 0.8
       },
       {
        "x": 90.14,
-       "z": 28.099,
+       "z": 28.499,
        "size": 0.8
       },
       {
        "x": 105.17,
-       "z": 28.099,
+       "z": 28.499,
        "size": 0.8
       },
       {
        "x": 120.19,
-       "z": 28.099,
+       "z": 28.499,
        "size": 0.8
       },
       {
        "x": 135.22,
-       "z": 28.099,
+       "z": 28.499,
        "size": 0.8
       },
       {
@@ -1693,18 +1693,7 @@
       "w": false
      },
      "doors": {},
-     "partitions": [
-      [
-       {
-        "x": 3.11,
-        "z": 17.179000000000002
-       },
-       {
-        "x": 49.19,
-        "z": 17.179000000000002
-       }
-      ]
-     ],
+     "partitions": [],
      "roof": "none",
      "roofRise": 2.5,
      "columns": [
@@ -2369,8 +2358,8 @@
     "z": -72.218
    },
    "b": {
-    "x": 45.983,
-    "z": -71.351
+    "x": 77.763,
+    "z": -65.161
    },
    "height": 6.2,
    "thick": 0.3,
@@ -2385,7 +2374,7 @@
     "x": 79.205,
     "z": -77.637
    },
-   "height": 3,
+   "height": 6.2,
    "thick": 0.3,
    "material": "masonry"
   },
@@ -2398,7 +2387,7 @@
     "x": 78.524,
     "z": -71.747
    },
-   "height": 3,
+   "height": 6.2,
    "thick": 0.3,
    "material": "masonry"
   },
@@ -2411,7 +2400,7 @@
     "x": 77.763,
     "z": -65.161
    },
-   "height": 3,
+   "height": 6.2,
    "thick": 0.3,
    "material": "masonry"
   }

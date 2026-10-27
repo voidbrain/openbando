@@ -22,6 +22,7 @@ export class SiteViewRenderer {
   private readonly scene = new THREE.Scene();
   private readonly camera = new THREE.PerspectiveCamera(50, 1, 0.5, 6000);
   get compassCamera(): THREE.Camera { return this.camera; }
+  orientCompass(angle: number, calibration: number): void { this.yaw = (angle - calibration) * Math.PI / 180; }
   private model: SiteModel | null = null;
   private yaw = 0.6;
   private pitch = 0.75;
