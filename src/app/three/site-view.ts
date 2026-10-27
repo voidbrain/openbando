@@ -8,6 +8,7 @@ import { rayGround } from '../core/terrain';
 import { buildMeasureView, type MeasureViewItem } from './measure-view';
 
 import {pickModel,type SitePick} from './site-pick';
+import { floorPoint, indoorSourcePick, indoorViewSpec, type IndoorFloor } from './indoor-view';
 export type {SitePick} from './site-pick';
 
 /**
@@ -30,6 +31,8 @@ export class SiteViewRenderer {
   private framed = '';
   private readonly off: (() => void)[] = [];
   private spec: SiteSpec | null = null;
+  private indoorFloor: IndoorFloor | null = null;
+  drawPlaneY: number | null = null;
   private selection: SitePick | null = null;
   private box: THREE.Box3Helper | null = null;
   private readonly paths: PathRenderer;
@@ -150,7 +153,7 @@ export class SiteViewRenderer {
   }
 
   /** Preview a two-point ground gesture while it is being drawn. */
-  setDrawLine(line: { a: { x: number; z: number }; b: { x: number; z: number }; color: string } | null): void {
+  setDrawLine(line: { a: { x: number; z: number }; b: { x: number; z: number }; color: string; height?: number } | null): void {
     if (!line || !this.model) {
       if (this.drawLine) this.drawLine.visible = false;
       return;
@@ -163,7 +166,7 @@ export class SiteViewRenderer {
     const pts: number[] = [];
     for (let i = 0; i <= 32; i++) {
       const u = i / 32, x = line.a.x + (line.b.x - line.a.x) * u, z = line.a.z + (line.b.z - line.a.z) * u;
-      pts.push(x, this.model.ground.at(x, z) + 0.3, z);
+      pts.push(x, (line.height ?? this.model.ground.at(x, z)) + 0.3, z);
     }
     this.drawLine.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
     (this.drawLine.material as THREE.LineBasicMaterial).color.set(line.color);
@@ -197,16 +200,17 @@ export class SiteViewRenderer {
   }
 
   /** Rebuild from the spec. The camera re-frames only when `frameKey` changes (a different bando). */
-  show(spec: SiteSpec, roofHidden: boolean, frameKey: string, focus: { id: string; li: number } | null = null): void {
+  show(spec: SiteSpec, roofHidden: boolean, frameKey: string, focus: { id: string; li: number } | null = null, indoorFloor: IndoorFloor | null = null): void {
     if (this.model) {
       this.scene.remove(this.model.group);
       dispose(this.model.group);
     }
     this.spec = spec;
-    this.model = buildSiteFromSpec(spec, { merge: true });
+    this.indoorFloor = indoorFloor;
+    this.model = buildSiteFromSpec(indoorFloor ? indoorViewSpec(spec, indoorFloor) : spec, { merge: true });
     this.model.setRoofHidden?.(roofHidden);
     this.model.setGroundStyle(this.groundStyle);
-    if (focus) this.focusFloor(spec, focus);
+    if (focus && !indoorFloor) this.focusFloor(spec, focus);
     this.scene.add(this.model.group);
     this.refreshSelection();
     if (frameKey !== this.framed) {
@@ -234,6 +238,7 @@ export class SiteViewRenderer {
   private groundPoint(e: { clientX: number; clientY: number }): { x: number; z: number } | null {
     const r = this.canvas.getBoundingClientRect();
     this.ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
+    if (this.drawPlaneY !== null) return floorPoint(this.ray.ray, this.drawPlaneY);
     const grid = this.model?.ground.grid;
     if (grid) return rayGround(grid, this.ray.ray.origin, this.ray.ray.direction);
     const p = new THREE.Vector3();
@@ -245,7 +250,7 @@ export class SiteViewRenderer {
     if (!this.model || !this.spec) return null;
     const r = this.canvas.getBoundingClientRect();
     this.ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
-    return pickModel(this.ray,this.model,this.spec);
+    return indoorSourcePick(pickModel(this.ray,this.model,this.spec), this.indoorFloor);
 
 
   }
@@ -275,8 +280,8 @@ export class SiteViewRenderer {
       b.set(new THREE.Vector3(t.x - t.r, 0, t.z - t.r), new THREE.Vector3(t.x + t.r, t.h, t.z + t.r));
     } else {
       this.model.group.traverse((o) => {
-        const p = o.userData['pick'] as SitePick | undefined;
-        if (p && p.kind === sel.kind && (('id' in p && 'id' in sel && p.id === sel.id) || ('i' in p && 'i' in sel && p.i === sel.i))) b.expandByObject(o);
+        const p = indoorSourcePick((o.userData['pick'] as SitePick | undefined) ?? null, this.indoorFloor);
+        if (p && p.kind === sel.kind && (('id' in p && 'id' in sel && p.id === sel.id && (!('li' in p) || ('li' in sel && p.li === sel.li && p.i === sel.i))) || ('i' in p && 'i' in sel && !('id' in p) && p.i === sel.i))) b.expandByObject(o);
       });
     }
     if (b.isEmpty()) return;

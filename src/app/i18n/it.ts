@@ -451,7 +451,7 @@ export const IT: Readonly<Record<string, string>> = {
   // ---- editor header
   '2D': '2D',
   '3D': '3D',
-  '2D edits the plan; 3D just looks around the whole bando': '2D modifica la pianta; 3D mostra tutto il bando',
+  'Edit the model in 2D or 3D': 'Modifica il modello in 2D o 3D',
   'ground': 'terreno',
   'natural': 'naturale',
   'height map': 'mappa altezze',

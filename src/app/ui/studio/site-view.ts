@@ -69,6 +69,8 @@ export class SiteView {
   readonly selection = input<SitePick | null>(null);
   /** One floor of one building to show solid, the rest of that building ghosted. */
   readonly focus = input<{ id: string; li: number } | null>(null);
+  readonly indoorFloor = input<{ id: string; li: number } | null>(null);
+  readonly drawPlaneY = input<number | null>(null);
   readonly flights = input<Flight[]>([]);
   readonly speedMax = input(10);
   readonly picked = output<SitePick | null>();
@@ -77,7 +79,7 @@ export class SiteView {
   readonly groundStyle = input<GroundStyle>('natural');
   /** A brush ring on the ground (terrain tools), or none. */
   readonly cursor = input<{ x: number; z: number; r: number; color: string } | null>(null);
-  readonly drawLine = input<{ a: { x: number; z: number }; b: { x: number; z: number }; color: string } | null>(null);
+  readonly drawLine = input<{ a: { x: number; z: number }; b: { x: number; z: number }; color: string; height?: number } | null>(null);
   readonly measures = input<readonly MeasureViewItem[]>([]);
   readonly measurePicked = output<{ index: number; label: boolean }>();
   protected readonly failed = signal(false);
@@ -95,6 +97,7 @@ export class SiteView {
         return;
       }
       this.r.mode = this.mode();
+      this.r.drawPlaneY = this.drawPlaneY();
       this.r.groundStyle = untracked(() => this.groundStyle());
       this.r.onPick = (p) => this.picked.emit(p);
       this.r.onGround = (phase, x, z) => this.ground.emit({ phase, x, z });
@@ -104,6 +107,10 @@ export class SiteView {
     effect(() => {
       const m = this.mode();
       if (this.r) this.r.mode = m;
+    });
+    effect(() => {
+      const y = this.drawPlaneY();
+      if (this.r) this.r.drawPlaneY = y;
     });
     effect(() => {
       const st = this.groundStyle();
@@ -128,6 +135,7 @@ export class SiteView {
       this.spec();
       this.roofHidden();
       this.focus();
+      this.indoorFloor();
       untracked(() => this.schedule(220)); // an edit drag changes the spec many times a second
     });
     inject(DestroyRef).onDestroy(() => {
@@ -142,7 +150,7 @@ export class SiteView {
     clearTimeout(this.timer);
     this.timer = setTimeout(() => {
       try {
-        this.r?.show(this.spec(), this.roofHidden(), this.frameKey(), this.focus());
+        this.r?.show(this.spec(), this.roofHidden(), this.frameKey(), this.focus(), this.indoorFloor());
         this.r?.setDrawLine(this.drawLine());
         this.r?.setMeasures(this.measures());
         this.r?.setSelection(this.selection());

@@ -116,7 +116,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 - Villetta: verify restored annex walls and their openings against photos; verify the release 7 greenhouse east frame against IMG_4341 (support dimensions are estimates); verify the release 8 centre roof strip and separate blue-ladder cabin; cabin dimensions and placement are estimates.
 - Terrain: investigate the gallery road/terrain and warehouse perimeter/terrain flicker; investigate basement lighting. Verify fixes visually from multiple viewpoints.
-- Studio: 2D and 3D now share compass styling, closing Studio exits indoor mode, the editor can expand, and the inspector can dock right at full height. Verify these visually. Indoor editing in 3D remains open.
+- Studio: 2D and 3D now share compass styling, closing Studio exits indoor mode, the editor can expand, and the inspector can dock right at full height. Verify these visually. 3D indoor editing is implemented for above-ground floors; browser verification remains open.
 - Measures: 2D and 3D share chains, Select-mode highlighting and expandable labels; 3D supports drawing points and selecting lines or labels. Verify interaction visually and review other 2D/3D feature differences.
 - 3D placement: two-point fences, bridges and tunnels show a ground-following construction line; visually verify. Hedge and bramble now support click and brush/lasso placement in the Trees tools; verify their appearance and editing in the browser.
 - Flight alignment: endpoint availability and explanatory text are implemented in the path panel and Studio; verify with real video, offsets and a flight without video.
@@ -148,3 +148,9 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — hedge and bramble placement
 
 - The Trees and Tree brush selectors include hedge and bramble. A click creates one editable living wall; pen, square, circle and lasso fill the area with individual objects in one undo step. Placement avoids buildings and existing walls and remains within the brush outline. Browser and visual review are pending.
+
+### Follow-up — 3D indoor editing
+
+- Indoors and floor controls are available in the 3D editor. The selected building is displayed one floor at a time, with its roof removed; floor tools place onto that floor’s elevation. Selection of a rendered wall or column maps to the corresponding original floor.
+- Verify wall, void, door, window, column and stair placement in a browser, including rotated buildings and upper floors. Basement indoor-tool parity and 3D move/resize handles remain open.
+- Full guide E2E on PR #85 failed on Look around in 3D, Draw a building, Plant trees with the brush and Edit with the AI assistant; showcase was flaky. The cause is not yet established and these failures remain open.
