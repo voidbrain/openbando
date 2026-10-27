@@ -109,12 +109,12 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Villetta and Studio follow-up — 27 October 2026
 
 - Restored the annex south interior partition, three door-separated eastern wall sections, and the first-floor end wall in Villetta release 6. These corrections supersede the release 5 assumption that these walls should be removed. Their precise appearance still needs visual review against the survey photographs.
-- The main store's two central column rows are 1 m apart; release 8 adds the matching 1 m roof strip and retains the 8 m vault crown. Greenhouse east end, ladder cabin, terrain/road and warehouse seams and basement lighting still require work and visual review.
+- The main store's two central column rows are 1 m apart; release 8 adds the matching 1 m roof strip and retains the 8 m vault crown. The greenhouse east end, ladder cabin, terrain/road and warehouse seams and basement lighting still require visual review.
 - In Studio, empty-ground selection now clears the selected building too; the ground context menu offers a disabled-aware Clear all measures action; Space/Enter dismiss an active tool when the editor canvas has keyboard focus. Other requested Studio view, measurement, layout and flight-alignment changes remain open.
 
 #### Outstanding requests from the 27 October review
 
-- Villetta: verify restored annex walls and their openings against photos; verify the release 7 greenhouse east frame against IMG_4341 (support dimensions are estimates); verify the release 8 centre roof strip and add an optional cabin for the blue ladder.
+- Villetta: verify restored annex walls and their openings against photos; verify the release 7 greenhouse east frame against IMG_4341 (support dimensions are estimates); verify the release 8 centre roof strip and separate blue-ladder cabin; cabin dimensions and placement are estimates.
 - Terrain: investigate the gallery road/terrain and warehouse perimeter/terrain flicker; investigate basement lighting. Verify fixes visually from multiple viewpoints.
 - Studio: 2D and 3D now share compass styling, closing Studio exits indoor mode, the editor can expand, and the inspector can dock right at full height. Verify these visually. Indoor editing in 3D remains open.
 - Measures: 2D lines can now be selected in Select mode with a red highlight and compact expandable labels; verify interaction visually. Display and interaction in 3D remain open. Review other 2D/3D feature differences.
@@ -134,5 +134,5 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 ### Follow-up — central roof and 3D drawing
 
-- Villetta release 8 adds an editable one-metre solid strip between barrel roofs 2 and 3, keeping the eight-metre crown. The layout and collision are covered by model checks; visual review against the site remains pending. Existing edited copies remain unchanged.
+- Villetta release 8 adds an editable one-metre solid strip between barrel roofs 2 and 3, keeping the eight-metre crown, and a separately selectable ladder cabin. The cabin has an open base and doorway; its dimensions are estimates. The layout and collision are covered by model checks; visual review against the site remains pending. Existing edited copies remain unchanged.
 - Fence, bridge and tunnel two-point gestures show a terrain-following preview in 3D while drawing. Browser review remains pending.

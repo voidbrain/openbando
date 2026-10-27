@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { newerExample, sanitizeExamples } from './examples';
-import { sanitizeSpec } from './site-spec';
+import { fixturesInSite, sanitizeSpec } from './site-spec';
+import { expandShapes, shapeSolids } from './shapes';
 import index from '../../../public/library/bandos.json';
 import chiari from '../../../public/library/bandos/chiari-e-forti.json';
 import hidden from '../../../public/library/bandos/villetta-no-place.json';
@@ -115,6 +116,18 @@ describe('Villetta survey refinements', () => {
     expect(north.filter(o => o.kind === 'window').map(o => o.c)).toEqual([7.499, 27.599]);
     expect(north.filter(o => o.kind === 'door').map(o => o.c)).toEqual([47.699]);
     expect(store.levels[0]!.roofColor).toBe(annex.levels[1]!.roofColor);
+  });
+  it('places a separately selectable cabin over the blue ladder with an open bottom and doorway', () => {
+    const ladder = fixturesInSite(store)[0]!;
+    const cabin = v.structures!.find(s => s.id === 'villetta-ladder-cabin')!;
+    expect(cabin.x).toBeCloseTo(ladder.x, 2);
+    expect(cabin.z).toBeCloseTo(ladder.z, 2);
+    expect(cabin.y).toBe(7);
+    const boxes = shapeSolids(expandShapes(cabin.shapes!), 0, 0, 0).boxes;
+    const contains = (x: number, y: number, z: number): boolean => boxes.some(b => x > b[0] && x < b[1] && y > b[2] && y < b[3] && z > b[4] && z < b[5]);
+    expect(contains(0, 0.05, 0)).toBe(false); // ladder can enter through the open bottom
+    expect(contains(0, 1, -0.9)).toBe(false); // doorway remains open
+    expect(contains(0, 2.25, 0)).toBe(true); // a roof closes the cabin
   });
   it('retains the south interior wall and door-bearing east end, with the first-floor end closed', () => {
     expect(annex.levels[0]!.partitions).toHaveLength(1);
