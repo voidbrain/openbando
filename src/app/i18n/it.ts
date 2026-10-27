@@ -939,6 +939,7 @@ export const IT: Readonly<Record<string, string>> = {
   'Move basement vertex {0}': 'Sposta vertice {0} del seminterrato',
   'Insert basement vertex': 'Inserisci vertice del seminterrato',
   'Remove basement vertex': 'Rimuovi vertice del seminterrato',
+  'Cannot reshape basement: check its outline, wall openings and floor items.': 'Impossibile modificare il seminterrato: controlla il perimetro, le aperture e gli elementi del piano.',
   'Move basement vertex': 'Sposta vertice del seminterrato',
   'Cannot move this vertex: check the outline and floor items.': 'Impossibile spostare il vertice: controlla il perimetro e gli elementi del piano.',
   'Drag or use arrows to move; Insert adds and Delete removes a vertex': 'Trascina o usa le frecce per spostare; Ins aggiunge e Canc rimuove un vertice',

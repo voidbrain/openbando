@@ -474,7 +474,7 @@ export class BandoEditor {
   });
   protected readonly indoorPlaneY = computed(() => {
     const b = this.floorBuilding();
-    if (!b || !this.indoor() || !['wall', 'void', 'door', 'window', 'column', 'stairs'].includes(this.tool())) return null;
+    if (!b || !this.indoor() || !['wall', 'void', 'door', 'window', 'column', 'stairs', 'cut', 'wing'].includes(this.tool())) return null;
     return (this.ground().building.get(b.id) ?? 0) + (b.levels[this.basementFocus() ? 0 : this.level()]?.baseY ?? 0);
   });
   protected readonly drawLine3d = computed(() => {
@@ -2281,7 +2281,7 @@ export class BandoEditor {
       if (Math.abs(rect.x1 - rect.x0) >= 0.5 && Math.abs(rect.z1 - rect.z0) >= 0.5) {
         if (this.indoor() && this.basementFocus()) {
           const probe = structuredClone(this.b());
-          if (!probe || !reshapeBasement(probe, rect, d.op)) this.toast.show(d.op === 'cut' ? 'That cut would split the basement or leave a hole.' : 'The wing has to touch the basement.');
+          if (!probe || !reshapeBasement(probe, rect, d.op)) this.toast.show('Cannot reshape basement: check its outline, wall openings and floor items.');
           else { this.ed.commitSite(s => { const b = this.index(s, bd.id); if (b) reshapeBasement(b, rect, d.op); }); this.applyNow(); }
         } else {
         const probe = cloneSpec({ ...this.ed.draft(), buildings: [bd] }).buildings[0]!;
