@@ -32,6 +32,11 @@ test('the editor with a model, the inspector and the library', async ({ page }) 
   await page.locator('app-bando-editor button').filter({ hasText: /^\W*Library$/ }).first().click();
   await expect(page.getByPlaceholder('Search blocks…')).toBeVisible();
   expect(await axe(page)).toEqual([]);
+  await page.locator('app-bando-editor button').filter({ hasText: /^\W*Library$/ }).first().click();
+  await page.locator('app-bando-editor button[data-tour="ai"]').click();
+  await page.getByRole('button', { name: 'Server / home PC', exact: true }).click();
+  await expect(page.getByLabel('token (optional)')).toHaveAccessibleDescription("The token is saved in this browser's local storage.");
+  expect(await axe(page)).toEqual([]);
 });
 
 test('a guide step running (caption bar)', async ({ page }) => {

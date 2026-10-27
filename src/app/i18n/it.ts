@@ -889,6 +889,7 @@ export const IT: Readonly<Record<string, string>> = {
   'address': 'indirizzo',
   'model': 'modello',
   'token (optional)': 'token (facoltativo)',
+  "The token is saved in this browser's local storage.": 'Il token viene salvato nella memoria locale di questo browser.',
   'Changes': 'Modifiche',
   'Accept all': 'Accetta tutte',
   'Reviewed': 'Rivista',

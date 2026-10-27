@@ -8,6 +8,7 @@ FormControls are the native inputs, styled once globally: `field` fill, `line` b
 - Range, checkbox and radio use `accent-color: accent`.
 - A checkbox with its label: `<label class="check">`.
 - Errors show as `.err` text in `warn` under the field, never as a red border alone.
+- The AI server token input has a nearby description of its local-storage persistence, associated with `aria-describedby`.
 
 ## Consumer provides
 
