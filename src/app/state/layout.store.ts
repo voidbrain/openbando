@@ -113,10 +113,9 @@ export const LayoutStore = signalStore(
           return { panels };
         }),
       reset: () => {
-        // everything back to its first place and size; Welcome is for a first visit, Views stays the way back
+        // Reset geometry and appearance while preserving which panels the pilot has open.
         const d = defaults();
-        d.panels.welcome = { ...d.panels.welcome, visible: false };
-        d.panels.views = { ...d.panels.views, visible: true };
+        for (const id of Object.keys(d.panels) as PanelId[]) d.panels[id].visible = store.panels()[id].visible;
         patchState(store, d);
         // the float boxes and the editor's toolbars remember their place on their own
         try {

@@ -19,7 +19,7 @@ import { Panel } from '../panel/panel';
         @if (!video.synced()) {
           <label class="btn" data-tour="load-video">Load video<input type="file" accept="video/*" hidden (change)="load($event)" /></label>
         }
-        <button class="btn" [class.primary]="!video.synced()" [disabled]="video.busy() || !video.loaded()" (click)="video.autoSync(scanFrom(), scanLength())" data-tour="auto-sync">{{ video.synced() ? 'Sync again' : 'Auto-sync' }}</button>
+        <button class="btn" [class.primary]="!video.synced()" [disabled]="video.busy() || !video.loaded()" (click)="video.autoSync(scanFrom(), scanLength())" data-tour="auto-sync">Auto-sync</button>
         <span class="dim small grow">{{ video.status() }}</span>
       </div>
       <details class="adv">

@@ -21,10 +21,12 @@ export class PanelPlacer {
     const views = this.layout.panels().views.visible ? box('views') : undefined;
     const x0 = views ? views.right + 12 : 12;
     const area = { x: x0, y: 56, w: Math.max(200, innerWidth - x0 - 12), h: innerHeight - 68 };
-    const sizes = ids.map((id) => {
+    // The timeline has a dedicated bottom anchor; keep it out of the row arrangement.
+    const arranged = ids.filter((id) => id !== 'timeline');
+    const sizes = arranged.map((id) => {
       const r = box(id);
       return { w: r?.width ?? 300, h: r?.height ?? 200 };
     });
-    arrangeRows(sizes, area).forEach((p, i) => this.layout.moveTo(ids[i]!, p.x, p.y));
+    arrangeRows(sizes, area).forEach((p, i) => this.layout.moveTo(arranged[i]!, p.x, p.y));
   }
 }

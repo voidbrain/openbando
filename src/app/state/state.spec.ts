@@ -61,7 +61,11 @@ describe('stores', () => {
       expect(p.flights.ghost).toBe(true);
       expect(p.flights.minimized).toBe(true);
       expect(p.path.w).toBe(400);
+      s.setVisible('flights', true);
+      s.setVisible('video', false);
       s.reset();
+      expect(s.panels().flights.visible).toBe(true);
+      expect(s.panels().video.visible).toBe(false);
       expect(s.panels().flights.x).toBeNull();
       expect(s.panels().flights.ghost).toBe(false);
     });

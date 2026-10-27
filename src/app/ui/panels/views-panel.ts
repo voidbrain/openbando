@@ -175,7 +175,7 @@ const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'cam
         <span class="grow dim small">Panels</span>
         <button class="btn ib" (click)="setAll(true)" title="Show every panel" aria-label="Show every panel"><app-tool-icon name="eye" /></button>
         <button class="btn ib" (click)="setAll(false)" title="Hide every panel but this one" aria-label="Hide every panel but this one"><app-tool-icon name="eyeOff" /></button>
-        <button class="btn ib" (click)="resetLayout()" title="Reset UI: every panel back to its first place, size and visibility" aria-label="Reset UI"><app-tool-icon name="resetLayout" /></button>
+        <button class="btn ib" (click)="resetLayout()" title="Reset UI: restore panel positions and sizes" aria-label="Reset UI"><app-tool-icon name="resetLayout" /></button>
       </div>
 
       <div class="sec">

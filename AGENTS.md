@@ -244,7 +244,7 @@ npm run check:i18n                        # every UI text has its Italian
 - Heights: Betaflight logs with `baroAlt` take the replay's height from the barometer (GPS altitude wanders tens of metres), cleaned by `cleanHeights` (running median over 7 fixes, centred mean over 7, at most 25 m/s).
 - The FPV camera (main page and FPV window) is drawn solid: no x-ray fading (`XRay.solid`) and roofs shown even with "hide roofs" (`SceneService.solidly`).
 - Views → 3D camera: a segmented "camera" switch (which camera the main page uses) and a row of "view" toggles (follow, roofs, satellite, x-ray, reset).
-- A new log loaded from the Flights panel opens its instruments with it (path, speed; Blackbox and attitude with telemetry) through `PanelPlacer`.
+- A new log loaded from the Flights panel opens its instruments with it (path, speed; Blackbox and attitude with telemetry) through `PanelPlacer`; Timeline keeps its bottom anchor instead of joining the arranged rows. Reset UI restores positions and sizes while preserving panel visibility.
 - Villetta check (demo flight, 1:16.5): the path's position matches the video (greenhouse frame left, Annex right, looking north); the camera heading is about 10–15° right of the video's. Re-check once the model is refined from photos.
 - With the Views panel closed, a menu button next to the language flag opens it (`VersionBadge`).
 - Paths: the whole path is a thin washed-out line (`aheadColor`), the part already flown a thick line in the speed colours drawn up to the playhead (`Line2`, `PathRenderer.setProgress`); the Flight path panel draws the same (`drawFlightPath(…, replayed)`). Its side column has Pin start / Pin end icons and a knob that turns the path about its start (`SceneService.turnPath`; arrow keys ±1°, Shift ±10°).
@@ -313,7 +313,7 @@ npm run check:i18n                        # every UI text has its Italian
 
 - `docs/mascot/README.md` is the character bible. Do not replace the approved coarse pixel direction with smooth chibi art. Radio: ergonomic, mostly black, orange details, no antenna, controls face the pilot. Goggles: continuous 360° head strap. Cap emblem black; shirt emblem white. Drone: exposed-prop freestyle quad.
 - `public/mascot/timeline.json` drives `core/mascot.ts` and `tools/mascot/build.py` (Pillow). Keep generated poses/GIF in step. Preserve reviewed source rectangles: the imagegen master is not an exact grid.
-- `ui/mascot.ts` uses the shared frame loop only while Welcome is shown, with reduced-motion and a still fallback; Welcome has no animation pause control. Decorative art never appears over the flight/editor work surfaces. Keep its design-system exception scoped to Welcome.
+- `ui/mascot.ts` uses the shared frame loop only while Welcome is shown, with reduced-motion and a still fallback; Welcome has no animation pause control, and opening it restarts the mascot from the first pose. Decorative art never appears over the flight/editor work surfaces. Keep its design-system exception scoped to Welcome.
 
 ## Multipath racing
 

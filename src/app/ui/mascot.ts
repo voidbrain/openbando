@@ -36,11 +36,13 @@ export class Mascot implements AfterViewInit {
     const images = MASCOT_POSES.map((name, i) => { const im = new Image(); im.src = `mascot/poses/${String(i).padStart(2, '0')}-${name}.png`; return im; });
     const drone = new Image(); drone.src = 'mascot/drone.png';
     const droneRight = new Image(); droneRight.src = 'mascot/drone-right.png';
-    let ms = 0, last = performance.now(), painted = false;
+    let ms = 0, last = performance.now(), painted = false, wasVisible = false;
     const stop = this.loop.add(FrameOrder.widgets, () => {
       const now = performance.now(), dt = Math.min(100, now - last); last = now;
       const panel = this.layout.panels().welcome;
-      if (!panel.visible || panel.minimized || document.hidden) return;
+      if (!panel.visible) { wasVisible = false; return; }
+      if (!wasVisible) { ms = 0; painted = false; wasVisible = true; }
+      if (panel.minimized || document.hidden) return;
       const still = this.paused();
       if (still && painted) return;
       const f = mascotFrame(ms), pilot = images[f.pose]!;
