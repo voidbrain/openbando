@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-/** The showcase link plays the welcome tour by itself and ends on its finished screen. */
+/** The showcase link plays the welcome tour by itself and returns to Welcome with playback stopped. */
 test('the showcase link plays to the end', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
@@ -11,8 +11,24 @@ test('the showcase link plays to the end', async ({ page }) => {
   await expect(bar).toContainText('OpenBando'); // Italian captions (the app name stays)
   await expect(bar).toBeHidden({ timeout: 300_000 });
   const shown = await page.locator('app-panel:not([hidden])').evaluateAll((els) => els.map((e) => `${e.getAttribute('data-id')}${e.classList.contains('ghost') ? '*' : ''}`));
-  expect(shown.sort()).toEqual(['attitude', 'blackbox', 'path', 'speed', 'timeline', 'video*', 'vpFpv'].sort()); // only the video under glass
+  expect(shown).toEqual(['welcome']);
+  await expect(page.getByRole('heading', { name: 'OpenBando', exact: true })).toBeVisible();
+  expect(await page.locator('video').evaluateAll((videos) => videos.every((video) => video.paused))).toBe(true);
+  await page.waitForTimeout(2000);
+  await expect(bar).toBeHidden();
+  await expect(page.locator('app-panel[data-id=welcome]')).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test('stopping the showcase returns to Welcome', async ({ page }) => {
+  await page.goto('/?tour=showcase&lang=en');
+  const bar = page.locator('app-tour-overlay .bar');
+  await expect(bar).toBeVisible({ timeout: 20_000 });
+  await bar.getByRole('button', { name: /Stop/ }).click();
+  await expect(bar).toBeHidden();
+  await expect(page.locator('app-panel[data-id="welcome"]')).toBeVisible();
+  const shown = await page.locator('app-panel:not([hidden])').evaluateAll((els) => els.map((e) => e.getAttribute('data-id')));
+  expect(shown).toEqual(['welcome']);
 });
 
 /** The showcase skips the scan: the offset it uses must be the one a real Auto-sync finds for the demo flight. */

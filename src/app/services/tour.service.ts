@@ -88,7 +88,6 @@ export class TourService {
   private skip = false;
   /** Set by Back: the beat to play next. */
   private jump: number | null = null;
-  /** The last run was the showcase (`keepLayout`): stopping it must go back to the entry screen, not to the layout before it. */
 
   setTips(on: boolean): void {
     this.tips.set(on);
@@ -96,7 +95,7 @@ export class TourService {
   }
 
   playTour(t: Tour): Promise<void> {
-    return this.run(t.title, t.snippets.map((id) => SNIPPET_BY_ID.get(id)).filter((s): s is Snippet => !!s), !!t.keepLayout);
+    return this.run(t.title, t.snippets.map((id) => SNIPPET_BY_ID.get(id)).filter((s): s is Snippet => !!s), !!t.returnToWelcome);
   }
 
   playSnippet(s: Snippet): Promise<void> {
@@ -147,7 +146,7 @@ export class TourService {
   }
   private firsts: boolean[] = [];
 
-  private async run(title: string, snippets: readonly Snippet[], keepLayout = false): Promise<void> {
+  private async run(title: string, snippets: readonly Snippet[], returnToWelcome = false): Promise<void> {
     const beats: { beat: Beat; snippet: Snippet; first: boolean }[] = snippets.flatMap((s) => s.beats.map((beat, k) => ({ beat, snippet: s, first: k === 0 })));
     if (this.state()) this.end();
     while (this.state()) await new Promise((r) => setTimeout(r, 50));
@@ -181,12 +180,13 @@ export class TourService {
     } catch (e) {
       if (!(e instanceof Stopped)) console.warn('tour', e);
     } finally {
-      if (this.stop && keepLayout) {
-        // stopped showcase: back to the entry screen — only Welcome over the empty world, turning — instead of the
-        // layout from before it started, which may have no panel open at all (a blank-looking screen)
+      if (returnToWelcome) {
+        // The showcase must stop its looping replay and return to Welcome on completion or cancellation.
+        this.haltReplay();
+        this.heldReplay = false;
         this.entryScreen();
-      } else if (!keepLayout || this.stop) {
-        this.layout.restore(before); // the showcase ends on its finished screen, unless stopped
+      } else {
+        this.layout.restore(before);
       }
       this.ai.demo.set(false);
       this.diagnostic.set('');
@@ -510,7 +510,7 @@ export class TourService {
 
   /**
    * The entry screen: only Welcome over the empty world, turning. Used by the showcase's first step and when the
-   * showcase is stopped — stopping must land here, never on the layout from before it started (which may show no
+   * showcase finishes or is stopped — it must land here, never on the layout from before it started (which may show no
    * panel at all), so the pilot always returns to a working app with Welcome open.
    */
   private entryScreen(): void {

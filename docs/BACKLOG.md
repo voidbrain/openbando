@@ -24,6 +24,7 @@ Current work ledger, reviewed 27 October 2026 against `main` at `74bdf78`. The [
 | B-008 | P2 | Verify | Flight descent smoothing | Compare the demo CSV descent with its corresponding video; unit coverage does not verify the visual result. | — | 2026-10-27 |
 | B-009 | P2 | Verify | Simulator and selected-flight/video regression | Manually exercise simulator entry/exit, collision and selected-flight/video replay and synchronization after editor/racing changes. | — | 2026-10-27 |
 | B-010 | P1 | Verify | Tunnel unit test timeout in CI | The `check` job in PR #103 timed out in `site-model.spec.ts` after 5 seconds. The test now reuses the rendered model and uses a smaller grid containing the whole hill and both tunnel portals; the next check passed, while the complete browser run remains in progress. | [#103 CI](https://github.com/voidbrain/openbando/actions/runs/40555115536) (failed); [#104 CI](https://github.com/voidbrain/openbando/actions/runs/40556707739) (check passed; run in progress) | 2026-10-27 |
+| B-011 | P1 | Verify | Showcase finishes on looping replay instead of Welcome | The showcase now pauses playback and returns to the Welcome-only entry screen on both completion and Stop. Browser verification of the full run and Stop remains pending. | [#107](https://github.com/voidbrain/openbando/pull/107) (fix; browser checks pending) | 2026-10-27 |
 
 ## Features and limitations
 
