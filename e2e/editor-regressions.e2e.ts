@@ -122,7 +122,11 @@ test('basement controls and explicit roof choice update the selected building', 
   expect(mapBox).not.toBeNull(); expect(buildingBox).not.toBeNull();
   await svg.click({ position: { x: buildingBox!.x + buildingBox!.width / 2 - mapBox!.x, y: buildingBox!.y + buildingBox!.height / 2 - mapBox!.y }, force: true });
   await expect(page.locator('[data-pk="col:0"]')).toHaveCount(1);
-  const pre3dX = await page.locator('[data-pk="basement-vertex:1"]').getAttribute('cx');
+  // Placement switches away from Select; reselect the building before reading its handles.
+  await page.locator('app-bando-editor .palette button[title^="Select ·"]').click();
+  await page.locator('[data-pk="building:b"]').first().click({ force: true });
+  await expect(vertex).toBeVisible();
+  const pre3dX = await vertex.getAttribute('cx');
   await page.locator('[data-tour="view-3d"]').click();
   await expect(page.locator('app-site-view canvas')).toBeVisible();
   await expect(page.locator('app-site-view .fail')).toHaveCount(0);
