@@ -6,6 +6,7 @@ Readout is the mono pill at the bottom of the map showing live distances and ang
 
 - `readout` type style on `overlay-soft`, `radius`, `line` border. `.read.warn` turns text and border `warn` (e.g. a snap failed or a size is out of range).
 - Values with units, separated by " · ". No pointer events.
+- 3D measurement labels follow the terrain and use a compact dark backing, the measurement colour, and a reddish selection colour. Labels can be expanded; keyboard-accessible controls appear when focused.
 
 ## Consumer provides
 

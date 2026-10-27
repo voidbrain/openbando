@@ -5,6 +5,7 @@
  * Voice as in English: short, direct, "tu", no exclamation marks. "Bando" stays (it is the app's word).
  */
 export const IT: Readonly<Record<string, string>> = {
+  'Measures': 'Misure',
   'Pin start: position at the start of the video and click the ground where the flight started': 'Fissa inizio: posizionati all’inizio del video e clicca sul terreno dove è iniziato il volo',
   'Pin start: position at the start of the flight and click the ground where the flight started': 'Fissa inizio: posizionati all’inizio del volo e clicca sul terreno dove è iniziato',
   'Pin end: position at the end of the video and click the ground where the flight ended': 'Fissa fine: posizionati alla fine del video e clicca sul terreno dove è terminato il volo',

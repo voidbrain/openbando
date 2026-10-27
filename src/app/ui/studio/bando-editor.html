@@ -393,6 +393,8 @@
       [groundStyle]="terrain.groundStyle()"
       [cursor]="terrain.cursor3d()"
       [drawLine]="drawLine3d()"
+      [measures]="measures3d()"
+      (measurePicked)="onMeasurePick3d($event)"
     />
   }
   @if (!(overlayOn() && view3d())) {

@@ -117,7 +117,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 - Villetta: verify restored annex walls and their openings against photos; verify the release 7 greenhouse east frame against IMG_4341 (support dimensions are estimates); verify the release 8 centre roof strip and separate blue-ladder cabin; cabin dimensions and placement are estimates.
 - Terrain: investigate the gallery road/terrain and warehouse perimeter/terrain flicker; investigate basement lighting. Verify fixes visually from multiple viewpoints.
 - Studio: 2D and 3D now share compass styling, closing Studio exits indoor mode, the editor can expand, and the inspector can dock right at full height. Verify these visually. Indoor editing in 3D remains open.
-- Measures: 2D lines can now be selected in Select mode with a red highlight and compact expandable labels; verify interaction visually. Display and interaction in 3D remain open. Review other 2D/3D feature differences.
+- Measures: 2D and 3D share chains, Select-mode highlighting and expandable labels; 3D supports drawing points and selecting lines or labels. Verify interaction visually and review other 2D/3D feature differences.
 - 3D placement: two-point fences, bridges and tunnels show a ground-following construction line; visually verify. Add hedge and bramble to the trees tool with click and lasso placement.
 - Flight alignment: endpoint availability and explanatory text are implemented in the path panel and Studio; verify with real video, offsets and a flight without video.
 - Visually review the mascot loop, title, responsive Welcome, editor layout and restored annex geometry in a browser. Space/Enter tool cancellation currently applies when the editor canvas has keyboard focus.
@@ -130,7 +130,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — Studio layout and browser CI
 
 - 2D and 3D compass widgets share the same appearance; closing Studio exits indoor mode. The editor has an expand/restore control and the Inspector can dock at the right edge at full height. Browser verification is pending.
-- The browser CI condition explicitly enables the job on pull requests; confirm the actual GitHub Actions result after opening the PR. Indoor editing and measures in 3D remain open.
+- The browser CI condition explicitly enables the job on pull requests; confirm the actual GitHub Actions result after opening the PR. Indoor editing in 3D remains open; 3D measures were added in a later follow-up.
 
 ### Follow-up — central roof and 3D drawing
 
@@ -140,3 +140,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — flight alignment endpoints
 
 - Start pin and start angle are enabled at the video start; end pin is enabled at the video end. Without video the flight endpoints are used. Moving away from an endpoint cancels an armed pin. Endpoint decisions have unit and service coverage; verify in the browser with real video and sync offsets.
+
+### Follow-up — measures in 3D
+
+- The 3D editor displays the same measure chains as the plan, permits point-by-point drawing, shows a live preview, and lets the Select tool highlight a line or expand its label. Terrain-following coordinates have automated coverage; browser interaction, label readability and accessibility still need verification.

@@ -5,6 +5,7 @@ import { ghost, levelOnly } from './element-preview';
 import { PathRenderer } from './path-renderer';
 import { buildSiteFromSpec, type GroundStyle, type SiteModel } from './site-model';
 import { rayGround } from '../core/terrain';
+import { buildMeasureView, type MeasureViewItem } from './measure-view';
 
 import {pickModel,type SitePick} from './site-pick';
 export type {SitePick} from './site-pick';
@@ -42,6 +43,8 @@ export class SiteViewRenderer {
   /** A ring on the ground under the pointer (a terrain brush), or none. */
   private cursor: THREE.LineLoop | null = null;
   private drawLine: THREE.Line | null = null;
+  private measures: THREE.Group | null = null;
+  onMeasurePick: (index: number, label: boolean) => void = () => undefined;
   private press: { x: number; y: number; moved: boolean; ground: boolean } | null = null;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
@@ -104,7 +107,11 @@ export class SiteViewRenderer {
         const g = this.groundPoint(e);
         if (g) this.onGround('up', g.x, g.z);
         else this.onGround('up', Number.NaN, Number.NaN);
-      } else if (!p.moved && e.type === 'pointerup' && this.mode === 'select' && e.button === 0) this.onPick(this.pickAt(e));
+      } else if (!p.moved && e.type === 'pointerup' && this.mode === 'select' && e.button === 0) {
+        const measure = this.measureAt(e);
+        if (measure) this.onMeasurePick(measure.index, measure.label);
+        else this.onPick(this.pickAt(e));
+      }
     };
     on('pointerup', release);
     on('pointercancel', release);
@@ -161,6 +168,32 @@ export class SiteViewRenderer {
     this.drawLine.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
     (this.drawLine.material as THREE.LineBasicMaterial).color.set(line.color);
     this.drawLine.visible = true;
+  }
+
+  setMeasures(items: readonly MeasureViewItem[]): void {
+    this.clearMeasures();
+    if (!this.model || !items.length) return;
+    this.measures = buildMeasureView(items, (x, z) => this.model!.ground.at(x, z));
+    this.scene.add(this.measures);
+  }
+
+  private clearMeasures(): void {
+    if (!this.measures) return;
+    this.scene.remove(this.measures);
+    this.measures.traverse((o) => {
+      if (o instanceof THREE.Sprite) { o.material.map?.dispose(); o.material.dispose(); }
+      else if (o instanceof THREE.Line) { o.geometry.dispose(); (o.material as THREE.Material).dispose(); }
+    });
+    this.measures = null;
+  }
+
+  private measureAt(e: { clientX: number; clientY: number }): { index: number; label: boolean } | null {
+    if (!this.measures) return null;
+    const r = this.canvas.getBoundingClientRect();
+    this.ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
+    this.ray.params.Line = { threshold: Math.max(0.2, this.dist * 0.004) };
+    const hit = this.ray.intersectObjects(this.measures.children).find((h) => typeof h.object.userData['measureIndex'] === 'number' && h.object.userData['measureIndex'] >= 0);
+    return hit ? { index: hit.object.userData['measureIndex'] as number, label: !!hit.object.userData['measureLabel'] } : null;
   }
 
   /** Rebuild from the spec. The camera re-frames only when `frameKey` changes (a different bando). */
@@ -279,6 +312,7 @@ export class SiteViewRenderer {
     for (const f of this.off) f();
     if (this.model) dispose(this.model.group);
     if (this.drawLine) dispose(this.drawLine);
+    this.clearMeasures();
     this.renderer.dispose();
   }
 }
