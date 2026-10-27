@@ -115,13 +115,14 @@ export function floorUnder(vols: readonly UndergroundSpec[], x: number, z: numbe
 
 }
 
-/** Link a basement opening to a lower box room only when the whole opening fits within that room. */
+/** Link a basement opening to any overlapping lower box room at the same height. */
 export function linkBasementFloors(vols: readonly UndergroundSpec[]): UndergroundSpec[] {
   const out = vols.map(v => ({ ...v, ceilingHoles: undefined as Vec2[][] | undefined }));
   for (const top of out) for (const hole of top.floorHoles ?? []) {
     for (const lower of out) {
       if (lower === top || lower.shape !== 'box' || lower.floor >= top.floor || Math.abs(lower.ceiling - top.floor) >= 0.1) continue;
-      if (!hole.every(p => insidePolygon(lower.outline, p.x, p.z))) continue;
+      const overlaps = (axis: 'x' | 'z'): boolean => Math.max(...hole.map(p => p[axis])) > Math.min(...lower.outline.map(p => p[axis])) && Math.min(...hole.map(p => p[axis])) < Math.max(...lower.outline.map(p => p[axis]));
+      if (!overlaps('x') || !overlaps('z')) continue;
       (lower.ceilingHoles ??= []).push(hole);
     }
   }
