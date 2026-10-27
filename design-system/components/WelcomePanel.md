@@ -12,7 +12,7 @@ The first thing a visitor sees, over the empty world turning slowly: what OpenBa
   link buttons ("Open the bandos →") that open the panels for that job and close Welcome. The column under the pointer
   or the keyboard focus gets an `accent` border and plays its film.
 - Footer: the primary `▶ Watch the welcome tour`, `Guide me`, and a `dim` note on privacy.
-- Closing it shows Views.
+- Closing it shows Views. The mascot starts its animation from the first pose whenever Welcome reopens.
 
 ## Voice
 
