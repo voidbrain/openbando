@@ -21,6 +21,7 @@ import { BlocksBox } from './blocks-box';
 import { paramValues, type BlockSpec, type ParamValue } from '../../core/blocks';
 import { BlockLibraryService } from '../../services/block-library.service';
 import { areaOf, nearBuilding, scatterTrees, type ScatterMode } from '../../core/scatter';
+import { scatterVegetation, vegetationAt, type ShrubKind } from '../../core/vegetation';
 import { placeColumn, type Placement } from '../../core/placement';
 import { RECT_KINDS, STRUCTURE_DEFAULTS } from '../../three/structures';
 import { AiService } from '../../services/ai.service';
@@ -55,6 +56,7 @@ import { UndergroundTool } from './editor/underground-tool';
 
 type Entry = { key: string; tool: Tool; mode?: ScatterMode; op?: Brush; icon: string; name: string; color: string; hint: string; group: string; sep?: boolean };
 type CtxItem = { label: string; act?: () => void; danger?: boolean; disabled?: boolean; sep?: boolean; head?: boolean };
+type VegetationMix = 'd' | 'c' | 'mix' | ShrubKind;
 
 /** Tools that place something on the selected building: while one is active, a click puts the thing where the ghost is. */
 const PLACE: readonly Tool[] = ['door', 'window', 'wall', 'void', 'column', 'stairs', 'cut', 'wing'];
@@ -140,8 +142,8 @@ export class BandoEditor {
     { id: 'wing', icon: 'wing', group: 'build', name: 'Wing', color: '#74b9ff', hint: 'Add a wing to the selected building', where: 'out', needsBuilding: true },
     { id: 'gate', icon: 'gate', group: 'fpv', name: 'FPV gates and poles', color: '#e8742a', hint: 'Race gates, dive gates, ladders, hurdles, flags and slalom poles: click the map to place one', where: 'out' },
     { id: 'structure', icon: 'structure', group: 'struct', name: 'Structure', color: '#f78fb3', hint: 'Tower, bridge, container, vehicle ... (choose the kind in the options)', where: 'out' },
-    { id: 'tree', icon: 'tree', group: 'trees', name: 'Tree', color: '#4cd964', hint: 'Click the map to plant a tree', where: 'out' },
-    { id: 'scatter', icon: 'brush', group: 'trees', name: 'Tree brush', color: '#00cec9', hint: 'Paint trees with a pen, or fill a square, circle or hand-drawn area with random trees', where: 'out' },
+    { id: 'tree', icon: 'tree', group: 'trees', name: 'Tree', color: '#4cd964', hint: 'Click the map to plant a tree, hedge or bramble', where: 'out' },
+    { id: 'scatter', icon: 'brush', group: 'trees', name: 'Tree brush', color: '#00cec9', hint: 'Paint vegetation with a pen, or fill a square, circle or hand-drawn area', where: 'out' },
     { id: 'fence', icon: 'fence', group: 'fence', name: 'Fence', color: '#ff9f43', hint: 'Drag to draw a free-standing wall or fence', where: 'out' },
     { id: 'road', icon: 'road', group: 'layers', name: 'Road', color: '#b0b8c9', hint: 'Drag along the way: a road, track, path or railway laid on the ground', where: 'out' },
     { id: 'surface', icon: 'surface', group: 'layers', name: 'Surface', color: '#e8d48b', hint: 'Draw an outline: the ground inside becomes asphalt, gravel, sand ...', where: 'out' },
@@ -377,8 +379,8 @@ export class BandoEditor {
   protected readonly scatterWidth = signal(10);
   protected asScatter = (v: string): ScatterMode => (['pen', 'rect', 'circle', 'lasso'].includes(v) ? (v as ScatterMode) : 'pen');
   /** Species of new trees (tree tool and brush): broadleaf, conifer, or a natural mix. More species will come from the shared library. */
-  protected readonly treeMix = signal<'d' | 'c' | 'mix'>('mix');
-  protected asMix = (v: string): 'd' | 'c' | 'mix' => (v === 'd' || v === 'c' ? v : 'mix');
+  protected readonly treeMix = signal<VegetationMix>('mix');
+  protected asMix = (v: string): VegetationMix => (v === 'd' || v === 'c' || v === 'hedge' || v === 'bramble' ? v : 'mix');
   /** Material of new fences. */
   protected readonly fenceMat = signal<FenceMaterial>('masonry');
   protected asFence = (v: string): FenceMaterial => fenceDef(v as FenceMaterial).id;
@@ -389,7 +391,11 @@ export class BandoEditor {
     { id: 'd', label: 'Broadleaf', icon: 'tree', hint: 'Round crown (oak, plane, poplar)' },
     { id: 'c', label: 'Conifer', icon: 'conifer', hint: 'Cone (pine, spruce, cypress)' },
   ];
-  protected readonly treeMixOptions: readonly PickOption[] = [...this.treeKindOptions, { id: 'mix', label: 'Mixed', icon: 'mixedTrees', hint: 'Both, at random (about 4 in 10 conifers)' }];
+  protected readonly treeMixOptions: readonly PickOption[] = [
+    ...this.treeKindOptions, { id: 'mix', label: 'Mixed', icon: 'mixedTrees', hint: 'Both, at random (about 4 in 10 conifers)' },
+    { id: 'hedge', label: 'Hedge', icon: 'hedge', hint: 'A short editable hedge' },
+    { id: 'bramble', label: 'Bramble thicket', icon: 'bramble', hint: 'A short editable bramble thicket' },
+  ];
   protected readonly scatterOptions: readonly PickOption[] = [
     { id: 'pen', label: 'Pen', icon: 'brush', hint: 'Plant along a stroke' },
     { id: 'rect', label: 'Square', icon: 'areaRect', hint: 'Fill a dragged square' },
@@ -1221,8 +1227,7 @@ export class BandoEditor {
       this.drag.set({ t: 'sculpt' });
     } else if (t === 'terrain') this.drag.set({ t: 'terrain', pts: [{ x: p.x, z: p.z }], h0: siteGround(this.ed.draft()).at(p.x, p.z) });
     else if (t === 'tree') {
-      this.ed.addTree(snap(p.x, 0.5), snap(p.z, 0.5), this.newTreeKind());
-      this.applyNow();
+      this.plantVegetation(p);
     } else if (t === 'measure') this.measure.click(p);
     else if ((t === 'cut' || t === 'wing') && bd) {
       const l = this.toLocal(bd, p);
@@ -2052,14 +2057,23 @@ export class BandoEditor {
       const poly = areaOf(this.scatterMode(), d.pts, this.scatterWidth());
       const live = this.ed.draft();
       const mix = this.treeMix();
-      const made = scatterTrees(poly, live.trees, { spacing: this.scatterSpacing(), conifers: mix === 'c' ? 1 : mix === 'd' ? 0 : 0.4 }, (q) => nearBuilding(live.buildings, q));
-      if (made.length) {
-        this.ed.commitSite((s) => {
-          s.trees.push(...made);
-        });
-        this.applyNow();
+      if (mix === 'hedge' || mix === 'bramble') {
+        const shrubs = scatterVegetation(poly, live, mix, { spacing: this.scatterSpacing() });
+        if (shrubs.length) {
+          this.ed.commitSite((s) => (s.walls ??= []).push(...shrubs));
+          this.applyNow();
+        }
+        this.toast.show(shrubs.length ? `${shrubs.length} shrubs planted. Undo removes the whole stroke.` : 'No room for shrubs there (or the stroke was too short).');
+      } else {
+        const made = scatterTrees(poly, live.trees, { spacing: this.scatterSpacing(), conifers: mix === 'c' ? 1 : mix === 'd' ? 0 : 0.4 }, (q) => nearBuilding(live.buildings, q));
+        if (made.length) {
+          this.ed.commitSite((s) => {
+            s.trees.push(...made);
+          });
+          this.applyNow();
+        }
+        this.toast.show(made.length ? `${made.length} trees planted. Undo removes the whole stroke.` : 'No room for trees there (or the stroke was too short).');
       }
-      this.toast.show(made.length ? `${made.length} trees planted. Undo removes the whole stroke.` : 'No room for trees there (or the stroke was too short).');
     } else if (d.t === 'fenceDraw') {
       if (Math.hypot(d.b.x - d.a.x, d.b.z - d.a.z) >= 0.5) {
         this.ed.commitSite((s) => {
@@ -2251,7 +2265,7 @@ export class BandoEditor {
         return [
           head('Ground'),
           { label: 'New building here', act: () => this.newBuildingAt(q) },
-          { label: 'Plant a tree here', act: () => { this.ed.addTree(snap(p.x, 0.5), snap(p.z, 0.5), this.newTreeKind()); this.applyNow(); } },
+          { label: 'Plant vegetation here', act: () => this.plantVegetation(p) },
           tool('Scatter trees…', 'scatter'),
           tool('Draw a fence', 'fence'),
           { label: 'Measure from here', act: () => { this.setTool('measure'); this.measure.startAt(p); } },
@@ -2517,7 +2531,14 @@ export class BandoEditor {
   /** The species of a tree planted now: the chosen one, or a random pick for "Mixed". */
   private newTreeKind(): 'd' | 'c' {
     const m = this.treeMix();
-    return m === 'mix' ? (Math.random() < 0.4 ? 'c' : 'd') : m;
+    return m === 'c' ? 'c' : m === 'mix' && Math.random() < 0.4 ? 'c' : 'd';
+  }
+
+  private plantVegetation(p: Pt): void {
+    const q = { x: snap(p.x, 0.5), z: snap(p.z, 0.5) }, kind = this.treeMix();
+    if (kind === 'hedge' || kind === 'bramble') this.ed.commitSite((s) => (s.walls ??= []).push(vegetationAt(q, kind)));
+    else this.ed.addTree(q.x, q.z, this.newTreeKind());
+    this.applyNow();
   }
 
   protected setFence(patch: Partial<{ height: number; thick: number }>): void {

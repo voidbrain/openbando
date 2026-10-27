@@ -118,7 +118,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 - Terrain: investigate the gallery road/terrain and warehouse perimeter/terrain flicker; investigate basement lighting. Verify fixes visually from multiple viewpoints.
 - Studio: 2D and 3D now share compass styling, closing Studio exits indoor mode, the editor can expand, and the inspector can dock right at full height. Verify these visually. Indoor editing in 3D remains open.
 - Measures: 2D and 3D share chains, Select-mode highlighting and expandable labels; 3D supports drawing points and selecting lines or labels. Verify interaction visually and review other 2D/3D feature differences.
-- 3D placement: two-point fences, bridges and tunnels show a ground-following construction line; visually verify. Add hedge and bramble to the trees tool with click and lasso placement.
+- 3D placement: two-point fences, bridges and tunnels show a ground-following construction line; visually verify. Hedge and bramble now support click and brush/lasso placement in the Trees tools; verify their appearance and editing in the browser.
 - Flight alignment: endpoint availability and explanatory text are implemented in the path panel and Studio; verify with real video, offsets and a flight without video.
 - Visually review the mascot loop, title, responsive Welcome, editor layout and restored annex geometry in a browser. Space/Enter tool cancellation currently applies when the editor canvas has keyboard focus.
 
@@ -144,3 +144,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — measures in 3D
 
 - The 3D editor displays the same measure chains as the plan, permits point-by-point drawing, shows a live preview, and lets the Select tool highlight a line or expand its label. Terrain-following coordinates have automated coverage; browser interaction, label readability and accessibility still need verification.
+
+### Follow-up — hedge and bramble placement
+
+- The Trees and Tree brush selectors include hedge and bramble. A click creates one editable living wall; pen, square, circle and lasso fill the area with individual objects in one undo step. Placement avoids buildings and existing walls and remains within the brush outline. Browser and visual review are pending.

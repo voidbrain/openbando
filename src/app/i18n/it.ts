@@ -5,6 +5,14 @@
  * Voice as in English: short, direct, "tu", no exclamation marks. "Bando" stays (it is the app's word).
  */
 export const IT: Readonly<Record<string, string>> = {
+  'Vegetation': 'Vegetazione',
+  'Plant vegetation here': 'Pianta vegetazione qui',
+  'Click the map to plant a tree, hedge or bramble': 'Clicca la mappa per piantare un albero, una siepe o un rovo',
+  'Paint vegetation with a pen, or fill a square, circle or hand-drawn area': 'Dipingi la vegetazione o riempi un quadrato, un cerchio o un’area disegnata',
+  'A short editable hedge': 'Una breve siepe modificabile',
+  'A short editable bramble thicket': 'Un breve rovo modificabile',
+  '{0} shrubs planted. Undo removes the whole stroke.': '{0} arbusti piantati. Annulla rimuove l’intera pennellata.',
+  'No room for shrubs there (or the stroke was too short).': 'Non c’è spazio per arbusti oppure il tratto era troppo corto.',
   'Measures': 'Misure',
   'Pin start: position at the start of the video and click the ground where the flight started': 'Fissa inizio: posizionati all’inizio del video e clicca sul terreno dove è iniziato il volo',
   'Pin start: position at the start of the flight and click the ground where the flight started': 'Fissa inizio: posizionati all’inizio del volo e clicca sul terreno dove è iniziato',
