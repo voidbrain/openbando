@@ -1,5 +1,6 @@
 import { basementBuilding } from '../core/basement';
 import { cutUnderground } from './underground-cut';
+import { drapeRoad } from './road-drape';
 import { cutRect, edgesOf, slabs } from '../core/footprint';
 import { buildStructure } from './structures';
 import { fenceDef, hedgeLumps, postsAlong, wireSag, type FenceDef } from '../core/fences';
@@ -696,10 +697,7 @@ function roadMesh(ground: SiteGround, r: RoadSpec, order: number): THREE.Mesh {
       idx.push(v, w, v + 1, v + 1, w, w + 1);
     }
   }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  geo.setIndex(idx);
-  geo.computeVertexNormals();
+  const geo = drapeRoad(pos, idx, ground.grid, 0.06);
   const color = r.surface ? surfaceDef(r.surface).color : roadDef(r.kind).color;
   const m = new THREE.Mesh(cutUnderground(geo, ground.vols, 0.06), material(color, { side: THREE.DoubleSide, depthWrite: false, depthTest: !!ground.grid, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 }));
   m.receiveShadow = true;
