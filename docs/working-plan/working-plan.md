@@ -180,4 +180,8 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 ### Follow-up — basement shadow
 
-- The ground-floor slab above a basement casts shadows, with the stairwell opening left clear. An automated ray test verifies the shadow-casting surface and opening; browser lighting verification remains pending. Gallery-road and warehouse-perimeter flicker remain open.
+- The ground-floor slab above a basement casts shadows, with the stairwell opening left clear. An automated ray test verifies the shadow-casting surface and opening; browser lighting verification remains pending. Gallery-road draping now follows terrain triangles; browser verification remains pending. Warehouse-perimeter flicker remains open.
+
+### Follow-up — road and terrain seam
+
+- Road triangles are split along the rendered terrain triangle edges, preserving their 6 cm clearance even across steep diagonal slopes. A regression checks clearance between vertices and retained road area. Verify the gallery and tunnel portals visually; warehouse-perimeter flicker remains open.
