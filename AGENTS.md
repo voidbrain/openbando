@@ -304,9 +304,9 @@ npm run check:i18n                        # every UI text has its Italian
 
 ## Villetta measured example
 
-- `library/bandos/villetta-no-place.json` remains the place-hidden source (no private coordinate inputs). Its release 5 applies the October survey and facade corrections; interpretations and remaining assumptions live in the working plan. Keep its exported counterpart in `public/library/` generated with `tools/build-catalog.mjs`.
+- `library/bandos/villetta-no-place.json` remains the place-hidden source (no private coordinate inputs). Its release 8 applies the October survey, facade and central roof-strip corrections; interpretations and remaining assumptions live in the working plan. Keep its exported counterpart in `public/library/` generated with `tools/build-catalog.mjs`.
 - Greenhouse `BuildingSpec.ribSpacing` optionally sets a measured pitch; absent = the old evenly spaced ~2.5 m ribs. `vaultK` sets the ellipse crown (`width / 2 * vaultK + baseY`), not `height`. Bare frames are intact; only glazed frames get a torn stretch.
-- Store vault crown is wall height + `(width / roofCount / 2) * vaultK` when `roofTurn` is true; `roofRise` alone does not set a barrel crown. Annex slabs are centred on `baseY` with thickness 0.20 m; a measured underside of 6.20 m means baseY 6.30 m.
+- Store vault crown is wall height + `((width - roofCenterStrip) / roofCount / 2) * vaultK` when `roofTurn` is true; `roofRise` alone does not set a barrel crown. Annex slabs are centred on `baseY` with thickness 0.20 m; a measured underside of 6.20 m means baseY 6.30 m.
 - `abando/cage-ladder` v2 is the reusable open cage, not a solid cylinder. Refresh Villetta's fixture from this block, never maintain an independent ladder shape list. Regenerate Playground and bump its release when this shared placement changes.
 
 ## Pixel mascot
@@ -332,7 +332,7 @@ npm run check:i18n                        # every UI text has its Italian
 - Speed-trail colours never change racing drone identity colours or name-label colours. Labels are drawn as plain canvas text.
 - Mascot sources and exports must agree with `timeline.json`; index 16 is the held cross-legged confused pose. The loop starts with no drone. Use the approved pixel-art concrete-and-brick wordmark in Welcome and README; follow `docs/mascot/wordmark-style-guide.md`. Keep colour approval (true orange versus red-orange) and multi-angle terrain/browser verification pending until actually reviewed.
 
-- Villetta release 5 uses `BuildingSpec.archShape = 'parabola'`; absent retains the original elliptical greenhouse. Crown height and rib pitch remain measured values; do not overwrite pilots’ saved copies.
+- Villetta uses `BuildingSpec.archShape = 'parabola'`; absent retains the original elliptical greenhouse. Crown height and rib pitch remain measured values; do not overwrite pilots’ saved copies.
 - Road vertices sample the rendered terrain triangles and use polygon offset; cut coplanar basement-ceiling triangles without treating them as outside fragments. Confirm terrain seams visually before closing the bugs.
 - The mascot pokes the grounded drone twice (pose 17), retracting his hand between pokes (pose 18), then sits for takeoff. Keep canvas and GIF placement in step.
 

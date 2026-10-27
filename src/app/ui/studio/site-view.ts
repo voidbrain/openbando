@@ -66,6 +66,7 @@ export class SiteView {
   readonly groundStyle = input<GroundStyle>('natural');
   /** A brush ring on the ground (terrain tools), or none. */
   readonly cursor = input<{ x: number; z: number; r: number; color: string } | null>(null);
+  readonly drawLine = input<{ a: { x: number; z: number }; b: { x: number; z: number }; color: string } | null>(null);
   protected readonly failed = signal(false);
   private readonly cv = viewChild.required<ElementRef<HTMLCanvasElement>>('cv');
   private r: SiteViewRenderer | null = null;
@@ -98,6 +99,7 @@ export class SiteView {
       const c = this.cursor();
       this.r?.setCursor(c);
     });
+    effect(() => this.r?.setDrawLine(this.drawLine()));
     effect(() => {
       const sel = this.selection();
       this.spec(); // a rebuild invalidates the box: redraw it after
@@ -126,6 +128,7 @@ export class SiteView {
     this.timer = setTimeout(() => {
       try {
         this.r?.show(this.spec(), this.roofHidden(), this.frameKey(), this.focus());
+        this.r?.setDrawLine(this.drawLine());
         this.r?.setSelection(this.selection());
         this.r?.setPaths(this.flights(), this.speedMax());
       } catch {

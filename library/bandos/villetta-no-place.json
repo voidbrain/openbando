@@ -1,6 +1,6 @@
 {
  "about": "The Villetta main store shared without its place: no map and no map data, its real ground travels inside. Open a copy, edit it, load your flights: they start on the take-off pad, and pins and the compass fit them.",
- "release": 7,
+ "release": 8,
  "version": 1,
  "id": "example-villetta-no-place",
  "name": "Villetta (place hidden)",
@@ -708,7 +708,7 @@
      "roof": "vault",
      "roofTurn": true,
      "roofCount": 4,
-     "vaultK": 0.2898655748396681,
+     "vaultK": 0.2952138455293553,
      "roofRise": 2,
      "roofColor": "#b0563d",
      "columns": [
@@ -892,7 +892,8 @@
        "z": 41.4,
        "size": 0.8
       }
-     ]
+     ],
+     "roofCenterStrip": 1
     }
    ],
    "block": {
@@ -2483,6 +2484,124 @@
     },
     "rot": 97.908
    }
+  },
+  {
+   "id": "villetta-ladder-cabin",
+   "kind": "shapes",
+   "name": "Blue ladder roof cabin",
+   "x": 58.43,
+   "z": 61.255,
+   "rotDeg": 276.592,
+   "y": 7,
+   "height": 2.3,
+   "size": 1,
+   "shapes": [
+    {
+     "prim": "box",
+     "at": {
+      "x": -0.95,
+      "y": 1.1,
+      "z": 0
+     },
+     "size": {
+      "x": 0.1,
+      "y": 2.2,
+      "z": 1.9
+     },
+     "rotDeg": 0,
+     "color": "#506a8f"
+    },
+    {
+     "prim": "box",
+     "at": {
+      "x": 0.95,
+      "y": 1.1,
+      "z": 0
+     },
+     "size": {
+      "x": 0.1,
+      "y": 2.2,
+      "z": 1.9
+     },
+     "rotDeg": 0,
+     "color": "#506a8f"
+    },
+    {
+     "prim": "box",
+     "at": {
+      "x": 0,
+      "y": 1.1,
+      "z": 0.9
+     },
+     "size": {
+      "x": 1.9,
+      "y": 2.2,
+      "z": 0.1
+     },
+     "rotDeg": 0,
+     "color": "#506a8f"
+    },
+    {
+     "prim": "box",
+     "at": {
+      "x": -0.7,
+      "y": 1.1,
+      "z": -0.9
+     },
+     "size": {
+      "x": 0.5,
+      "y": 2.2,
+      "z": 0.1
+     },
+     "rotDeg": 0,
+     "color": "#506a8f"
+    },
+    {
+     "prim": "box",
+     "at": {
+      "x": 0.7,
+      "y": 1.1,
+      "z": -0.9
+     },
+     "size": {
+      "x": 0.5,
+      "y": 2.2,
+      "z": 0.1
+     },
+     "rotDeg": 0,
+     "color": "#506a8f"
+    },
+    {
+     "prim": "box",
+     "at": {
+      "x": 0,
+      "y": 2.1,
+      "z": -0.9
+     },
+     "size": {
+      "x": 0.9,
+      "y": 0.2,
+      "z": 0.1
+     },
+     "rotDeg": 0,
+     "color": "#506a8f"
+    },
+    {
+     "prim": "box",
+     "at": {
+      "x": 0,
+      "y": 2.25,
+      "z": 0
+     },
+     "size": {
+      "x": 2,
+      "y": 0.1,
+      "z": 2
+     },
+     "rotDeg": 0,
+     "color": "#506a8f"
+    }
+   ]
   }
  ],
  "trees": [

@@ -392,6 +392,7 @@
       (ground)="onGround3d($event)"
       [groundStyle]="terrain.groundStyle()"
       [cursor]="terrain.cursor3d()"
+      [drawLine]="drawLine3d()"
     />
   }
   @if (!(overlayOn() && view3d())) {
@@ -795,6 +796,9 @@
                   @if (!bd.footprint) {
                     <label class="fld">shape <select (change)="editTop(setRoof, roofOf($event))"><option value="gable" [selected]="tl.roof === 'gable'">gable</option><option value="vault" [selected]="tl.roof === 'vault'">vault</option><option value="flat" [selected]="tl.roof === 'flat'">flat</option></select></label>
                     <label class="fld">repeat × <input type="number" min="1" max="12" step="1" [value]="tl.roofCount ?? tl.vaultCount ?? 1" (change)="editTop(setCount, num($event))" /></label>
+                    @if (tl.roof === 'vault' && (tl.roofCount ?? tl.vaultCount ?? 1) >= 2 && (tl.roofCount ?? tl.vaultCount ?? 1) % 2 === 0) {
+                      <label class="fld" title="Flat strip between the two halves of the barrel roof">centre strip m <input type="number" min="0" max="100" step="0.1" [value]="tl.roofCenterStrip ?? 0" (change)="editTop(setRoofCenterStrip, num($event))" /></label>
+                    }
                     <label class="chk span2"><input type="checkbox" [checked]="!!tl.roofTurn" (change)="editTop(setTurn, checked($event))" /> turn 90°</label>
                   } @else {
                     <span class="dim span2">flat (shaped building)</span>

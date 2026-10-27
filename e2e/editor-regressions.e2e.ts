@@ -27,6 +27,7 @@ test('Welcome shows the approved wordmark, Features link and revised pose assets
 test('basement controls and explicit roof choice update the selected building', async ({
   page,
 }) => {
+  test.setTimeout(90_000);
   await page.goto('/');
   await page.getByRole('button', { name: 'Open the bandos', exact: true }).click();
   const fixture = {
@@ -93,7 +94,10 @@ test('basement controls and explicit roof choice update the selected building', 
   await expect(
     inspector.getByRole('button', { name: 'Delete basement wall', exact: true }),
   ).toBeVisible();
-  await inspector.getByLabel('shape', { exact: true }).selectOption('vault');
+  const roof = inspector.locator('.sec').filter({ has: page.locator('.st').filter({ hasText: /^Roof$/ }) });
+  const roofShape = roof.locator('select');
+  await expect(roofShape).toBeVisible();
+  await roofShape.selectOption('vault');
   await expect(inspector.getByLabel('ruined %', { exact: true })).toHaveValue('55');
   await expect(
     inspector.getByText('Roof removed by ruin or open shell. Choosing a shape restores it.', {

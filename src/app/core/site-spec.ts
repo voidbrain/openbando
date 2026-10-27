@@ -127,6 +127,8 @@ export interface LevelSpec {
   roofTurn?: boolean;
   /** Repeat the roof module this many times (3 side-by-side gables, 4 barrels ...). Default 1. */
   roofCount?: number;
+  /** Flat strip between the two halves of an even-numbered barrel roof, in metres. */
+  roofCenterStrip?: number;
   /** Holes in this floor (a stairwell, an atrium) or, on the ground floor, a water basin. Building-local, from the min corner. */
   voids?: VoidSpec[];
   /** Columns standing on this floor, from its slab up to the next one. Building-local, from the min corner. */
