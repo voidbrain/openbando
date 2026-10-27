@@ -285,6 +285,10 @@ input.mini {
   pointer-events: auto;
   cursor: pointer;
 }
+.ov .basement-vertex:focus-visible {
+  stroke: var(--accent);
+  stroke-width: 3px;
+}
 .ov .rotk {
   cursor: grab;
 }

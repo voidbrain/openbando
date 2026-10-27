@@ -59,13 +59,12 @@ function ray(b: BuildingSpec, x: number, z: number, dx: number, dz: number): num
   const px = x - L, pz = z - W;
   let best: number | null = null;
   for (const e of edgesOf(outlineOf(b))) {
-    if (dx !== 0 && e.axis === 'z') {
-      const t = (e.at - px) * dx;
-      if (t > 1e-6 && pz >= e.from - 1e-6 && pz <= e.to + 1e-6 && (best === null || t < best)) best = t;
-    } else if (dz !== 0 && e.axis === 'x') {
-      const t = (e.at - pz) * dz;
-      if (t > 1e-6 && px >= e.from - 1e-6 && px <= e.to + 1e-6 && (best === null || t < best)) best = t;
-    }
+    const ex = e.b.x - e.a.x, ez = e.b.z - e.a.z;
+    const cross = dx * ez - dz * ex;
+    if (Math.abs(cross) < 1e-9) continue;
+    const ax = e.a.x - px, az = e.a.z - pz;
+    const t = (ax * ez - az * ex) / cross, u = (ax * dz - az * dx) / cross;
+    if (t > 1e-6 && u >= -1e-6 && u <= 1 + 1e-6 && (best === null || t < best)) best = t;
   }
   return best;
 }

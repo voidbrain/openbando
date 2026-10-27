@@ -88,7 +88,11 @@ function partGroup(b: BuildingSpec, li: number, p: PartHighlight): THREE.Group {
     const o = p.seg;
     const y0 = lev.baseY + (o.kind === 'door' ? 0 : Math.min(lev.height - 0.2, o.sill));
     const color = o.kind === 'door' ? '#ff9a2e' : '#4fc3f7';
-    out.add(o.axis === 'x' ? marker(o.w, o.h, 0.8, color, o.c, y0 + o.h / 2, o.at) : marker(0.8, o.h, o.w, color, o.at, y0 + o.h / 2, o.c));
+    if (o.vector) {
+      const m = marker(o.w, o.h, 0.8, color, o.vector.a.x + o.c * o.vector.ux, y0 + o.h / 2, o.vector.a.z + o.c * o.vector.uz);
+      m.rotation.y = -Math.atan2(o.vector.uz, o.vector.ux);
+      out.add(m);
+    } else out.add(o.axis === 'x' ? marker(o.w, o.h, 0.8, color, o.c, y0 + o.h / 2, o.at) : marker(0.8, o.h, o.w, color, o.at, y0 + o.h / 2, o.c));
   } else if (p.t === 'wall') {
     const len = Math.hypot(p.c.x - p.a.x, p.c.z - p.a.z);
     const mx = (p.a.x + p.c.x) / 2 - L / 2, mz = (p.a.z + p.c.z) / 2 - W / 2;

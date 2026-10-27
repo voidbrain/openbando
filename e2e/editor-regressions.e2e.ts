@@ -102,6 +102,20 @@ test('basement controls and explicit roof choice update the selected building', 
   const height = inspector.getByLabel('wall height m', { exact: true });
   await height.fill('3.5'); await height.press('Tab');
   await expect(inspector.getByLabel('basement m', { exact: true })).toHaveValue('3.5');
+  // A keyboard move changes one vertex, making a diagonal wall while keeping the −1 floor selected.
+  const vertex = page.locator('[data-pk="basement-vertex:1"]');
+  await expect(vertex).toBeVisible();
+  const oldX = await vertex.getAttribute('cx');
+  await vertex.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(vertex).not.toHaveAttribute('cx', oldX!);
+  await expect(topBar.getByRole('button', { name: '−1', exact: true })).toHaveClass(/on/);
+  await vertex.focus();
+  await page.keyboard.press('Insert');
+  await expect(page.locator('[data-pk^="basement-vertex:"]')).toHaveCount(5);
+  await page.locator('[data-pk="basement-vertex:2"]').focus();
+  await page.keyboard.press('Delete');
+  await expect(page.locator('[data-pk^="basement-vertex:"]')).toHaveCount(4);
   await page.locator('app-bando-editor .palette button[title^="Column ·"]').click();
   const svg = page.locator('app-bando-editor svg.ov');
   const mapBox = await svg.boundingBox(), buildingBox = await page.locator('[data-pk="building:b"]').first().boundingBox();

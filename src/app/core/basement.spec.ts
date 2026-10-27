@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { basementBuilding } from './basement';
+import { basementBuilding, insertBasementVertex, moveBasementVertex, removeBasementVertex } from './basement';
+import { addOpening, listOpenings, moveOpening } from './openings';
 import { emptySpec, sanitizeSpec, type BuildingSpec } from './site-spec';
 import { siteGround } from './site-ground';
 import { pickModel } from '../three/site-pick';
@@ -95,6 +96,91 @@ describe('editable basement join', () => {
 });
 
 describe('basement floor tools', () => {
+  it('moves a basement vertex without moving floor objects and preserves undo and saved diagonal outlines', async () => {
+    const { SiteEditor } = await import('./site-editor');
+    const b = building();
+    b.basement = { height: 3, columns: [{ x: 5, z: 4, size: 0.4 }], doors: { n: [{ kind: 'door', c: 5, w: 1, h: 2 }] } };
+    const s = emptySpec(); s.buildings = [b];
+    const ed = new SiteEditor(); ed.load(s);
+    ed.commitSite(d => { expect(moveBasementVertex(d.buildings[0]!, 1, { x: 4, z: -3 })).toBe(true); });
+    const changed = ed.draft().buildings[0]!;
+    const floor = basementBuilding(changed);
+    expect(floor.footprint).toBeDefined();
+    expect(listOpenings(floor, 0)).toHaveLength(1);
+    expect(changed.basement!.columns![0]!.x).toBe(5);
+    expect(sanitizeSpec(JSON.parse(JSON.stringify(ed.draft())))!.buildings[0]!.basement!.outline).toEqual(changed.basement!.outline);
+    ed.undo();
+    expect(ed.draft().buildings[0]!.basement!.outline).toBeUndefined();
+    ed.redo();
+    expect(ed.draft().buildings[0]!.basement!.outline).toEqual(changed.basement!.outline);
+    const invalid = structuredClone(changed);
+    expect(moveBasementVertex(invalid, 1, { x: -6, z: 5 })).toBe(false);
+    expect(invalid).toEqual(changed);
+  });
+  it('places and slides an opening along a diagonal wall', () => {
+    const b = building();
+    b.basement = { height: 3, outline: [{ x: -5, z: -4 }, { x: 5, z: -4 }, { x: 5, z: 0 }, { x: 0, z: 4 }, { x: -5, z: 4 }] };
+    const mini = basementBuilding(b);
+    const id = addOpening(mini, 0, { x: 2.5, z: 2 }, 'door', 1)!;
+    const opening = listOpenings(mini, 0).find(o => o.id === id)!;
+    expect(opening.vector).toBeDefined();
+    moveOpening(mini, 0, id, opening.c + 0.5);
+    const moved = mini.levels[0]!.wallOpenings![0]!;
+    expect((moved.x - 5) * 4 + moved.z * 5).toBeCloseTo(0, 5);
+  });
+  it('inserts a vertex without cutting a door in half', () => {
+    const b = building();
+    b.basement = { height: 3, doors: { n: [{ kind: 'door', c: 5, w: 2, h: 2 }] } };
+    const unchanged = structuredClone(b);
+    expect(insertBasementVertex(b, 0)).toBe(false);
+    expect(b).toEqual(unchanged);
+    expect(insertBasementVertex(b, 1)).toBe(true);
+    expect(b.basement!.outline).toHaveLength(5);
+    expect(listOpenings(basementBuilding(b), 0)).toHaveLength(1);
+    const inserted = b.basement!.outline![2]!;
+    expect(moveBasementVertex(b, 2, { x: inserted.x + 1, z: inserted.z })).toBe(true);
+    expect(removeBasementVertex(b, 2)).toBe(true);
+    expect(b.basement!.outline).toHaveLength(4);
+    expect(listOpenings(basementBuilding(b), 0)).toHaveLength(1);
+    const saved = structuredClone(b);
+    expect(removeBasementVertex(b, 0)).toBe(false); // the adjacent north wall contains the door
+    expect(b).toEqual(saved);
+  });
+  it('renders and collides against a diagonal basement wall with a door, including a floor void', () => {
+    const b = building();
+    b.basement = {
+      height: 3,
+      outline: [{ x: -5, z: -4 }, { x: 5, z: -4 }, { x: 5, z: 0 }, { x: 0, z: 4 }, { x: -5, z: 4 }],
+      wallOpenings: [{ kind: 'door', x: 2.5, z: 2, w: 1.5, h: 2.2 }],
+      voids: [{ x0: 3, z0: 2, x1: 5, z1: 4 }],
+    };
+    const s = emptySpec(); s.extent = 60; s.buildings = [b]; s.pads = [];
+    const model = buildSiteFromSpec(s);
+    expect(model.collider.hit(new Vec3(2.5, -2, 2))).toBe(false);
+    expect(model.collider.hit(new Vec3(4.2, -2, 0.64))).toBe(true);
+    expect(model.collider.groundAt(-4, 0, -2)).toBe(-3);
+    expect(model.collider.groundAt(4, 3, -2)).toBe(0);
+    model.group.updateMatrixWorld(true);
+    const groundRay = (x: number, z: number) => new THREE.Raycaster(new THREE.Vector3(x, -2, z), new THREE.Vector3(0, -1, 0), 0, 2).intersectObject(model.group, true);
+    expect(groundRay(-4, 0).length).toBeGreaterThan(0);
+    expect(groundRay(-1, -1)).toHaveLength(0);
+    expect(groundRay(4, 3)).toHaveLength(0);
+  });
+  it('keeps diagonal walls and floor aligned in a rotated building and isolated 3D floor', async () => {
+    const { indoorViewSpec } = await import('../three/indoor-view');
+    const b = building(); b.rotDeg = 30;
+    b.basement = { height: 3, outline: [{ x: -5, z: -4 }, { x: 5, z: -4 }, { x: 5, z: 0 }, { x: 0, z: 4 }, { x: -5, z: 4 }] };
+    const s = emptySpec(); s.extent = 60; s.buildings = [b]; s.pads = [];
+    const at = (x: number, z: number) => ({ x: x * Math.cos(Math.PI / 6) - z * Math.sin(Math.PI / 6), z: x * Math.sin(Math.PI / 6) + z * Math.cos(Math.PI / 6) });
+    const wall = at(2.5, 2), floor = at(-4, 0);
+    for (const spec of [s, indoorViewSpec(s, { id: b.id, li: -1 })]) {
+      const model = buildSiteFromSpec(spec);
+      expect(model.collider.hit(new Vec3(wall.x, -2, wall.z))).toBe(true);
+      model.group.updateMatrixWorld(true);
+      const ray = new THREE.Raycaster(new THREE.Vector3(floor.x, -2, floor.z), new THREE.Vector3(0, -1, 0), 0, 2);
+      expect(ray.intersectObject(model.group, true).length).toBeGreaterThan(0);
+    }
+  });
   it('keeps floor-tool data separate from G and through save/import', async () => {
     const { editBasementFloor } = await import('./basement');
     const b = building();

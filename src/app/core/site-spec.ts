@@ -11,6 +11,7 @@ import { sanitizeTerrain, type TerrainSpec } from './terrain';
 import { sanitizeLayers } from './layers';
 import { sanitizeShapes, type ShapeSpec } from './shapes';
 import type { BlockRef } from './blocks';
+import { validOutline } from './footprint';
 
 export interface Vec2 {
   x: number;
@@ -422,7 +423,7 @@ export function fixturesInSite(b: BuildingSpec): StructureSpec[] {
 function cleanBasement(raw: BuildingSpec['basement']): BuildingSpec['basement'] {
   if (!raw || !Number.isFinite(raw.height)) return undefined;
   const point=(p:Vec2):boolean=>!!p && Number.isFinite(p.x) && Number.isFinite(p.z) && Math.abs(p.x)<=300 && Math.abs(p.z)<=300;
-  const outline=Array.isArray(raw.outline) && raw.outline.length>=4 && raw.outline.length<=64 && raw.outline.every(point) ? raw.outline.map(p=>({x:p.x,z:p.z})) : undefined;
+  const outline=Array.isArray(raw.outline) && raw.outline.every(point) && validOutline(raw.outline) ? raw.outline.map(p=>({x:p.x,z:p.z})) : undefined;
   const sides=raw.sides ? Object.fromEntries((['n','s','e','w'] as const).map(k=>[k,raw.sides?.[k]!==false])) : undefined;
   const partitions=Array.isArray(raw.partitions) ? raw.partitions.filter(w=>Array.isArray(w) && w.length===2 && w.every(point)).slice(0,100).map(([a,b])=>[{x:a.x,z:a.z},{x:b.x,z:b.z}] as [Vec2,Vec2]) : undefined;
   const validOpening = (o: OpeningSpec): boolean => !!o && (o.kind === 'door' || o.kind === 'window') && Number.isFinite(o.c) && Number.isFinite(o.w) && Number.isFinite(o.h) && o.w > 0 && o.h > 0 && (o.sill === undefined || Number.isFinite(o.sill));

@@ -18,6 +18,34 @@ export interface Rect {
 
 const EPS = 1e-6;
 
+/** Whether every edge follows one of the building's local axes. */
+export function isRectilinear(poly: readonly Pt[]): boolean {
+  return poly.every((p, i) => {
+    const q = poly[(i + 1) % poly.length]!;
+    return Math.abs(p.x - q.x) < EPS || Math.abs(p.z - q.z) < EPS;
+  });
+}
+
+/** A single non-self-intersecting outline with usable edges and area. */
+export function validOutline(poly: readonly Pt[]): boolean {
+  if (poly.length < 3 || poly.length > 64 || poly.some(p => !Number.isFinite(p.x) || !Number.isFinite(p.z))) return false;
+  const cross = (a: Pt, b: Pt, c: Pt): number => (b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x);
+  const on = (a: Pt, b: Pt, p: Pt): boolean => Math.abs(cross(a, b, p)) < EPS && p.x >= Math.min(a.x, b.x) - EPS && p.x <= Math.max(a.x, b.x) + EPS && p.z >= Math.min(a.z, b.z) - EPS && p.z <= Math.max(a.z, b.z) + EPS;
+  let area = 0;
+  for (let i = 0; i < poly.length; i++) {
+    const a = poly[i]!, b = poly[(i + 1) % poly.length]!;
+    if (Math.hypot(a.x - b.x, a.z - b.z) < 0.5) return false;
+    area += a.x * b.z - b.x * a.z;
+    for (let j = i + 1; j < poly.length; j++) {
+      if (j === i + 1 || (i === 0 && j === poly.length - 1)) continue;
+      const c = poly[j]!, d = poly[(j + 1) % poly.length]!;
+      const abC = cross(a, b, c), abD = cross(a, b, d), cdA = cross(c, d, a), cdB = cross(c, d, b);
+      if ((abC * abD < -EPS && cdA * cdB < -EPS) || on(a, b, c) || on(a, b, d) || on(c, d, a) || on(c, d, b)) return false;
+    }
+  }
+  return Math.abs(area) >= 2;
+}
+
 export const rectPoly = (length: number, width: number): Pt[] => [
   { x: -length / 2, z: -width / 2 },
   { x: length / 2, z: -width / 2 },
