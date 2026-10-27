@@ -152,12 +152,12 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — 3D indoor editing
 
 - Indoors and floor controls are available in the 3D editor. The selected building is displayed one floor at a time, with its roof removed; floor tools place onto that floor’s elevation. Selection of a rendered wall or column maps to the corresponding original floor.
-- Verify wall, void, door, window, column and stair placement in a browser, including rotated buildings and upper floors. Basement floor tools are implemented in 2D and 3D; browser verification remains open. A basement floor opening connects to a fully enclosing box room directly below; curved tunnels and partial overlaps remain open. 3D move/resize handles for rectangular buildings are implemented and await browser verification. Shaped-building handles remain open.
+- Verify wall, void, door, window, column and stair placement in a browser, including rotated buildings and upper floors. Basement floor tools are implemented in 2D and 3D; browser verification remains open. A basement floor opening connects to a fully enclosing box room directly below; curved tunnels and partial overlaps remain open. 3D move/resize handles for rectangular buildings are implemented and await browser verification. Shaped-building move and edge handles are implemented; browser verification remains open.
 - Full guide E2E on PR #85 failed on Look around in 3D, Draw a building, Plant trees with the brush and Edit with the AI assistant; showcase was flaky. The cause is not yet established and these failures remain open.
 
 ### Follow-up — 3D building handles
 
-- In 3D Select mode, rectangular buildings have a cyan move handle and four yellow resize handles. They reuse the 2D overlap guard, snapping and single-gesture undo. Shaped buildings still require 2D handles or inspector fields. Browser interaction and accessibility verification remain pending.
+- In 3D Select mode, rectangular buildings have a cyan move handle and four yellow resize handles. They reuse the 2D overlap guard, snapping and single-gesture undo. Shaped buildings use a move handle and one resize handle per outline edge. Browser interaction and accessibility verification remain pending.
 
 ### Follow-up — basement floor tools
 
@@ -168,3 +168,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 - A basement slab opening now links rendering and collision to a box room immediately below when the whole opening fits inside it. The lower ceiling is cut, the drone can pass through, and its ground height becomes the lower room floor. Unconnected openings expose solid soil below the slab rather than creating an invented underground void. Rotated opening coordinates are covered by tests.
 - Connecting openings to curved tunnels or partially overlapping rooms and arbitrary basement outline manipulation remain open. Visual checks of the gallery/warehouse seams and basement lighting remain pending.
+
+### Follow-up — shaped-building 3D handles
+
+- Shaped buildings expose a move handle and one handle per outline edge in 3D Select mode. Edge drags use the same reshape, overlap checks and undo path as 2D. Browser interaction and accessibility verification remain pending.

@@ -326,7 +326,7 @@ export class SiteViewRenderer {
     this.scene.add(this.box);
     if (this.handlesEnabled && sel.kind === 'building' && !this.indoorFloor) {
       const building = this.spec.buildings.find((item) => item.id === sel.id);
-      if (building && !building.footprint) {
+      if (building) {
         this.handles = new THREE.Group();
         const size = Math.max(0.6, Math.min(2, Math.max(building.length, building.width) * 0.035));
         for (const handle of buildingHandles(building, this.model.ground.building.get(building.id) ?? 0)) {
