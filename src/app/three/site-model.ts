@@ -806,6 +806,9 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
 
   const mats: Record<string, THREE.MeshStandardMaterial> = {};
   const wallMats: Record<string, THREE.MeshStandardMaterial> = {};
+  // Basement wall tops can meet terrain at exactly the pad height. Resolve the shared depth consistently,
+  // just as for the exterior walls above, without widening the terrain hole or changing collision.
+  const basementWall = material('#d7d0bd', { polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 });
   const ctx: Ctx = {
     ruin: null,
     noSlabs: false,
@@ -959,7 +962,11 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     ctx.ruin = null;
     ctx.noSlabs = false;
     ctx.mat.wall = baseWall;
-    if (b.basement && !b.frame) buildBasement(ctx, b, inner, floorMat);
+    if (b.basement && !b.frame) {
+      ctx.mat.wall = basementWall;
+      buildBasement(ctx, b, inner, floorMat);
+      ctx.mat.wall = baseWall;
+    }
     // roofs live under the building but belong to the global roof group for hide/show
     roof.attach(localRoof);
     units.push(inner, localRoof);

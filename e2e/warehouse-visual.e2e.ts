@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+// Flicker is motion-dependent, so keep the orbit recording as well as the still frames in the report.
+test.use({ video: 'on' });
+
 /** Capture the warehouse from several angles so its terrain seam can be reviewed on the WebGL runner. */
 test('warehouse terrain seam visual capture', async ({ page }, info) => {
   test.setTimeout(180_000);
