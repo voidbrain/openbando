@@ -159,6 +159,10 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 - In 3D Select mode, rectangular buildings have a cyan move handle and four yellow resize handles. They reuse the 2D overlap guard, snapping and single-gesture undo. Shaped buildings use a move handle and one resize handle per outline edge. Browser interaction and accessibility verification remain pending.
 
+### Follow-up — basement floor label and height
+
+- The indoor hint and selected void show −1 for the basement. The inspector wall-height control updates basement depth while editing −1, without changing G. A focused browser regression covers switching floors and checking both heights; GitHub browser verification remains pending.
+
 ### Follow-up — basement floor tools
 
 - The −1 floor can be edited with walls, openings, columns, floor voids and stairs in 2D and 3D. Its data is stored separately from G, survives sanitization and participates in undo/redo. Placing basement stairs with stairwell enabled cuts a hole in G in the same undo step.

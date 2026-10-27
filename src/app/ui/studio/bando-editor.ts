@@ -282,6 +282,7 @@ export class BandoEditor {
   protected readonly level = signal(0);
   protected readonly pick = signal<Pick>(null);
   protected levelName = (i: number): string => (i === 0 ? 'G' : `L${i}`);
+  protected readonly activeLevelName = computed(() => this.indoor() && this.basementFocus() ? '−1' : this.levelName(this.level()));
   protected readonly drag = signal<Drag | null>(null);
   protected readonly autoAlign = signal(true);
   /** Magnet while moving / rotating a building: flush to neighbours, angles to theirs and to the map axes. Alt = off for one drag. */
@@ -764,7 +765,7 @@ export class BandoEditor {
     if (t === 'door' || t === 'window') return this.b() ? `Click a wall of “${this.b()!.name}” to add a ${t}.` : 'Select a building first.';
     if (t === 'wall') return this.b() ? 'Drag inside the building to draw an interior wall.' : 'Select a building first.';
     if (t === 'measure') return 'Click points: each one continues the chain (B of one is A of the next); click the same point twice, Esc or right-click to stop. Click a line to select it, drag to move it, Delete removes it.';
-    if (this.indoor()) return `Floor ${this.levelName(this.level())}: roof off in 3D. Doors, windows, walls, voids and columns are edited here, per floor. Delete removes the selection.`;
+    if (this.indoor()) return `Floor ${this.activeLevelName()}: roof off in 3D. Doors, windows, walls, voids and columns are edited here, per floor. Delete removes the selection.`;
     return 'Drag a building to move it, corners / edge squares to resize or reshape, the yellow knob to rotate. Drag the map to pan.';
   });
 
@@ -2346,7 +2347,7 @@ export class BandoEditor {
       default: {
         const tool = (label: string, t: Tool): CtxItem => ({ label, act: () => this.setTool(t) });
         if (this.indoor()) {
-          return [head(`Floor ${this.levelName(this.level())}`), tool('Draw a wall', 'wall'), tool('Place columns', 'column'), tool('Add a door', 'door'), tool('Add a window', 'window'), tool('Cut a void', 'void'), sep, { label: 'Exit indoors', act: () => this.exitIndoor() }];
+          return [head(`Floor ${this.activeLevelName()}`), tool('Draw a wall', 'wall'), tool('Place columns', 'column'), tool('Add a door', 'door'), tool('Add a window', 'window'), tool('Cut a void', 'void'), sep, { label: 'Exit indoors', act: () => this.exitIndoor() }];
         }
         const q = { x: snap(p.x, 1), z: snap(p.z, 1) };
         return [
@@ -2683,6 +2684,10 @@ export class BandoEditor {
   protected readonly setRoof = (l: LevelSpec, v: LevelSpec['roof']): void => { l.roof = v; };
 
   protected editLevel<T>(fn: (l: LevelSpec, v: T) => void, v: T): void {
+    if (this.indoor() && this.basementFocus() && fn === this.setHeight && typeof v === 'number') {
+      this.mutate(this.setBasement, v);
+      return;
+    }
     this.ed.editSelectedLevel((l) => fn(l, v), this.level());
     this.applyNow();
   }

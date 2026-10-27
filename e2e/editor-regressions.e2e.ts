@@ -98,6 +98,10 @@ test('basement controls and explicit roof choice update the selected building', 
   const topBar = page.locator('app-bando-editor > .bar');
   await topBar.getByRole('button', { name: 'Indoors', exact: true }).click();
   await expect(topBar.getByRole('button', { name: '−1', exact: true })).toHaveClass(/on/);
+  await expect(page.getByText(/Floor −1: roof off in 3D/)).toBeVisible();
+  const height = inspector.getByLabel('wall height m', { exact: true });
+  await height.fill('3.5'); await height.press('Tab');
+  await expect(inspector.getByLabel('basement m', { exact: true })).toHaveValue('3.5');
   await page.locator('app-bando-editor .palette button[title^="Column ·"]').click();
   const svg = page.locator('app-bando-editor svg.ov');
   const mapBox = await svg.boundingBox(), buildingBox = await page.locator('[data-pk="building:b"]').first().boundingBox();
@@ -112,8 +116,10 @@ test('basement controls and explicit roof choice update the selected building', 
   expect(studioAxe.violations.map(v => v.id)).toEqual([]);
   await page.locator('[data-tour="view-2d"]').click();
   await topBar.getByRole('button', { name: 'G', exact: true }).click();
+  await expect(height).toHaveValue('4');
   await expect(page.locator('[data-pk="col:0"]')).toHaveCount(0);
   await topBar.getByRole('button', { name: '−1', exact: true }).click();
+  await expect(height).toHaveValue('3.5');
   await expect(page.locator('[data-pk="col:0"]')).toHaveCount(1);
   await topBar.locator('button[title^="Take the roof off"]').click();
   const roof = inspector.locator('.sec').filter({ has: page.locator('.st').filter({ hasText: /^Roof$/ }) });
