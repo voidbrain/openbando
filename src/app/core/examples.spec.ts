@@ -145,7 +145,11 @@ describe('Villetta survey refinements', () => {
     expect(greenhouse.glass).toBe(false);
     expect(greenhouse.archShape).toBe('parabola');
     const end = greenhouse.fixtures?.find(f => f.id === 'villetta-greenhouse-east-frame');
-    expect(end?.x).toBeCloseTo(greenhouse.length / 2);
+    expect(end?.x).toBeCloseTo(-greenhouse.length / 2);
+    const placed = fixturesInSite(greenhouse).find(f => f.id === end?.id)!;
+    const opposite = fixturesInSite({ ...greenhouse, fixtures: [{ ...end!, x: -end!.x }] })[0]!;
+    const distanceToAnnex = (p: { x: number; z: number }) => Math.hypot(p.x - annex.pos.x, p.z - annex.pos.z);
+    expect(distanceToAnnex(placed)).toBeGreaterThan(distanceToAnnex(opposite));
     expect(end?.shapes).toHaveLength(8);
   });
   it('leaves a 3.11 m first-floor walkway, a central void and a 6.20 m slab underside', () => {
