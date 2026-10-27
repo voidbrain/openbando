@@ -422,7 +422,17 @@ function buildFloorAndColumns(ctx: Ctx, b: BuildingSpec, l: LevelSpec, inner: TH
   for (const v of voids) rects = rects.flatMap((r) => cutRect(r, v));
   for (const r of rects) {
     const cx = (r.x0 + r.x1) / 2, cz = (r.z0 + r.z1) / 2, w = r.x1 - r.x0, d = r.z1 - r.z0;
-    if (l.baseY === 0) ctx.addBox(inner, cx, 0.05, cz, w, 0.1, d, floorMat, !!b.basement, !!b.basement);
+    if (b.frame && l === b.levels[0] && l.baseY > 0) {
+      // A raised greenhouse platform is solid, but one rotated AABB would cover too much ground around it.
+      ctx.addBox(inner, cx, l.baseY / 2, cz, w, l.baseY, d, floorMat, false, false);
+      const nx = Math.max(1, Math.ceil(w / 3)), nz = Math.max(1, Math.ceil(d / 3));
+      const a = ctx.rot * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+      for (let ix = 0; ix < nx; ix++) for (let iz = 0; iz < nz; iz++) {
+        const x = r.x0 + (ix + 0.5) * w / nx, z = r.z0 + (iz + 0.5) * d / nz;
+        ctx.solids.push(rotBoxLocal(ctx.at[0] + x * c - z * s, ctx.at[1] + x * s + z * c, w / nx, d / nz, ctx.rot, 0, l.baseY, false));
+      }
+    }
+    else if (l.baseY === 0) ctx.addBox(inner, cx, 0.05, cz, w, 0.1, d, floorMat, !!b.basement, !!b.basement);
     else if (!ctx.noSlabs) ctx.addBox(inner, cx, l.baseY, cz, w, 0.2, d, floorMat, false, false); // a deep ruin has lost its upper floors
   }
   if (l.baseY === 0) {

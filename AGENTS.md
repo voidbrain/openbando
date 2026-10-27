@@ -304,7 +304,7 @@ npm run check:i18n                        # every UI text has its Italian
 
 ## Villetta measured example
 
-- `library/bandos/villetta-no-place.json` remains the place-hidden source (no private coordinate inputs). Its release 10 applies the October survey, facade, central roof-strip and revised clear column spacing; interpretations live in the archived working plan and remaining checks in the backlog. Keep its exported counterpart in `public/library/` generated with `tools/build-catalog.mjs`.
+- `library/bandos/villetta-no-place.json` remains the place-hidden source (no private coordinate inputs). Its release 11 raises the greenhouse floor and end frame by an estimated 0.35 m above its levelled pad; release 10 applies the October survey, facade, central roof-strip and revised clear column spacing; interpretations live in the archived working plan and remaining checks in the backlog. Keep its exported counterpart in `public/library/` generated with `tools/build-catalog.mjs`.
 - Greenhouse `BuildingSpec.ribSpacing` optionally sets a measured pitch; absent = the old evenly spaced ~2.5 m ribs. `vaultK` sets the ellipse crown (`width / 2 * vaultK + baseY`), not `height`. Bare frames are intact; only glazed frames get a torn stretch.
 - Store vault crown is wall height + `((width - roofCenterStrip) / roofCount / 2) * vaultK` when `roofTurn` is true; `roofRise` alone does not set a barrel crown. Annex slabs are centred on `baseY` with thickness 0.20 m; a measured underside of 6.20 m means baseY 6.30 m.
 - `abando/cage-ladder` v2 is the reusable open cage, not a solid cylinder. Refresh Villetta's fixture from this block, never maintain an independent ladder shape list. Regenerate Playground and bump its release when this shared placement changes.
