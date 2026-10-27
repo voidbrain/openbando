@@ -1,6 +1,8 @@
 import { Service, inject, signal } from '@angular/core';
 import { AI_SCRIPTS, SNIPPET_BY_ID, backTarget, type At, type Beat, type Hook, type Need, type Snippet, type Tour, type TourAction } from '../core/tour';
 import { sanitizeSpec } from '../core/site-spec';
+import { MASCOT_DURATION } from '../core/mascot';
+import { MascotProgressService } from './mascot-progress.service';
 import { PANEL_BY_ID, type PanelId } from '../ui/panel-defs';
 import { LayoutStore } from '../state/layout.store';
 import { AiService } from './ai.service';
@@ -60,6 +62,7 @@ class Stopped extends Error {}
 @Service()
 export class TourService {
   private readonly layout = inject(LayoutStore);
+  private readonly mascotProgress = inject(MascotProgressService);
   private readonly studio = inject(StudioService);
   private readonly site = inject(SiteService);
   private readonly ai = inject(AiService);
@@ -426,6 +429,14 @@ export class TourService {
         // a clean screen: only Welcome over the empty world, turning (a showcase may run on a visit with a bando open)
         this.entryScreen();
         return this.sleep(400);
+      case 'mascotLoop': {
+        // Count rendered animation time, not wall time: hidden tabs and slow image loading cannot cut the loop short.
+        const start = this.mascotProgress.elapsed;
+        while (this.mascotProgress.elapsed - start < MASCOT_DURATION && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && !this.skip) {
+          await this.sleep(100);
+        }
+        return;
+      }
       case 'orbit':
         this.scene.autoOrbit.set(arg === 'on');
         return;

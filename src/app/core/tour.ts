@@ -20,7 +20,7 @@ export const SECTIONS: readonly { id: Section; title: string }[] = [
 ];
 
 /** What the player can do besides moving the cursor; each one is implemented in the tour service. */
-export const HOOKS = ['panel', 'list', 'fakeGenerate', 'tool', 'select', 'view', 'ai', 'demoLog', 'demoVideo', 'autoSync', 'play', 'pause', 'closeBoxes', 'layoutReset', 'orbit', 'flightSite', 'hide', 'camera', 'fakeSync', 'arrange', 'ghost', 'show'] as const;
+export const HOOKS = ['panel', 'list', 'fakeGenerate', 'tool', 'select', 'view', 'ai', 'demoLog', 'demoVideo', 'autoSync', 'play', 'pause', 'closeBoxes', 'layoutReset', 'mascotLoop', 'orbit', 'flightSite', 'hide', 'camera', 'fakeSync', 'arrange', 'ghost', 'show'] as const;
 export type Hook = (typeof HOOKS)[number];
 
 export type At = readonly [number, number];
@@ -222,7 +222,7 @@ export const SNIPPETS: readonly Snippet[] = [
     section: 'showcase',
     title: 'Welcome',
     beats: [
-      { say: 'OpenBando: your bandos in 3D, and your flights back inside them.', actions: [hook('layoutReset'), hook('orbit', 'on'), wait(2600)] },
+      { say: 'OpenBando: your bandos in 3D, and your flights back inside them.', actions: [hook('layoutReset'), hook('orbit', 'on'), hook('mascotLoop')] },
       { say: 'Build the place. Fly it again. Share it, or keep it secret.', actions: [p('welcome-build', [0.5, 0.3]), wait(900), click('welcome-fly', [0.5, 0.3]), wait(2200), p('welcome-share', [0.5, 0.3]), wait(900)] },
     ],
   },
