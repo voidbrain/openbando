@@ -167,8 +167,13 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — basement floor collision
 
 - A basement slab opening now links rendering and collision to a box room immediately below when the whole opening fits inside it. The lower ceiling is cut, the drone can pass through, and its ground height becomes the lower room floor. Unconnected openings expose solid soil below the slab rather than creating an invented underground void. Rotated opening coordinates are covered by tests.
-- Connecting openings to curved tunnels or partially overlapping rooms and arbitrary basement outline manipulation remain open. Visual checks of the gallery/warehouse seams and basement lighting remain pending.
+- Connecting openings to curved tunnels or partially overlapping rooms remains open. Basement outlines now support rectilinear cut, wing and edge edits in 2D; freeform diagonal outlines remain open. Visual checks of the gallery/warehouse seams and basement lighting remain pending.
 
 ### Follow-up — shaped-building 3D handles
 
 - Shaped buildings expose a move handle and one handle per outline edge in 3D Select mode. Edge drags use the same reshape, overlap checks and undo path as 2D. Browser interaction and accessibility verification remain pending.
+
+### Follow-up — basement outline editing
+
+- In 2D indoor mode, the basement has edge handles and supports Cut and Wing to build rectilinear outlines independently of G. Non-centred outlines are re-centred for floor editing and rendering without moving the building above; rotated basement collision centers follow the rendered geometry. Undo and save/import are covered by tests.
+- Browser verification remains pending. The underlying building geometry supports rectilinear outlines, so freeform diagonal vertex editing and holes or disconnected outline pieces remain open.

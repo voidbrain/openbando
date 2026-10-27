@@ -222,6 +222,11 @@
         <g [attr.transform]="tf(bd)">
           @if (indoor() && basementFocus()) {
             <polygon [attr.points]="outline(bd)" fill="#a9aaa0" fill-opacity="0.2" stroke="#ffd166" stroke-width="2" stroke-dasharray="6 3" vector-effect="non-scaling-stroke" pointer-events="none" />
+            @if (tool() === 'select') {
+              @for (edge of edgesOf(outlineOf(bd)); track edge.i) {
+                <rect class="hit" [attr.x]="(edge.a.x + edge.b.x) / 2 - hr()" [attr.y]="(edge.a.z + edge.b.z) / 2 - hr()" [attr.width]="hr() * 2" [attr.height]="hr() * 2" fill="#ffd166" stroke="#12200b" vector-effect="non-scaling-stroke" [attr.data-pk]="'basement-edge:' + edge.i" (pointerdown)="edgeDown($event, edge.i)" />
+              }
+            }
           }
           @if (!indoor()) {
             @for (pt of lvl()?.partitions ?? []; track $index) {

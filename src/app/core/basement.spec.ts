@@ -140,3 +140,36 @@ it('opens the basement slab and connected room ceiling together for rendering an
   const first = ray.intersectObject(model.group, true).find(h => h.object instanceof THREE.Mesh && h.object.visible);
   expect(first?.point.y).toBeCloseTo(-7, 1);
 });
+
+it('reshapes an offset rotated basement without moving the building above', async () => {
+  const { reshapeBasement } = await import('./basement');
+  const b = building(); b.rotDeg = 90; b.pos = { x: 20, z: 10 };
+  b.basement!.columns = [{ x: 2, z: 2, size: 1 }];
+  const oldPos = { ...b.pos };
+  expect(reshapeBasement(b, { x0: 5, x1: 8, z0: -2, z1: 2 }, 'add')).toBe(true);
+  expect(b.pos).toEqual(oldPos);
+  const floor = basementBuilding(b);
+  expect(floor.length).toBe(13);
+  expect(floor.pos.x).toBeCloseTo(20);
+  expect(floor.pos.z).toBeCloseTo(11.5);
+  expect(floor.levels[0]!.columns![0]!.x).toBe(2);
+  const s = emptySpec(); s.extent = 60; s.buildings = [b]; s.pads = [];
+  const model = buildSiteFromSpec(s);
+  // The column was at local (-3, -2), hence world (22, 7); it remains there after the wing.
+  expect(model.collider.hit(new Vec3(22, -2, 7))).toBe(true);
+  expect(model.collider.groundAt(20, 17, -2)).toBe(-3);
+});
+
+it('undoes and imports a shaped basement without changing the upper building', async () => {
+  const { reshapeBasement } = await import('./basement');
+  const { SiteEditor } = await import('./site-editor');
+  const spec = emptySpec(); const b = building(); b.basement!.doors = { n: [{ kind: 'door', c: 2, w: 1, h: 2 }] }; spec.buildings = [b];
+  const ed = new SiteEditor(); ed.load(spec);
+  ed.commitSite(s => { expect(reshapeBasement(s.buildings[0]!, { x0: 5, x1: 8, z0: -2, z1: 2 }, 'add')).toBe(true); });
+  const saved = sanitizeSpec(JSON.parse(JSON.stringify(ed.draft())))!;
+  expect(saved.buildings[0]!.basement!.outline!.length).toBeGreaterThan(4);
+  expect(saved.buildings[0]!.length).toBe(10);
+  expect(basementBuilding(saved.buildings[0]!).levels[0]!.wallOpenings).toHaveLength(1);
+  ed.undo(); expect(ed.draft().buildings[0]!.basement!.outline).toBeUndefined();
+  ed.redo(); expect(ed.draft().buildings[0]!.basement!.outline!.length).toBeGreaterThan(4);
+});

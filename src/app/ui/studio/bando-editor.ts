@@ -16,7 +16,7 @@ import { areaCorners } from '../../core/areas';
 import { roadDef, surfaceDef } from '../../core/layers';
 import { blockCategory } from '../../core/catalog';
 import { siteGround } from '../../core/site-ground';
-import { basementBuilding, basementOutline, editBasementFloor } from '../../core/basement';
+import { basementBuilding, basementOutline, editBasementFloor, reshapeBasement, saveBasementFloor } from '../../core/basement';
 import { PickMenu, type PickOption } from './pick-menu';
 import { BlocksBox } from './blocks-box';
 import { paramValues, type BlockSpec, type ParamValue } from '../../core/blocks';
@@ -131,6 +131,7 @@ export class BandoEditor {
   protected readonly round = Math.round;
   protected readonly Math = Math;
   protected readonly edgesOf = edgesOf;
+  protected readonly outlineOf = outlineOf;
   protected readonly handles: readonly Handle[] = ['n', 's', 'e', 'w', 'nw', 'ne', 'sw', 'se'];
   protected readonly corners: readonly [number, number][] = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
   /** `where`: shown outdoors ('out'), only while editing a floor ('in'), or always. Tools that need a building hide without one. */
@@ -637,7 +638,7 @@ export class BandoEditor {
   protected readonly visibleTools = computed(() =>
     this.tools.filter(
       (t) =>
-        (t.where === 'both' || (t.where === 'in') === this.indoor()) &&
+        (t.where === 'both' || (t.where === 'in') === this.indoor() || (this.indoor() && this.basementFocus() && (t.id === 'cut' || t.id === 'wing'))) &&
         // cut / wing / merge stay in the palette: without a selected building they ask for one (their hint says so)
 
         (!this.view3d() || ['select', 'measure', 'building', 'structure', 'tree', 'scatter', 'fence', 'terrain', 'tunnel', 'road', 'surface', 'water', 'wall', 'void', 'door', 'window', 'column', 'stairs'].includes(t.id)), // on the ground in 3D: what a click can place or paint
@@ -1322,14 +1323,16 @@ export class BandoEditor {
   }
 
   protected edgeDown(e: PointerEvent, i: number): void {
-    const bd = this.b();
-    if (!bd?.footprint) return;
+    const basement = this.indoor() && this.basementFocus();
+    const bd = basement ? this.floorBuilding() : this.b();
+    if (!bd || (!basement && !bd.footprint)) return;
     e.stopPropagation();
     this.capture(e);
-    const ed = edgesOf(bd.footprint)[i];
+    const shape = outlineOf(bd);
+    const ed = edgesOf(shape)[i];
     if (!ed) return;
     const mid = ed.axis === 'x' ? { x: (ed.from + ed.to) / 2, z: ed.at } : { x: ed.at, z: (ed.from + ed.to) / 2 };
-    const inside = contains(bd.footprint, mid.x + (ed.axis === 'z' ? 0.05 : 0), mid.z + (ed.axis === 'x' ? 0.05 : 0));
+    const inside = contains(shape, mid.x + (ed.axis === 'z' ? 0.05 : 0), mid.z + (ed.axis === 'x' ? 0.05 : 0));
     this.drag.set({ t: 'edge', start: cloneSpec({ ...this.ed.draft(), buildings: [bd] }).buildings[0]!, axis: ed.axis, at: ed.at, from: ed.from, to: ed.to, n: inside ? -1 : 1 });
   }
 
@@ -1719,8 +1722,9 @@ export class BandoEditor {
       // Basement coordinates are relative to its own footprint; G uses the main building's frame.
       const main = this.b();
       if (!main) return;
-      const x0 = g.x - bd.length / 2 + main.length / 2;
-      const z0 = g.z - bd.width / 2 + main.width / 2;
+      const offset = this.toLocal(main, bd.pos);
+      const x0 = g.x - bd.length / 2 + offset.x + main.length / 2;
+      const z0 = g.z - bd.width / 2 + offset.z + main.width / 2;
       const hole = { x0: Math.max(0, x0), x1: Math.min(main.length, x0 + st.structure.length / 2 + 0.3),
         z0: Math.max(0, z0 - d.size / 2 - 0.15), z1: Math.min(main.width, z0 + d.size / 2 + 0.15) };
       this.ed.commitSite(s => {
@@ -1913,10 +1917,14 @@ export class BandoEditor {
         const rect: Rect = d.axis === 'x' ? { x0: d.from, x1: d.to, z0: lo, z1: hi } : { x0: lo, x1: hi, z0: d.from, z1: d.to };
         const next = cloneSpec({ ...this.ed.draft(), buildings: [d.start] }).buildings[0]!;
         if (!reshapeBuilding(next, rect, outward ? 'add' : 'cut')) break;
+        const basement = this.indoor() && this.basementFocus();
         this.gesture((s) => {
           const i = s.buildings.findIndex((x) => x.id === d.start.id);
-          if (i >= 0) s.buildings[i] = next;
-        }, d.start.id);
+          if (i >= 0) {
+            if (basement) saveBasementFloor(s.buildings[i]!, next, true);
+            else s.buildings[i] = next;
+          }
+        }, basement ? undefined : d.start.id);
         break;
       }
       case 'tree':
@@ -2190,6 +2198,11 @@ export class BandoEditor {
     } else if (d.t === 'shape' && bd) {
       const rect: Rect = { x0: d.a.x, z0: d.a.z, x1: d.b.x, z1: d.b.z };
       if (Math.abs(rect.x1 - rect.x0) >= 0.5 && Math.abs(rect.z1 - rect.z0) >= 0.5) {
+        if (this.indoor() && this.basementFocus()) {
+          const probe = structuredClone(this.b());
+          if (!probe || !reshapeBasement(probe, rect, d.op)) this.toast.show(d.op === 'cut' ? 'That cut would split the basement or leave a hole.' : 'The wing has to touch the basement.');
+          else { this.ed.commitSite(s => { const b = this.index(s, bd.id); if (b) reshapeBasement(b, rect, d.op); }); this.applyNow(); }
+        } else {
         const probe = cloneSpec({ ...this.ed.draft(), buildings: [bd] }).buildings[0]!;
         const whole = cloneSpec(this.ed.draft());
         const fits = reshapeBuilding(probe, rect, d.op);
@@ -2203,6 +2216,7 @@ export class BandoEditor {
             if (x) reshapeBuilding(x, rect, d.op);
           });
           this.applyNow();
+        }
         }
       }
     } else if (d.t === 'wallDraw' && bd) {
