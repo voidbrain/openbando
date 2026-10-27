@@ -29,7 +29,8 @@ const EXAMPLES: readonly string[] = [
         <div class="dim small">Any OpenAI-compatible server: Ollama or LM Studio on your PC (over HTTPS, e.g. Tailscale), a proxy on your hosting, or a cloud API. Your messages and the building list are sent to it.</div>
         <label class="f">address <input type="text" [value]="ai.server().url" placeholder="https://my-pc.tailnet.ts.net  or  https://site.it/ai-proxy.php" (change)="srv({ url: val($event) })" /></label>
         <label class="f">model <input type="text" [value]="ai.server().model" placeholder="qwen2.5:7b" (change)="srv({ model: val($event) })" /></label>
-        <label class="f">token (optional) <input type="password" [value]="ai.server().token" autocomplete="off" (change)="srv({ token: val($event) })" /></label>
+        <label class="f">token (optional) <input type="password" [value]="ai.server().token" autocomplete="off" aria-describedby="ai-token-storage" (change)="srv({ token: val($event) })" /></label>
+        <div id="ai-token-storage" class="dim small">The token is saved in this browser's local storage.</div>
         @if (ai.status() === 'error') {
           <div class="err">{{ ai.error() }}</div>
         }
