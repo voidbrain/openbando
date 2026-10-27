@@ -446,6 +446,10 @@ export class BandoEditor {
   protected readonly overlayOn = computed(() => this.mode() === 'model' && this.hasModel() && this.ed.draft().bearingDeg === 0);
   protected readonly captures = computed(() => this.tool() !== 'select' || this.pinMode() !== null || this.indoor() || this.shiftHeld() || !!this.blocks.armed());
   protected readonly drawLine3d = computed(() => {
+    if (this.tool() === 'measure') {
+      const a = this.measure.chain().a, b = this.measure.hover();
+      return a && b ? { a, b, color: this.tc('measure') } : null;
+    }
     const d = this.drag();
     if (d?.t !== 'fenceDraw' && d?.t !== 'bridgeDraw' && d?.t !== 'under') return null;
     return { a: d.a, b: d.b, color: this.tc(d.t === 'fenceDraw' ? 'fence' : d.t === 'under' ? 'tunnel' : 'structure') };
@@ -600,7 +604,7 @@ export class BandoEditor {
         (t.where === 'both' || (t.where === 'in') === this.indoor()) &&
         // cut / wing / merge stay in the palette: without a selected building they ask for one (their hint says so)
 
-        (!this.view3d() || ['select', 'building', 'structure', 'tree', 'scatter', 'fence', 'terrain', 'tunnel', 'road', 'surface', 'water'].includes(t.id)), // on the ground in 3D: what a click can place or paint
+        (!this.view3d() || ['select', 'measure', 'building', 'structure', 'tree', 'scatter', 'fence', 'terrain', 'tunnel', 'road', 'surface', 'water'].includes(t.id)), // on the ground in 3D: what a click can place or paint
     ),
   );
   protected readonly placing = computed(() => PLACE.includes(this.tool()));
@@ -754,6 +758,17 @@ export class BandoEditor {
   protected readonly under = new UndergroundTool(this.host);
   protected readonly terrain = new TerrainTool(this.host);
   protected readonly measure = new MeasureTool(this.host);
+  protected readonly measures3d = computed(() => {
+    const chain = this.measure.chain();
+    const selected = this.measure.sel(), expanded = this.measure.expanded();
+    const items = chain.segs.map((seg, index) => ({ seg, index, selected: index === selected, label: index === expanded ? this.measure.fmt(seg) + ' −' : this.measure.flat(seg) + ' +' }));
+    return items;
+  });
+  protected onMeasurePick3d(p: { index: number; label: boolean }): void {
+    this.pick.set(null);
+    this.measure.sel.set(p.index);
+    if (p.label) this.measure.toggleDetails(p.index);
+  }
   protected readonly blocks = new BlockTool(this.host, this.blockLib);
   /** The palette and the options bar: dragged places and stacking. */
   protected readonly dock = new ToolbarDock(this.size, () => this.wrapEl().nativeElement);
@@ -1387,6 +1402,7 @@ export class BandoEditor {
   }
 
   protected onPick3d(p: SitePick | null): void {
+    this.measure.sel.set(null);
     if (!p) {
       this.pick.set(null);
       this.ed.select('');
@@ -1422,6 +1438,7 @@ export class BandoEditor {
   protected onGround3d(g: { phase: 'down' | 'move' | 'up' | 'hover'; x: number; z: number }): void {
     if (g.phase === 'hover') {
       this.hover.set({ x: g.x, z: g.z }); // the height readout and the brush ring follow the pointer
+      if (this.tool() === 'measure' && this.measure.chain().a) this.measure.hover.set(this.measure.point({ x: g.x, z: g.z }));
       return;
     }
     const fake = { clientX: 0, clientY: 0, pointerId: 1, shiftKey: false, button: 0, currentTarget: null, stopPropagation: () => undefined, preventDefault: () => undefined } as unknown as PointerEvent;

@@ -106,4 +106,17 @@ test('basement controls and explicit roof choice update the selected building', 
   ).toHaveCount(0);
   await page.locator('[data-tour="view-3d"]').click();
   await expect(page.locator('app-site-view app-camera-compass')).toBeVisible();
+  await page.locator('app-bando-editor .palette button[title^="Measure"]').click();
+  const canvas = page.locator('app-site-view canvas');
+  const bounds = await canvas.boundingBox();
+  expect(bounds).not.toBeNull();
+  await canvas.click({ position: { x: bounds!.width * 0.35, y: bounds!.height * 0.8 }, force: true });
+  await canvas.click({ position: { x: bounds!.width * 0.55, y: bounds!.height * 0.8 }, force: true });
+  const measure = page.getByRole('group', { name: 'Measures' }).getByRole('button').first();
+  await expect(measure).toHaveCount(1);
+  await measure.focus();
+  await measure.press('Enter');
+  await expect(measure).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('[data-tour="view-2d"]').click();
+  await expect(page.locator('[data-pk="meas:0"]')).toHaveCount(1);
 });

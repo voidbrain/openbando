@@ -4,6 +4,7 @@ import type { Flight } from '../../core/models';
 import type { SiteSpec } from '../../core/site-spec';
 import { SiteViewRenderer, type SitePick } from '../../three/site-view';
 import type { GroundStyle } from '../../three/site-model';
+import type { MeasureViewItem } from '../../three/measure-view';
 
 /** The editor's 3D mode: the whole bando, orbit with the mouse. Editing happens in 2D; this is for looking. */
 @Component({
@@ -11,6 +12,13 @@ import type { GroundStyle } from '../../three/site-model';
   imports: [CameraCompass],
   template: `
     <canvas #cv></canvas>
+    @if (measures().length) {
+      <div class="measure-access" role="group" aria-label="Measures" (keydown)="$event.stopPropagation()">
+        @for (m of measures(); track m.index) {
+          <button [attr.aria-pressed]="m.selected" (click)="measurePicked.emit({ index: m.index, label: true })">{{ m.label }}</button>
+        }
+      </div>
+    }
     @if (!failed()) { <app-camera-compass [camera]="compassCamera" /> }
     @if (failed()) {
       <div class="fail dim">3D view unavailable (WebGL could not start).</div>
@@ -41,6 +49,9 @@ import type { GroundStyle } from '../../three/site-model';
       border-radius: 6px;
       pointer-events: none;
     }
+    .measure-access { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .measure-access:focus-within { width: auto; height: auto; clip-path: none; overflow: auto; top: 8px; left: 8px; z-index: 20; background: var(--panel-solid); padding: 4px; }
+    .measure-access button { color: var(--text); background: var(--panel-solid); border: 1px solid var(--line); padding: 4px; }
     .fail {
       position: absolute;
       inset: 0;
@@ -67,6 +78,8 @@ export class SiteView {
   /** A brush ring on the ground (terrain tools), or none. */
   readonly cursor = input<{ x: number; z: number; r: number; color: string } | null>(null);
   readonly drawLine = input<{ a: { x: number; z: number }; b: { x: number; z: number }; color: string } | null>(null);
+  readonly measures = input<readonly MeasureViewItem[]>([]);
+  readonly measurePicked = output<{ index: number; label: boolean }>();
   protected readonly failed = signal(false);
   private readonly cv = viewChild.required<ElementRef<HTMLCanvasElement>>('cv');
   private r: SiteViewRenderer | null = null;
@@ -85,6 +98,7 @@ export class SiteView {
       this.r.groundStyle = untracked(() => this.groundStyle());
       this.r.onPick = (p) => this.picked.emit(p);
       this.r.onGround = (phase, x, z) => this.ground.emit({ phase, x, z });
+      this.r.onMeasurePick = (index, label) => this.measurePicked.emit({ index, label });
       this.schedule(0);
     });
     effect(() => {
@@ -100,6 +114,7 @@ export class SiteView {
       this.r?.setCursor(c);
     });
     effect(() => this.r?.setDrawLine(this.drawLine()));
+    effect(() => this.r?.setMeasures(this.measures()));
     effect(() => {
       const sel = this.selection();
       this.spec(); // a rebuild invalidates the box: redraw it after
@@ -129,6 +144,7 @@ export class SiteView {
       try {
         this.r?.show(this.spec(), this.roofHidden(), this.frameKey(), this.focus());
         this.r?.setDrawLine(this.drawLine());
+        this.r?.setMeasures(this.measures());
         this.r?.setSelection(this.selection());
         this.r?.setPaths(this.flights(), this.speedMax());
       } catch {
