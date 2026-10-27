@@ -564,7 +564,7 @@
         } @else if (it.head) {
           <div class="head">{{ it.label }}</div>
         } @else {
-          <button [class.danger]="it.danger" (click)="runCtx(it)">{{ it.label }}</button>
+          <button [class.danger]="it.danger" [disabled]="it.disabled" (click)="runCtx(it)">{{ it.label }}</button>
         }
       }
     </div>

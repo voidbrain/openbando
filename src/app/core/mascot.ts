@@ -19,6 +19,7 @@ export const MASCOT_POSES = [
   'back',
   'confused-a',
   'poke',
+  'poke-middle',
 ] as const;
 export const MASCOT_DURATION = timeline.duration;
 /** Same timeline used by the GIF exporter: milliseconds, a 320×160 logical pixel stage. */

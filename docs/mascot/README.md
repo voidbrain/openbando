@@ -65,14 +65,15 @@ Indices are zero-based. Names are stable API, not descriptions of an automatical
 | 15 | back | Full rear equipment/strap reference, reserved for future turns |
 | 16 | confused-a | Cross-legged, hand scratching head, manga sweat drop; held keyframe |
 | 17 | poke | Seated, arm reaches downward to the grounded quad; used twice before takeoff |
+| 18 | poke-middle | Hand retracts to the knee between the two pokes |
 
 The generated source is **not an exact regular atlas**: the jump fist crosses a nominal row boundary. `RECTS` in `tools/mascot/build.py` records reviewed sprite bounds, preventing stray shoes or a cropped fist. Every export uses one common scale and foot baseline; never scale each cropped pose to fill the square independently.
 
 ## Choreography
 
-0–2.4 s the pilot looks around while the drone is hidden; 2.4–4.8 s run in place as the grounded drone moves left; 4.8–7.2 s crouch, lower and sit; 7.2–9 s sit perplexed; 9–10.6 s the drone lifts off and its propellers start spinning; 10.6–12.6 s the pilot rises as the drone climbs; 12.6–13.6 s look up; 13.6–15.7 s jump and victory; 15.7–17.3 s the quad turns right and exits; 17.3–18.1 s return to idle. Both the canvas and GIF animate propeller highlights using the same 100 ms cycle.
+0–2.4 s the pilot searches while the drone is hidden; 2.4–4.8 s he runs as the grounded drone arrives; 4.8–9 s he crouches, sits and looks perplexed; 9–10.2 s he pokes twice with a hand-retraction frame between; he sits as the drone takes off, then rises, looks up, jumps and celebrates. The drone flies right and the loop returns to idle. Both canvas and GIF use the same timeline and propeller highlights.
 
-The canvas and GIF read the same JSON timeline. README uses the GIF below the large ASCII OPENBANDO wall; Welcome uses the same wall (`core/wordmark.ts`) with an accessible text heading; it links to a still alternative because GitHub does not offer a playback control for inline GIFs. The GIF is a portable preview; Welcome uses canvas so the pilot can pause it. It is decorative and hidden from assistive technology. Only Welcome animates; no mascot overlays the simulator, editing controls or flight instruments. Hidden/minimized Welcome and background tabs stop progress. Reduced-motion preference starts on a still and can be overridden with the Play control. The Welcome pause control was removed at the project owner’s request. Reduced-motion preference still shows a still image. The exit uses a separate right-facing sprite; flight uses alternating propeller highlights. Browser visual review remains pending.
+The canvas and GIF read the same JSON timeline. README uses the GIF below the pixel-art OPENBANDO wordmark; Welcome uses the same wordmark with accessible alternative text; it links to a still alternative because GitHub does not offer a playback control for inline GIFs. The GIF is a portable preview; Welcome uses canvas for the same animation. It is decorative and hidden from assistive technology. Only Welcome animates; no mascot overlays the simulator, editing controls or flight instruments. Hidden/minimized Welcome and background tabs stop progress. Reduced-motion preference starts on a still and can be overridden with the Play control. The Welcome pause control was removed at the project owner’s request. Reduced-motion preference still shows a still image. The exit uses a separate right-facing sprite; flight uses alternating propeller highlights. Browser visual review remains pending.
 
 ## Adding poses or actions
 

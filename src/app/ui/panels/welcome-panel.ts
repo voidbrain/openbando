@@ -7,7 +7,6 @@ import { LayoutStore } from '../../state/layout.store';
 import type { PanelId } from '../panel-defs';
 import { Panel } from '../panel/panel';
 import { Mascot } from '../mascot';
-import { WORDMARK } from '../../core/wordmark';
 
 /** One of the three columns: what it is about, its short film, and where to start. */
 interface Pillar {
@@ -60,7 +59,7 @@ const PILLARS: readonly Pillar[] = [
     <app-panel id="welcome">
       <div class="welcome">
         <header>
-          <div class="brand"><h2 translate="no" aria-label="OpenBando"><span class="wordmark" aria-hidden="true">{{ wordmark }}</span></h2><app-mascot /></div>
+          <div class="brand"><h2 translate="no"><img class="wordmark" src="mascot/openbando-wordmark.png" alt="OpenBando" /></h2><app-mascot /></div>
           <p class="tag">Build, Fly, Share.</p>
           <p class="dim">Your bandos in 3D, and your flights back inside them.</p>
         </header>
@@ -100,20 +99,10 @@ const PILLARS: readonly Pillar[] = [
     .brand { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .brand app-mascot { flex: 0 1 320px; min-width: 0; }
     header h2 { margin: 0; min-width: 0; flex: 1; }
-    header h2 .wordmark {
-      display: block;
-      margin: 0;
-      font-family: var(--mono);
-      font-size: clamp(5px, 0.9vw, 15px);
-      font-weight: 900;
-      line-height: 1;
-      white-space: pre;
-      letter-spacing: -0.04em;
-    }
+    header h2 .wordmark { display: block; width: 100%; height: auto; image-rendering: pixelated; }
     @media (max-width: 760px) {
       .brand { flex-direction: column; align-items: stretch; }
       .brand app-mascot { flex-basis: auto; align-self: center; }
-      header h2 .wordmark { font-size: clamp(5px, 1.25vw, 10px); }
     }
     header p {
       margin: 4px 0 0;
@@ -195,7 +184,6 @@ const PILLARS: readonly Pillar[] = [
   `,
 })
 export class WelcomePanel {
-  protected readonly wordmark = WORDMARK;
   protected readonly pillars = PILLARS;
   private readonly layout = inject(LayoutStore);
   private readonly studio = inject(StudioService);

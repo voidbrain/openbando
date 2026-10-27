@@ -26,6 +26,10 @@ describe('mascot timeline', () => {
       expect(frame.droneY).toBe(132);
       expect(frame.propellersSpinning).toBe(false);
     }
+    const middle = timeline.phases.find(p => p.name === 'pause-poke')!;
+    expect(mascotFrame(middle.start).pose).toBe(18);
+    expect(mascotFrame(middle.start).droneY).toBe(132);
+    expect(mascotFrame(middle.start).droneX).toBe(155);
     const sit = timeline.phases.find(p => p.name === 'sit-before-takeoff')!;
     expect(mascotFrame(sit.start).pose).toBe(9);
     const takeoff=timeline.phases.find(p=>p.name==='takeoff')!;

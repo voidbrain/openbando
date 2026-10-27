@@ -52,7 +52,7 @@ import { TerrainTool, TERRAIN_OPS, type Brush } from './editor/terrain-tool';
 import { UndergroundTool } from './editor/underground-tool';
 
 type Entry = { key: string; tool: Tool; mode?: ScatterMode; op?: Brush; icon: string; name: string; color: string; hint: string; group: string; sep?: boolean };
-type CtxItem = { label: string; act?: () => void; danger?: boolean; sep?: boolean; head?: boolean };
+type CtxItem = { label: string; act?: () => void; danger?: boolean; disabled?: boolean; sep?: boolean; head?: boolean };
 
 /** Tools that place something on the selected building: while one is active, a click puts the thing where the ghost is. */
 const PLACE: readonly Tool[] = ['door', 'window', 'wall', 'void', 'column', 'stairs', 'cut', 'wing'];
@@ -904,7 +904,10 @@ export class BandoEditor {
     };
     map.on('move zoom resize', sync);
     map.on('click', () => {
-      if (this.mode() === 'model' && this.tool() === 'select') this.pick.set(null);
+      if (this.mode() === 'model' && this.tool() === 'select' && !this.indoor()) {
+        this.pick.set(null);
+        this.ed.select('');
+      }
     });
     const ro = new ResizeObserver(() => {
       map.invalidateSize();
@@ -1177,7 +1180,7 @@ export class BandoEditor {
       this.ed.addTree(snap(p.x, 0.5), snap(p.z, 0.5), this.newTreeKind());
       this.applyNow();
     } else if (t === 'measure') this.measure.click(p);
-    else if ((t === 'cut' || t === 'wing') && bd) {    } else if ((t === 'cut' || t === 'wing') && bd) {
+    else if ((t === 'cut' || t === 'wing') && bd) {
       const l = this.toLocal(bd, p);
       const a = { x: snap(l.x, 0.5), z: snap(l.z, 0.5) };
       this.drag.set({ t: 'shape', op: t === 'cut' ? 'cut' : 'add', a, b: { ...a } });
@@ -2212,6 +2215,7 @@ export class BandoEditor {
           tool('Scatter trees…', 'scatter'),
           tool('Draw a fence', 'fence'),
           { label: 'Measure from here', act: () => { this.setTool('measure'); this.measure.startAt(p); } },
+          { label: 'Clear all measures', disabled: !this.measure.chain().segs.length, act: () => this.measure.clear() },
           ...this.byCoords('New building at coordinates…', (q) => this.newBuildingAt(q)),
           ...(this.hasPlace() ? [{ label: 'Copy the coordinates of this point', act: () => this.copyCoords(p) }] : []),
           sep,
@@ -2264,6 +2268,14 @@ export class BandoEditor {
 
   protected key(e: KeyboardEvent): void {
     if (['INPUT', 'SELECT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return;
+    if ((e.code === 'Space' || e.code === 'Enter') && (this.tool() !== 'select' || this.blocks.armed() || this.pinMode())) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.blocks.armed.set(null);
+      this.setTool('select');
+      this.measure.endChain();
+      return;
+    }
     if ((e.key === 'Delete' || e.key === 'Backspace') && this.tool() === 'measure') {
       e.preventDefault();
       this.measure.delete();

@@ -1,6 +1,6 @@
 {
  "about": "The Villetta main store shared without its place: no map and no map data, its real ground travels inside. Open a copy, edit it, load your flights: they start on the take-off pad, and pins and the compass fit them.",
- "release": 5,
+ "release": 6,
  "version": 1,
  "id": "example-villetta-no-place",
  "name": "Villetta (place hidden)",
@@ -1558,7 +1558,18 @@
       "w": false
      },
      "doors": {},
-     "partitions": [],
+     "partitions": [
+      [
+       {
+        "x": 3.11,
+        "z": 17.179000000000002
+       },
+       {
+        "x": 49.19,
+        "z": 17.179000000000002
+       }
+      ]
+     ],
      "roof": "none",
      "roofRise": 2.5,
      "columns": [
@@ -1791,7 +1802,7 @@
       "n": true,
       "s": true,
       "e": true,
-      "w": false
+      "w": true
      },
      "doors": {
       "n": [
@@ -2227,6 +2238,45 @@
     "z": -71.351
    },
    "height": 6.2,
+   "thick": 0.3,
+   "material": "masonry"
+  },
+  {
+   "a": {
+    "x": 79.806,
+    "z": -82.833
+   },
+   "b": {
+    "x": 79.205,
+    "z": -77.637
+   },
+   "height": 3,
+   "thick": 0.3,
+   "material": "masonry"
+  },
+  {
+   "a": {
+    "x": 79.045,
+    "z": -76.247
+   },
+   "b": {
+    "x": 78.524,
+    "z": -71.747
+   },
+   "height": 3,
+   "thick": 0.3,
+   "material": "masonry"
+  },
+  {
+   "a": {
+    "x": 78.364,
+    "z": -70.356
+   },
+   "b": {
+    "x": 77.763,
+    "z": -65.161
+   },
+   "height": 3,
    "thick": 0.3,
    "material": "masonry"
   }
