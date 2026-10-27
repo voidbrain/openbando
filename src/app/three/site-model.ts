@@ -713,8 +713,9 @@ const UNDER_MAT = new THREE.MeshStandardMaterial({ color: '#6b6d66', roughness: 
 /** One underground volume as meshes: a slab of its outline at the floor, then walls and a flat ceiling, a pipe or a vault. */
 function buildUnderground(v: UndergroundSpec): THREE.Group {
   const out = new THREE.Group();
-  const slab = (y: number): void => {
+  const slab = (y: number, holes: readonly { x: number; z: number }[][] = []): void => {
     const shape = new THREE.Shape(v.outline.map((q) => new THREE.Vector2(q.x, -q.z)));
+    for (const hole of holes) shape.holes.push(new THREE.Path(hole.map(q => new THREE.Vector2(q.x, -q.z))));
     const geo = new THREE.ExtrudeGeometry(shape, { depth: v.wall, bevelEnabled: false });
     geo.rotateX(-Math.PI / 2); // extruded along +y from y = 0
     const m = new THREE.Mesh(geo, UNDER_MAT);
@@ -750,7 +751,7 @@ function buildUnderground(v: UndergroundSpec): THREE.Group {
       w.castShadow = true;
       out.add(w);
     }
-    slab(v.ceiling);
+    slab(v.ceiling, v.ceilingHoles);
   }
   if (v.water) {
     const shape = new THREE.Shape(v.outline.map((q) => new THREE.Vector2(q.x, -q.z)));
@@ -788,6 +789,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
   const roof = new THREE.Group();
   group.add(roof);
   const solids: SolidBox[] = [];
+  const ceilingTiles: { box: SolidBox; volume: UndergroundSpec }[] = [];
   const treeSolids: TreeCylinder[] = [];
   const occluders: THREE.Mesh[] = [];
   /** Buildings, their roofs and structures: what `merge` turns into one mesh per material. */
@@ -902,11 +904,15 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
   }
 
   // ---- underground volumes: walls, floor and ceiling (a pipe or a vault for straight tunnels), solid for the drone
-  for (const v of opts.bare ? [] : (spec.underground ?? [])) {
+  for (const source of opts.bare ? [] : (spec.underground ?? [])) {
+    const v = ground.vols.find(item => item.id === source.id) ?? source;
     const g = buildUnderground(v);
     g.userData['pick'] = { kind: 'underground', id: v.id };
     group.add(g);
-    solids.push(...volumeSolids(v));
+    const boxes = volumeSolids(v);
+    solids.push(...boxes);
+    if (v.ceilingHoles?.length) for (const box of boxes)
+      if (box[2] >= v.ceiling - 1e-6 && box[3] <= v.ceiling + v.wall + 1e-6) ceilingTiles.push({ box, volume: v });
   }
 
   // ---- buildings
@@ -1050,7 +1056,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
 
   if (opts.merge) mergeUnits(units, occluders);
 
-  const collider = new SiteCollider(solids, treeSolids, ground.grid, opts.bare ? [] : (spec.waters ?? []).map((w, i) => ({ pts: w.pts, level: ground.grid ? (ground.water[i] ?? 0) : 0.03 })), opts.bare ? [] : ground.vols);
+  const collider = new SiteCollider(solids, treeSolids, ground.grid, opts.bare ? [] : (spec.waters ?? []).map((w, i) => ({ pts: w.pts, level: ground.grid ? (ground.water[i] ?? 0) : 0.03 })), opts.bare ? [] : ground.vols, ceilingTiles);
   return {
     group,
     roof,

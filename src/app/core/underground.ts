@@ -103,8 +103,29 @@ export function cutMask(g: HeightGrid, vols: readonly UndergroundSpec[]): Uint8A
  * otherwise null (the terrain decides).
  */
 export function floorUnder(vols: readonly UndergroundSpec[], x: number, z: number, y: number): number | null {
-  for (const v of vols) if (y < v.ceiling && y > v.floor - v.wall - 0.5 && insidePolygon(v.outline, x, z)) return v.floor + (v.water ?? 0);
-  return null;
+  const inside = vols.filter(v => insidePolygon(v.outline, x, z));
+  const current = inside.filter(v => y < v.ceiling && y > v.floor - v.wall - 0.5).sort((a, b) => b.floor - a.floor)[0];
+  if (!current) return null;
+  if (!current.floorHoles?.some(hole => insidePolygon(hole, x, z))) return current.floor + (current.water ?? 0);
+  // A hole exposes a connected lower volume if there is one. Otherwise the undisturbed soil directly below the
+  // slab is still solid: a floor opening must not manufacture an infinitely deep underground chamber.
+  const lower = inside.filter(v => v !== current && v.floor < current.floor && Math.abs(v.ceiling - current.floor) < 0.1 && v.ceilingHoles?.some(hole => insidePolygon(hole, x, z)))
+    .sort((a, b) => b.floor - a.floor)[0];
+  return lower ? lower.floor + (lower.water ?? 0) : current.floor - current.wall;
+
+}
+
+/** Link a basement opening to a lower box room only when the whole opening fits within that room. */
+export function linkBasementFloors(vols: readonly UndergroundSpec[]): UndergroundSpec[] {
+  const out = vols.map(v => ({ ...v, ceilingHoles: undefined as Vec2[][] | undefined }));
+  for (const top of out) for (const hole of top.floorHoles ?? []) {
+    for (const lower of out) {
+      if (lower === top || lower.shape !== 'box' || lower.floor >= top.floor || Math.abs(lower.ceiling - top.floor) >= 0.1) continue;
+      if (!hole.every(p => insidePolygon(lower.outline, p.x, p.z))) continue;
+      (lower.ceilingHoles ??= []).push(hole);
+    }
+  }
+  return out;
 }
 
 /** Collision boxes of a volume: its walls along every edge, cut into ~1 m pieces, and floor / ceiling slabs in ~2 m tiles. */
@@ -189,7 +210,15 @@ export const BASEMENT_WALL = 0.3;
 export function basementVolume(b: BuildingSpec, outline: Vec2[], ground: number): UndergroundSpec | null {
   if (!b.basement || b.frame) return null;
   const h = Math.min(12, Math.max(2, b.basement.height));
-  return { id: `basement-${b.id}`, name: `${b.name} basement`, outline, floor: ground - h, ceiling: ground, shape: 'box', wall: BASEMENT_WALL };
+  const local = b.basement.outline ?? (b.footprint ?? [
+    { x: -b.length / 2, z: -b.width / 2 }, { x: b.length / 2, z: -b.width / 2 },
+    { x: b.length / 2, z: b.width / 2 }, { x: -b.length / 2, z: b.width / 2 },
+  ]);
+  const x0 = Math.min(...local.map(p => p.x)), z0 = Math.min(...local.map(p => p.z));
+  const a = b.rotDeg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+  const world = (x: number, z: number): Vec2 => ({ x: b.pos.x + x * c - z * s, z: b.pos.z + x * s + z * c });
+  const floorHoles = b.basement.voids?.map(v => [world(x0 + v.x0, z0 + v.z0), world(x0 + v.x1, z0 + v.z0), world(x0 + v.x1, z0 + v.z1), world(x0 + v.x0, z0 + v.z1)]);
+  return { id: `basement-${b.id}`, name: `${b.name} basement`, outline, floor: ground - h, ceiling: ground, shape: 'box', wall: BASEMENT_WALL, ...(floorHoles?.length ? { floorHoles } : {}) };
 }
 
 /**

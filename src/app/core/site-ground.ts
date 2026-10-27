@@ -1,6 +1,6 @@
 import { basementOutline } from './basement';
 import { digWater, levelRoads, waterLevel } from './layers';
-import { basementVolume, cutMask } from './underground';
+import { basementVolume, cutMask, linkBasementFloors } from './underground';
 import { outlineOf } from './openings';
 import type { BuildingSpec, SiteSpec, UndergroundSpec, Vec2 } from './site-spec';
 import { buildHeights, defaultTerrain, flattenPad, hasTerrainBase, heightAt, type FlatPad, type HeightGrid } from './terrain';
@@ -46,7 +46,7 @@ export function siteGround(spec: SiteSpec): SiteGround {
   const waters = spec.waters ?? [];
   if (!t) {
     const water = waters.map((w) => waterLevel(null, w));
-    const vols = [...(spec.underground ?? []), ...spec.buildings.map((b) => basementVolume(b, siteOutline({...b,footprint:basementOutline(b)}), 0)).filter((v): v is UndergroundSpec => !!v)];
+    const vols = linkBasementFloors([...(spec.underground ?? []), ...spec.buildings.map((b) => basementVolume(b, siteOutline({...b,footprint:basementOutline(b)}), 0)).filter((v): v is UndergroundSpec => !!v)]);
     return { grid: null, building: new Map(), start: 0, water, cut: null, vols, at: () => 0 };
   }
   const pads: FlatPad[] = [...spec.buildings.map((b) => ({ poly: siteOutline(b) })), { poly: square(spec.droneStart, 3) }];
@@ -58,7 +58,7 @@ export function siteGround(spec: SiteSpec): SiteGround {
   levelRoads(grid, spec.roads ?? []);
   const ys = pads.map((p) => flattenPad(grid, p));
   const building = new Map(spec.buildings.map((b, i) => [b.id, ys[i] ?? 0]));
-  const vols = [...(spec.underground ?? []), ...spec.buildings.map((b, i) => basementVolume(b, siteOutline({...b,footprint:basementOutline(b)}), ys[i] ?? 0)).filter((v): v is UndergroundSpec => !!v)];
+  const vols = linkBasementFloors([...(spec.underground ?? []), ...spec.buildings.map((b, i) => basementVolume(b, siteOutline({...b,footprint:basementOutline(b)}), ys[i] ?? 0)).filter((v): v is UndergroundSpec => !!v)]);
   const cut = vols.length ? cutMask(grid, vols) : null;
   const out: SiteGround = { grid, building, start: ys[ys.length - 1] ?? 0, water, cut, vols, at: (x, z) => heightAt(grid, x, z) };
   memo = { key, out };

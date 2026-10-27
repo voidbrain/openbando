@@ -38,6 +38,7 @@ export class SiteCollider implements CollisionWorld {
     readonly waters: readonly { pts: readonly { x: number; z: number }[]; level: number }[] = [],
     /** Underground volumes (unscaled): inside one, the floor is its own, not the terrain above. */
     readonly underground: readonly UndergroundSpec[] = [],
+    readonly ceilingTiles: readonly { box: SolidBox; volume: UndergroundSpec }[] = [],
   ) {}
 
   waterAt(x: number, z: number): number | null {
@@ -61,6 +62,10 @@ export class SiteCollider implements CollisionWorld {
     const m = this.margin / k;
     for (const b of this.solids) {
       if (b[6] && this.roofHidden) continue;
+      // The lower room's ceiling is tiled as boxes. Ignore a tile only inside its linked opening, with clearance
+      // for the drone radius; walls and other solids spanning a wider vertical range are unaffected.
+      const openCeiling = this.ceilingTiles.some(({ box, volume: v }) => box === b && y >= v.ceiling - m && y <= v.ceiling + v.wall + m && v.ceilingHoles?.some(h => clearInside(h, x, z, m)));
+      if (openCeiling) continue;
       if (x > b[0] - m && x < b[1] + m && y > b[2] - m && y < b[3] + m && z > b[4] - m && z < b[5] + m) return true;
     }
     for (const t of this.trees) {
@@ -68,4 +73,14 @@ export class SiteCollider implements CollisionWorld {
     }
     return false;
   }
+}
+
+/** A point fully inside a polygon by at least the drone clearance. */
+function clearInside(poly: readonly { x: number; z: number }[], x: number, z: number, margin: number): boolean {
+  if (!insidePolygon(poly, x, z)) return false;
+  return poly.every((a, i) => {
+    const b = poly[(i + 1) % poly.length]!, dx = b.x - a.x, dz = b.z - a.z;
+    const t = Math.max(0, Math.min(1, ((x - a.x) * dx + (z - a.z) * dz) / (dx * dx + dz * dz || 1)));
+    return Math.hypot(x - a.x - t * dx, z - a.z - t * dz) >= margin;
+  });
 }
