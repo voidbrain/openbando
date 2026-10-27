@@ -1477,13 +1477,14 @@ export class BandoEditor {
   /** Use the same building gesture, overlap guard and undo step as the plan handles. */
   protected onTransform3d(g: { phase: 'down' | 'move' | 'up'; handle: BuildingHandle; x: number; z: number }): void {
     const bd = this.b();
-    if (!bd || this.indoor() || bd.footprint) return;
+    if (!bd || this.indoor()) return;
     const fake = { clientX: 0, clientY: 0, pointerId: 1, shiftKey: false, altKey: false, button: 0, currentTarget: null, stopPropagation: () => undefined, preventDefault: () => undefined } as unknown as PointerEvent;
     this.world3d = { x: g.x, z: g.z };
     try {
       if (g.phase === 'down') {
         this.capture(fake);
         if (g.handle.kind === 'move') this.drag.set({ t: 'move', ox: bd.pos.x, oz: bd.pos.z, px: g.x, pz: g.z });
+        else if (g.handle.kind === 'edge' && g.handle.edge !== undefined) this.edgeDown(fake, g.handle.edge);
         else this.cornerDown(fake, g.handle.sx, g.handle.sz);
       } else if (g.phase === 'move') this.move(fake);
       else this.up(fake);

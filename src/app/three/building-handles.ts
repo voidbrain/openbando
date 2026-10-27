@@ -1,7 +1,9 @@
 import type { BuildingSpec } from '../core/site-spec';
+import { edgesOf } from '../core/footprint';
 
 export interface BuildingHandle {
-  kind: 'move' | 'resize';
+  kind: 'move' | 'resize' | 'edge';
+  edge?: number;
   sx: number;
   sz: number;
   x: number;
@@ -18,5 +20,9 @@ export function buildingHandles(b: BuildingSpec, groundY: number): BuildingHandl
     const x = sx * b.length / 2, z = sz * b.width / 2;
     return { kind: sx || sz ? 'resize' : 'move', sx, sz, x: b.pos.x + x * c - z * s, z: b.pos.z + x * s + z * c, y };
   };
+  if (b.footprint) return [at(0, 0), ...edgesOf(b.footprint).map(e => {
+    const x = (e.a.x + e.b.x) / 2, z = (e.a.z + e.b.z) / 2;
+    return { kind: 'edge' as const, edge: e.i, sx: 0, sz: 0, x: b.pos.x + x * c - z * s, z: b.pos.z + x * s + z * c, y };
+  })];
   return [at(0, 0), at(-1, -1), at(1, -1), at(1, 1), at(-1, 1)];
 }

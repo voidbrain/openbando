@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { sanitizeLayers } from './layers';
 import type { UndergroundSpec } from './site-spec';
 import { buildHeights, emptyGrid, heightAt } from './terrain';
-import { basementVolume, cutCellsPath, cutMask, floorUnder, newRoom, newTunnel, sectionDrawing, sectionProfile, tunnelAxis, tunnelOutline, volumeSolids } from './underground';
+import { basementVolume, cutCellsPath, cutMask, floorUnder, linkBasementFloors, newRoom, newTunnel, sectionDrawing, sectionProfile, tunnelAxis, tunnelOutline, volumeSolids } from './underground';
 
 const hill = () => buildHeights({ cell: 1, half: { e: 80, n: 80 }, strokes: [{ op: 'hill', pts: [{ x: 0, z: 0 }], radius: 35, strength: 10 }] }).grid;
 const tunnel = (): UndergroundSpec => ({ id: 't', name: 'T', outline: tunnelOutline({ x: -45, z: 0 }, { x: 45, z: 0 }, 4), floor: -0.5, ceiling: 3, shape: 'box', wall: 0.4 });
@@ -116,4 +116,15 @@ describe('editor drawings of underground volumes', () => {
     expect(cutCellsPath(g, cut)).toBe(`M${g.x0 + g.cell - g.cell / 2} ${g.z0 - g.cell / 2}h${g.cell}v${g.cell}h${-g.cell}Z`);
     expect(cutCellsPath(g, null)).toBe('');
   });
+});
+
+it('uses the connected lower room through a rotated basement floor opening, or soil if none exists', () => {
+  const b = { id: 'b', name: 'B', pos: { x: 10, z: 20 }, rotDeg: 90, length: 10, width: 8, levels: [], basement: { height: 3, voids: [{ x0: 1, z0: 1, x1: 3, z1: 3 }] } };
+  const outline = [{ x: 14, z: 15 }, { x: 14, z: 25 }, { x: 6, z: 25 }, { x: 6, z: 15 }];
+  const basement = basementVolume(b, outline, 0)!;
+  const room = { id: 'lower', name: 'Lower room', outline: [{ x: 10, z: 15 }, { x: 14, z: 15 }, { x: 14, z: 20 }, { x: 10, z: 20 }], floor: -7, ceiling: -3, shape: 'box' as const, wall: 0.2 };
+  expect(floorUnder(linkBasementFloors([basement, room]), 12, 17, -2)).toBe(-7);
+  expect(floorUnder(linkBasementFloors([room, basement]), 12, 17, -2)).toBe(-7);
+  expect(floorUnder([basement], 12, 17, -2)).toBeCloseTo(-3 - basement.wall);
+  expect(floorUnder([basement, room], 10, 21, -2)).toBe(-3);
 });

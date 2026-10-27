@@ -249,6 +249,10 @@ export interface UndergroundSpec {
   wall: number;
   /** Water in the bottom (culverts), metres; 0 / absent = dry. */
   water?: number;
+  /** Runtime-only holes in a generated basement floor, in site coordinates. */
+  floorHoles?: Vec2[][];
+  /** Runtime-only openings in a box room ceiling, in site coordinates. */
+  ceilingHoles?: Vec2[][];
 }
 
 /** A rectangular map area: centre and half extents (metres) east-west / north-south. */
