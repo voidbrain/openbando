@@ -23,7 +23,7 @@ Current work ledger, reviewed 27 October 2026 against `main` at `74bdf78`. The [
 | B-007 | P2 | Verify | Basement lighting and connections | Inspect shadows under G and through its opening; fly through openings to overlapping box rooms and curved tunnels. Test independently sized and rotated basements. | [#92](https://github.com/voidbrain/openbando/pull/92) (shadows); [#94](https://github.com/voidbrain/openbando/pull/94), [#96](https://github.com/voidbrain/openbando/pull/96) (connections) | 2026-10-27 |
 | B-008 | P2 | Verify | Flight descent smoothing | Compare the demo CSV descent with its corresponding video; unit coverage does not verify the visual result. | — | 2026-10-27 |
 | B-009 | P2 | Verify | Simulator and selected-flight/video regression | Manually exercise simulator entry/exit, collision and selected-flight/video replay and synchronization after editor/racing changes. | — | 2026-10-27 |
-| B-010 | P1 | Verify | Tunnel unit test timeout in CI | The `check` job in PR #103 timed out in `site-model.spec.ts` after 5 seconds. The test now reuses the rendered model and uses a smaller grid containing the whole hill and both tunnel portals; verify the complete CI run. | [#103 CI](https://github.com/voidbrain/openbando/actions/runs/40555115536) (failed); fix in this PR | 2026-10-27 |
+| B-010 | P1 | Verify | Tunnel unit test timeout in CI | The `check` job in PR #103 timed out in `site-model.spec.ts` after 5 seconds. The test now reuses the rendered model and uses a smaller grid containing the whole hill and both tunnel portals; verify the complete CI run. | [#103 CI](https://github.com/voidbrain/openbando/actions/runs/40555115536) (failed); [#104](https://github.com/voidbrain/openbando/pull/104) (test-cost fix; CI pending) | 2026-10-27 |
 
 ## Features and limitations
 
@@ -48,3 +48,4 @@ The warehouse report is retained for seven days by CI; a temporary artifact link
 | Change | PR / evidence | Status | Reviewed |
 |---|---|---|---|
 | Archive the old working plan and create the active backlog and audit. | [#102](https://github.com/voidbrain/openbando/pull/102) | Merged; continued guide review is tracked as F-011. | 2026-10-27 |
+| Track PR links and review dates; require backlog updates for every change. | [#104](https://github.com/voidbrain/openbando/pull/104) | Open; CI pending. | 2026-10-27 |
