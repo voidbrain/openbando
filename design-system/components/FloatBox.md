@@ -10,6 +10,7 @@ FloatBox is a small window inside a panel's work area (the elements list, the AI
 - It stays hidden until it knows its place (no flash at the top-left), then opens on top of the other float boxes and
   toolbars; clicking it brings it to the front (`ui/stacking.ts`). Context menus stay above everything (z 9000).
 - The body keeps 16px free at the bottom so the resize corners never cover the last row (resizable panels too).
+- The Inspector may opt into a dock button: docking attaches it to the right edge at full work-area height and its default width; undocking restores its previous floating geometry.
 
 ## Consumer provides
 

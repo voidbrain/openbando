@@ -15,13 +15,15 @@ interface Geo {
 @Component({
   selector: 'app-float-box',
   host: {
-    '[style.left.px]': 'geo().x',
-    '[style.top.px]': 'geo().y',
-    '[style.width.px]': 'geo().w',
+    '[style.left.px]': 'docked() ? null : geo().x',
+    '[style.right.px]': 'docked() ? 0 : null',
+    '[style.top.px]': 'docked() ? 0 : geo().y',
+    '[style.width.px]': 'docked() ? w() : geo().w',
     '[style.min-width.px]': 'minW()',
     '[style.min-height]': 'open() ? minH() + "px" : null',
-    '[style.height]': 'open() ? geo().h + "px" : "auto"',
+    '[style.height]': 'open() ? (docked() ? "100%" : geo().h + "px") : "auto"',
     '[class.closed]': '!open()',
+    '[class.docked]': 'docked()',
     // hidden until it knows its place (the parent may not be laid out yet): it no longer flashes at the top-left
     '[style.visibility]': 'shown() ? null : "hidden"',
     '[style.z-index]': 'z()',
@@ -32,6 +34,9 @@ interface Geo {
   template: `
     <header (pointerdown)="dragStart($event)" (pointermove)="dragMove($event)" (pointerup)="dragEnd()" (dblclick)="reset()" title="Drag to move · double-click for the default size">
       <span class="t">{{ title() }}</span>
+      @if (dockable()) {
+        <button (pointerdown)="$event.stopPropagation()" (click)="docked.set(!docked()); open.set(true)" [attr.aria-pressed]="docked()" [title]="docked() ? 'Undock inspector' : 'Dock inspector to the right'" [attr.aria-label]="docked() ? 'Undock inspector' : 'Dock inspector to the right'">▥</button>
+      }
       <button (pointerdown)="$event.stopPropagation()" (click)="open.set(!open())" [title]="open() ? 'Collapse' : 'Expand'">{{ open() ? '▾' : '▸' }}</button>
     </header>
     @if (open()) {
@@ -75,6 +80,8 @@ interface Geo {
       resize: none;
       min-height: 0;
     }
+    :host(.docked) { max-height: 100%; resize: none; }
+    :host(.docked) .blgrip { display: none; }
     header {
       display: flex;
       align-items: center;
@@ -137,6 +144,8 @@ export class FloatBox {
   readonly cols = input(false);
   /** Measure the default `x` from the right edge of the parent instead of the left. */
   readonly right = input(false);
+  readonly dockable = input(false);
+  protected readonly docked = signal(false);
 
   protected readonly open = signal(true);
   private ro: ResizeObserver | null = null;
@@ -234,6 +243,7 @@ export class FloatBox {
   }
 
   protected dragStart(e: PointerEvent): void {
+    if (this.docked()) return;
     this.init();
     const r = this.host.nativeElement.getBoundingClientRect();
     this.drag = { dx: e.clientX - r.left, dy: e.clientY - r.top };

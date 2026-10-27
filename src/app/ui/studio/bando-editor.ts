@@ -1,7 +1,7 @@
 import { Component, DestroyRef, ElementRef, afterNextRender, afterRenderEffect, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { tr } from '../../services/i18n.service';
 import { latLonText, parseLatLon, siteFromLatLon } from '../../core/geo';
-import { uiResets } from '../../state/layout.store';
+import { LayoutStore, uiResets } from '../../state/layout.store';
 import { FormsModule } from '@angular/forms';
 import * as L from 'leaflet';
 import { contains, edgesOf, type Pt, type Rect } from '../../core/footprint';
@@ -41,6 +41,7 @@ import { ElementPreview } from './element-preview';
 import { ToolIcon } from './tool-icon';
 import type { SitePick } from '../../three/site-view';
 import { SiteView } from './site-view';
+import { CameraCompass } from '../widgets/camera-compass';
 import { TourService } from '../../services/tour.service';
 import type { PreviewTarget } from '../../three/element-preview';
 import { polyPts, type Drag, type EditorHost, type Handle, type Pick, type Tool } from './editor/editor-host';
@@ -82,13 +83,29 @@ const FENCE_ICON: Record<FenceMaterial, string> = { masonry: 'wall', concrete: '
  */
 @Component({
   selector: 'app-bando-editor',
-  imports: [FormsModule, FloatBox, AssistantBox, ElementsBox, ElementPreview, SiteView, ToolIcon, PickMenu, BlocksBox],
+  imports: [FormsModule, FloatBox, AssistantBox, ElementsBox, ElementPreview, SiteView, ToolIcon, PickMenu, BlocksBox, CameraCompass],
   host: { class: 'be' },
   templateUrl: './bando-editor.html',
   styleUrl: './bando-editor.scss',
 })
 export class BandoEditor {
   protected readonly studio = inject(StudioService);
+  private readonly layout = inject(LayoutStore);
+  protected readonly northUpCamera = (): null => null;
+  protected readonly expanded = signal(false);
+  private panelBeforeExpand: { x: number | null; y: number | null; w: number | null; h: number | null } | null = null;
+  protected toggleExpand(): void {
+    if (this.expanded() && this.panelBeforeExpand) {
+      this.layout.restore({ studio: this.panelBeforeExpand });
+      this.panelBeforeExpand = null;
+      this.expanded.set(false);
+      return;
+    }
+    const { x, y, w, h } = this.layout.panels().studio;
+    this.panelBeforeExpand = { x, y, w, h };
+    this.layout.restore({ studio: { x: 4, y: 4, w: Math.max(90, window.innerWidth - 8), h: Math.max(120, window.innerHeight - 8) } });
+    this.expanded.set(true);
+  }
   protected readonly ai = inject(AiService);
   protected readonly site = inject(SiteService);
   private readonly scene = inject(SceneService);
@@ -808,6 +825,9 @@ export class BandoEditor {
       this.studio.zone.set({ lat: c.lat - south / 111132, lon: c.lon + east / mLon, halfE: h.e, halfN: h.n, ...(rd ? { rotDeg: rd } : {}) });
     });
     effect(() => {
+      if (!this.layout.panels().studio.visible && this.indoor()) untracked(() => this.exitIndoor());
+    });
+    effect(() => {
       if (this.pick()) untracked(() => { this.zoneSel.set(null); this.measure.sel.set(null); }); // selecting another element clears measure selection
     });
     effect(() => {
@@ -925,6 +945,7 @@ export class BandoEditor {
     this.destroyRef.onDestroy(() => {
       ro.disconnect();
       if (this.indoor()) this.view.setRoofHidden(this.roofBefore);
+      if (this.panelBeforeExpand) this.layout.restore({ studio: this.panelBeforeExpand });
       this.scene.pin.set(null);
       map.remove();
       this.map = null;
@@ -1346,12 +1367,6 @@ export class BandoEditor {
 
   protected heightLabel(k: StructureKind): string {
     return k === 'bridge' ? 'deck height' : k === 'stairs' || k === 'ramp' ? 'rise' : 'height';
-  }
-
-  /** Where the long axis of a building points on the compass rose (SVG units around the centre). */
-  protected axisEnd(b: BuildingSpec): [number, number] {
-    const a = (b.rotDeg * Math.PI) / 180;
-    return [Math.cos(a) * 22, Math.sin(a) * 22];
   }
 
   protected axisOf = (e: Event): 'x' | 'z' => ((e.target as HTMLSelectElement).value === 'z' ? 'z' : 'x');

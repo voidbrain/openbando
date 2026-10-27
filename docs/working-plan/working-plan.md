@@ -9,7 +9,7 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 - **Bug 6 — implemented:** terrain vertices are levelled once from the original grid; higher road classes own overlapping strips. Draw order is railway > road > track > path, with stable same-class ties independent of insertion order. Road decals do not write depth, so one cannot flicker against another; terrain depth testing stays on so hills/buildings occlude them. Meshes sample ground across their full width instead of using only the centre height. Regression tests cover reversed order, crossing heights, priorities and full-width draping on flat/hilly sites. Browser visual confirmation remains pending (no local Chromium available).
 - **CI failure:** run `40339576161` failed only the basement cut assertion (412 other tests passed). The fix includes ceiling equality; terrain strictly above the ceiling remains intact. No tests are skipped.
 
-- **Browser CI follow-up:** PR #69 skips the e2e job under the current `inputs.e2e != false` guard. Explicitly include pull-request events in that condition before claiming browser tests run on every PR. No browser verification was performed in this review.
+- **Browser CI follow-up:** the PR guard explicitly includes pull-request events; confirmation from the next GitHub Actions run remains pending. No browser verification was performed locally.
 
 ## Bugs
 
@@ -116,13 +116,18 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 - Villetta: verify restored annex walls and their openings against photos; verify the release 7 greenhouse east frame against IMG_4341 (support dimensions are estimates); add the 1 m centre roof strip and an optional cabin for the blue ladder.
 - Terrain: investigate the gallery road/terrain and warehouse perimeter/terrain flicker; investigate basement lighting. Verify fixes visually from multiple viewpoints.
-- Studio: use consistent compass styling; support indoor editing in 3D and exit indoors on editor close; add editor expansion and a full-height right-docked inspector.
+- Studio: 2D and 3D now share compass styling, closing Studio exits indoor mode, the editor can expand, and the inspector can dock right at full height. Verify these visually. Indoor editing in 3D remains open.
 - Measures: 2D lines can now be selected in Select mode with a red highlight and compact expandable labels; verify interaction visually. Display and interaction in 3D remain open. Review other 2D/3D feature differences.
 - 3D placement: show the construction line for two-point objects. Add hedge and bramble to the trees tool with click and lasso placement.
 - Flight alignment: disable start/end pins and start angle except at the corresponding video position, and update their explanatory text.
-- Visually review the mascot loop, title, responsive Welcome and restored annex geometry in a browser. Space/Enter tool cancellation currently applies when the editor canvas has keyboard focus.
+- Visually review the mascot loop, title, responsive Welcome, editor layout and restored annex geometry in a browser. Space/Enter tool cancellation currently applies when the editor canvas has keyboard focus.
 
 ### Follow-up — greenhouse end and 2D measures
 
 - Villetta release 7 adds an open steel east-end frame based on IMG_4341. Column spacing and rail heights are photo estimates; verify against the actual building. Existing edited copies remain unchanged.
 - In 2D, measure lines can be selected in Select mode, use a contrasting selected colour, and expose their terrain details through an expandable label. The 3D measure view is still open.
+
+### Follow-up — Studio layout and browser CI
+
+- 2D and 3D compass widgets share the same appearance; closing Studio exits indoor mode. The editor has an expand/restore control and the Inspector can dock at the right edge at full height. Browser verification is pending.
+- The browser CI condition explicitly enables the job on pull requests; confirm the actual GitHub Actions result after opening the PR. Indoor editing and measures in 3D remain open.
