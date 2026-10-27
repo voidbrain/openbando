@@ -1,3 +1,4 @@
+import type { BuildingHandle } from '../../three/building-handles';
 import { Component, DestroyRef, ElementRef, afterNextRender, afterRenderEffect, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { tr } from '../../services/i18n.service';
 import { latLonText, parseLatLon, siteFromLatLon } from '../../core/geo';
@@ -1456,6 +1457,22 @@ export class BandoEditor {
     } else if(p.kind === 'road'||p.kind === 'surface'||p.kind === 'water') this.pick.set({t:p.kind,i:p.i});
     else if (p.kind === 'fence') this.pick.set({ t: 'fence', i: p.i });
     else if(p.kind==='tree') this.pick.set({ t: 'tree', i: p.i });
+  }
+
+  /** Use the same building gesture, overlap guard and undo step as the plan handles. */
+  protected onTransform3d(g: { phase: 'down' | 'move' | 'up'; handle: BuildingHandle; x: number; z: number }): void {
+    const bd = this.b();
+    if (!bd || this.indoor() || bd.footprint) return;
+    const fake = { clientX: 0, clientY: 0, pointerId: 1, shiftKey: false, altKey: false, button: 0, currentTarget: null, stopPropagation: () => undefined, preventDefault: () => undefined } as unknown as PointerEvent;
+    this.world3d = { x: g.x, z: g.z };
+    try {
+      if (g.phase === 'down') {
+        this.capture(fake);
+        if (g.handle.kind === 'move') this.drag.set({ t: 'move', ox: bd.pos.x, oz: bd.pos.z, px: g.x, pz: g.z });
+        else this.cornerDown(fake, g.handle.sx, g.handle.sz);
+      } else if (g.phase === 'move') this.move(fake);
+      else this.up(fake);
+    } finally { this.world3d = null; }
   }
 
   /** A drag / click on the ground in 3D with a tool active: the same code path as in 2D, with the ground point as the pointer. */

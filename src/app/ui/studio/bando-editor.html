@@ -388,6 +388,8 @@
       [focus]="focus3d()"
       [indoorFloor]="indoorFloor3d()"
       [drawPlaneY]="indoorPlaneY()"
+      [handlesEnabled]="tool() === 'select' && !indoor()"
+      (transformed)="onTransform3d($event)"
       [flights]="flightList()"
       [speedMax]="flights.speedMax"
       (picked)="onPick3d($event)"

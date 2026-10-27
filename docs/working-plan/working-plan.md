@@ -152,5 +152,9 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — 3D indoor editing
 
 - Indoors and floor controls are available in the 3D editor. The selected building is displayed one floor at a time, with its roof removed; floor tools place onto that floor’s elevation. Selection of a rendered wall or column maps to the corresponding original floor.
-- Verify wall, void, door, window, column and stair placement in a browser, including rotated buildings and upper floors. Basement indoor-tool parity and 3D move/resize handles remain open.
+- Verify wall, void, door, window, column and stair placement in a browser, including rotated buildings and upper floors. Basement indoor-tool parity remains open; 3D move/resize handles for rectangular buildings are implemented and await browser verification. Shaped-building handles remain open.
 - Full guide E2E on PR #85 failed on Look around in 3D, Draw a building, Plant trees with the brush and Edit with the AI assistant; showcase was flaky. The cause is not yet established and these failures remain open.
+
+### Follow-up — 3D building handles
+
+- In 3D Select mode, rectangular buildings have a cyan move handle and four yellow resize handles. They reuse the 2D overlap guard, snapping and single-gesture undo. Shaped buildings still require 2D handles or inspector fields. Browser interaction and accessibility verification remain pending.

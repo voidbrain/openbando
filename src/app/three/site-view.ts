@@ -9,6 +9,7 @@ import { buildMeasureView, type MeasureViewItem } from './measure-view';
 
 import {pickModel,type SitePick} from './site-pick';
 import { floorPoint, indoorSourcePick, indoorViewSpec, type IndoorFloor } from './indoor-view';
+import { buildingHandles, type BuildingHandle } from './building-handles';
 export type {SitePick} from './site-pick';
 
 /**
@@ -47,6 +48,10 @@ export class SiteViewRenderer {
   private cursor: THREE.LineLoop | null = null;
   private drawLine: THREE.Line | null = null;
   private measures: THREE.Group | null = null;
+  private handles: THREE.Group | null = null;
+  private transform: BuildingHandle | null = null;
+  handlesEnabled = false;
+  onTransform: (phase: 'down' | 'move' | 'up', handle: BuildingHandle, x: number, z: number) => void = () => undefined;
   onMeasurePick: (index: number, label: boolean) => void = () => undefined;
   private press: { x: number; y: number; moved: boolean; ground: boolean } | null = null;
 
@@ -67,6 +72,19 @@ export class SiteViewRenderer {
       this.off.push(() => canvas.removeEventListener(t, f as EventListener));
     };
     on('pointerdown', (e) => {
+      if (this.mode === 'select' && e.button === 0 && !e.shiftKey && this.handles) {
+        const rect = canvas.getBoundingClientRect();
+        this.ray.setFromCamera(new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1), this.camera);
+        const hit = this.ray.intersectObjects(this.handles.children)[0];
+        const handle = hit?.object.userData['handle'] as BuildingHandle | undefined;
+        const point = handle ? floorPoint(this.ray.ray, handle.y) : null;
+        if (handle && point) {
+          this.transform = handle;
+          canvas.setPointerCapture(e.pointerId);
+          this.onTransform('down', handle, point.x, point.z);
+          return;
+        }
+      }
       const ground = this.mode === 'draw' && e.button === 0 && !e.shiftKey;
       this.press = { x: e.clientX, y: e.clientY, moved: false, ground };
       canvas.setPointerCapture(e.pointerId);
@@ -76,6 +94,11 @@ export class SiteViewRenderer {
       } else this.drag = { x: e.clientX, y: e.clientY, pan: e.button === 2 || e.shiftKey };
     });
     on('pointermove', (e) => {
+      if (this.transform) {
+        const point = this.pointAtHeight(e, this.transform.y);
+        if (point) this.onTransform('move', this.transform, point.x, point.z);
+        return;
+      }
       if (this.press && Math.hypot(e.clientX - this.press.x, e.clientY - this.press.y) > 4) this.press.moved = true;
       if (this.press?.ground) {
         const g = this.groundPoint(e);
@@ -102,6 +125,13 @@ export class SiteViewRenderer {
       this.drag = { ...d, x: e.clientX, y: e.clientY };
     });
     const release = (e: PointerEvent): void => {
+      if (this.transform) {
+        const handle = this.transform;
+        this.transform = null;
+        const point = this.pointAtHeight(e, handle.y);
+        this.onTransform('up', handle, point?.x ?? handle.x, point?.z ?? handle.z);
+        return;
+      }
       const p = this.press;
       this.press = null;
       this.drag = null;
@@ -234,6 +264,12 @@ export class SiteViewRenderer {
     this.model.group.add(buildSiteFromSpec(mini, { bare: true }).group);
   }
 
+  private pointAtHeight(e: { clientX: number; clientY: number }, height: number): { x: number; z: number } | null {
+    const r = this.canvas.getBoundingClientRect();
+    this.ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
+    return floorPoint(this.ray.ray, height);
+  }
+
   /** The point on the ground (the terrain, or y = 0) under the pointer, in site coordinates. */
   private groundPoint(e: { clientX: number; clientY: number }): { x: number; z: number } | null {
     const r = this.canvas.getBoundingClientRect();
@@ -258,14 +294,15 @@ export class SiteViewRenderer {
   setSelection(sel: SitePick | null): void {
     this.selection = sel;
     this.refreshSelection();
-    if (this.box) {
+    if (this.box && !this.transform) {
       this.box.box.getCenter(this.target);
       this.dist=Math.max(25,Math.min(300,this.box.box.getSize(new THREE.Vector3()).length()*2));
     }
   }
 
-  /** A yellow box around the selected thing. */
+  /** A yellow box and draggable handles around the selected thing. */
   private refreshSelection(): void {
+    if (this.handles) { this.scene.remove(this.handles); dispose(this.handles); this.handles = null; }
     if (this.box) {
       this.scene.remove(this.box);
       this.box.geometry.dispose();
@@ -287,6 +324,21 @@ export class SiteViewRenderer {
     if (b.isEmpty()) return;
     this.box = new THREE.Box3Helper(b, 0xffd166);
     this.scene.add(this.box);
+    if (this.handlesEnabled && sel.kind === 'building' && !this.indoorFloor) {
+      const building = this.spec.buildings.find((item) => item.id === sel.id);
+      if (building && !building.footprint) {
+        this.handles = new THREE.Group();
+        const size = Math.max(0.6, Math.min(2, Math.max(building.length, building.width) * 0.035));
+        for (const handle of buildingHandles(building, this.model.ground.building.get(building.id) ?? 0)) {
+          const mesh = new THREE.Mesh(new THREE.BoxGeometry(size, size, size), new THREE.MeshBasicMaterial({ color: handle.kind === 'move' ? 0x38d6ff : 0xffd166, depthTest: false }));
+          mesh.position.set(handle.x, handle.y, handle.z);
+          mesh.renderOrder = 20;
+          mesh.userData['handle'] = handle;
+          this.handles.add(mesh);
+        }
+        this.scene.add(this.handles);
+      }
+    }
   }
 
   setPaths(flights: Flight[], speedMax: number): void {
@@ -317,6 +369,7 @@ export class SiteViewRenderer {
     for (const f of this.off) f();
     if (this.model) dispose(this.model.group);
     if (this.drawLine) dispose(this.drawLine);
+    if (this.handles) dispose(this.handles);
     this.clearMeasures();
     this.renderer.dispose();
   }
