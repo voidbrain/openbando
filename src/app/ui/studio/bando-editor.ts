@@ -25,6 +25,7 @@ import { placeColumn, type Placement } from '../../core/placement';
 import { RECT_KINDS, STRUCTURE_DEFAULTS } from '../../three/structures';
 import { AiService } from '../../services/ai.service';
 import { FlightService } from '../../services/flight.service';
+import { AlignmentPositionService } from '../../services/alignment-position.service';
 import { FlightStore } from '../../state/flight.store';
 import { GeoService } from '../../services/geo.service';
 import { SceneService } from '../../services/scene.service';
@@ -90,6 +91,7 @@ const FENCE_ICON: Record<FenceMaterial, string> = { masonry: 'wall', concrete: '
 })
 export class BandoEditor {
   protected readonly studio = inject(StudioService);
+  protected readonly alignment = inject(AlignmentPositionService);
   private readonly layout = inject(LayoutStore);
   protected readonly northUpCamera = (): null => null;
   protected readonly expanded = signal(false);

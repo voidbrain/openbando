@@ -5,6 +5,12 @@
  * Voice as in English: short, direct, "tu", no exclamation marks. "Bando" stays (it is the app's word).
  */
 export const IT: Readonly<Record<string, string>> = {
+  'Pin start: position at the start of the video and click the ground where the flight started': 'Fissa inizio: posizionati all’inizio del video e clicca sul terreno dove è iniziato il volo',
+  'Pin start: position at the start of the flight and click the ground where the flight started': 'Fissa inizio: posizionati all’inizio del volo e clicca sul terreno dove è iniziato',
+  'Pin end: position at the end of the video and click the ground where the flight ended': 'Fissa fine: posizionati alla fine del video e clicca sul terreno dove è terminato il volo',
+  'Pin end: position at the end of the flight and click the ground where the flight ended': 'Fissa fine: posizionati alla fine del volo e clicca sul terreno dove è terminato',
+  'Position at the start of the video and turn the path about its start': 'Posizionati all’inizio del video e ruota il percorso intorno al suo inizio',
+  'Position at the start of the flight and turn the path about its start': 'Posizionati all’inizio del volo e ruota il percorso intorno al suo inizio',
   'centre strip m': 'fascia centrale m',
   'Flat strip between the two halves of the barrel roof': 'Fascia piana tra le due metà della copertura a volta',
   'Dock inspector to the right': 'Aggancia l’ispezione a destra',

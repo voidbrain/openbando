@@ -423,8 +423,8 @@
       }
       @if (!indoor() && hasPath() && !view3d()) {
         <i class="psep"></i>
-        <div class="pg"><button class="pbtn" [class.on]="pinMode() === 's'" style="--tc: #ff6b6b" (click)="armPin('s')" title="Pin start · click where the loaded flight started"><app-tool-icon name="pinStart" /></button></div>
-        <div class="pg"><button class="pbtn" [class.on]="pinMode() === 'e'" style="--tc: #ff6b6b" (click)="armPin('e')" title="Pin end · click where the loaded flight ended"><app-tool-icon name="pinEnd" /></button></div>
+        <div class="pg"><button class="pbtn" [class.on]="pinMode() === 's'" [disabled]="!alignment.atStart()" style="--tc: #ff6b6b" (click)="armPin('s')" [title]="alignment.videoLoaded() ? 'Pin start: position at the start of the video and click the ground where the flight started' : 'Pin start: position at the start of the flight and click the ground where the flight started'" aria-label="Pin start"><app-tool-icon name="pinStart" /></button></div>
+        <div class="pg"><button class="pbtn" [class.on]="pinMode() === 'e'" [disabled]="!alignment.atEnd()" style="--tc: #ff6b6b" (click)="armPin('e')" [title]="alignment.videoLoaded() ? 'Pin end: position at the end of the video and click the ground where the flight ended' : 'Pin end: position at the end of the flight and click the ground where the flight ended'" aria-label="Pin end"><app-tool-icon name="pinEnd" /></button></div>
       }
     </div>
     @if (!view3d() || tool() !== 'select') {
