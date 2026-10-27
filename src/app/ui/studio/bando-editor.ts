@@ -5,7 +5,7 @@ import { latLonText, parseLatLon, siteFromLatLon } from '../../core/geo';
 import { LayoutStore, uiResets } from '../../state/layout.store';
 import { FormsModule } from '@angular/forms';
 import * as L from 'leaflet';
-import { contains, edgesOf, type Pt, type Rect } from '../../core/footprint';
+import { contains, edgesOf, isRectilinear, type Pt, type Rect } from '../../core/footprint';
 import { buildingsOverlap, stairsFor, columnGrid, columnRow, convertBuilding, duplicateColumn, duplicateColumns, fillModule, mergeBuildings, overlapsOthers, repeatOpening } from '../../core/building-ops';
 import { addOpening, insideBuilding, listOpenings, moveOpening, outlineOf, previewOpening, patchOpening, removeOpening, reshapeBuilding, resetToRect, resizeOpening, type OpenSeg } from '../../core/openings';
 import { cloneSpec, uid, type BuildingSpec, type LevelSpec, type LocationInfo, type SiteSpec, type StructureKind, type StructureSpec } from '../../core/site-spec';
@@ -16,7 +16,7 @@ import { areaCorners } from '../../core/areas';
 import { roadDef, surfaceDef } from '../../core/layers';
 import { blockCategory } from '../../core/catalog';
 import { siteGround } from '../../core/site-ground';
-import { basementBuilding, basementOutline, editBasementFloor, reshapeBasement, saveBasementFloor } from '../../core/basement';
+import { basementBuilding, basementOutline, editBasementFloor, insertBasementVertex, moveBasementVertex, removeBasementVertex, reshapeBasement, saveBasementFloor } from '../../core/basement';
 import { PickMenu, type PickOption } from './pick-menu';
 import { BlocksBox } from './blocks-box';
 import { paramValues, type BlockSpec, type ParamValue } from '../../core/blocks';
@@ -660,7 +660,7 @@ export class BandoEditor {
       const pv = previewOpening(bd, li, l, kind, Math.max(3, 14 / this.ppm()));
       if (!pv) return { x: raw.x, z: raw.z, valid: false, guides: [], labels: [], snapped: { x: 'grid', z: 'grid' }, kind: 'opening', w: 0, d: 0 };
       const L2 = bd.length / 2, W2 = bd.width / 2;
-      const P = (a: number, c: number): { x: number; z: number } => (pv.axis === 'x' ? { x: a + L2, z: c + W2 } : { x: c + L2, z: a + W2 });
+      const P = (a: number, c: number): { x: number; z: number } => pv.vector ? { x: pv.vector.a.x + a * pv.vector.ux - c * pv.vector.uz + L2, z: pv.vector.a.z + a * pv.vector.uz + c * pv.vector.ux + W2 } : (pv.axis === 'x' ? { x: a + L2, z: c + W2 } : { x: c + L2, z: a + W2 });
       const s0 = P(pv.c - pv.w / 2, pv.at), s1 = P(pv.c + pv.w / 2, pv.at);
       const eq = pv.gaps.length === 2 && Math.abs(pv.gaps[0]!.d - pv.gaps[1]!.d) < 0.06;
       return {
@@ -1099,6 +1099,7 @@ export class BandoEditor {
   }
 
   protected seg(o: OpenSeg): { x1: number; y1: number; x2: number; y2: number } {
+    if (o.vector) return { x1: o.vector.a.x + (o.c - o.w / 2) * o.vector.ux, y1: o.vector.a.z + (o.c - o.w / 2) * o.vector.uz, x2: o.vector.a.x + (o.c + o.w / 2) * o.vector.ux, y2: o.vector.a.z + (o.c + o.w / 2) * o.vector.uz };
     return o.axis === 'x' ? { x1: o.c - o.w / 2, y1: o.at, x2: o.c + o.w / 2, y2: o.at } : { x1: o.at, y1: o.c - o.w / 2, x2: o.at, y2: o.c + o.w / 2 };
   }
 
@@ -1335,6 +1336,69 @@ export class BandoEditor {
     const mid = ed.axis === 'x' ? { x: (ed.from + ed.to) / 2, z: ed.at } : { x: ed.at, z: (ed.from + ed.to) / 2 };
     const inside = contains(shape, mid.x + (ed.axis === 'z' ? 0.05 : 0), mid.z + (ed.axis === 'x' ? 0.05 : 0));
     this.drag.set({ t: 'edge', start: cloneSpec({ ...this.ed.draft(), buildings: [bd] }).buildings[0]!, axis: ed.axis, at: ed.at, from: ed.from, to: ed.to, n: inside ? -1 : 1 });
+  }
+
+  protected readonly isRectilinear = isRectilinear;
+
+  protected basementVertexDown(e: PointerEvent, index: number): void {
+    const b = this.b();
+    if (!b?.basement) return;
+    e.stopPropagation();
+    if (e.altKey) { this.removeVertex(index); return; }
+    this.capture(e);
+    this.drag.set({ t: 'basementVertex', start: structuredClone(b), index });
+  }
+
+  protected basementVertexKey(e: KeyboardEvent, index: number): void {
+    const b = this.b();
+    if (e.key === 'Insert' || e.key === 'Delete' || e.key === 'Backspace') {
+      e.preventDefault(); e.stopPropagation();
+      if (e.key === 'Insert') this.insertVertex(index); else this.removeVertex(index);
+      return;
+    }
+    const step = e.shiftKey ? 1 : 0.1;
+    const delta = e.key === 'ArrowLeft' ? { x: -step, z: 0 } : e.key === 'ArrowRight' ? { x: step, z: 0 } : e.key === 'ArrowUp' ? { x: 0, z: -step } : e.key === 'ArrowDown' ? { x: 0, z: step } : null;
+    if (!b?.basement || !delta) return;
+    e.preventDefault(); e.stopPropagation();
+    const point = basementOutline(b)[index];
+    if (!point) return;
+    const next = structuredClone(b);
+    if (!moveBasementVertex(next, index, { x: point.x + delta.x, z: point.z + delta.z })) { this.toast.show('Cannot move this vertex: check the outline and floor items.'); return; }
+    this.ed.commitSite(s => { const i = s.buildings.findIndex(x => x.id === b.id); if (i >= 0) s.buildings[i] = next; });
+    this.applyNow();
+  }
+
+  protected basementEdgeDoubleClick(e: MouseEvent): void {
+    const b = this.b();
+    if (!b?.basement || this.tool() !== 'select') return;
+    e.preventDefault(); e.stopPropagation();
+    const p = this.toLocal(b, this.toWorld(e)), poly = basementOutline(b);
+    let edge = -1, best = Infinity;
+    poly.forEach((a, i) => {
+      const q = poly[(i + 1) % poly.length]!, dx = q.x - a.x, dz = q.z - a.z;
+      const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.z - a.z) * dz) / (dx * dx + dz * dz)));
+      const distance = Math.hypot(p.x - a.x - t * dx, p.z - a.z - t * dz);
+      if (distance < best) { edge = i; best = distance; }
+    });
+    if (edge >= 0) this.insertVertex(edge);
+  }
+
+  private insertVertex(index: number): void {
+    const b = this.b();
+    if (!b?.basement) return;
+    const next = structuredClone(b);
+    if (!insertBasementVertex(next, index)) { this.toast.show('Cannot add a vertex here: check wall openings and length.'); return; }
+    this.ed.commitSite(s => { const i = s.buildings.findIndex(x => x.id === b.id); if (i >= 0) s.buildings[i] = next; });
+    this.applyNow();
+  }
+
+  private removeVertex(index: number): void {
+    const b = this.b();
+    if (!b?.basement) return;
+    const next = structuredClone(b);
+    if (!removeBasementVertex(next, index)) { this.toast.show('Cannot remove this vertex: check wall openings and floor items.'); return; }
+    this.ed.commitSite(s => { const i = s.buildings.findIndex(x => x.id === b.id); if (i >= 0) s.buildings[i] = next; });
+    this.applyNow();
   }
 
   protected rotDown(e: PointerEvent): void {
@@ -1928,6 +1992,17 @@ export class BandoEditor {
         }, basement ? undefined : d.start.id);
         break;
       }
+      case 'basementVertex': {
+        const local = this.toLocal(d.start, p);
+        const next = structuredClone(d.start);
+        if (!moveBasementVertex(next, d.index, { x: snap(local.x, 0.1), z: snap(local.z, 0.1) })) {
+          if (!this.warned) this.toast.show('Cannot move this vertex: check the outline and floor items.');
+          this.warned = true;
+          break;
+        }
+        this.gesture(s => { const i = s.buildings.findIndex(x => x.id === d.start.id); if (i >= 0) s.buildings[i] = next; });
+        break;
+      }
       case 'tree':
         this.gesture((s) => {
           const t = s.trees[d.i];
@@ -1943,7 +2018,7 @@ export class BandoEditor {
         const l = this.toLocal(bd, p);
         const o = this.openings().find((x) => x.id === d.id);
         if (!o) break;
-        const along = o.axis === 'x' ? l.x : l.z;
+        const along = o.vector ? (l.x - o.vector.a.x) * o.vector.ux + (l.z - o.vector.a.z) * o.vector.uz : o.axis === 'x' ? l.x : l.z;
         this.gesture((s) => {
           this.floorEdit(s, bd.id, x => {
             if (d.t === 'open') moveOpening(x, li, d.id, along);

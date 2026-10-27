@@ -218,3 +218,8 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — basement wall/terrain seam
 
 - A basement wall extends beyond the outline used to cut terrain, so its top face can coincide with the surrounding terrain. Basement walls now use the same depth bias as the exterior walls, while preserving the terrain boundary and collision. A ray test covers the overlapping surface in both normal and merged scenes. This is a rendering mitigation; moving-camera browser verification is still needed before closing the warehouse flicker issue.
+
+### Follow-up — diagonal basement outlines
+
+- In 2D indoor Select mode, move, insert and remove vertices of a single basement outline. Walls and slab follow diagonal edges; openings can be placed and moved along them. Terrain cuts and simulator wall/floor collision use the same outline. Edits preserve floor-item positions and reject invalid outlines or operations that would discard openings or exclude floor items; save/import and undo are covered by unit tests.
+- Cut and Wing remain rectilinear-only. Outlines with holes or disconnected islands are unsupported; changing an outline with disabled perimeter sides or removing a vertex next to an opening is rejected. Vertex handles are 2D only. Browser, keyboard/accessibility and multi-angle 3D verification remain pending.

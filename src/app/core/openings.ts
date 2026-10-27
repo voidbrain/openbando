@@ -1,4 +1,4 @@
-import { combine, contains, edgesOf, recentre, rectPoly, type Edge, type Pt, type Rect } from './footprint';
+import { combine, contains, edgesOf, isRectilinear, recentre, rectPoly, type Edge, type Pt, type Rect } from './footprint';
 import type { BuildingSpec, LevelSpec, OpeningSpec, WallOpening } from './site-spec';
 
 type Side = 'n' | 's' | 'e' | 'w';
@@ -21,12 +21,18 @@ export interface OpenSeg {
   /** The wall's extent along its axis. */
   from: number;
   to: number;
+  /** For a diagonal polygon, positions are distances along this directed edge. */
+  vector?: { a: Pt; ux: number; uz: number };
 }
 
 export const defaultSill = (l: LevelSpec, kind: 'door' | 'window'): number => (kind === 'door' ? 0 : Math.max(0.4, l.height * 0.75));
 
 /** The walls of a building: four sides for a rectangle, the polygon edges for a shaped one. */
-export function wallsOf(b: BuildingSpec): { key: string; side?: Side; axis: 'x' | 'z'; at: number; from: number; to: number }[] {
+export function wallsOf(b: BuildingSpec): { key: string; side?: Side; axis: 'x' | 'z'; at: number; from: number; to: number; vector?: { a: Pt; ux: number; uz: number } }[] {
+  if (b.footprint && !isRectilinear(b.footprint)) return b.footprint.map((a, i) => {
+    const z = b.footprint![(i + 1) % b.footprint!.length]!, dx = z.x - a.x, dz = z.z - a.z, len = Math.hypot(dx, dz);
+    return { key: `e${i}`, axis: 'x' as const, at: 0, from: 0, to: len, vector: { a, ux: dx / len, uz: dz / len } };
+  });
   if (b.footprint) return edgesOf(b.footprint).map((e) => ({ key: `e${e.i}`, axis: e.axis, at: e.at, from: e.from, to: e.to }));
   const L = b.length / 2, W = b.width / 2;
   return [
@@ -46,6 +52,11 @@ export function listOpenings(b: BuildingSpec, li: number): OpenSeg[] {
   const out: OpenSeg[] = [];
   if (b.footprint) {
     (l.wallOpenings ?? []).forEach((o, i) => {
+      if (!isRectilinear(b.footprint!)) {
+        const found = nearestWall(b, o, TOL);
+        if (found) out.push({ id: `p:${i}`, kind: o.kind, w: o.w, h: o.h, sill: o.sill ?? defaultSill(l, o.kind), closed: !!o.closed, ...found.wall, c: found.along });
+        return;
+      }
       const e = edgeFor(b, o);
       if (e) out.push({ id: `p:${i}`, kind: o.kind, w: o.w, h: o.h, sill: o.sill ?? defaultSill(l, o.kind), closed: !!o.closed, axis: e.axis, at: e.at, c: e.axis === 'x' ? o.x : o.z, from: e.from, to: e.to });
     });
@@ -63,12 +74,19 @@ function nearestWall(b: BuildingSpec, p: Pt, maxDist: number): { wall: ReturnTyp
   let best: ReturnType<typeof wallsOf>[number] | null = null;
   let bd = Infinity;
   for (const w of wallsOf(b)) {
+    if (w.vector) {
+      const { a, ux, uz } = w.vector, dx = p.x - a.x, dz = p.z - a.z;
+      const along = dx * ux + dz * uz, clamped = Math.max(w.from, Math.min(w.to, along));
+      const d = Math.hypot(dx - clamped * ux, dz - clamped * uz);
+      if (d < bd) { bd = d; best = w; }
+      continue;
+    }
     const along = w.axis === 'x' ? p.x : p.z, across = w.axis === 'x' ? p.z : p.x;
     const d = Math.abs(across - w.at) + (along < w.from ? w.from - along : along > w.to ? along - w.to : 0);
     if (d < bd) { bd = d; best = w; }
   }
   if (!best || bd > maxDist) return null;
-  return { wall: best, along: best.axis === 'x' ? p.x : p.z };
+  return { wall: best, along: best.vector ? (p.x - best.vector.a.x) * best.vector.ux + (p.z - best.vector.a.z) * best.vector.uz : best.axis === 'x' ? p.x : p.z };
 }
 
 const openingSize = (l: LevelSpec, kind: 'door' | 'window'): { w: number; h: number; sill: number | undefined } => {
@@ -86,6 +104,7 @@ export interface OpeningPreview {
   w: number;
   /** Free stretches next to it along the wall (to the wall end or the next opening): from, to (building-centred) and their length. */
   gaps: { from: number; to: number; d: number }[];
+  vector?: OpenSeg['vector'];
 }
 
 export function previewOpening(b: BuildingSpec, li: number, p: Pt, kind: 'door' | 'window', maxDist: number): OpeningPreview | null {
@@ -97,11 +116,11 @@ export function previewOpening(b: BuildingSpec, li: number, p: Pt, kind: 'door' 
   const { wall, along } = hit;
   if (wall.to - wall.from < w + 0.3) return null;
   const c = Math.min(wall.to - w / 2 - 0.1, Math.max(wall.from + w / 2 + 0.1, Math.round(along * 10) / 10));
-  const others = listOpenings(b, li).filter((o) => o.axis === wall.axis && Math.abs(o.at - wall.at) < 0.1).sort((x, y) => x.c - y.c);
+  const others = listOpenings(b, li).filter((o) => wall.vector ? !!o.vector && Math.hypot(o.vector.a.x - wall.vector.a.x, o.vector.a.z - wall.vector.a.z) < TOL : !o.vector && o.axis === wall.axis && Math.abs(o.at - wall.at) < 0.1).sort((x, y) => x.c - y.c);
   const left = others.filter((o) => o.c < c).pop(), right = others.find((o) => o.c > c);
   const lo = left ? left.c + left.w / 2 : wall.from, hi = right ? right.c - right.w / 2 : wall.to;
   const gaps = [{ from: lo, to: c - w / 2, d: c - w / 2 - lo }, { from: c + w / 2, to: hi, d: hi - (c + w / 2) }].filter((g) => g.d > 0.05);
-  return { axis: wall.axis, at: wall.at, c, w, gaps };
+  return { axis: wall.axis, at: wall.at, c, w, gaps, vector: wall.vector };
 }
 
 /** Add a door / window on the wall nearest to `p` (building-centred); returns its id, or null when no wall is close. */
@@ -116,7 +135,7 @@ export function addOpening(b: BuildingSpec, li: number, p: Pt, kind: 'door' | 'w
   if (len < w + 0.3) return null;
   const c = Math.min(best.to - w / 2 - 0.1, Math.max(best.from + w / 2 + 0.1, Math.round(hit.along * 10) / 10));
   if (b.footprint) {
-    const o: WallOpening = best.axis === 'x' ? { kind, x: c, z: best.at, w, h, sill } : { kind, x: best.at, z: c, w, h, sill };
+    const o: WallOpening = best.vector ? { kind, x: best.vector.a.x + c * best.vector.ux, z: best.vector.a.z + c * best.vector.uz, w, h, sill } : best.axis === 'x' ? { kind, x: c, z: best.at, w, h, sill } : { kind, x: best.at, z: c, w, h, sill };
     (l.wallOpenings ??= []).push(o);
     return `p:${l.wallOpenings.length - 1}`;
   }
@@ -137,6 +156,7 @@ function ref(b: BuildingSpec, li: number, id: string): { o: OpeningSpec | WallOp
 const setCentre = (o: OpenSeg, target: OpeningSpec | WallOpening, c: number, w: number, from: number, b: BuildingSpec): void => {
   void b;
   if ('c' in target) target.c = c - from;
+  else if (o.vector) { target.x = o.vector.a.x + c * o.vector.ux; target.z = o.vector.a.z + c * o.vector.uz; }
   else if (o.axis === 'x') target.x = c;
   else target.z = c;
   target.w = w;

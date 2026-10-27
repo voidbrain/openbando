@@ -15,6 +15,7 @@ export type Drag =
   | { t: 'resize'; sx: number; sz: number; ax: number; az: number }
   | { t: 'rotate' }
   | { t: 'edge'; start: BuildingSpec; axis: 'x' | 'z'; at: number; from: number; to: number; n: 1 | -1 }
+  | { t: 'basementVertex'; start: BuildingSpec; index: number }
   | { t: 'tree'; i: number; dx: number; dz: number }
   | { t: 'open'; id: string }
   | { t: 'openEnd'; id: string; end: 0 | 1 }
