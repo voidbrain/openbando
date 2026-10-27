@@ -713,10 +713,11 @@ function buildUnderground(v: UndergroundSpec): THREE.Group {
   const out = new THREE.Group();
   const slab = (y: number, holes: readonly { x: number; z: number }[][] = []): void => {
     const shape = new THREE.Shape(v.outline.map((q) => new THREE.Vector2(q.x, -q.z)));
-    for (const hole of holes) shape.holes.push(new THREE.Path(hole.map(q => new THREE.Vector2(q.x, -q.z))));
     const geo = new THREE.ExtrudeGeometry(shape, { depth: v.wall, bevelEnabled: false });
     geo.rotateX(-Math.PI / 2); // extruded along +y from y = 0
-    const m = new THREE.Mesh(geo, UNDER_MAT);
+    // Subtract the opening prism from the ceiling mesh; it also handles openings that cross its outline.
+    const cuts: UndergroundSpec[] = holes.map((outline, i) => ({ id: `ceiling-cut-${i}`, name: '', outline, floor: -0.01, ceiling: v.wall + 0.01, shape: 'box', wall: 0 }));
+    const m = new THREE.Mesh(cutUnderground(geo, cuts), UNDER_MAT);
     m.position.y = y;
     m.receiveShadow = true;
     out.add(m);
