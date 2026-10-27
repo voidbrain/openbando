@@ -1,3 +1,4 @@
+import type { BuildingHandle } from '../../three/building-handles';
 import { Component, DestroyRef, ElementRef, afterNextRender, afterRenderEffect, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { tr } from '../../services/i18n.service';
 import { latLonText, parseLatLon, siteFromLatLon } from '../../core/geo';
@@ -451,12 +452,26 @@ export class BandoEditor {
   protected readonly hasModel = computed(() => !this.studio.isNew() && this.ed.draft().buildings.length + this.ed.draft().trees.length > 0);
   protected readonly overlayOn = computed(() => this.mode() === 'model' && this.hasModel() && this.ed.draft().bearingDeg === 0);
   protected readonly captures = computed(() => this.tool() !== 'select' || this.pinMode() !== null || this.indoor() || this.shiftHeld() || !!this.blocks.armed());
+  protected readonly indoorFloor3d = computed(() => {
+    const b = this.b();
+    return this.indoor() && b ? { id: b.id, li: Math.min(this.level(), b.levels.length - 1) } : null;
+  });
+  protected readonly indoorPlaneY = computed(() => {
+    const b = this.b();
+    if (!b || !this.indoor() || !['wall', 'void', 'door', 'window', 'column', 'stairs'].includes(this.tool())) return null;
+    return (this.ground().building.get(b.id) ?? 0) + (b.levels[this.level()]?.baseY ?? 0);
+  });
   protected readonly drawLine3d = computed(() => {
     if (this.tool() === 'measure') {
       const a = this.measure.chain().a, b = this.measure.hover();
       return a && b ? { a, b, color: this.tc('measure') } : null;
     }
     const d = this.drag();
+    const bd = this.b(), height = this.indoorPlaneY();
+    if (bd && height !== null && (d?.t === 'wallDraw' || d?.t === 'voidDraw')) {
+      const world = (p: Pt) => this.fromLocal(bd, { x: p.x - bd.length / 2, z: p.z - bd.width / 2 });
+      return { a: world(d.a), b: world(d.b), color: this.tc(d.t === 'wallDraw' ? 'wall' : 'void'), height };
+    }
     if (d?.t !== 'fenceDraw' && d?.t !== 'bridgeDraw' && d?.t !== 'under') return null;
     return { a: d.a, b: d.b, color: this.tc(d.t === 'fenceDraw' ? 'fence' : d.t === 'under' ? 'tunnel' : 'structure') };
   });
@@ -610,7 +625,7 @@ export class BandoEditor {
         (t.where === 'both' || (t.where === 'in') === this.indoor()) &&
         // cut / wing / merge stay in the palette: without a selected building they ask for one (their hint says so)
 
-        (!this.view3d() || ['select', 'measure', 'building', 'structure', 'tree', 'scatter', 'fence', 'terrain', 'tunnel', 'road', 'surface', 'water'].includes(t.id)), // on the ground in 3D: what a click can place or paint
+        (!this.view3d() || ['select', 'measure', 'building', 'structure', 'tree', 'scatter', 'fence', 'terrain', 'tunnel', 'road', 'surface', 'water', 'wall', 'void', 'door', 'window', 'column', 'stairs'].includes(t.id)), // on the ground in 3D: what a click can place or paint
     ),
   );
   protected readonly placing = computed(() => PLACE.includes(this.tool()));
@@ -659,6 +674,7 @@ export class BandoEditor {
       return st ? { kind: 'structure', id: st.id } : null;
     }
     const id = this.ed.selectedId();
+    if (id && (p?.t === 'column' || p?.t === 'wall')) return { kind: p.t, id, li: this.level(), i: p.i };
     return id ? { kind: 'building', id } : null;
   });
 
@@ -1118,6 +1134,7 @@ export class BandoEditor {
     const bd = this.b();
     if (!bd) return;
     if (!this.indoor()) this.roofBefore = this.view.roofHidden();
+    this.basementFocus.set(false);
     this.indoor.set(true);
     this.tool.set('select'); // the outdoor tools are not shown while editing a floor
     this.view.setRoofHidden(true);
@@ -1409,19 +1426,22 @@ export class BandoEditor {
   protected onPick3d(p: SitePick | null): void {
     this.measure.sel.set(null);
     if (!p) {
+      if (this.indoor()) return;
       this.pick.set(null);
       this.ed.select('');
       return;
     }
+    if (this.indoor() && !['building', 'column', 'wall'].includes(p.kind)) this.exitIndoor();
     if (p.kind === 'basement') {
       this.ed.select(p.id);
       this.basementFocusId.set(p.id);
       this.basementFocus.set(true);
       this.pick.set({t:'building'});
     } else if (p.kind === 'building') {
+      const keepFloor = this.indoor() && this.ed.selectedId() === p.id;
       this.ed.select(p.id);
       this.basementFocus.set(false);
-      this.level.set(0);
+      if (!keepFloor) this.level.set(0);
       this.pick.set({ t: 'building' });
     } else if (p.kind === 'structure') {
       const i = (this.ed.draft().structures ?? []).findIndex((x) => x.id === p.id);
@@ -1439,6 +1459,22 @@ export class BandoEditor {
     else if(p.kind==='tree') this.pick.set({ t: 'tree', i: p.i });
   }
 
+  /** Use the same building gesture, overlap guard and undo step as the plan handles. */
+  protected onTransform3d(g: { phase: 'down' | 'move' | 'up'; handle: BuildingHandle; x: number; z: number }): void {
+    const bd = this.b();
+    if (!bd || this.indoor() || bd.footprint) return;
+    const fake = { clientX: 0, clientY: 0, pointerId: 1, shiftKey: false, altKey: false, button: 0, currentTarget: null, stopPropagation: () => undefined, preventDefault: () => undefined } as unknown as PointerEvent;
+    this.world3d = { x: g.x, z: g.z };
+    try {
+      if (g.phase === 'down') {
+        this.capture(fake);
+        if (g.handle.kind === 'move') this.drag.set({ t: 'move', ox: bd.pos.x, oz: bd.pos.z, px: g.x, pz: g.z });
+        else this.cornerDown(fake, g.handle.sx, g.handle.sz);
+      } else if (g.phase === 'move') this.move(fake);
+      else this.up(fake);
+    } finally { this.world3d = null; }
+  }
+
   /** A drag / click on the ground in 3D with a tool active: the same code path as in 2D, with the ground point as the pointer. */
   protected onGround3d(g: { phase: 'down' | 'move' | 'up' | 'hover'; x: number; z: number }): void {
     if (g.phase === 'hover') {
@@ -1452,6 +1488,7 @@ export class BandoEditor {
       this.up(fake);
       return;
     }
+    this.hover.set({ x: g.x, z: g.z });
     this.world3d = { x: g.x, z: g.z };
     try {
       if (g.phase === 'down') this.bgDown(fake);

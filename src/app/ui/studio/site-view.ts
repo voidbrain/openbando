@@ -5,6 +5,7 @@ import type { SiteSpec } from '../../core/site-spec';
 import { SiteViewRenderer, type SitePick } from '../../three/site-view';
 import type { GroundStyle } from '../../three/site-model';
 import type { MeasureViewItem } from '../../three/measure-view';
+import type { BuildingHandle } from '../../three/building-handles';
 
 /** The editor's 3D mode: the whole bando, orbit with the mouse. Editing happens in 2D; this is for looking. */
 @Component({
@@ -23,7 +24,7 @@ import type { MeasureViewItem } from '../../three/measure-view';
     @if (failed()) {
       <div class="fail dim">3D view unavailable (WebGL could not start).</div>
     } @else {
-      <div class="cap dim small">{{ mode() === 'select' ? 'click: select · drag: orbit · right-drag / Shift-drag: pan · wheel: zoom' : 'drag / click on the ground to draw or place · right-drag or Shift-drag: orbit · wheel: zoom' }}</div>
+      <div class="cap dim small">{{ mode() === 'select' ? 'click: select · drag handles: move / resize · drag: orbit · wheel: zoom' : 'drag / click on the ground to draw or place · right-drag or Shift-drag: orbit · wheel: zoom' }}</div>
     }
   `,
   styles: `
@@ -69,6 +70,10 @@ export class SiteView {
   readonly selection = input<SitePick | null>(null);
   /** One floor of one building to show solid, the rest of that building ghosted. */
   readonly focus = input<{ id: string; li: number } | null>(null);
+  readonly indoorFloor = input<{ id: string; li: number } | null>(null);
+  readonly drawPlaneY = input<number | null>(null);
+  readonly handlesEnabled = input(false);
+  readonly transformed = output<{ phase: 'down' | 'move' | 'up'; handle: BuildingHandle; x: number; z: number }>();
   readonly flights = input<Flight[]>([]);
   readonly speedMax = input(10);
   readonly picked = output<SitePick | null>();
@@ -77,7 +82,7 @@ export class SiteView {
   readonly groundStyle = input<GroundStyle>('natural');
   /** A brush ring on the ground (terrain tools), or none. */
   readonly cursor = input<{ x: number; z: number; r: number; color: string } | null>(null);
-  readonly drawLine = input<{ a: { x: number; z: number }; b: { x: number; z: number }; color: string } | null>(null);
+  readonly drawLine = input<{ a: { x: number; z: number }; b: { x: number; z: number }; color: string; height?: number } | null>(null);
   readonly measures = input<readonly MeasureViewItem[]>([]);
   readonly measurePicked = output<{ index: number; label: boolean }>();
   protected readonly failed = signal(false);
@@ -95,6 +100,9 @@ export class SiteView {
         return;
       }
       this.r.mode = this.mode();
+      this.r.drawPlaneY = this.drawPlaneY();
+      this.r.handlesEnabled = this.handlesEnabled();
+      this.r.onTransform = (phase, handle, x, z) => this.transformed.emit({ phase, handle, x, z });
       this.r.groundStyle = untracked(() => this.groundStyle());
       this.r.onPick = (p) => this.picked.emit(p);
       this.r.onGround = (phase, x, z) => this.ground.emit({ phase, x, z });
@@ -104,6 +112,14 @@ export class SiteView {
     effect(() => {
       const m = this.mode();
       if (this.r) this.r.mode = m;
+    });
+    effect(() => {
+      const enabled = this.handlesEnabled();
+      if (this.r) { this.r.handlesEnabled = enabled; this.r.setSelection(this.selection()); }
+    });
+    effect(() => {
+      const y = this.drawPlaneY();
+      if (this.r) this.r.drawPlaneY = y;
     });
     effect(() => {
       const st = this.groundStyle();
@@ -128,6 +144,7 @@ export class SiteView {
       this.spec();
       this.roofHidden();
       this.focus();
+      this.indoorFloor();
       untracked(() => this.schedule(220)); // an edit drag changes the spec many times a second
     });
     inject(DestroyRef).onDestroy(() => {
@@ -142,7 +159,7 @@ export class SiteView {
     clearTimeout(this.timer);
     this.timer = setTimeout(() => {
       try {
-        this.r?.show(this.spec(), this.roofHidden(), this.frameKey(), this.focus());
+        this.r?.show(this.spec(), this.roofHidden(), this.frameKey(), this.focus(), this.indoorFloor());
         this.r?.setDrawLine(this.drawLine());
         this.r?.setMeasures(this.measures());
         this.r?.setSelection(this.selection());

@@ -451,7 +451,7 @@ export const IT: Readonly<Record<string, string>> = {
   // ---- editor header
   '2D': '2D',
   '3D': '3D',
-  '2D edits the plan; 3D just looks around the whole bando': '2D modifica la pianta; 3D mostra tutto il bando',
+  'Edit the model in 2D or 3D': 'Modifica il modello in 2D o 3D',
   'ground': 'terreno',
   'natural': 'naturale',
   'height map': 'mappa altezze',
@@ -471,6 +471,7 @@ export const IT: Readonly<Record<string, string>> = {
   'Elements: list of all buildings, structures, walls and trees (grouped by area), with thumbnails and links': 'Elementi: elenco di tutti gli edifici, strutture, muri e alberi (raggruppati per area), con miniature e collegamenti',
   'AI': 'IA',
   'Chat with the AI assistant to edit buildings and interiors': 'Chatta con l’assistente IA per modificare edifici e interni',
+  'click: select · drag handles: move / resize · drag: orbit · wheel: zoom': 'clic: seleziona · trascina le maniglie: sposta / ridimensiona · trascina: orbita · rotella: zoom',
   'click: select · drag: orbit · right-drag / Shift-drag: pan · wheel: zoom': 'clic: seleziona · trascina: orbita · tasto destro / Shift-trascina: sposta · rotella: zoom',
   'Drag a building to move it, corners / edge squares to resize or reshape, the yellow knob to rotate. Drag the map to pan.': 'Trascina un edificio per spostarlo, gli angoli / quadratini dei lati per ridimensionarlo o cambiarne la forma, la manopola gialla per ruotarlo. Trascina la mappa per spostarti.',
   'Drag to move the tools · double-click to put them back': 'Trascina per spostare gli strumenti · doppio clic per rimetterli a posto',

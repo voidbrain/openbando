@@ -5,14 +5,14 @@
     <button [class.on]="mode() === 'model'" [disabled]="!hasModel()" (click)="setMode('model')" data-tour="tab-model" [title]="hasModel() ? '' : 'Generate the model first'">2 · Model</button>
   </div>
   @if (mode() === 'model') {
-    <div class="seg" title="2D edits the plan; 3D just looks around the whole bando">
+    <div class="seg" title="Edit the model in 2D or 3D">
       <button [class.on]="!view3d()" (click)="view3d.set(false)" data-tour="view-2d">2D</button>
       <button [class.on]="view3d()" (click)="setView3d()" data-tour="view-3d">3D</button>
     </div>
     @if (view3d()) {
       <label class="lay" title="Show the roofs in the 3D view"><input type="checkbox" [checked]="roofs3d()" (change)="roofs3d.set(checked($event))" /> roofs</label>
     }
-    @if (!view3d()) {
+    @if (true) {
       <button class="btn" [class.on]="indoor()" [disabled]="!b() || !!b()!.frame" (click)="toggleIndoor()" title="Take the roof off and edit one floor of the selected building: walls, doors, windows, voids, columns, stairs">{{ indoor() ? '✓ Indoors' : 'Indoors' }}</button>
       @if (indoor() && b(); as ib) {
         <span class="grp">
@@ -386,6 +386,10 @@
       [mode]="tool() === 'select' ? 'select' : 'draw'"
       [selection]="sel3d()"
       [focus]="focus3d()"
+      [indoorFloor]="indoorFloor3d()"
+      [drawPlaneY]="indoorPlaneY()"
+      [handlesEnabled]="tool() === 'select' && !indoor()"
+      (transformed)="onTransform3d($event)"
       [flights]="flightList()"
       [speedMax]="flights.speedMax"
       (picked)="onPick3d($event)"
