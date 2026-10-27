@@ -325,7 +325,7 @@ npm run check:i18n                        # every UI text has its Italian
 
 ## Work tracking
 
-- `docs/BACKLOG.md` is the active status ledger; update an item and its evidence when behavior or verification changes. Historical working plans are archived in `docs/working-plan/` and are not current status. The scoped audit is in `docs/audits/2026-10-27.md`.
+- `docs/BACKLOG.md` is the active status ledger. For every change and every PR, update the affected bug or feature entry with the PR/evidence link, status, review date and remaining checks. Add an entry if none exists; for a change outside an active bug or feature, record it in the backlog's other-changes table. Update the entry again when the PR or verification status changes. Label partial fixes, diagnostics and context accurately; do not imply a PR or its checks passed without evidence. Historical working plans are archived in `docs/working-plan/` and are not current status. The scoped audit is in `docs/audits/2026-10-27.md`.
 - Preserve the distinction between a confirmed bug, a candidate fix awaiting review, an unimplemented feature and a completed check. Do not mark a visual or device-dependent item done on unit tests alone.
 
 ## Terrain and editor regression rules
