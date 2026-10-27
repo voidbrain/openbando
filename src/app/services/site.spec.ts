@@ -5,7 +5,7 @@ import { emptySpec, sanitizeSpec } from '../core/site-spec';
 import { shareCopy } from '../core/share';
 import { toLocal } from '../core/geo';
 import { FlightService } from './flight.service';
-import { setHiddenSite, setTakeoff } from '../core/takeoff';
+import { autoAlignFlights, setHiddenSite, setTakeoff } from '../core/takeoff';
 import { CalibrationStore } from '../state/calibration.store';
 import { SiteLibraryService } from './site-library.service';
 import { SiteService } from './site.service';
@@ -71,6 +71,23 @@ describe('SiteService: the pilot\'s path alignment', () => {
     cal.reset(); site.useStored(spec.id); TestBed.tick();
     expect(cal.calibration()).toEqual(saved);
     expect(toLocal(second.lat, second.lon, cal.calibration())).toEqual(expected);
+  });
+
+  it('keeps first-flight alignment available after a live feed, save and reload', () => {
+    const lib = TestBed.inject(SiteLibraryService);
+    const spec = emptySpec({lat: 0, lon: 0}, 'Hidden live-first test');
+    spec.id = 'hidden-live-first'; spec.privacy = 'hidden'; spec.droneStart = {x: 40, z: -50};
+    lib.save(spec);
+    const site = TestBed.inject(SiteService), flights = TestBed.inject(FlightService);
+    site.useStored(spec.id); TestBed.tick();
+    const points = [{lat: 45, lon: 9, alt: 0, t: 0}, {lat: 45.001, lon: 9, alt: 1, t: 1}];
+    flights.add('live', points, null, {live: true}); TestBed.tick();
+    site.saveDraft(); TestBed.tick();
+    site.useStored(spec.id); TestBed.tick();
+    expect(autoAlignFlights()).toBe(true);
+    const flight = flights.add('recorded', points);
+    expect(flight.loc[0]!.x).toBeCloseTo(40, 4);
+    expect(flight.loc[0]!.z).toBeCloseTo(-50, 4);
   });
 
 });

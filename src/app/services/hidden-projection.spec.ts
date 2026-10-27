@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { setSiteOrigin } from '../core/constants';
 import { toLocal } from '../core/geo';
-import { setActiveGround, setAutoAlign, setHiddenSite, setTakeoff } from '../core/takeoff';
+import { autoAlignFlights, setActiveGround, setAutoAlign, setHiddenSite, setTakeoff } from '../core/takeoff';
 import { CalibrationStore } from '../state/calibration.store';
 import { FlightService } from './flight.service';
 
@@ -26,4 +26,17 @@ describe('hidden-site GPS alignment', () => {
     expect(live[0]).toBeCloseTo(a.loc[1]!.x, 5);
     expect(live[1]).toBeCloseTo(a.loc[1]!.z, 5);
   });
+  it('does not save an unaligned live reference before the first recorded flight', () => {
+    const service = TestBed.inject(FlightService), calibration = TestBed.inject(CalibrationStore);
+    const points = [{lat:45,lon:9,alt:0,t:0}, {lat:45.001,lon:9,alt:2,t:1}];
+    service.add('live', points, null, {live: true});
+    expect(autoAlignFlights()).toBe(true);
+    expect(calibration.calibration().reference).toBeUndefined();
+    const flight = service.add('recorded', points);
+    expect(autoAlignFlights()).toBe(false);
+    expect(calibration.calibration().reference).toEqual({lat:45,lon:9});
+    expect(flight.loc[0]!.x).toBeCloseTo(40, 4);
+    expect(flight.loc[0]!.z).toBeCloseTo(-50, 4);
+  });
+
 });

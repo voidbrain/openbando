@@ -77,7 +77,7 @@ export class FlightService {
       this.toast.show('This bando has no real place: the flight starts on its take-off pad. Pin start / end and the compass fine-tune it.', 4500);
     }
     // Preserve the legacy start position while anchoring all subsequent points to one private local reference.
-    if (hiddenSite() && !this.calibration.calibration().reference && pts[0]) {
+    if (hiddenSite() && !autoAlignFlights() && !this.calibration.calibration().reference && pts[0]) {
       this.calibration.setReference({ lat: pts[0].lat, lon: pts[0].lon });
       prepareFlight(f, this.calibration.calibration(), activeGround() ?? undefined);
     }
