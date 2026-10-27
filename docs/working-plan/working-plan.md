@@ -189,3 +189,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — partially overlapping rooms
 
 - A basement opening can connect to an overlapping box room directly below, including when it crosses the room boundary. The room ceiling is clipped to the overlap and collision follows it; regression coverage includes the remaining intact ceiling and soil outside the lower room. Browser verification remains pending.
+
+### Follow-up — indoor browser regression
+
+- The focused browser suite now exercises placing a basement column in 2D, switching to 3D with −1 selected, an axe scan of the 3D view, and switching between G and −1 without leaking the column. The new check requires a successful GitHub browser run; manual 3D placement, handles, lighting and gallery/warehouse visual checks remain open.

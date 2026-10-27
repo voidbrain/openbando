@@ -27,7 +27,7 @@ test('Welcome shows the approved wordmark, Features link and revised pose assets
 test('basement controls and explicit roof choice update the selected building', async ({
   page,
 }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(180_000);
   await page.goto('/');
   await page.getByRole('button', { name: 'Open the bandos', exact: true }).click();
   const fixture = {
@@ -94,6 +94,28 @@ test('basement controls and explicit roof choice update the selected building', 
   await expect(
     inspector.getByRole('button', { name: 'Delete basement wall', exact: true }),
   ).toBeVisible();
+  // Edit −1 in the plan, then confirm it stays selected and accessible in 3D.
+  const topBar = page.locator('app-bando-editor > .bar');
+  await topBar.getByRole('button', { name: 'Indoors', exact: true }).click();
+  await expect(topBar.getByRole('button', { name: '−1', exact: true })).toHaveClass(/on/);
+  await page.locator('app-bando-editor .palette button[title^="Column ·"]').click();
+  const svg = page.locator('app-bando-editor svg.ov');
+  const mapBox = await svg.boundingBox(), buildingBox = await page.locator('[data-pk="building:b"]').first().boundingBox();
+  expect(mapBox).not.toBeNull(); expect(buildingBox).not.toBeNull();
+  await svg.click({ position: { x: buildingBox!.x + buildingBox!.width / 2 - mapBox!.x, y: buildingBox!.y + buildingBox!.height / 2 - mapBox!.y }, force: true });
+  await expect(page.locator('[data-pk="col:0"]')).toHaveCount(1);
+  await page.locator('[data-tour="view-3d"]').click();
+  await expect(page.locator('app-site-view canvas')).toBeVisible();
+  await expect(page.locator('app-site-view .fail')).toHaveCount(0);
+  await expect(topBar.getByRole('button', { name: '−1', exact: true })).toHaveClass(/on/);
+  const studioAxe = await new AxeBuilder({ page }).include('app-site-view').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+  expect(studioAxe.violations.map(v => v.id)).toEqual([]);
+  await page.locator('[data-tour="view-2d"]').click();
+  await topBar.getByRole('button', { name: 'G', exact: true }).click();
+  await expect(page.locator('[data-pk="col:0"]')).toHaveCount(0);
+  await topBar.getByRole('button', { name: '−1', exact: true }).click();
+  await expect(page.locator('[data-pk="col:0"]')).toHaveCount(1);
+  await topBar.locator('button[title^="Take the roof off"]').click();
   const roof = inspector.locator('.sec').filter({ has: page.locator('.st').filter({ hasText: /^Roof$/ }) });
   const roofShape = roof.locator('select');
   await expect(roofShape).toBeVisible();
