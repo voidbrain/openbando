@@ -420,6 +420,25 @@ describe('road overlap rendering', () => {
 });
 
 describe('Villetta measured frame and ladder', () => {
+  it('places four barrel roofs around the one-metre central strip', () => {
+    const s = sanitizeSpec(villetta)!;
+    const store = s.buildings.find((b) => b.name === 'Main store')!;
+    store.pos = { x: 0, z: 0 }; store.rotDeg = 0;
+    const m = buildSiteFromSpec({ ...s, buildings: [store] }, { bare: true });
+    const barrels: THREE.Mesh[] = [];
+    const strips: THREE.Mesh[] = [];
+    m.group.traverse((o) => {
+      if (o instanceof THREE.Mesh && o.userData['roofBarrel']) barrels.push(o);
+      if (o instanceof THREE.Mesh && o.userData['roofCenterStrip']) strips.push(o);
+    });
+    expect(barrels).toHaveLength(4);
+    expect(strips).toHaveLength(1);
+    expect(new THREE.Box3().setFromObject(strips[0]!).getSize(new THREE.Vector3()).z).toBeCloseTo(1);
+    const centres = barrels.map(b => b.position.z).sort((a, b) => a - b);
+    const width = (store.width - 1) / 4;
+    expect(centres[2]! - centres[1]! - width).toBeCloseTo(1);
+    expect(store.levels[0]!.height + width / 2 * store.levels[0]!.vaultK!).toBeCloseTo(8);
+  });
   it('builds the parabolic ribs at the measured pitch and crown, including the last end', () => {
     const s = sanitizeSpec(villetta)!;
     const b = s.buildings.find((b) => b.frame === 'greenhouse')!;

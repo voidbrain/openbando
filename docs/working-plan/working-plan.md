@@ -24,7 +24,7 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 
 ## Bando Villetta — Specs
 
-Measurements applied to `library/bandos/villetta-no-place.json` (release 7). Original footprint positions, dimensions and rotations remain; no geographic location is published. iPhone measurements are approximate, not survey-grade.
+Measurements applied to `library/bandos/villetta-no-place.json` (release 8). Original footprint positions, dimensions and rotations remain; no geographic location is published. iPhone measurements are approximate, not survey-grade.
 
 | # | Element | Applied measurement | Interpretation / evidence | Status |
 |---|---|---|---|---|
@@ -55,7 +55,7 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 7). Ori
 | 3 | Verify flight descent | Compare the example CSV path with the video (bug 5). | High | Pending |
 | 4 | Finish road overlaps | Add road-class priority and remove overlap flicker; verify slopes in both drawing orders (bug 6). | High | Implemented — visual check pending |
 | 5 | Validate Bando Villetta dimensions | Measurements applied with explicit photo interpretations above; check unmeasured east return, roof pitch and interior wall ends. | High | Further survey pending |
-| 6 | Implement Bando geometry | Survey refinement applied; compare a fresh release-7 copy with flight video and the reference photos. | Medium | Implemented — visual check pending |
+| 6 | Implement Bando geometry | Survey refinement applied; compare a fresh release-8 copy with flight video and the reference photos. | Medium | Implemented — visual check pending |
 | 7 | Multipath racing mode | Separate race clock, per-pilot names/colours/offsets, simultaneous 3D ghosts and shared start gate. | Medium | Implemented — field verification pending |
 | 8 | Upload support | Existing multi-file log upload reused; closed-loop lap/best-lap estimates, local-coordinate race package export/import. | Medium | Implemented — field verification pending |
 | 9 | Multiuser racing mode | Server-free race-file exchange plus optional self-hosted HTTP/SSE room relay; same exported bando/model scale required. | Medium | Implemented — relay deployment and device verification pending |
@@ -109,16 +109,16 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Villetta and Studio follow-up — 27 October 2026
 
 - Restored the annex south interior partition, three door-separated eastern wall sections, and the first-floor end wall in Villetta release 6. These corrections supersede the release 5 assumption that these walls should be removed. Their precise appearance still needs visual review against the survey photographs.
-- The main store's two central column rows are already 1 m apart in the specification; the matching 1 m roof strip remains open. Greenhouse east end, ladder cabin, terrain/road and warehouse seams and basement lighting still require work and visual review.
+- The main store's two central column rows are 1 m apart; release 8 adds the matching 1 m roof strip and retains the 8 m vault crown. Greenhouse east end, ladder cabin, terrain/road and warehouse seams and basement lighting still require work and visual review.
 - In Studio, empty-ground selection now clears the selected building too; the ground context menu offers a disabled-aware Clear all measures action; Space/Enter dismiss an active tool when the editor canvas has keyboard focus. Other requested Studio view, measurement, layout and flight-alignment changes remain open.
 
 #### Outstanding requests from the 27 October review
 
-- Villetta: verify restored annex walls and their openings against photos; verify the release 7 greenhouse east frame against IMG_4341 (support dimensions are estimates); add the 1 m centre roof strip and an optional cabin for the blue ladder.
+- Villetta: verify restored annex walls and their openings against photos; verify the release 7 greenhouse east frame against IMG_4341 (support dimensions are estimates); verify the release 8 centre roof strip and add an optional cabin for the blue ladder.
 - Terrain: investigate the gallery road/terrain and warehouse perimeter/terrain flicker; investigate basement lighting. Verify fixes visually from multiple viewpoints.
 - Studio: 2D and 3D now share compass styling, closing Studio exits indoor mode, the editor can expand, and the inspector can dock right at full height. Verify these visually. Indoor editing in 3D remains open.
 - Measures: 2D lines can now be selected in Select mode with a red highlight and compact expandable labels; verify interaction visually. Display and interaction in 3D remain open. Review other 2D/3D feature differences.
-- 3D placement: show the construction line for two-point objects. Add hedge and bramble to the trees tool with click and lasso placement.
+- 3D placement: two-point fences, bridges and tunnels show a ground-following construction line; visually verify. Add hedge and bramble to the trees tool with click and lasso placement.
 - Flight alignment: disable start/end pins and start angle except at the corresponding video position, and update their explanatory text.
 - Visually review the mascot loop, title, responsive Welcome, editor layout and restored annex geometry in a browser. Space/Enter tool cancellation currently applies when the editor canvas has keyboard focus.
 
@@ -131,3 +131,8 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 - 2D and 3D compass widgets share the same appearance; closing Studio exits indoor mode. The editor has an expand/restore control and the Inspector can dock at the right edge at full height. Browser verification is pending.
 - The browser CI condition explicitly enables the job on pull requests; confirm the actual GitHub Actions result after opening the PR. Indoor editing and measures in 3D remain open.
+
+### Follow-up — central roof and 3D drawing
+
+- Villetta release 8 adds an editable one-metre solid strip between barrel roofs 2 and 3, keeping the eight-metre crown. The layout and collision are covered by model checks; visual review against the site remains pending. Existing edited copies remain unchanged.
+- Fence, bridge and tunnel two-point gestures show a terrain-following preview in 3D while drawing. Browser review remains pending.

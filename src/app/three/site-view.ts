@@ -41,6 +41,7 @@ export class SiteViewRenderer {
   groundStyle: GroundStyle = 'natural';
   /** A ring on the ground under the pointer (a terrain brush), or none. */
   private cursor: THREE.LineLoop | null = null;
+  private drawLine: THREE.Line | null = null;
   private press: { x: number; y: number; moved: boolean; ground: boolean } | null = null;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
@@ -139,6 +140,27 @@ export class SiteViewRenderer {
     this.cursor.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
     (this.cursor.material as THREE.LineBasicMaterial).color.set(c.color);
     this.cursor.visible = true;
+  }
+
+  /** Preview a two-point ground gesture while it is being drawn. */
+  setDrawLine(line: { a: { x: number; z: number }; b: { x: number; z: number }; color: string } | null): void {
+    if (!line || !this.model) {
+      if (this.drawLine) this.drawLine.visible = false;
+      return;
+    }
+    if (!this.drawLine) {
+      this.drawLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: line.color, depthTest: false }));
+      this.drawLine.renderOrder = 10;
+      this.scene.add(this.drawLine);
+    }
+    const pts: number[] = [];
+    for (let i = 0; i <= 32; i++) {
+      const u = i / 32, x = line.a.x + (line.b.x - line.a.x) * u, z = line.a.z + (line.b.z - line.a.z) * u;
+      pts.push(x, this.model.ground.at(x, z) + 0.3, z);
+    }
+    this.drawLine.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+    (this.drawLine.material as THREE.LineBasicMaterial).color.set(line.color);
+    this.drawLine.visible = true;
   }
 
   /** Rebuild from the spec. The camera re-frames only when `frameKey` changes (a different bando). */
@@ -256,6 +278,7 @@ export class SiteViewRenderer {
     cancelAnimationFrame(this.raf);
     for (const f of this.off) f();
     if (this.model) dispose(this.model.group);
+    if (this.drawLine) dispose(this.drawLine);
     this.renderer.dispose();
   }
 }

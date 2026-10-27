@@ -5,6 +5,8 @@
  * Voice as in English: short, direct, "tu", no exclamation marks. "Bando" stays (it is the app's word).
  */
 export const IT: Readonly<Record<string, string>> = {
+  'centre strip m': 'fascia centrale m',
+  'Flat strip between the two halves of the barrel roof': 'Fascia piana tra le due metà della copertura a volta',
   'Dock inspector to the right': 'Aggancia l’ispezione a destra',
   'Undock inspector': 'Sgancia l’ispezione',
   'Expand studio': 'Espandi studio',

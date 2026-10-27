@@ -1,6 +1,6 @@
 {
  "about": "The Villetta main store shared without its place: no map and no map data, its real ground travels inside. Open a copy, edit it, load your flights: they start on the take-off pad, and pins and the compass fit them.",
- "release": 7,
+ "release": 8,
  "version": 1,
  "id": "example-villetta-no-place",
  "name": "Villetta (place hidden)",
@@ -708,7 +708,7 @@
      "roof": "vault",
      "roofTurn": true,
      "roofCount": 4,
-     "vaultK": 0.2898655748396681,
+     "vaultK": 0.2952138455293553,
      "roofRise": 2,
      "roofColor": "#b0563d",
      "columns": [
@@ -892,7 +892,8 @@
        "z": 41.4,
        "size": 0.8
       }
-     ]
+     ],
+     "roofCenterStrip": 1
     }
    ],
    "block": {

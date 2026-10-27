@@ -348,11 +348,20 @@ function buildRoof(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object
   }
   const run = turn ? b.length : b.width; // barrel length
   const across = turn ? b.width : b.length;
-  const VW = across / n, VR = VW / 2, VK = l.vaultK ?? 0.58;
+  const strip = n >= 2 && n % 2 === 0 && Number.isFinite(l.roofCenterStrip)
+    ? Math.max(0, Math.min(across / 2, l.roofCenterStrip!)) : 0;
+  const VW = (across - strip) / n, VR = VW / 2, VK = l.vaultK ?? 0.58;
+  if (strip > 0) {
+    // A shallow connecting roof, not a hole: the four barrels leave a measured central walkway/strip.
+    const connector = turn
+      ? ctx.addBox(target, 0, top + 0.15, 0, run, 0.3, strip, rc, true, true)
+      : ctx.addBox(target, 0, top + 0.15, 0, strip, 0.3, run, rc, true, true);
+    connector.userData['roofCenterStrip'] = true;
+  }
   // the ends of each barrel are closed by the end walls, carried up into the arch (where that wall exists)
   const ends: [number, boolean][] = turn ? [[-run / 2, l.sides.w], [run / 2, l.sides.e]] : [[-run / 2, l.sides.n], [run / 2, l.sides.s]];
   for (let i = 0; i < n; i++) {
-    const c = -across / 2 + VW / 2 + i * VW;
+    const c = -across / 2 + VW / 2 + i * VW + (i >= n / 2 ? strip : 0);
     for (const [at, wall] of ends) {
       if (!wall) continue;
       const cap = vaultEnd(VR, VK, ctx.mat.wall);
@@ -380,6 +389,7 @@ function buildRoof(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object
       continue;
     }
     const m = vault(run, VR, VK, rc);
+    m.userData['roofBarrel'] = true;
     if (turn) {
       m.rotation.y = Math.PI / 2;
       ctx.addMesh(target, m, 0, top, c);

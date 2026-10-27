@@ -101,7 +101,8 @@ describe('Villetta survey refinements', () => {
   const annex = v.buildings.find((b) => b.name === 'Annex')!;
   it('keeps the four store crowns at 8 m and surveyed façade openings', () => {
     const l = store.levels[0]!;
-    expect(l.baseY + l.height + store.width / l.roofCount! / 2 * l.vaultK!).toBeCloseTo(8);
+    expect(l.roofCenterStrip).toBe(1);
+    expect(l.baseY + l.height + (store.width - l.roofCenterStrip!) / l.roofCount! / 2 * l.vaultK!).toBeCloseTo(8);
     for (const o of Object.values(l.doors).flat()) {
       if (o.kind === 'door') expect(o.w).toBe(4.64);
       else expect(o.sill).toBe(2.69);

@@ -443,6 +443,11 @@ export class BandoEditor {
   protected readonly hasModel = computed(() => !this.studio.isNew() && this.ed.draft().buildings.length + this.ed.draft().trees.length > 0);
   protected readonly overlayOn = computed(() => this.mode() === 'model' && this.hasModel() && this.ed.draft().bearingDeg === 0);
   protected readonly captures = computed(() => this.tool() !== 'select' || this.pinMode() !== null || this.indoor() || this.shiftHeld() || !!this.blocks.armed());
+  protected readonly drawLine3d = computed(() => {
+    const d = this.drag();
+    if (d?.t !== 'fenceDraw' && d?.t !== 'bridgeDraw' && d?.t !== 'under') return null;
+    return { a: d.a, b: d.b, color: this.tc(d.t === 'fenceDraw' ? 'fence' : d.t === 'under' ? 'tunnel' : 'structure') };
+  });
   protected readonly hasPath = computed(() => !!this.flights.active);
   protected readonly atMax = computed(() => this.half().e >= MAX_HALF_EXTENT || this.half().n >= MAX_HALF_EXTENT);
 
@@ -2541,6 +2546,7 @@ export class BandoEditor {
 
   protected readonly setTurn = (l: LevelSpec, v: boolean): void => { l.roofTurn = v; };
   protected readonly setCount = (l: LevelSpec, v: number): void => { l.roofCount = Math.max(1, Math.min(12, Math.round(v))); delete l.vaultCount; };
+  protected readonly setRoofCenterStrip = (l: LevelSpec, v: number): void => { l.roofCenterStrip = Number.isFinite(v) ? Math.max(0, Math.min(100, v)) : 0; };
 
   protected addLevel(): void {
     this.ed.addLevel();
