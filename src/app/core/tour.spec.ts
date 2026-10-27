@@ -61,7 +61,7 @@ describe('the showcase', () => {
     expect(showcaseLink('?lang=it')).toBeNull();
   });
   it('keeps its finished screen and stays out of the Guide sections', () => {
-    expect(SHOWCASE.keepLayout).toBe(true);
+    expect(SHOWCASE.returnToWelcome).toBe(true);
     expect(SHOWCASE.snippets.every((id) => SNIPPETS.find((s) => s.id === id)?.section === 'showcase')).toBe(true);
     expect(checkGuide()).toEqual([]);
   });

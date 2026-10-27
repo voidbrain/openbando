@@ -67,8 +67,8 @@ export interface Tour {
   title: string;
   about: string;
   snippets: string[];
-  /** Leave the panels as the tour arranged them (the showcase ends on its finished screen); others put the layout back. */
-  keepLayout?: boolean;
+  /** Return to the Welcome entry screen when this tour finishes or is stopped. */
+  returnToWelcome?: boolean;
 }
 
 const p = (at: string, to?: At): TourAction => ({ do: 'point', at, ...(to ? { to } : {}) });
@@ -257,7 +257,7 @@ export const SNIPPETS: readonly Snippet[] = [
 ];
 
 /** The welcome tour (the showcase), about a minute: Welcome, a bando without its address, a log and its video synced, every camera. */
-export const SHOWCASE: Tour = { id: 'showcase', title: 'Welcome', about: 'What OpenBando does, in a minute, played by itself.', snippets: ['sc-welcome', 'sc-bando', 'sc-load', 'sc-replay'], keepLayout: true };
+export const SHOWCASE: Tour = { id: 'showcase', title: 'Welcome', about: 'What OpenBando does, in a minute, played by itself.', snippets: ['sc-welcome', 'sc-bando', 'sc-load', 'sc-replay'], returnToWelcome: true };
 
 export const TOURS: readonly Tour[] = [
   SHOWCASE,
