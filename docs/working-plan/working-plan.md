@@ -214,3 +214,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 - CI run 40504366300 passed the focused browser job and three of four full-suite shards, but the AI-assistant guide timed out twice on the remaining shard. A shorter example prompt retains the same door and window request and reduces simulated typing; this is a candidate mitigation that still needs browser CI verification.
 - The warehouse capture ran on that CI build, but the building was too distant to assess its ground seam. The capture now zooms in and lowers the camera before orbiting; the new views and the actual flicker still need review. Freeform diagonal basement outlines remain open.
+
+### Follow-up — basement wall/terrain seam
+
+- A basement wall extends beyond the outline used to cut terrain, so its top face can coincide with the surrounding terrain. Basement walls now use the same depth bias as the exterior walls, while preserving the terrain boundary and collision. A ray test covers the overlapping surface in both normal and merged scenes. This is a rendering mitigation; moving-camera browser verification is still needed before closing the warehouse flicker issue.

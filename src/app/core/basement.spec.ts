@@ -27,6 +27,23 @@ const building = (): BuildingSpec => ({
   basement: { height: 3 },
 });
 describe('editable basement join', () => {
+  it('resolves the coplanar wall and terrain at the basement perimeter, including merged scenes', () => {
+    const s = emptySpec(); s.extent = 60; s.buildings = [building()]; s.pads = [];
+    for (const merge of [false, true]) {
+      const model = buildSiteFromSpec(s, { merge });
+      model.group.updateMatrixWorld(true);
+      // Outside the basement outline but over the outer half of its wall: the wall top and terrain meet at y=0.
+      const ray = new THREE.Raycaster(new THREE.Vector3(1, 0.02, -4.1), new THREE.Vector3(0, -1, 0), 0, 0.04);
+      const hits = ray.intersectObject(model.group, true);
+      const wall = hits.find(hit => {
+        const material = (hit.object as THREE.Mesh).material as THREE.MeshStandardMaterial;
+        return material?.polygonOffset && material.polygonOffsetFactor === -1 && material.polygonOffsetUnits === -2;
+      });
+      expect(wall).toBeDefined();
+      expect(hits.some(hit => (hit.object as THREE.Mesh).material instanceof THREE.MeshStandardMaterial && ((hit.object as THREE.Mesh).material as THREE.MeshStandardMaterial).vertexColors)).toBe(true);
+      expect(model.collider.hit(new Vec3(1, -2, -4))).toBe(true);
+    }
+  });
   it('keeps the basement below G with independent dimensions and walls in preview and scene', () => {
     const b = building();
     b.basement = {
