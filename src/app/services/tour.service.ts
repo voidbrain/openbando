@@ -72,6 +72,8 @@ export class TourService {
   private readonly view = inject(ViewStore);
 
   readonly state = signal<TourState | null>(null);
+  /** Current action for browser-test diagnostics when a guide fails to finish. */
+  readonly diagnostic = signal('');
   readonly cursor = signal<{ x: number; y: number; down: boolean } | null>(null);
   /** A click ring, bumped on every click. */
   readonly ring = signal<{ x: number; y: number; n: number } | null>(null);
@@ -167,6 +169,7 @@ export class TourService {
         }
         for (const a of b.actions) {
           if (this.skip) break;
+          this.diagnostic.set(a.do === 'hook' ? `hook:${a.hook}` : 'at' in a ? `${a.do}:${a.at}` : a.do);
           await this.act(a);
         }
         if (this.jump !== null) {
@@ -186,6 +189,7 @@ export class TourService {
         this.layout.restore(before); // the showcase ends on its finished screen, unless stopped
       }
       this.ai.demo.set(false);
+      this.diagnostic.set('');
       this.state.set(null);
       this.cursor.set(null);
       this.focus.set(null);
@@ -249,12 +253,16 @@ export class TourService {
       case 'point':
       case 'click':
       case 'press': {
+        this.diagnostic.set(`${a.do}:${a.at}:find`);
         const el = await this.find(a.at);
         if (!el) return;
         const p = this.freePoint(el, a.to);
+        this.diagnostic.set(`${a.do}:${a.at}:glide`);
         await this.glide(p.x, p.y, el);
         if (a.do === 'point') return;
+        this.diagnostic.set(`${a.do}:${a.at}:tap`);
         await this.tap(p.x, p.y);
+        this.diagnostic.set(`${a.do}:${a.at}:activate`);
         if (a.do === 'click') this.clickAt(el, p.x, p.y);
         this.focus.set(null); // what was clicked may be gone at once (a panel that changes): no outline left behind
         return;

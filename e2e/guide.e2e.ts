@@ -27,8 +27,9 @@ for (const s of SNIPPETS.filter((x) => x.section !== 'showcase')) {
     } catch (e) {
       // where it stuck: the beat, its caption and what the page said, so a timeout explains itself
       const state = await bar.innerText().catch(() => '(no caption)');
-      await test.info().attach('stuck', { body: `beat: ${state}\n\n${problems.join('\n')}`, contentType: 'text/plain' });
-      throw new Error(`"${s.title}" did not finish. Caption bar: ${state.replace(/\s+/g, ' ')} · page: ${problems.join(' | ') || 'no errors'}`, { cause: e });
+      const action = await bar.getAttribute('data-action').catch(() => null);
+      await test.info().attach('stuck', { body: `beat: ${state}\naction: ${action ?? '(none)'}\n\n${problems.join('\n')}`, contentType: 'text/plain' });
+      throw new Error(`"${s.title}" did not finish. Caption bar: ${state.replace(/\s+/g, ' ')} · action: ${action ?? '(none)'} · page: ${problems.join(' | ') || 'no errors'}`, { cause: e });
     }
     expect(problems).toEqual([]);
   });

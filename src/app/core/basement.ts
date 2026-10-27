@@ -1,6 +1,6 @@
 import type { BuildingSpec, LevelSpec, Vec2 } from './site-spec';
 import { listOpenings, outlineOf, reshapeBuilding } from './openings';
-import { bounds, contains, isRectilinear, rectPoly, validOutline, type Rect } from './footprint';
+import { BASEMENT_COORD_LIMIT, bounds, contains, isRectilinear, rectPoly, validOutline, type Rect } from './footprint';
 
 /** Basement dimensions are independent of the floors above, in the same centred building frame. */
 export function basementOutline(b: BuildingSpec): Vec2[] {
@@ -60,15 +60,19 @@ export function editBasementFloor(b: BuildingSpec, edit: (floor: BuildingSpec) =
 }
 
 /** Save an edited virtual basement without moving the building above. */
-export function saveBasementFloor(b: BuildingSpec, floor: BuildingSpec, saveOutline = false): void {
-  if (!b.basement) return;
+export function saveBasementFloor(b: BuildingSpec, floor: BuildingSpec, saveOutline = false): boolean {
+  if (!b.basement) return false;
   const a = b.rotDeg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
   const dx = floor.pos.x - b.pos.x, dz = floor.pos.z - b.pos.z;
   const offset = { x: dx * c + dz * s, z: -dx * s + dz * c };
   const level = floor.levels[0]!;
-  b.basement = { ...b.basement, sides: { ...level.sides }, partitions: level.partitions, doors: level.doors,
+  const next = { ...b.basement, sides: { ...level.sides }, partitions: level.partitions, doors: level.doors,
     wallOpenings: level.wallOpenings?.map(o => ({ ...o, x: o.x + offset.x, z: o.z + offset.z })), columns: level.columns, voids: level.voids,
     ...(saveOutline ? { outline: (floor.footprint ?? rectPoly(floor.length, floor.width)).map(p => ({ x: p.x + offset.x, z: p.z + offset.z })) } : {}) };
+  const valid = (p: Vec2): boolean => Number.isFinite(p.x) && Number.isFinite(p.z) && Math.abs(p.x) <= BASEMENT_COORD_LIMIT && Math.abs(p.z) <= BASEMENT_COORD_LIMIT;
+  if ((next.outline && (!validOutline(next.outline) || !next.outline.every(valid))) || (next.wallOpenings ?? []).some(o => !valid(o)) || (next.columns ?? []).some(c => !valid(c)) || (next.partitions ?? []).some(w => w.some(p => !valid(p))) || (next.voids ?? []).some(v => !valid({ x: v.x0, z: v.z0 }) || !valid({ x: v.x1, z: v.z1 }))) return false;
+  b.basement = next;
+  return true;
 }
 
 /** Add or cut a rectangular section of the basement, leaving the upper building unchanged. */
@@ -77,8 +81,7 @@ export function reshapeBasement(b: BuildingSpec, rect: Rect, op: 'add' | 'cut'):
   const floor = basementBuilding(b);
   floor.levels[0]!.partitions = structuredClone(floor.levels[0]!.partitions);
   if (!reshapeBuilding(floor, rect, op)) return false;
-  saveBasementFloor(b, floor, true);
-  return true;
+  return saveBasementFloor(b, floor, true);
 }
 
 /** Move one basement vertex, preserving floor objects in building coordinates and openings on their wall. */
@@ -86,9 +89,12 @@ export function moveBasementVertex(b: BuildingSpec, index: number, point: Vec2):
   const basement = b.basement;
   if (!basement || Object.values(basement.sides ?? {}).some(v => v === false)) return false;
   const old = basementOutline(b), next = old.map((p, i) => i === index ? { ...point } : { ...p });
-  if (index < 0 || index >= old.length || !validOutline(next)) return false;
+  const validPoint = (p: Vec2): boolean => Number.isFinite(p.x) && Number.isFinite(p.z) && Math.abs(p.x) <= BASEMENT_COORD_LIMIT && Math.abs(p.z) <= BASEMENT_COORD_LIMIT;
+  if (index < 0 || index >= old.length || !validOutline(next) || !next.every(validPoint)) return false;
   const before = bounds(old), after = bounds(next);
   const dx = before.x0 - after.x0, dz = before.z0 - after.z0;
+  const shifted = (p: Vec2): Vec2 => ({ x: p.x + dx, z: p.z + dz });
+  if ((basement.columns ?? []).some(c => !validPoint(shifted(c))) || (basement.partitions ?? []).some(w => w.some(p => !validPoint(shifted(p)))) || (basement.voids ?? []).some(v => !validPoint(shifted({ x: v.x0, z: v.z0 })) || !validPoint(shifted({ x: v.x1, z: v.z1 })))) return false;
   const inNext = (p: Vec2): boolean => contains(next, p.x, p.z) || next.some((a, i) => {
     const z = next[(i + 1) % next.length]!, ex = z.x - a.x, ez = z.z - a.z;
     const t = Math.max(0, Math.min(1, ((p.x - a.x) * ex + (p.z - a.z) * ez) / (ex * ex + ez * ez)));
@@ -132,7 +138,7 @@ export function moveBasementVertex(b: BuildingSpec, index: number, point: Vec2):
     if (fraction * len < o.w / 2 || (1 - fraction) * len < o.w / 2) return null;
     return { kind: o.kind, x: a.x + fraction * (q.x - a.x), z: a.z + fraction * (q.z - a.z), w: o.w, h: o.h, sill: o.sill, closed: o.closed };
   });
-  if (openings.some(o => !o)) return false;
+  if (openings.some(o => !o || !validPoint(o))) return false;
   basement.outline = next;
   basement.doors = {};
   basement.wallOpenings = openings.filter(o => o !== null);

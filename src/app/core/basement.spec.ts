@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { basementBuilding, insertBasementVertex, moveBasementVertex, removeBasementVertex } from './basement';
+import { basementBuilding, insertBasementVertex, moveBasementVertex, removeBasementVertex, reshapeBasement } from './basement';
 import { addOpening, listOpenings, moveOpening } from './openings';
 import { emptySpec, sanitizeSpec, type BuildingSpec } from './site-spec';
 import { siteGround } from './site-ground';
@@ -96,6 +96,51 @@ describe('editable basement join', () => {
 });
 
 describe('basement floor tools', () => {
+  it('keeps edited outline coordinates within the save/import limit without changing the draft on rejection', async () => {
+    const { SiteEditor } = await import('./site-editor');
+    const s = emptySpec(); s.buildings = [building()];
+    const ed = new SiteEditor(); ed.load(s);
+    const before = structuredClone(ed.draft().buildings[0]!);
+    expect(moveBasementVertex(ed.draft().buildings[0]!, 1, { x: 301, z: -4 })).toBe(false);
+    expect(ed.draft().buildings[0]).toEqual(before);
+    ed.commitSite(d => { expect(moveBasementVertex(d.buildings[0]!, 1, { x: 300, z: -4 })).toBe(true); });
+    expect(sanitizeSpec(JSON.parse(JSON.stringify(ed.draft())))!.buildings[0]!.basement!.outline).toEqual(ed.draft().buildings[0]!.basement!.outline);
+    ed.undo(); expect(ed.draft().buildings[0]!.basement!.outline).toBeUndefined();
+    ed.redo(); expect(ed.draft().buildings[0]!.basement!.outline![1]!.x).toBe(300);
+  });
+  it('rejects a vertex move that would put a floor item outside the saved coordinate range', () => {
+    const b = building();
+    b.basement = { height: 3, outline: [{x:-299,z:-4},{x:1,z:-4},{x:1,z:4},{x:-299,z:4}], columns: [{x:300,z:4,size:0.4}] };
+    const before = structuredClone(b);
+    // The vertex itself remains within ±300, but the shifted column would become 301.
+    expect(moveBasementVertex(b, 0, {x:-300,z:-4})).toBe(false);
+    expect(b).toEqual(before);
+  });
+  it('rejects an out-of-range wing without changing the basement', () => {
+    const b = building(), before = structuredClone(b);
+    expect(reshapeBasement(b, { x0: 5, x1: 301, z0: -4, z1: 4 }, 'add')).toBe(false);
+    expect(b).toEqual(before);
+  });
+  it('renders and collides with diagonal partitions in basement and upper floors at both rotations', () => {
+    for (const rotDeg of [0, 37]) for (const basement of [false, true]) {
+      const b = building(); b.rotDeg = rotDeg;
+      b.levels[0]!.sides = { n:false, s:false, e:false, w:false };
+      b.basement!.sides = { n:false, s:false, e:false, w:false };
+      const partition: [{x:number;z:number},{x:number;z:number}] = [{x:1,z:1},{x:8,z:6}];
+      if (basement) b.basement!.partitions = [partition]; else b.levels[0]!.partitions = [partition];
+      const s = emptySpec(); s.extent = 30; s.buildings = [b]; s.pads = [];
+      const model = buildSiteFromSpec(s);
+      const angle = rotDeg * Math.PI / 180;
+      const world = (x:number,z:number) => ({x: x * Math.cos(angle) - z * Math.sin(angle), z: x * Math.sin(angle) + z * Math.cos(angle)});
+      const on = world(-3, -2.285714), off = world(-3, 0.5), y = basement ? -2 : 2;
+      expect(model.collider.hit(new Vec3(on.x, y, on.z))).toBe(true);
+      expect(model.collider.hit(new Vec3(off.x, y, off.z))).toBe(false);
+      model.group.updateMatrixWorld(true);
+      const dx = 7 / Math.hypot(7, 5), dz = 5 / Math.hypot(7, 5), normal = world(-dz, dx);
+      const ray = new THREE.Raycaster(new THREE.Vector3(on.x + normal.x, y, on.z + normal.z), new THREE.Vector3(-normal.x, 0, -normal.z), 0, 2);
+      expect(ray.intersectObject(model.group, true).length).toBeGreaterThan(0);
+    }
+  });
   it('moves a basement vertex without moving floor objects and preserves undo and saved diagonal outlines', async () => {
     const { SiteEditor } = await import('./site-editor');
     const b = building();

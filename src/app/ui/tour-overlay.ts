@@ -31,7 +31,7 @@ import { TourService } from '../services/tour.service';
       </svg>
     }
     @if (tour.state(); as s) {
-      <div #bar class="bar" role="status" aria-live="polite" [attr.data-preparing]="s.preparing || null" [style.left.px]="barAt().left" [style.top.px]="barAt().top" [style.bottom.px]="barAt().bottom">
+      <div #bar class="bar" role="status" aria-live="polite" [attr.data-preparing]="s.preparing || null" [attr.data-action]="tour.diagnostic() || null" [style.left.px]="barAt().left" [style.top.px]="barAt().top" [style.bottom.px]="barAt().bottom">
         <div class="head">
           <span class="grip" title="Drag to move" aria-hidden="true" (pointerdown)="gripDown($event)" (pointermove)="gripMove($event)" (pointerup)="gripUp($event)" (pointercancel)="gripUp($event)">⠿</span>
           <!-- the showcase is called "Welcome" in every language: a name, not a word to translate -->

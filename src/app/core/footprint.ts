@@ -17,6 +17,8 @@ export interface Rect {
 }
 
 const EPS = 1e-6;
+/** Saved basement-local points and floor-item coordinates are bounded to this range. */
+export const BASEMENT_COORD_LIMIT = 300;
 
 /** Whether every edge follows one of the building's local axes. */
 export function isRectilinear(poly: readonly Pt[]): boolean {
