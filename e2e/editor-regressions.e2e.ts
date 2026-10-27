@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-test('Welcome keeps the ASCII title, Features link and revised pose assets', async ({
+test('Welcome shows the approved wordmark, Features link and revised pose assets', async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -9,7 +9,10 @@ test('Welcome keeps the ASCII title, Features link and revised pose assets', asy
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'OpenBando', exact: true })).toBeVisible();
   await expect(page.locator('app-stage app-camera-compass')).toBeVisible();
-  await expect(page.locator('app-welcome-panel .wordmark')).toContainText('___');
+  const wordmark = page.getByRole('img', { name: 'OpenBando', exact: true });
+  await expect(wordmark).toBeVisible();
+  await expect(wordmark).toHaveJSProperty('complete', true);
+  await expect.poll(() => wordmark.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
   const asset = await page.request.get('/mascot/poses/16-confused-a.png');
   expect(asset.ok()).toBe(true);
   await expect(page.getByRole('button', { name: 'Features' })).toBeVisible();
@@ -82,7 +85,7 @@ test('basement controls and explicit roof choice update the selected building', 
   await page.locator('[data-pk="building:b"]').first().click({ force: true });
   const inspector = page.locator('[data-tour="inspector"]');
   await inspector.getByRole('button', { name: '−1', exact: true }).click();
-  await expect(inspector.getByText('Basement · −1', { exact: true })).toBeVisible();
+  await expect(inspector.locator('.st').filter({ hasText: /^Basement · −1$/ })).toBeVisible();
   await inspector.getByLabel('length m', { exact: true }).last().fill('8');
   await inspector.getByLabel('length m', { exact: true }).last().press('Tab');
   await expect(inspector.getByLabel('length m', { exact: true }).last()).toHaveValue('8');
