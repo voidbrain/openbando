@@ -115,13 +115,14 @@ describe('Villetta survey refinements', () => {
     expect(north.filter(o => o.kind === 'door').map(o => o.c)).toEqual([47.699]);
     expect(store.levels[0]!.roofColor).toBe(annex.levels[1]!.roofColor);
   });
-  it('removes the doubled solid annex partitions and end returns, retaining the door-bearing walls up to the slab', () => {
-    expect(annex.levels[0]!.partitions).toEqual([]);
+  it('retains the south interior wall and door-bearing east end, with the first-floor end closed', () => {
+    expect(annex.levels[0]!.partitions).toHaveLength(1);
+    expect(annex.levels[0]!.partitions[0]![0].z).toBeCloseTo(17.179);
     expect(annex.levels[0]!.sides.w).toBe(false);
-    expect(annex.levels[1]!.sides.w).toBe(false); // open towards the greenhouse
+    expect(annex.levels[1]!.sides.w).toBe(true);
     expect(annex.levels[0]!.columns!.length).toBeGreaterThan(0);
-    expect(v.walls).toHaveLength(9);
-    expect(v.walls!.every(w => w.height === 6.2)).toBe(true);
+    expect(v.walls).toHaveLength(12);
+    expect(v.walls!.filter(w => w.height === 3)).toHaveLength(3);
   });
   it('keeps the greenhouse footprint but uses the measured crown and rib pitch', () => {
     expect(greenhouse.width).toBeCloseTo(20.289);

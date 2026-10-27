@@ -1,14 +1,6 @@
 # OpenBando
 
-```text
- ###   ####   #####  ##  #  ####    ###   ##  #  ####    ###
-## ##  ## ##  ##     ### #  ## ##  ## ##  ### #  ## ##  ## ##
-## ##  ## ##  ##     ### #  ## ##  ## ##  ### #  ## ##  ## ##
-## ##  ####   ####   ## ##  ####   #####  ## ##  ## ##  ## ##
-## ##  ##     ##     ## ##  ## ##  ## ##  ## ##  ## ##  ## ##
-## ##  ##     ##     ##  #  ## ##  ## ##  ##  #  ## ##  ## ##
- ###   ##     #####  ##  #  ####   ## ##  ##  #  ####    ###
-```
+![OPENBANDO pixel-art concrete and brick wordmark](public/mascot/openbando-wordmark.png)
 
 [![Pixel pilot and drone: look, sit, confusion, run, takeoff and fly away.](public/mascot/openbando-mascot.gif)](docs/mascot/README.md)
 

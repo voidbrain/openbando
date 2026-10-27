@@ -51,7 +51,7 @@ export class Mascot implements AfterViewInit {
       this.cv()!.nativeElement.previousElementSibling?.setAttribute('hidden', '');
       g.save();
       if (f.mirror) { g.translate(176, 0); g.scale(-1, 1); }
-      g.drawImage(pilot, f.phase.startsWith('poke-') ? 36 : 24, 24 + f.y); g.restore();
+      g.drawImage(pilot, (f.phase.startsWith('poke-') || f.phase === 'pause-poke') ? 26 : 24, 24 + f.y); g.restore();
       if (f.droneVisible) {
         const x=f.droneX-quad.width/2, y=f.droneY-quad.height/2;
         g.drawImage(quad,x,y);

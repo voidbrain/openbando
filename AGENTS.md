@@ -330,13 +330,13 @@ npm run check:i18n                        # every UI text has its Italian
 - `three/site-pick.ts` resolves the nearest visible mesh for both stage and editor, including instanced trees. Do not select buried elements through terrain. Stage selection requests use `StudioService.focus` and are consumed after the editor map is ready.
 - Choosing a roof explicitly restores it by clearing open shell and lowering global ruin to at most 55%; explain this effect in the inspector. A high-ruin roof shape is otherwise intentionally invisible.
 - Speed-trail colours never change racing drone identity colours or name-label colours. Labels are drawn as plain canvas text.
-- Mascot sources and exports must agree with `timeline.json`; index 16 is the held cross-legged confused pose. The loop starts with no drone. Use the ASCII wordmark in Welcome and README. Keep colour approval (true orange versus red-orange) and multi-angle terrain/browser verification pending until actually reviewed.
+- Mascot sources and exports must agree with `timeline.json`; index 16 is the held cross-legged confused pose. The loop starts with no drone. Use the approved pixel-art concrete-and-brick wordmark in Welcome and README; follow `docs/mascot/wordmark-style-guide.md`. Keep colour approval (true orange versus red-orange) and multi-angle terrain/browser verification pending until actually reviewed.
 
 - Villetta release 5 uses `BuildingSpec.archShape = 'parabola'`; absent retains the original elliptical greenhouse. Crown height and rib pitch remain measured values; do not overwrite pilots’ saved copies.
 - Road vertices sample the rendered terrain triangles and use polygon offset; cut coplanar basement-ceiling triangles without treating them as outside fragments. Confirm terrain seams visually before closing the bugs.
-- The mascot pokes the grounded drone twice (pose 17), then sits for takeoff. Keep canvas and GIF placement in step.
+- The mascot pokes the grounded drone twice (pose 17), retracting his hand between pokes (pose 18), then sits for takeoff. Keep canvas and GIF placement in step.
 
-- Villetta store north is the rotated building’s local east (`doors.e`); keep its two covered windows and one exposed eastern door. Annex door-bearing freestanding walls end at the 6.20 m slab underside, the unbroken inset partitions and end returns are removed, and the greenhouse-facing end is open.
+- Villetta store north is the rotated building’s local east (`doors.e`); keep its two covered windows and one exposed eastern door. Release 6 restores the annex south interior partition, the three eastern door-separated wall sections, and the first-floor end wall; verify their placement against the survey photographs. The remaining door-bearing freestanding walls extend to the 6.20 m slab underside.
 
 - X-ray uses only the actively followed replay or armed simulator; free orbit, manual pan and an idle parked simulator do not trace to a parked drone; a surface immediately in front of the camera can still fade. See `core/xray-policy.ts`.
 

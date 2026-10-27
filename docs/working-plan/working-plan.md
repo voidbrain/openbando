@@ -105,3 +105,19 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 - X-ray follows only the active tracked subject; free orbit, manual pan and a disarmed parked simulator no longer fade the annex based on a distant parked drone; surfaces immediately in front of the camera can still fade. Verify close-camera and flight behaviour visually.
 
 - Both the main 3D view and editor 3D view show a fixed compass widget that follows the camera and calibration; the old ground landmark was removed. Verify its placement and direction in the browser.
+
+### Villetta and Studio follow-up — 27 October 2026
+
+- Restored the annex south interior partition, three door-separated eastern wall sections, and the first-floor end wall in Villetta release 6. These corrections supersede the release 5 assumption that these walls should be removed. Their precise appearance still needs visual review against the survey photographs.
+- The main store's two central column rows are already 1 m apart in the specification; the matching 1 m roof strip remains open. Greenhouse east end, ladder cabin, terrain/road and warehouse seams and basement lighting still require work and visual review.
+- In Studio, empty-ground selection now clears the selected building too; the ground context menu offers a disabled-aware Clear all measures action; Space/Enter dismiss an active tool when the editor canvas has keyboard focus. Other requested Studio view, measurement, layout and flight-alignment changes remain open.
+
+#### Outstanding requests from the 27 October review
+
+- Villetta: verify restored annex walls and their openings against photos; add the greenhouse east end, the 1 m centre roof strip, and an optional cabin for the blue ladder.
+- Terrain: investigate the gallery road/terrain and warehouse perimeter/terrain flicker; investigate basement lighting. Verify fixes visually from multiple viewpoints.
+- Studio: use consistent compass styling; support indoor editing in 3D and exit indoors on editor close; add editor expansion and a full-height right-docked inspector.
+- Measures: compact expandable labels, selection outside the measure tool with distinct selected colour, and display/interaction in 3D. Review other 2D/3D feature differences.
+- 3D placement: show the construction line for two-point objects. Add hedge and bramble to the trees tool with click and lasso placement.
+- Flight alignment: disable start/end pins and start angle except at the corresponding video position, and update their explanatory text.
+- Visually review the mascot loop, title, responsive Welcome and restored annex geometry in a browser. Space/Enter tool cancellation currently applies when the editor canvas has keyboard focus.
