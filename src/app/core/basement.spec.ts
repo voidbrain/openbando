@@ -200,3 +200,16 @@ it('cuts only the overlap when a basement opening crosses the lower room boundar
   const first = ray.intersectObject(model.group, true).find(h => h.object instanceof THREE.Mesh && h.object.visible);
   expect(first?.point.y).toBeCloseTo(-7, 1);
 });
+
+for (const shape of ['pipe', 'vault'] as const) it(`opens a basement floor into a curved ${shape} tunnel`, () => {
+  const b = building(); b.basement = { height: 3, voids: [{ x0: 4, z0: 3, x1: 6, z1: 5 }] };
+  const s = emptySpec(); s.extent = 60; s.buildings = [b]; s.pads = [];
+  s.underground = [{ id: 'lower', name: 'Lower', outline: [{ x: -8, z: -3 }, { x: 8, z: -3 }, { x: 8, z: 3 }, { x: -8, z: 3 }], floor: -7, ceiling: -3, shape, wall: 0.2 }];
+  const model = buildSiteFromSpec(s); model.group.updateMatrixWorld(true);
+  expect(model.collider.groundAt(0, 0, -2)).toBe(-7);
+  expect(model.collider.hit(new Vec3(0, -3, 0))).toBe(false);
+  expect(model.collider.hit(new Vec3(3, -3, 0))).toBe(true);
+  const ray = new THREE.Raycaster(new THREE.Vector3(0, -2, 0), new THREE.Vector3(0, -1, 0));
+  const first = ray.intersectObject(model.group, true).find(h => h.object instanceof THREE.Mesh && h.object.visible);
+  expect(first?.point.y).toBeCloseTo(-7, 1);
+});

@@ -152,7 +152,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — 3D indoor editing
 
 - Indoors and floor controls are available in the 3D editor. The selected building is displayed one floor at a time, with its roof removed; floor tools place onto that floor’s elevation. Selection of a rendered wall or column maps to the corresponding original floor.
-- Verify wall, void, door, window, column and stair placement in a browser, including rotated buildings and upper floors. Basement floor tools are implemented in 2D and 3D; browser verification remains open. A basement floor opening connects to an overlapping box room directly below; curved tunnels remain open. 3D move/resize handles for rectangular buildings are implemented and await browser verification. Shaped-building move and edge handles are implemented; browser verification remains open.
+- Verify wall, void, door, window, column and stair placement in a browser, including rotated buildings and upper floors. Basement floor tools are implemented in 2D and 3D; browser verification remains open. A basement floor opening connects to an overlapping room or curved tunnel directly below; browser verification remains open. 3D move/resize handles for rectangular buildings are implemented and await browser verification. Shaped-building move and edge handles are implemented; browser verification remains open.
 - Full guide E2E on PR #85 failed on Look around in 3D, Draw a building, Plant trees with the brush and Edit with the AI assistant; showcase was flaky. The cause is not yet established and these failures remain open.
 
 ### Follow-up — 3D building handles
@@ -162,12 +162,12 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — basement floor tools
 
 - The −1 floor can be edited with walls, openings, columns, floor voids and stairs in 2D and 3D. Its data is stored separately from G, survives sanitization and participates in undo/redo. Placing basement stairs with stairwell enabled cuts a hole in G in the same undo step.
-- Browser interaction and multi-angle visual checks remain pending, including independently sized and rotated basements. A basement floor opening connects to the overlapping portion of a box room directly below; without a room, soil directly under the slab remains solid. Curved tunnels are not connected automatically. Arbitrary basement outline editing remains open.
+- Browser interaction and multi-angle visual checks remain pending, including independently sized and rotated basements. A basement floor opening connects to the overlapping portion of a room or curved tunnel directly below; without a lower volume, soil directly under the slab remains solid. Arbitrary basement outline editing remains open.
 
 ### Follow-up — basement floor collision
 
 - A basement slab opening now links rendering and collision to a box room immediately below when the whole opening fits inside it. The lower ceiling is cut, the drone can pass through, and its ground height becomes the lower room floor. Unconnected openings expose solid soil below the slab rather than creating an invented underground void. Rotated opening coordinates are covered by tests.
-- Connecting openings to curved tunnels remains open. Basement outlines now support rectilinear cut, wing and edge edits in 2D; freeform diagonal outlines remain open. Visual checks of the gallery/warehouse seams and basement lighting remain pending.
+- Curved tunnel connections have automated geometry and collision coverage; browser verification remains open. Basement outlines now support rectilinear cut, wing and edge edits in 2D; freeform diagonal outlines remain open. Visual checks of the gallery/warehouse seams and basement lighting remain pending.
 
 ### Follow-up — shaped-building 3D handles
 
@@ -189,3 +189,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — partially overlapping rooms
 
 - A basement opening can connect to an overlapping box room directly below, including when it crosses the room boundary. The room ceiling is clipped to the overlap and collision follows it; regression coverage includes the remaining intact ceiling and soil outside the lower room. Browser verification remains pending.
+
+### Follow-up — curved tunnel connections
+
+- Basement openings also cut overlapping pipe and vault tunnel shells directly below. The corresponding collision boxes allow passage within the opening, while the tunnel floor and surrounding shell remain solid. Pipe and vault ray/collision tests pass; multi-angle browser review remains pending.
