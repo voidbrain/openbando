@@ -11,7 +11,10 @@ export function basementBuilding(b: BuildingSpec): BuildingSpec {
     baseY: -h,
     height: h,
     sides: { n: true, s: true, e: true, w: true, ...b.basement?.sides },
-    doors: {},
+    doors: structuredClone(b.basement?.doors ?? {}),
+    wallOpenings: structuredClone(b.basement?.wallOpenings),
+    columns: structuredClone(b.basement?.columns),
+    voids: structuredClone(b.basement?.voids),
     partitions: b.basement?.partitions ?? [],
     roof: 'none',
     roofRise: 0,
@@ -39,4 +42,15 @@ export function basementBuilding(b: BuildingSpec): BuildingSpec {
     roofless: false,
     crenels: false,
   };
+}
+
+/** Apply floor-tool edits to an isolated basement view and store them only in the basement. */
+export function editBasementFloor(b: BuildingSpec, edit: (floor: BuildingSpec) => void): void {
+  if (!b.basement) return;
+  const floor = basementBuilding(b);
+  floor.levels[0]!.partitions = structuredClone(floor.levels[0]!.partitions);
+  edit(floor);
+  const level = floor.levels[0]!;
+  b.basement = { ...b.basement, sides: { ...level.sides }, partitions: level.partitions, doors: level.doors,
+    wallOpenings: level.wallOpenings, columns: level.columns, voids: level.voids };
 }
