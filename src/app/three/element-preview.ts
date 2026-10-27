@@ -97,7 +97,12 @@ function partGroup(b: BuildingSpec, li: number, p: PartHighlight): THREE.Group {
     const len = Math.hypot(p.c.x - p.a.x, p.c.z - p.a.z);
     const mx = (p.a.x + p.c.x) / 2 - L / 2, mz = (p.a.z + p.c.z) / 2 - W / 2;
     const y = lev.baseY + lev.height / 2;
-    out.add(Math.abs(p.a.x - p.c.x) < 0.01 ? marker(0.45, lev.height, len, HILITE, mx, y, mz) : marker(len, lev.height, 0.45, HILITE, mx, y, mz));
+    if (Math.abs(p.a.x - p.c.x) < 0.01) out.add(marker(0.45, lev.height, len, HILITE, mx, y, mz));
+    else {
+      const m = marker(len, lev.height, 0.45, HILITE, mx, y, mz);
+      m.rotation.y = -Math.atan2(p.c.z - p.a.z, p.c.x - p.a.x);
+      out.add(m);
+    }
   } else if (p.t === 'void') {
     const v = p.v;
     out.add(marker(v.x1 - v.x0, 0.3, v.z1 - v.z0, v.water ? '#3d86b6' : '#111111', (v.x0 + v.x1) / 2 - L / 2, lev.baseY + 0.1, (v.z0 + v.z1) / 2 - W / 2));

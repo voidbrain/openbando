@@ -286,7 +286,22 @@ function buildWalls(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Objec
     if (len < 0.3) return;
     const mx = (a.x + c.x) / 2 - b.length / 2, mz = (a.z + c.z) / 2 - b.width / 2;
     const my = l.baseY + l.height / 2;
-    const m = Math.abs(a.x - c.x) < 0.01 ? ctx.addBox(target, mx, my, mz, 0.3, l.height, len, ctx.mat.wall, true, true) : ctx.addBox(target, mx, my, mz, len, l.height, 0.3, ctx.mat.wall, true, true);
+    let m: THREE.Mesh;
+    if (Math.abs(a.x - c.x) < 0.01) m = ctx.addBox(target, mx, my, mz, 0.3, l.height, len, ctx.mat.wall, true, true);
+    else if (Math.abs(a.z - c.z) < 0.01) m = ctx.addBox(target, mx, my, mz, len, l.height, 0.3, ctx.mat.wall, true, true);
+    else {
+      const angle = Math.atan2(c.z - a.z, c.x - a.x);
+      m = new THREE.Mesh(new THREE.BoxGeometry(len, l.height, 0.3), ctx.mat.wall);
+      m.rotation.y = -angle;
+      m.castShadow = m.receiveShadow = true;
+      ctx.addMesh(target, m, mx, my, mz);
+      // Short AABBs follow the diagonal instead of blocking its entire bounding rectangle.
+      const n = Math.ceil(len / 0.5), rot = ctx.rot * Math.PI / 180, cos = Math.cos(rot), sin = Math.sin(rot);
+      for (let k = 0; k < n; k++) {
+        const t = (k + 0.5) / n, x = a.x + (c.x - a.x) * t - b.length / 2, z = a.z + (c.z - a.z) * t - b.width / 2;
+        ctx.solids.push(rotBoxLocal(ctx.at[0] + x * cos - z * sin, ctx.at[1] + x * sin + z * cos, len / n, 0.3, ctx.rot + angle * 180 / Math.PI, l.baseY, l.baseY + l.height, false));
+      }
+    }
     m.userData['pick'] = { kind: 'wall', id: b.id, li, i: pi };
   });
 }

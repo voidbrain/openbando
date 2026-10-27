@@ -1983,6 +1983,10 @@ export class BandoEditor {
         const next = cloneSpec({ ...this.ed.draft(), buildings: [d.start] }).buildings[0]!;
         if (!reshapeBuilding(next, rect, outward ? 'add' : 'cut')) break;
         const basement = this.indoor() && this.basementFocus();
+        if (basement) {
+          const parent = this.ed.draft().buildings.find(x => x.id === d.start.id);
+          if (!parent || !saveBasementFloor(structuredClone(parent), next, true)) break;
+        }
         this.gesture((s) => {
           const i = s.buildings.findIndex((x) => x.id === d.start.id);
           if (i >= 0) {
