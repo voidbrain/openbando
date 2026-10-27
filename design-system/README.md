@@ -54,7 +54,7 @@ OpenBando is a dark, dense instrument for FPV pilots: a 3D map and site editor, 
 ### States and motion
 
 - Hover: one step lighter (`control-hover`) or a white wash. Disabled: 45% opacity. Selected: `accent` border or fill.
-- Motion is functional only: a panel's 0.7s fade and rise when it opens (where it appears is where it stays), the toast's 0.2s rise and fade, the 0.8s spinner, and the guided tour's cursor, click ring and target outline (they show where the action is). No decorative animation outside the explicitly requested Welcome mascot; that loop has a pause control and reduced-motion still.
+- Motion is functional only: a panel's 0.7s fade and rise when it opens (where it appears is where it stays), the toast's 0.2s rise and fade, the 0.8s spinner, and the guided tour's cursor, click ring and target outline (they show where the action is). No decorative animation outside the explicitly requested Welcome mascot; that loop has a reduced-motion still and no pause control.
 - Focus: the app relies on the browser's default focus ring today. New work should give interactive elements a visible 2px `accent` outline (about 11:1 on `panel-solid`) so it meets WCAG AA.
 
 ### Layering
@@ -69,7 +69,7 @@ OpenBando is a dark, dense instrument for FPV pilots: a 3D map and site editor, 
 
 ## Logo
 
-Welcome uses a single-line ASCII OPENBANDO wall in the system `mono` family next to the pixel mascot; instrument/window titles retain the existing small type. Do not add a separate vector logo.
+Welcome uses the approved transparent pixel-art OPENBANDO wordmark next to the pixel mascot; instrument/window titles retain the existing small type. Follow the wordmark guide in `docs/mascot/wordmark-style-guide.md`.
 
 ## Components
 

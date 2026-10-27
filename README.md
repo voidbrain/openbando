@@ -150,7 +150,7 @@ No further configuration is required — the workflow uses the built-in
 
 ### How it works
 
-- Runs the reusable CI checks (catalogue, generated examples, unit tests, Italian translations, strict types and production build) before publishing. Browser e2e is optional; the current workflow input guard also skips it on pull requests (tracked in the working plan). The production build uses
+- Runs the reusable CI checks (catalogue, generated examples, unit tests, Italian translations, strict types and production build) before publishing. Browser e2e runs on pull requests; deployment calls the fast checks without browser e2e. The guide timeout is tracked in the backlog. The production build uses
   `"baseHref": "/openbando/"` set in `angular.json` so asset URLs
   resolve correctly under the project-page subpath.
 - Adds a `.nojekyll` file so GitHub Pages does **not** process the bundle
@@ -184,11 +184,11 @@ of GitHub Actions.
 
 ## Project maintenance
 
-- [Working plan](docs/working-plan/working-plan.md): numbered bugs, verification evidence, Villetta measurements and ordered next steps.
+- [Backlog](docs/BACKLOG.md): current bugs, features and verification status. [Archived working plan](docs/working-plan/working-plan-2026-10-27.md): history and Villetta measurements.
 - [Agent instructions](AGENTS.md): architecture, conventions and required checks.
 - [User guide](docs/guide/README.md): generated feature walkthroughs.
 
-Road overlaps use class priority (railway > road > track > path), stable draw order and full-width terrain draping. Regression coverage checks reversed drawing order; browser visual confirmation, slope-edge visuals and the example flight descent remain in the working plan.
+Road overlaps use class priority (railway > road > track > path), stable draw order and full-width terrain draping. Regression coverage checks reversed drawing order; browser visual confirmation, slope-edge visuals and the example flight descent remain in the backlog.
 
 ## Additional Resources
 
@@ -196,11 +196,11 @@ For more information on using the Angular CLI, including detailed command refere
 
 ### Villetta survey model
 
-The place-hidden Villetta example now includes the measured façade widths and panel heights, 8 m store roof crowns, a 9.30 m parabolic greenhouse with 4.61 m rib spacing, and the tall annex with a first-floor walkway around its central void. The blue ladder uses the reusable open-cage library block. Open a fresh example copy for release 5; edited copies remain yours. Measurements, photo interpretations and unmeasured details are recorded in the [working plan](docs/working-plan/working-plan.md).
+The place-hidden Villetta example now includes the measured façade widths and panel heights, 8 m store roof crowns, a 9.30 m parabolic greenhouse with 4.61 m rib spacing, and the tall annex with a first-floor walkway around its central void. The blue ladder uses the reusable open-cage library block. Open a fresh example copy for release 8; edited copies remain yours. Measurements and photo interpretations are recorded in the [archived working plan](docs/working-plan/working-plan-2026-10-27.md); open checks are in the [backlog](docs/BACKLOG.md).
 
 ### Pixel mascot
 
-Welcome includes the pixel pilot and freestyle quad with a pauseable animation and reduced-motion still. [Character bible and keyframes](docs/mascot/README.md) define equipment orientation, the 360° goggle strap, palette, choreography and rules for new poses. The [animated GIF](public/mascot/openbando-mascot.gif) is generated from the same timeline as the app.
+Welcome includes the pixel pilot and freestyle quad with an animation and reduced-motion still; there is no animation pause button. [Character bible and keyframes](docs/mascot/README.md) define equipment orientation, the 360° goggle strap, palette, choreography and rules for new poses. The [animated GIF](public/mascot/openbando-mascot.gif) is generated from the same timeline as the app.
 
 ## Multipath racing
 
