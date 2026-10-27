@@ -24,7 +24,7 @@ Current bug status is tracked here; implementation rules live in [AGENTS.md](../
 
 ## Bando Villetta — Specs
 
-Measurements applied to `library/bandos/villetta-no-place.json` (release 6). Original footprint positions, dimensions and rotations remain; no geographic location is published. iPhone measurements are approximate, not survey-grade.
+Measurements applied to `library/bandos/villetta-no-place.json` (release 7). Original footprint positions, dimensions and rotations remain; no geographic location is published. iPhone measurements are approximate, not survey-grade.
 
 | # | Element | Applied measurement | Interpretation / evidence | Status |
 |---|---|---|---|---|
@@ -55,7 +55,7 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 6). Ori
 | 3 | Verify flight descent | Compare the example CSV path with the video (bug 5). | High | Pending |
 | 4 | Finish road overlaps | Add road-class priority and remove overlap flicker; verify slopes in both drawing orders (bug 6). | High | Implemented — visual check pending |
 | 5 | Validate Bando Villetta dimensions | Measurements applied with explicit photo interpretations above; check unmeasured east return, roof pitch and interior wall ends. | High | Further survey pending |
-| 6 | Implement Bando geometry | Survey refinement applied; compare a fresh release-6 copy with flight video and the reference photos. | Medium | Implemented — visual check pending |
+| 6 | Implement Bando geometry | Survey refinement applied; compare a fresh release-7 copy with flight video and the reference photos. | Medium | Implemented — visual check pending |
 | 7 | Multipath racing mode | Separate race clock, per-pilot names/colours/offsets, simultaneous 3D ghosts and shared start gate. | Medium | Implemented — field verification pending |
 | 8 | Upload support | Existing multi-file log upload reused; closed-loop lap/best-lap estimates, local-coordinate race package export/import. | Medium | Implemented — field verification pending |
 | 9 | Multiuser racing mode | Server-free race-file exchange plus optional self-hosted HTTP/SSE room relay; same exported bando/model scale required. | Medium | Implemented — relay deployment and device verification pending |
@@ -114,10 +114,15 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 #### Outstanding requests from the 27 October review
 
-- Villetta: verify restored annex walls and their openings against photos; add the greenhouse east end, the 1 m centre roof strip, and an optional cabin for the blue ladder.
+- Villetta: verify restored annex walls and their openings against photos; verify the release 7 greenhouse east frame against IMG_4341 (support dimensions are estimates); add the 1 m centre roof strip and an optional cabin for the blue ladder.
 - Terrain: investigate the gallery road/terrain and warehouse perimeter/terrain flicker; investigate basement lighting. Verify fixes visually from multiple viewpoints.
 - Studio: use consistent compass styling; support indoor editing in 3D and exit indoors on editor close; add editor expansion and a full-height right-docked inspector.
-- Measures: compact expandable labels, selection outside the measure tool with distinct selected colour, and display/interaction in 3D. Review other 2D/3D feature differences.
+- Measures: 2D lines can now be selected in Select mode with a red highlight and compact expandable labels; verify interaction visually. Display and interaction in 3D remain open. Review other 2D/3D feature differences.
 - 3D placement: show the construction line for two-point objects. Add hedge and bramble to the trees tool with click and lasso placement.
 - Flight alignment: disable start/end pins and start angle except at the corresponding video position, and update their explanatory text.
 - Visually review the mascot loop, title, responsive Welcome and restored annex geometry in a browser. Space/Enter tool cancellation currently applies when the editor canvas has keyboard focus.
+
+### Follow-up — greenhouse end and 2D measures
+
+- Villetta release 7 adds an open steel east-end frame based on IMG_4341. Column spacing and rail heights are photo estimates; verify against the actual building. Existing edited copies remain unchanged.
+- In 2D, measure lines can be selected in Select mode, use a contrasting selected colour, and expose their terrain details through an expandable label. The 3D measure view is still open.

@@ -808,7 +808,7 @@ export class BandoEditor {
       this.studio.zone.set({ lat: c.lat - south / 111132, lon: c.lon + east / mLon, halfE: h.e, halfN: h.n, ...(rd ? { rotDeg: rd } : {}) });
     });
     effect(() => {
-      if (this.pick()) untracked(() => this.zoneSel.set(null)); // selecting something else drops the zone highlight
+      if (this.pick()) untracked(() => { this.zoneSel.set(null); this.measure.sel.set(null); }); // selecting another element clears measure selection
     });
     effect(() => {
       this.ed.selectedId(); // another building: back to the whole building
@@ -907,6 +907,7 @@ export class BandoEditor {
       if (this.mode() === 'model' && this.tool() === 'select' && !this.indoor()) {
         this.pick.set(null);
         this.ed.select('');
+        this.measure.sel.set(null);
       }
     });
     const ro = new ResizeObserver(() => {
@@ -2276,7 +2277,7 @@ export class BandoEditor {
       this.measure.endChain();
       return;
     }
-    if ((e.key === 'Delete' || e.key === 'Backspace') && this.tool() === 'measure') {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && (this.tool() === 'measure' || this.measure.sel() !== null)) {
       e.preventDefault();
       this.measure.delete();
     } else if (e.key === 'Delete' || e.key === 'Backspace') {
