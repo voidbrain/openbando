@@ -2,7 +2,7 @@ import type { Vec3 } from '../math3d';
 import { heightAt, type HeightGrid } from '../terrain';
 import { insidePolygon } from '../layers';
 import type { UndergroundSpec } from '../site-spec';
-import { floorUnder } from '../underground';
+import { floorUnder, tunnelOpeningBottom } from '../underground';
 
 /** Axis-aligned box [x0, x1, y0, y1, z0, z1, isRoof] in unscaled model coordinates. */
 export type SolidBox = readonly [number, number, number, number, number, number, boolean];
@@ -64,7 +64,7 @@ export class SiteCollider implements CollisionWorld {
       if (b[6] && this.roofHidden) continue;
       // The lower room's ceiling is tiled as boxes. Ignore a tile only inside its linked opening, with clearance
       // for the drone radius; walls and other solids spanning a wider vertical range are unaffected.
-      const openCeiling = this.ceilingTiles.some(({ box, volume: v }) => box === b && y >= v.ceiling - m && y <= v.ceiling + v.wall + m && v.ceilingHoles?.some(h => clearInside(h, x, z, m)));
+      const openCeiling = this.ceilingTiles.some(({ box, volume: v }) => box === b && y >= tunnelOpeningBottom(v) - m && y <= v.ceiling + v.wall + m && v.ceilingHoles?.some(h => clearInside(h, x, z, m)));
       if (openCeiling) continue;
       if (x > b[0] - m && x < b[1] + m && y > b[2] - m && y < b[3] + m && z > b[4] - m && z < b[5] + m) return true;
     }

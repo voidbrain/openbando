@@ -115,12 +115,20 @@ export function floorUnder(vols: readonly UndergroundSpec[], x: number, z: numbe
 
 }
 
-/** Link a basement opening to any overlapping lower box room at the same height. */
+/** Lowest part of a tunnel shell to cut for a vertical opening; floors remain intact. */
+export function tunnelOpeningBottom(v: UndergroundSpec): number {
+  const axis = tunnelAxis(v);
+  if (!axis || v.shape === 'box') return v.ceiling;
+  const h = v.ceiling - v.floor;
+  return v.shape === 'pipe' ? v.floor + h / 2 : Math.max(v.floor + 0.05, v.ceiling - Math.min(axis.width / 2, h));
+}
+
+/** Link a basement opening to an overlapping lower room or tunnel at the same height. */
 export function linkBasementFloors(vols: readonly UndergroundSpec[]): UndergroundSpec[] {
   const out = vols.map(v => ({ ...v, ceilingHoles: undefined as Vec2[][] | undefined }));
   for (const top of out) for (const hole of top.floorHoles ?? []) {
     for (const lower of out) {
-      if (lower === top || lower.shape !== 'box' || lower.floor >= top.floor || Math.abs(lower.ceiling - top.floor) >= 0.1) continue;
+      if (lower === top || lower.floor >= top.floor || Math.abs(lower.ceiling - top.floor) >= 0.1) continue;
       const overlaps = (axis: 'x' | 'z'): boolean => Math.max(...hole.map(p => p[axis])) > Math.min(...lower.outline.map(p => p[axis])) && Math.min(...hole.map(p => p[axis])) < Math.max(...lower.outline.map(p => p[axis]));
       if (!overlaps('x') || !overlaps('z')) continue;
       (lower.ceilingHoles ??= []).push(hole);

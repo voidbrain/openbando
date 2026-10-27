@@ -5,7 +5,7 @@ import { cutRect, edgesOf, slabs } from '../core/footprint';
 import { buildStructure } from './structures';
 import { fenceDef, hedgeLumps, postsAlong, wireSag, type FenceDef } from '../core/fences';
 import { WATER_COLOR, insidePolygon, orderedRoads, roadDef, surfaceDef } from '../core/layers';
-import { tunnelAxis, tunnelSection, volumeSolids } from '../core/underground';
+import { tunnelAxis, tunnelOpeningBottom, tunnelSection, volumeSolids } from '../core/underground';
 import { NO_SLABS, ROOFLESS, roofCells, roofRuns, ruinRandom, wallPieces, wallTop } from '../core/ruin';
 import * as THREE from 'three';
 import { mergeUnit } from './merge';
@@ -737,7 +737,8 @@ function buildUnderground(v: UndergroundSpec): THREE.Group {
     // local x = cross-section width, local y = world height, extrusion z = tunnel axis
     const transform = new THREE.Matrix4().set(-dz/len,0,dx/len,axis.a.x, 0,1,0,0, dx/len,0,dz/len,axis.a.z, 0,0,0,1);
     geo.applyMatrix4(transform);
-    out.add(new THREE.Mesh(geo, UNDER_MAT));
+    const cuts: UndergroundSpec[] = (v.ceilingHoles ?? []).map((outline, i) => ({ id: `tunnel-cut-${i}`, name: '', outline, floor: tunnelOpeningBottom(v), ceiling: v.ceiling + v.wall + 0.01, shape: 'box', wall: 0 }));
+    out.add(new THREE.Mesh(cutUnderground(geo, cuts), UNDER_MAT));
 
   } else {
     for (let i = 0; i < v.outline.length; i++) {
@@ -918,7 +919,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     const boxes = volumeSolids(v);
     solids.push(...boxes);
     if (v.ceilingHoles?.length) for (const box of boxes)
-      if (box[2] >= v.ceiling - 1e-6 && box[3] <= v.ceiling + v.wall + 1e-6) ceilingTiles.push({ box, volume: v });
+      if (v.shape === 'box' ? box[2] >= v.ceiling - 1e-6 && box[3] <= v.ceiling + v.wall + 1e-6 : box[3] >= tunnelOpeningBottom(v)) ceilingTiles.push({ box, volume: v });
   }
 
   // ---- buildings
