@@ -119,7 +119,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 - Studio: 2D and 3D now share compass styling, closing Studio exits indoor mode, the editor can expand, and the inspector can dock right at full height. Verify these visually. Indoor editing in 3D remains open.
 - Measures: 2D lines can now be selected in Select mode with a red highlight and compact expandable labels; verify interaction visually. Display and interaction in 3D remain open. Review other 2D/3D feature differences.
 - 3D placement: two-point fences, bridges and tunnels show a ground-following construction line; visually verify. Add hedge and bramble to the trees tool with click and lasso placement.
-- Flight alignment: disable start/end pins and start angle except at the corresponding video position, and update their explanatory text.
+- Flight alignment: endpoint availability and explanatory text are implemented in the path panel and Studio; verify with real video, offsets and a flight without video.
 - Visually review the mascot loop, title, responsive Welcome, editor layout and restored annex geometry in a browser. Space/Enter tool cancellation currently applies when the editor canvas has keyboard focus.
 
 ### Follow-up — greenhouse end and 2D measures
@@ -136,3 +136,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 - Villetta release 8 adds an editable one-metre solid strip between barrel roofs 2 and 3, keeping the eight-metre crown, and a separately selectable ladder cabin. The cabin has an open base and doorway; its dimensions are estimates. The layout and collision are covered by model checks; visual review against the site remains pending. Existing edited copies remain unchanged.
 - Fence, bridge and tunnel two-point gestures show a terrain-following preview in 3D while drawing. Browser review remains pending.
+
+### Follow-up — flight alignment endpoints
+
+- Start pin and start angle are enabled at the video start; end pin is enabled at the video end. Without video the flight endpoints are used. Moving away from an endpoint cancels an armed pin. Endpoint decisions have unit and service coverage; verify in the browser with real video and sync offsets.

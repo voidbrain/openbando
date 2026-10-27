@@ -6,6 +6,7 @@ import { ToastService } from '../../services/toast.service';
 import { createPathView, dragPathView, drawFlightPath, resetPathView, zoomPathView, type PathViewMode } from '../../core/drawing/flight-path';
 import { FlightService } from '../../services/flight.service';
 import { PlaybackService } from '../../services/playback.service';
+import { AlignmentPositionService } from '../../services/alignment-position.service';
 import { SceneService } from '../../services/scene.service';
 import { CalibrationStore } from '../../state/calibration.store';
 import { CanvasWidget } from '../panel/canvas-widget';
@@ -42,18 +43,20 @@ import { Panel } from '../panel/panel';
             <app-canvas panel="path" [draw]="draw" />
           </div>
           <div class="side">
-            <button class="ico" [class.on]="scene.pin() === 's'" (click)="scene.armPin('s')" title="Pin start: click the ground where the flight started" aria-label="Pin start">
+            <button class="ico" [class.on]="scene.pin() === 's'" [disabled]="!alignment.atStart()" (click)="scene.armPin('s')" [title]="alignment.videoLoaded() ? 'Pin start: position at the start of the video and click the ground where the flight started' : 'Pin start: position at the start of the flight and click the ground where the flight started'" aria-label="Pin start">
               <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="s" d="M6 21V4h11l-2 4 2 4H6" /></svg>
             </button>
-            <button class="ico" [class.on]="scene.pin() === 'e'" (click)="scene.armPin('e')" title="Pin end: click the ground where the flight ended" aria-label="Pin end">
+            <button class="ico" [class.on]="scene.pin() === 'e'" [disabled]="!alignment.atEnd()" (click)="scene.armPin('e')" [title]="alignment.videoLoaded() ? 'Pin end: position at the end of the video and click the ground where the flight ended' : 'Pin end: position at the end of the flight and click the ground where the flight ended'" aria-label="Pin end">
               <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="e" d="M6 21V4h11v8H6" /><path class="e" d="M6 8h11M11.5 4v8" /></svg>
             </button>
             <div
               class="knob"
               role="slider"
-              tabindex="0"
+              [attr.tabindex]="alignment.atStart() ? 0 : -1"
+              [attr.aria-disabled]="!alignment.atStart()"
+              [class.disabled]="!alignment.atStart()"
               aria-label="Turn the path about its start"
-              title="Turn the path about its start: drag around, or use the arrow keys (Shift = 10°)"
+              [title]="alignment.videoLoaded() ? 'Position at the start of the video and turn the path about its start' : 'Position at the start of the flight and turn the path about its start'"
               aria-valuemin="-180"
               aria-valuemax="180"
               [attr.aria-valuenow]="turn()"
@@ -165,6 +168,7 @@ import { Panel } from '../panel/panel';
       outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
+    .knob.disabled { opacity: 0.45; cursor: default; }
     .knob circle {
       fill: var(--panel-solid);
       stroke: var(--line);
@@ -184,6 +188,7 @@ import { Panel } from '../panel/panel';
 export class PathPanel {
   private readonly flights = inject(FlightService);
   private readonly playback = inject(PlaybackService);
+  protected readonly alignment = inject(AlignmentPositionService);
   private readonly cal = inject(CalibrationStore);
   private readonly toast = inject(ToastService);
   protected readonly scene = inject(SceneService);
@@ -214,20 +219,23 @@ export class PathPanel {
     return (Math.atan2(e.clientX - (r.left + r.width / 2), -(e.clientY - (r.top + r.height / 2))) * 180) / Math.PI;
   }
   protected knobDown(e: PointerEvent): void {
+    if (!this.alignment.atStart()) return;
     this.knobAt = this.knobAngle(e);
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   }
   protected knobMove(e: PointerEvent): void {
-    if (this.knobAt == null) return;
+    if (this.knobAt == null || !this.alignment.atStart()) return;
     const a = this.knobAngle(e);
     this.scene.turnPath(wrapDeg(a - this.knobAt));
     this.knobAt = a;
   }
   protected knobUp(e: PointerEvent): void {
     this.knobAt = null;
-    (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+    const el = e.currentTarget as HTMLElement;
+    if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
   }
   protected knobKey(e: KeyboardEvent): void {
+    if (!this.alignment.atStart()) return;
     const step = e.shiftKey ? 10 : 1;
     const d = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? step : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -step : 0;
     if (!d) return;
