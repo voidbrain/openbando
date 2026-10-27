@@ -205,3 +205,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 ### Follow-up — guide browser CI contention
 
 - The complete browser suite is distributed across four independent GitHub runners with one Playwright worker each, to reduce software-WebGL contention. All tests and existing timeouts remain enabled; reports are retained per shard on failure. Verify the next complete CI run before closing the reported guide and showcase timeouts.
+
+### Follow-up — warehouse visual capture
+
+- Browser CI captures four 3D warehouse angles in its Playwright report to help inspect the terrain seam with WebGL. These captures require a completed GitHub run and visual review; they do not establish that the flicker is fixed.

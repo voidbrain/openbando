@@ -83,8 +83,9 @@ jobs:
       - name: Guide steps and accessibility
         run: npx playwright test --shard=${{ matrix.shard }}/4 --workers=1
 
+      # Keep the warehouse angle captures on success too, so the terrain seam can be visually reviewed.
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: always()
         with:
           name: playwright-report-${{ matrix.shard }}
           path: playwright-report/
