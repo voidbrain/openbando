@@ -457,7 +457,7 @@
               }
               @case ('scatter') {
                 <app-pick-menu label="Brush shape" [options]="scatterOptions" [value]="scatterMode()" (valueChange)="scatterMode.set(asScatter($event))" />
-                <app-pick-menu label="Trees" [options]="treeMixOptions" [value]="treeMix()" (valueChange)="treeMix.set(asMix($event))" />
+                <app-pick-menu label="Vegetation" [options]="treeMixOptions" [value]="treeMix()" (valueChange)="treeMix.set(asMix($event))" />
                 <label class="lay" title="Average distance between trees">every <input class="mini" type="number" min="2" max="30" step="0.5" [value]="scatterSpacing()" (change)="scatterSpacing.set(num($event))" /> m</label>
                 @if (scatterMode() === 'pen') {
                   <label class="lay" title="Width of the pen stroke">width <input class="mini" type="number" min="2" max="60" step="1" [value]="scatterWidth()" (change)="scatterWidth.set(num($event))" /> m</label>
@@ -502,7 +502,7 @@
                 <button class="btn" [disabled]="terrain.loadingGround()" (click)="terrain.realGround()" [title]="ed.draft().terrain?.base ? 'Download the real ground again (your strokes stay)' : 'Download the real ground heights for this bando (your strokes stay)'">@if (terrain.loadingGround()) {<i class="spin"></i> } {{ ed.draft().terrain?.base ? 'Re-load real ground' : 'Real ground' }}</button>
               }
               @case ('tree') {
-                <app-pick-menu label="Tree" [options]="treeMixOptions" [value]="treeMix()" (valueChange)="treeMix.set(asMix($event))" />
+                <app-pick-menu label="Vegetation" [options]="treeMixOptions" [value]="treeMix()" (valueChange)="treeMix.set(asMix($event))" />
               }
               @case ('fence') {
                 <app-pick-menu label="Material" [options]="fenceOptions" [value]="fenceMat()" (valueChange)="fenceMat.set(asFence($event))" />

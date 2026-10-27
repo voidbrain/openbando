@@ -15,6 +15,7 @@ ToolPalette is the editor's vertical tool strip: one 32px icon button per tool g
   double-clicking the grip, or Reset UI, puts it back top-left.
 - Tools that need a selected building (Merge, Cut, Wing) stay in the palette; picking one without a building says so in
   a toast instead of hiding.
+- The Trees tools also offer hedge and bramble: a click places one editable living wall; the brush supports pen, square, circle and lasso placement as a single undo step.
 
 ## Consumer provides
 

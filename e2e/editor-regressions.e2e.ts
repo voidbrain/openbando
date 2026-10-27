@@ -119,4 +119,12 @@ test('basement controls and explicit roof choice update the selected building', 
   await expect(measure).toHaveAttribute('aria-pressed', 'true');
   await page.locator('[data-tour="view-2d"]').click();
   await expect(page.locator('[data-pk="meas:0"]')).toHaveCount(1);
+  await page.locator('app-bando-editor .palette button[title^="Tree ·"]').click();
+  await page.getByRole('button', { name: /^Vegetation:/ }).click();
+  await page.getByRole('option', { name: /^Hedge/ }).click();
+  const plan = page.locator('app-bando-editor svg.ov');
+  const planBounds = await plan.boundingBox();
+  expect(planBounds).not.toBeNull();
+  await plan.click({ position: { x: planBounds!.width * 0.25, y: planBounds!.height * 0.75 }, force: true });
+  await expect(page.locator('[data-pk^="fence:"]')).toHaveCount(1);
 });
