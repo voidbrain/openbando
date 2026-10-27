@@ -773,9 +773,15 @@ function buildBasement(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, floorM
   const level = basement.levels[0]!;
   const room = new THREE.Group();
   room.userData['pick'] = {kind:'basement',id:b.id};
+  const angle = b.rotDeg * Math.PI / 180, c = Math.cos(angle), s = Math.sin(angle);
+  const dx = basement.pos.x - b.pos.x, dz = basement.pos.z - b.pos.z;
+  room.position.set(dx * c + dz * s, 0, -dx * s + dz * c);
+  const oldAt = ctx.at;
+  ctx.at = [basement.pos.x, basement.pos.z];
   target.add(room);
   buildFloorAndColumns(ctx, basement, level, room, floorMat);
   buildWalls(ctx, basement, level, room);
+  ctx.at = oldAt;
   room.traverse(o=>{if(o.userData['pick'])o.userData['pick']={kind:'basement',id:b.id};});
 }
 
@@ -824,7 +830,8 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
       o.receiveShadow = true;
       target.add(o);
       if (solid) {
-        solids.push(rotBoxLocal(x + ctx.at[0], z + ctx.at[1], w, d, ctx.rot, y - h / 2, y + h / 2, false));
+        const a = ctx.rot * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+        solids.push(rotBoxLocal(ctx.at[0] + x * c - z * s, ctx.at[1] + x * s + z * c, w, d, ctx.rot, y - h / 2, y + h / 2, false));
         occluders.push(o);
       }
       return o;
