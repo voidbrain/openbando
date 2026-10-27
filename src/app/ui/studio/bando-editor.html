@@ -63,6 +63,7 @@
       </label>
     }
   </span>
+  <button class="btn" [attr.aria-pressed]="expanded()" [attr.aria-label]="expanded() ? 'Restore studio size' : 'Expand studio'" [title]="expanded() ? 'Restore studio size' : 'Expand studio'" (click)="toggleExpand()">{{ expanded() ? '↙' : '⛶' }}</button>
 </div>
 <div class="wrap" #wrap tabindex="0" data-tour="map" [class.v3]="view3d() && overlayOn()" (keydown)="key($event)" (pointerdown)="closeMenus()" (contextmenu)="onContext($event)">
   <div class="map" #el></div>
@@ -394,15 +395,7 @@
     />
   }
   @if (!(overlayOn() && view3d())) {
-    <svg class="compass" viewBox="-30 -30 60 60" aria-label="North is up">
-      <circle r="27" fill="rgba(10,16,12,0.75)" stroke="#6f8577" />
-      <polygon points="0,-23 5,-3 -5,-3" fill="#ff5a4d" />
-      <polygon points="0,23 5,3 -5,3" fill="#8a948d" />
-      <text y="-14" x="0" text-anchor="middle" dominant-baseline="middle" font-size="9" font-weight="700" fill="#fff" stroke="#000" stroke-width="2" paint-order="stroke">N</text>
-      @if (mode() === 'model' && b(); as cb) {
-        <line x1="0" y1="0" [attr.x2]="axisEnd(cb)[0]" [attr.y2]="axisEnd(cb)[1]" stroke="#b7ed83" stroke-width="2.5" stroke-linecap="round" />
-      }
-    </svg>
+    <app-camera-compass class="compass" [camera]="northUpCamera" />
   }
   @if (mode() === 'model' && overlayOn()) {
     <div #pal class="palette" role="toolbar" aria-label="Tools" aria-orientation="vertical" [style.left.px]="dock.palXY().x" [style.top.px]="dock.palXY().y" [style.z-index]="dock.palZ()" (pointerdown)="$event.stopPropagation(); dock.raise('pal')">
@@ -581,7 +574,7 @@
   }
 
   @if (mode() === 'model' && overlayOn()) {
-    <app-float-box fid="inspector-v4" data-tour="inspector" title="Inspector" [x]="8" [y]="58" [w]="300" [h]="340" [right]="true" [cols]="true">
+    <app-float-box fid="inspector-v4" data-tour="inspector" title="Inspector" [x]="8" [y]="58" [w]="300" [h]="340" [right]="true" [cols]="true" [dockable]="true">
       @if (previewTarget(); as pt) {
         <app-element-preview [target]="pt" [key]="previewKey()" [caption]="previewCaption()" (picked)="onPreviewPick($event)" />
       }

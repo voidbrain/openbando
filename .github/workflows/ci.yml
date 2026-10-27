@@ -54,8 +54,8 @@ jobs:
 
   e2e:
     # in a real (headless) browser: every guide step plays on its own, and the main screens pass axe (WCAG 2.1 A / AA)
-    # not when the deploy calls this workflow (e2e: false); on pull requests `inputs` is empty, so it runs
-    if: ${{ inputs.e2e != false }}
+    # Pull requests always run this job; reusable-workflow callers can explicitly disable it.
+    if: ${{ github.event_name == 'pull_request' || inputs.e2e == true }}
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
