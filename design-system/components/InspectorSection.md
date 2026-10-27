@@ -17,6 +17,6 @@ Source: `src/app/ui/studio/bando-editor.scss (.sec, .st, .fld)`.
 
 Basements expose a −1 button in Floors, a dedicated preview and a separate section for height, independent rectangular dimensions, footprint reset, perimeter walls and internal wall endpoints. Choosing a roof when ruin/open shell removed it explicitly restores the roof (and lowers global ruin below the roof-removal threshold); explain that effect beside the selector.
 
-In the 2D indoor plan, the selected basement shows focusable outline vertices: drag or use arrow keys to move, Insert adds a midpoint, and Delete removes a vertex. The existing yellow outline/handle styling and visible focus treatment identify these controls.
+In the 2D indoor plan and 3D indoor view, the selected basement shows outline vertices: drag or use the focusable vertex controls and arrow keys to move, Insert adds a midpoint, and Delete removes a vertex. In 3D a compact expandable control provides keyboard movement and pointer buttons for insertion and removal. The existing yellow outline/handle styling and visible focus treatment identify these controls.
 
 The greenhouse arch ratio is dimensionless; show the corresponding crown height in metres next to it.

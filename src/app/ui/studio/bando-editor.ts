@@ -1383,7 +1383,7 @@ export class BandoEditor {
     if (edge >= 0) this.insertVertex(edge);
   }
 
-  private insertVertex(index: number): void {
+  protected insertVertex(index: number): void {
     const b = this.b();
     if (!b?.basement) return;
     const next = structuredClone(b);
@@ -1392,7 +1392,7 @@ export class BandoEditor {
     this.applyNow();
   }
 
-  private removeVertex(index: number): void {
+  protected removeVertex(index: number): void {
     const b = this.b();
     if (!b?.basement) return;
     const next = structuredClone(b);
@@ -1545,13 +1545,14 @@ export class BandoEditor {
   /** Use the same building gesture, overlap guard and undo step as the plan handles. */
   protected onTransform3d(g: { phase: 'down' | 'move' | 'up'; handle: BuildingHandle; x: number; z: number }): void {
     const bd = this.b();
-    if (!bd || this.indoor()) return;
+    if (!bd || (this.indoor() && !(this.basementFocus() && g.handle.kind === 'basementVertex'))) return;
     const fake = { clientX: 0, clientY: 0, pointerId: 1, shiftKey: false, altKey: false, button: 0, currentTarget: null, stopPropagation: () => undefined, preventDefault: () => undefined } as unknown as PointerEvent;
     this.world3d = { x: g.x, z: g.z };
     try {
       if (g.phase === 'down') {
         this.capture(fake);
-        if (g.handle.kind === 'move') this.drag.set({ t: 'move', ox: bd.pos.x, oz: bd.pos.z, px: g.x, pz: g.z });
+        if (g.handle.kind === 'basementVertex' && g.handle.vertex !== undefined) this.basementVertexDown(fake, g.handle.vertex);
+        else if (g.handle.kind === 'move') this.drag.set({ t: 'move', ox: bd.pos.x, oz: bd.pos.z, px: g.x, pz: g.z });
         else if (g.handle.kind === 'edge' && g.handle.edge !== undefined) this.edgeDown(fake, g.handle.edge);
         else this.cornerDown(fake, g.handle.sx, g.handle.sz);
       } else if (g.phase === 'move') this.move(fake);
