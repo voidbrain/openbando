@@ -21,6 +21,17 @@ describe('3D indoor floor', () => {
     expect(building.levels).toHaveLength(2);
     expect(building.levels[1]!.roof).toBe('gable');
   });
+  it('isolates the basement with its own floor data and maps its picks to −1', () => {
+    const spec = emptySpec(); spec.extent = 60;
+    const b = { ...building, basement: { height: 3, columns: [{ x: 2, z: 2, size: 0.5 }] } };
+    spec.buildings = [b];
+    const result = indoorViewSpec(spec, { id: 'b', li: -1 });
+    expect(result.buildings).toHaveLength(1);
+    expect(result.buildings[0]!.levels[0]!.baseY).toBe(-3);
+    expect(result.buildings[0]!.levels[0]!.columns).toHaveLength(1);
+    expect(result.buildings[0]!.basement).toBeUndefined();
+    expect(indoorSourcePick({ kind: 'column', id: 'b', li: 0, i: 0 }, { id: 'b', li: -1 })).toEqual({ kind: 'column', id: 'b', li: -1, i: 0 });
+  });
   it('maps isolated picks to their original level and projects onto the selected height', () => {
     expect(indoorSourcePick({ kind: 'column', id: 'b', li: 0, i: 2 }, { id: 'b', li: 1 })).toEqual({ kind: 'column', id: 'b', li: 1, i: 2 });
     expect(floorPoint(new THREE.Ray(new THREE.Vector3(2, 10, 3), new THREE.Vector3(0, -1, 0)), 4)).toEqual({ x: 2, z: 3 });

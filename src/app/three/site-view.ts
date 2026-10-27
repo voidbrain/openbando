@@ -237,7 +237,7 @@ export class SiteViewRenderer {
     }
     this.spec = spec;
     this.indoorFloor = indoorFloor;
-    this.model = buildSiteFromSpec(indoorFloor ? indoorViewSpec(spec, indoorFloor) : spec, { merge: true });
+    this.model = buildSiteFromSpec(indoorFloor ? indoorViewSpec(spec, indoorFloor) : spec, { merge: true, bare: indoorFloor?.li === -1 });
     this.model.setRoofHidden?.(roofHidden);
     this.model.setGroundStyle(this.groundStyle);
     if (focus && !indoorFloor) this.focusFloor(spec, focus);

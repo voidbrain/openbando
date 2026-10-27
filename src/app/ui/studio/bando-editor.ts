@@ -16,7 +16,7 @@ import { areaCorners } from '../../core/areas';
 import { roadDef, surfaceDef } from '../../core/layers';
 import { blockCategory } from '../../core/catalog';
 import { siteGround } from '../../core/site-ground';
-import { basementOutline } from '../../core/basement';
+import { basementBuilding, basementOutline, editBasementFloor } from '../../core/basement';
 import { PickMenu, type PickOption } from './pick-menu';
 import { BlocksBox } from './blocks-box';
 import { paramValues, type BlockSpec, type ParamValue } from '../../core/blocks';
@@ -449,17 +449,31 @@ export class BandoEditor {
   private roofBefore = false;
 
   protected readonly b = this.ed.building;
+  protected readonly floorBuilding = computed(() => {
+    const b = this.b();
+    return b && this.indoor() && this.basementFocus() && b.basement ? basementBuilding(b) : b;
+  });
+  private floorEdit(site: SiteSpec, id: string, edit: (building: BuildingSpec) => void): void {
+    const b = this.index(site, id);
+    if (!b) return;
+    if (this.indoor() && this.basementFocus() && b.basement) editBasementFloor(b, edit);
+    else edit(b);
+  }
+  private mutateFloor(edit: (building: BuildingSpec) => void): void {
+    this.ed.commitSite(s => this.floorEdit(s, this.ed.selectedId(), edit));
+    this.applyNow();
+  }
   protected readonly hasModel = computed(() => !this.studio.isNew() && this.ed.draft().buildings.length + this.ed.draft().trees.length > 0);
   protected readonly overlayOn = computed(() => this.mode() === 'model' && this.hasModel() && this.ed.draft().bearingDeg === 0);
   protected readonly captures = computed(() => this.tool() !== 'select' || this.pinMode() !== null || this.indoor() || this.shiftHeld() || !!this.blocks.armed());
   protected readonly indoorFloor3d = computed(() => {
     const b = this.b();
-    return this.indoor() && b ? { id: b.id, li: Math.min(this.level(), b.levels.length - 1) } : null;
+    return this.indoor() && b ? { id: b.id, li: this.basementFocus() && b.basement ? -1 : Math.min(this.level(), b.levels.length - 1) } : null;
   });
   protected readonly indoorPlaneY = computed(() => {
-    const b = this.b();
+    const b = this.floorBuilding();
     if (!b || !this.indoor() || !['wall', 'void', 'door', 'window', 'column', 'stairs'].includes(this.tool())) return null;
-    return (this.ground().building.get(b.id) ?? 0) + (b.levels[this.level()]?.baseY ?? 0);
+    return (this.ground().building.get(b.id) ?? 0) + (b.levels[this.basementFocus() ? 0 : this.level()]?.baseY ?? 0);
   });
   protected readonly drawLine3d = computed(() => {
     if (this.tool() === 'measure') {
@@ -467,7 +481,7 @@ export class BandoEditor {
       return a && b ? { a, b, color: this.tc('measure') } : null;
     }
     const d = this.drag();
-    const bd = this.b(), height = this.indoorPlaneY();
+    const bd = this.floorBuilding(), height = this.indoorPlaneY();
     if (bd && height !== null && (d?.t === 'wallDraw' || d?.t === 'voidDraw')) {
       const world = (p: Pt) => this.fromLocal(bd, { x: p.x - bd.length / 2, z: p.z - bd.width / 2 });
       return { a: world(d.a), b: world(d.b), color: this.tc(d.t === 'wallDraw' ? 'wall' : 'void'), height };
@@ -510,11 +524,11 @@ export class BandoEditor {
     return { l: cx - fw / 2, t: cy - fh / 2, w: fw, h: fh };
   });
   protected readonly lvl = computed<LevelSpec | null>(() => {
-    const bd = this.b();
-    return bd ? (bd.levels[Math.min(this.level(), bd.levels.length - 1)] ?? null) : null;
+    const bd = this.floorBuilding();
+    return bd ? (bd.levels[this.basementFocus() && this.indoor() ? 0 : Math.min(this.level(), bd.levels.length - 1)] ?? null) : null;
   });
   protected readonly openings = computed<OpenSeg[]>(() => {
-    const bd = this.b();
+    const bd = this.floorBuilding();
     return bd && this.indoor() ? listOpenings(bd, Math.min(this.level(), bd.levels.length - 1)) : [];
   });
   protected readonly openId = computed(() => {
@@ -601,6 +615,7 @@ export class BandoEditor {
     return this.floorFocus() && bd && bd.levels.length > 1 ? { id: bd.id, li: Math.min(this.level(), bd.levels.length - 1) } : null;
   });
   protected pickLevel(i: number): void {
+    if (this.basementFocus()) { this.pick.set({ t: 'building' }); this.colSet.set([]); }
     this.basementFocus.set(false);
     if (this.level() === i && this.floorFocus()) this.floorFocus.set(false);
     else {
@@ -632,7 +647,7 @@ export class BandoEditor {
 
   /** Where the column / stairs tool would put its thing under the pointer, with the guides to draw. */
   protected readonly ghost = computed<(Placement & { kind: 'column' | 'stairs' | 'opening'; w: number; d: number }) | null>(() => {
-    const h = this.hover(), bd = this.b();
+    const h = this.hover(), bd = this.floorBuilding();
     if (!h || !bd || !this.indoor()) return null;
     const li = Math.min(this.level(), bd.levels.length - 1);
     const l = this.toLocal(bd, h);
@@ -674,7 +689,7 @@ export class BandoEditor {
       return st ? { kind: 'structure', id: st.id } : null;
     }
     const id = this.ed.selectedId();
-    if (id && (p?.t === 'column' || p?.t === 'wall')) return { kind: p.t, id, li: this.level(), i: p.i };
+    if (id && (p?.t === 'column' || p?.t === 'wall')) return { kind: p.t, id, li: this.basementFocus() && this.indoor() ? -1 : this.level(), i: p.i };
     return id ? { kind: 'building', id } : null;
   });
 
@@ -1134,7 +1149,6 @@ export class BandoEditor {
     const bd = this.b();
     if (!bd) return;
     if (!this.indoor()) this.roofBefore = this.view.roofHidden();
-    this.basementFocus.set(false);
     this.indoor.set(true);
     this.tool.set('select'); // the outdoor tools are not shown while editing a floor
     this.view.setRoofHidden(true);
@@ -1197,7 +1211,7 @@ export class BandoEditor {
     }
     if (!this.pinMode() && this.tool() === 'select' && this.indoor()) {
       // indoors the plan owns the pointer: drag on the floor = box-select, outside the building = pan the map
-      const sel = this.b();
+      const sel = this.floorBuilding();
       const l = sel ? this.toLocal(sel, p) : null;
       if (sel && l && Math.abs(l.x) <= sel.length / 2 && Math.abs(l.z) <= sel.width / 2) {
         if (!e.shiftKey) this.colSet.set([]);
@@ -1211,7 +1225,7 @@ export class BandoEditor {
       return;
     }
     if (!this.pinMode() && PLACE.includes(this.tool())) {
-      const sel = this.b();
+      const sel = this.floorBuilding();
       if (sel) this.bgDownSelected(sel, p, this.tool());
       return;
     }
@@ -1275,7 +1289,7 @@ export class BandoEditor {
       this.pick.set({ t: 'building' });
       if (this.indoor()) this.enterIndoor();
     }
-    if (t !== 'select' && isSel) return this.bgDownSelected(bd, p, t);
+    if (t !== 'select' && isSel) return this.bgDownSelected(this.floorBuilding() ?? bd, p, t);
     this.pick.set({ t: 'building' });
     if (this.indoor()) return;
     this.drag.set({ t: 'move', ox: bd.pos.x, oz: bd.pos.z, px: p.x, pz: p.z });
@@ -1440,7 +1454,7 @@ export class BandoEditor {
     } else if (p.kind === 'building') {
       const keepFloor = this.indoor() && this.ed.selectedId() === p.id;
       this.ed.select(p.id);
-      this.basementFocus.set(false);
+      if (!keepFloor) this.basementFocus.set(false);
       if (!keepFloor) this.level.set(0);
       this.pick.set({ t: 'building' });
     } else if (p.kind === 'structure') {
@@ -1449,7 +1463,8 @@ export class BandoEditor {
     } else if (p.kind === 'column' || p.kind === 'wall') {
       // an element of one floor: select its building, show that floor and pick the element (the inspector previews it in place)
       this.ed.select(p.id);
-      this.level.set(p.li);
+      if (p.li === -1) this.basementFocus.set(true);
+      else { this.basementFocus.set(false); this.level.set(p.li); }
       this.colSet.set([]);
       this.pick.set(p.kind === 'column' ? { t: 'column', i: p.i } : { t: 'wall', i: p.i });
     } else if (p.kind === 'underground') {
@@ -1510,9 +1525,9 @@ export class BandoEditor {
     const id = this.openId();
     if (!id) return;
     let n = 0;
-    this.mutate((b) => {
+    this.mutateFloor((b) => {
       n = repeatOpening(b, Math.min(this.level(), b.levels.length - 1), id, this.repN(), this.repS());
-    }, 0);
+    });
     this.toast.show(n ? `${n} copies added.` : 'No room for copies along this wall with that spacing.');
   }
 
@@ -1520,18 +1535,18 @@ export class BandoEditor {
     const i = this.colI();
     if (this.colIdxs().length > 1) {
       let made: number[] = [];
-      this.mutate((b) => {
+      this.mutateFloor((b) => {
         made = duplicateColumns(b, Math.min(this.level(), b.levels.length - 1), this.colIdxs(), this.colAxis() === 'x' ? this.colS() : 0, this.colAxis() === 'z' ? this.colS() : 0);
-      }, 0);
+      });
       this.colSet.set(made);
       this.pick.set(made.length ? { t: 'column', i: made[made.length - 1]! } : { t: 'building' });
       this.toast.show(made.length ? `${made.length} columns copied as a group.` : 'The copy does not fit there (wall, void or another column).');
       return;
     }
     let idx = -1;
-    this.mutate((b) => {
+    this.mutateFloor((b) => {
       idx = duplicateColumn(b, Math.min(this.level(), b.levels.length - 1), i, this.colAxis() === 'x' ? this.colS() : 0, this.colAxis() === 'z' ? this.colS() : 0);
-    }, 0);
+    });
     if (idx < 0) this.toast.show('The copy would fall outside the building, in a void, or on another column.');
     else this.pick.set({ t: 'column', i: idx });
   }
@@ -1539,9 +1554,9 @@ export class BandoEditor {
   protected colRowAdd(): void {
     const i = this.colI();
     let n = 0;
-    this.mutate((b) => {
+    this.mutateFloor((b) => {
       n = columnRow(b, Math.min(this.level(), b.levels.length - 1), i, this.colN(), this.colS(), this.colAxis());
-    }, 0);
+    });
     this.toast.show(n ? `${n} columns added.` : 'Nothing fits in that direction.');
   }
 
@@ -1549,16 +1564,16 @@ export class BandoEditor {
     const i = this.colI();
     let n = 0;
     if (this.colIdxs().length > 1) {
-      this.mutate((b) => {
+      this.mutateFloor((b) => {
         n = fillModule(b, Math.min(this.level(), b.levels.length - 1), this.colIdxs(), this.colS(), 0.8);
-      }, 0);
+      });
       this.colSet.set([]);
       this.toast.show(n ? `${n} columns added on the grid of your selection.` : 'The selection\'s grid has no more room.');
       return;
     }
-    this.mutate((b) => {
+    this.mutateFloor((b) => {
       n = columnGrid(b, Math.min(this.level(), b.levels.length - 1), i, this.colS(), this.colS(), 0.8);
-    }, 0);
+    });
     this.pick.set(null);
     this.toast.show(n ? `Floor filled with ${n} columns, evenly spread and clear of the walls.` : 'No room for columns with that spacing.');
   }
@@ -1636,7 +1651,7 @@ export class BandoEditor {
   protected colDown(e: PointerEvent, i: number): void {
     e.stopPropagation();
     this.capture(e);
-    const bd = this.b();
+    const bd = this.floorBuilding();
     const c = this.lvl()?.columns?.[i];
     if (!bd || !c) return;
     const l = this.toLocal(bd, this.toWorld(e));
@@ -1676,10 +1691,12 @@ export class BandoEditor {
     let idx = 0;
     const shape = this.colShape() === 'round', size = this.colSize();
     this.ed.commitSite((s) => {
-      const lev = this.index(s, bd.id)?.levels[li];
-      if (!lev) return;
-      (lev.columns ??= []).push({ x: p.x, z: p.z, size, ...(shape ? { round: true } : {}) });
-      idx = lev.columns.length - 1;
+      this.floorEdit(s, bd.id, b => {
+        const lev = b.levels[li];
+        if (!lev) return;
+        (lev.columns ??= []).push({ x: p.x, z: p.z, size, ...(shape ? { round: true } : {}) });
+        idx = lev.columns.length - 1;
+      });
     });
     this.pick.set({ t: 'column', i: idx });
     this.applyNow();
@@ -1697,6 +1714,24 @@ export class BandoEditor {
     const kind = this.stairsKind();
     const d = STRUCTURE_DEFAULTS[kind];
     const st = stairsFor(bd, li, { x: g.x, z: g.z }, kind, { length: d.length ?? 5, size: d.size, name: d.name });
+    if (this.basementFocus() && this.indoor()) {
+      // Basement coordinates are relative to its own footprint; G uses the main building's frame.
+      const main = this.b();
+      if (!main) return;
+      const x0 = g.x - bd.length / 2 + main.length / 2;
+      const z0 = g.z - bd.width / 2 + main.width / 2;
+      const hole = { x0: Math.max(0, x0), x1: Math.min(main.length, x0 + st.structure.length / 2 + 0.3),
+        z0: Math.max(0, z0 - d.size / 2 - 0.15), z1: Math.min(main.width, z0 + d.size / 2 + 0.15) };
+      this.ed.commitSite(s => {
+        (s.structures ??= []).push({ ...st.structure, id: uid('st'), name: `${d.name} −1→G` });
+        const ground = this.index(s, bd.id)?.levels[0];
+        if (ground && this.stairwell() && hole.x1 > hole.x0 && hole.z1 > hole.z0) (ground.voids ??= []).push(hole);
+      });
+      this.pick.set({ t: 'structure', i: (this.ed.draft().structures?.length ?? 1) - 1 });
+      this.tool.set('select');
+      this.applyNow();
+      return;
+    }
     const { kind: _k, x, z, ...rest } = st.structure;
     this.placeStructure(kind, { x, z }, rest);
     if (st.voidAbove && this.stairwell()) {
@@ -1749,8 +1784,7 @@ export class BandoEditor {
     const l = this.toLocal(bd, world);
     let id: string | null = null;
     this.ed.commitSite((s) => {
-      const x = this.index(s, bd.id);
-      if (x) id = addOpening(x, li, l, kind, Math.max(3, 14 / this.ppm()));
+      this.floorEdit(s, bd.id, x => { id = addOpening(x, li, l, kind, Math.max(3, 14 / this.ppm())); });
     });
     if (!id) {
       this.ed.undo();
@@ -1786,7 +1820,7 @@ export class BandoEditor {
       return;
     }
     const p = this.toWorld(e);
-    const bd = this.b();
+    const bd = this.floorBuilding();
     const li = bd ? Math.min(this.level(), bd.levels.length - 1) : 0;
     switch (d.t) {
       case 'measMove':
@@ -1901,10 +1935,10 @@ export class BandoEditor {
         if (!o) break;
         const along = o.axis === 'x' ? l.x : l.z;
         this.gesture((s) => {
-          const x = this.index(s, bd.id);
-          if (!x) return;
-          if (d.t === 'open') moveOpening(x, li, d.id, along);
-          else resizeOpening(x, li, d.id, d.end, along);
+          this.floorEdit(s, bd.id, x => {
+            if (d.t === 'open') moveOpening(x, li, d.id, along);
+            else resizeOpening(x, li, d.id, d.end, along);
+          });
         });
         break;
       }
@@ -1995,11 +2029,10 @@ export class BandoEditor {
         this.dragPlacement.set(pl);
         if (!pl.valid) break; // do not drop it in a void or outside: it stays at the last good spot
         this.gesture((s) => {
-          const c = this.index(s, bd.id)?.levels[li]?.columns?.[d.i];
-          if (c) {
-            c.x = pl.x;
-            c.z = pl.z;
-          }
+          this.floorEdit(s, bd.id, b => {
+            const c = b.levels[li]?.columns?.[d.i];
+            if (c) { c.x = pl.x; c.z = pl.z; }
+          });
         });
         break;
       }
@@ -2044,7 +2077,7 @@ export class BandoEditor {
   private finishSelArea(d: { pts: Pt[]; add: boolean }, shift: boolean): void {
     const area = this.selShape() === 'lasso' ? d.pts : this.selAreaOf(d.pts);
     const add = d.add || shift;
-    const bd = this.b();
+    const bd = this.floorBuilding();
     if (this.indoor() && bd) {
       const hit = pointsInside(this.columnsWorld(bd), area);
       const next = add ? [...new Set([...this.colIdxs(), ...hit])] : hit;
@@ -2063,7 +2096,7 @@ export class BandoEditor {
   /** The four corners of a box dragged from the first to the last point (square to the edited building indoors). */
   private selAreaOf(pts: Pt[]): Pt[] {
     const a = pts[0]!, b = pts[pts.length - 1]!;
-    const bd = this.indoor() ? this.b() : null;
+    const bd = this.indoor() ? this.floorBuilding() : null;
     if (!bd) return [a, { x: b.x, z: a.z }, b, { x: a.x, z: b.z }];
     const la = this.toLocal(bd, a), lb = this.toLocal(bd, b);
     return [la, { x: lb.x, z: la.z }, lb, { x: la.x, z: lb.z }].map((l) => this.fromLocal(bd, l));
@@ -2076,7 +2109,7 @@ export class BandoEditor {
     this.dragPlacement.set(null);
     (e.currentTarget as Element | null)?.releasePointerCapture?.(e.pointerId);
     if (!d) return;
-    const bd = this.b();
+    const bd = this.floorBuilding();
     if (d.t === 'bridgeDraw') {
       const len = Math.hypot(d.b.x - d.a.x, d.b.z - d.a.z);
       if (len >= 6) this.placeStructure('bridge', { x: (d.a.x + d.b.x) / 2, z: (d.a.z + d.b.z) / 2 }, { length: Math.round(len), rotDeg: Math.round((Math.atan2(d.b.z - d.a.z, d.b.x - d.a.x) * 180) / Math.PI) });
@@ -2125,10 +2158,12 @@ export class BandoEditor {
         const li = Math.min(this.level(), bd.levels.length - 1);
         let idx = 0;
         this.ed.commitSite((s) => {
-          const lev = this.index(s, bd.id)?.levels[li];
-          if (!lev) return;
-          (lev.voids ??= []).push({ x0, z0, x1, z1, water: li === 0 ? false : undefined });
-          idx = lev.voids.length - 1;
+          this.floorEdit(s, bd.id, b => {
+            const lev = b.levels[li];
+            if (!lev) return;
+            (lev.voids ??= []).push({ x0, z0, x1, z1, water: li === 0 ? false : undefined });
+            idx = lev.voids.length - 1;
+          });
         });
         this.pick.set({ t: 'void', i: idx });
         this.applyNow();
@@ -2173,7 +2208,7 @@ export class BandoEditor {
       if (Math.hypot(d.b.x - d.a.x, d.b.z - d.a.z) >= 0.5) {
         const li = Math.min(this.level(), bd.levels.length - 1);
         this.ed.commitSite((s) => {
-          this.index(s, bd.id)?.levels[li]?.partitions.push([d.a, d.b]);
+          this.floorEdit(s, bd.id, b => b.levels[li]?.partitions.push([d.a, d.b]));
         });
         this.applyNow();
       }
@@ -2393,7 +2428,7 @@ export class BandoEditor {
   protected deleteSel(): void {
     if (this.mode() !== 'model') return;
     const p = this.pick();
-    const bd = this.b();
+    const bd = this.floorBuilding();
     const li = bd ? Math.min(this.level(), bd.levels.length - 1) : 0;
     if (p?.t === 'tree') {
       const gone = [...this.treeIdxs()].sort((x, y) => y - x);
@@ -2406,18 +2441,17 @@ export class BandoEditor {
     else if (p?.t === 'surface') this.ed.commitSite((s) => void s.surfaces?.splice(p.i, 1));
     else if (p?.t === 'water') this.ed.commitSite((s) => void s.waters?.splice(p.i, 1));
     else if (p?.t === 'under') this.ed.commitSite((s) => void s.underground?.splice(p.i, 1));
-    else if (p?.t === 'void' && bd) this.ed.commitSite((s) => void this.index(s, bd.id)?.levels[li]?.voids?.splice(p.i, 1));
+    else if (p?.t === 'void' && bd) this.ed.commitSite((s) => this.floorEdit(s, bd.id, b => void b.levels[li]?.voids?.splice(p.i, 1)));
     else if (p?.t === 'column' && bd) {
       const gone = [...this.colIdxs()].sort((x, y) => y - x);
-      this.ed.commitSite((s) => gone.forEach((k) => void this.index(s, bd.id)?.levels[li]?.columns?.splice(k, 1)));
+      this.ed.commitSite((s) => this.floorEdit(s, bd.id, b => gone.forEach((k) => void b.levels[li]?.columns?.splice(k, 1))));
       this.colSet.set([]);
     }
     else if (p?.t === 'opening' && bd) {
       this.ed.commitSite((s) => {
-        const x = this.index(s, bd.id);
-        if (x) removeOpening(x, li, p.id);
+        this.floorEdit(s, bd.id, x => removeOpening(x, li, p.id));
       });
-    } else if (p?.t === 'wall' && bd) this.ed.removePartition(li, p.i);
+    } else if (p?.t === 'wall' && bd) this.ed.commitSite(s => this.floorEdit(s, bd.id, b => void b.levels[li]?.partitions.splice(p.i, 1)));
     else if (bd && p?.t === 'building') {
       if (this.indoor()) this.exitIndoor();
       this.ed.removeBuilding(bd.id);
@@ -2501,7 +2535,6 @@ export class BandoEditor {
   }
   protected pickBasement(): void {
     this.basementFocusId.set(this.ed.selectedId());
-    if (this.indoor()) this.exitIndoor();
     this.pick.set({t:'building'});
     this.basementFocus.update(v=>!v);
   }
@@ -2537,7 +2570,7 @@ export class BandoEditor {
   protected setOpening(patch: Partial<{ kind: 'door' | 'window'; w: number; h: number; sill: number; c: number; closed: boolean }>): void {
     const id = this.openId();
     if (!id) return;
-    this.mutate((b) => patchOpening(b, Math.min(this.level(), b.levels.length - 1), id, patch), 0);
+    this.mutateFloor((b) => patchOpening(b, Math.min(this.level(), b.levels.length - 1), id, patch));
   }
 
   protected setTree(patch: Partial<{ h: number; r: number; kind: 'd' | 'c' }>): void {
@@ -2589,12 +2622,12 @@ export class BandoEditor {
 
   protected setVoid(patch: { water?: boolean }): void {
     const i = this.voidI(), li = this.level();
-    this.mutate((b) => Object.assign(b.levels[li]?.voids?.[i] ?? {}, patch), 0);
+    this.mutateFloor((b) => Object.assign(b.levels[this.basementFocus() && this.indoor() ? 0 : li]?.voids?.[i] ?? {}, patch));
   }
 
   protected setColumn(patch: Partial<{ size: number; round: boolean; x: number; z: number }>): void {
     const i = this.colI(), li = this.level();
-    this.mutate((b) => Object.assign(b.levels[li]?.columns?.[i] ?? {}, patch), 0);
+    this.mutateFloor((b) => Object.assign(b.levels[this.basementFocus() && this.indoor() ? 0 : li]?.columns?.[i] ?? {}, patch));
   }
 
   protected removeFloor(): void {

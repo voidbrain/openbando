@@ -16,8 +16,9 @@
       <button class="btn" [class.on]="indoor()" [disabled]="!b() || !!b()!.frame" (click)="toggleIndoor()" title="Take the roof off and edit one floor of the selected building: walls, doors, windows, voids, columns, stairs">{{ indoor() ? '✓ Indoors' : 'Indoors' }}</button>
       @if (indoor() && b(); as ib) {
         <span class="grp">
+          @if (ib.basement) { <button class="btn" [class.on]="basementFocus()" (click)="pickBasement()" title="Show the basement floor">−1</button> }
           @for (l of ib.levels; track $index) {
-            <button class="btn" [class.on]="$index === level()" (click)="pickLevel($index)" title="Edit this floor · click again to see the whole building">{{ levelName($index) }}</button>
+            <button class="btn" [class.on]="!basementFocus() && $index === level()" (click)="pickLevel($index)" title="Edit this floor · click again to see the whole building">{{ levelName($index) }}</button>
           }
           <button class="btn" (click)="addLevel()" title="Add a floor on top (a copy of the last one; the roof moves up)">＋</button>
           <button class="btn" [disabled]="ib.levels.length < 2" (click)="removeFloor()" title="Remove the selected floor">－</button>
@@ -217,8 +218,11 @@
         </g>
         <text [attr.x]="bd.pos.x" [attr.y]="bd.pos.z" text-anchor="middle" dominant-baseline="middle" [attr.font-size]="labelSize(bd)" fill="#1b231e" stroke="#fff" stroke-width="0.35" paint-order="stroke" pointer-events="none">{{ bd.name }}</text>
       }
-      @if (b(); as bd) {
+      @if (floorBuilding(); as bd) {
         <g [attr.transform]="tf(bd)">
+          @if (indoor() && basementFocus()) {
+            <polygon [attr.points]="outline(bd)" fill="#a9aaa0" fill-opacity="0.2" stroke="#ffd166" stroke-width="2" stroke-dasharray="6 3" vector-effect="non-scaling-stroke" pointer-events="none" />
+          }
           @if (!indoor()) {
             @for (pt of lvl()?.partitions ?? []; track $index) {
               <line [attr.x1]="pt[0].x - bd.length / 2" [attr.y1]="pt[0].z - bd.width / 2" [attr.x2]="pt[1].x - bd.length / 2" [attr.y2]="pt[1].z - bd.width / 2" stroke="#3a463f" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" pointer-events="none" />

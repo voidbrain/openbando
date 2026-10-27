@@ -1,12 +1,22 @@
 import * as THREE from 'three';
 import type { SiteSpec } from '../core/site-spec';
 import { levelOnly } from './element-preview';
+import { siteGround } from '../core/site-ground';
 import type { SitePick } from './site-pick';
 
 export type IndoorFloor = { id: string; li: number };
 
 /** Isolate the chosen floor without changing the editable site or removing its basement terrain cut. */
 export function indoorViewSpec(spec: SiteSpec, floor: IndoorFloor): SiteSpec {
+  if (floor.li === -1) {
+    const b = spec.buildings.find(building => building.id === floor.id && building.basement);
+    if (!b) return spec;
+    const ground = siteGround(spec);
+    const isolated = levelOnly(b, -1);
+    isolated.levels[0]!.baseY += ground.building.get(b.id) ?? 0;
+    const structures = (spec.structures ?? []).filter(st => (st.kind === 'stairs' || st.kind === 'ramp') && (st.y ?? 0) < 0).map(st => ({ ...st, y: (st.y ?? 0) + ground.at(st.x, st.z) }));
+    return { ...spec, buildings: [isolated], structures, trees: [], pads: [], underground: [], terrain: undefined };
+  }
   return { ...spec, buildings: spec.buildings.map((building) => {
     if (building.id !== floor.id || !building.levels[floor.li]) return building;
     const isolated = levelOnly(building, floor.li);

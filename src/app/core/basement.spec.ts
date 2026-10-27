@@ -76,3 +76,52 @@ describe('editable basement join', () => {
     expect(copy.buildings[0]!.levels[0]!.partitions).toHaveLength(0);
   });
 });
+
+describe('basement floor tools', () => {
+  it('keeps floor-tool data separate from G and through save/import', async () => {
+    const { editBasementFloor } = await import('./basement');
+    const b = building();
+    editBasementFloor(b, (floor) => {
+      const l = floor.levels[0]!;
+      l.doors.n = [{ kind: 'door', c: 1, w: 1, h: 2 }];
+      l.columns = [{ x: 3, z: 3, size: 0.5 }];
+      l.voids = [{ x0: 4, z0: 3, x1: 6, z1: 5 }];
+      l.partitions.push([{ x: 1, z: 1 }, { x: 4, z: 1 }]);
+    });
+    const s = emptySpec(); s.buildings = [b];
+    const copy = sanitizeSpec(JSON.parse(JSON.stringify(s)))!;
+    const floor = basementBuilding(copy.buildings[0]!).levels[0]!;
+    expect(floor.doors.n).toHaveLength(1);
+    expect(floor.columns).toHaveLength(1);
+    expect(floor.voids).toHaveLength(1);
+    expect(floor.partitions).toHaveLength(1);
+    expect(copy.buildings[0]!.levels[0]!.doors).toEqual({});
+    expect(copy.buildings[0]!.levels[0]!.columns).toBeUndefined();
+  });
+});
+
+it('undoes and redoes basement edits without changing ground-floor data', async () => {
+  const { SiteEditor } = await import('./site-editor');
+  const { editBasementFloor } = await import('./basement');
+  const spec = emptySpec(); spec.buildings = [building()];
+  const editor = new SiteEditor(); editor.load(spec);
+  editor.commitSite(s => editBasementFloor(s.buildings[0]!, floor => {
+    floor.levels[0]!.columns = [{ x: 2, z: 2, size: 0.5 }];
+  }));
+  expect(editor.draft().buildings[0]!.basement!.columns).toHaveLength(1);
+  editor.undo();
+  expect(editor.draft().buildings[0]!.basement!.columns).toBeUndefined();
+  editor.redo();
+  expect(editor.draft().buildings[0]!.basement!.columns).toHaveLength(1);
+  expect(editor.draft().buildings[0]!.levels[0]!.columns).toBeUndefined();
+});
+
+it('renders basement columns and cuts a door through the basement wall', () => {
+  const b = building();
+  b.basement = { height: 3, doors: { n: [{ kind: 'door', c: 5, w: 2, h: 2.5 }] }, columns: [{ x: 2, z: 2, size: 1 }] };
+  const s = emptySpec(); s.extent = 60; s.buildings = [b]; s.pads = [];
+  const model = buildSiteFromSpec(s);
+  expect(model.collider.hit(new Vec3(0, -2, -4))).toBe(false);
+  expect(model.collider.hit(new Vec3(3, -2, -4))).toBe(true);
+  expect(model.collider.hit(new Vec3(-3, -2, -2))).toBe(true);
+});

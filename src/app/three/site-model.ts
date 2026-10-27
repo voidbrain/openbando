@@ -773,9 +773,7 @@ function buildBasement(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, floorM
   const room = new THREE.Group();
   room.userData['pick'] = {kind:'basement',id:b.id};
   target.add(room);
-  for (const r of basement.footprint ? slabs(basement.footprint) : [{x0:-basement.length/2,x1:basement.length/2,z0:-basement.width/2,z1:basement.width/2}]) {
-    ctx.addBox(room,(r.x0+r.x1)/2,level.baseY-0.15,(r.z0+r.z1)/2,r.x1-r.x0,0.3,r.z1-r.z0,floorMat,true,false);
-  }
+  buildFloorAndColumns(ctx, basement, level, room, floorMat);
   buildWalls(ctx, basement, level, room);
   room.traverse(o=>{if(o.userData['pick'])o.userData['pick']={kind:'basement',id:b.id};});
 }
