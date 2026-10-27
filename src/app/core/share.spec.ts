@@ -6,7 +6,7 @@ const bando = () => {
   const s = emptySpec({ lat: 45.46694, lon: 9.19311 }, 'Old mill');
   s.zone = { lat: 45.46694, lon: 9.19311, halfE: 100, halfN: 80 };
   s.geoCorners = { p1: { lat: 45.466, lon: 9.192 }, p2: { lat: 45.467, lon: 9.194 } };
-  s.calibration = { rot: 3, dx: 1, dz: 2 };
+  s.calibration = { rot: 3, dx: 1, dz: 2, reference: {lat: 45.4642, lon: 9.19} };
   s.terrain = { cell: 1, half: { e: 20, n: 20 }, base: { source: 'aws-terrarium', key: 'terrarium:x', fetchedAt: 1, datum: 18.2 }, strokes: [{ op: 'hill', pts: [{ x: 0, z: 0 }], radius: 5, strength: 2 }] };
   return s;
 };
@@ -62,7 +62,8 @@ describe('sharing a bando', () => {
     expect(again.origin).toEqual({ lat: 0, lon: 0 });
     const e = shareCopy(s, 'exact', null);
     expect(e.origin.lat).toBe(45.46694);
-    expect(e.calibration).toEqual({ rot: 3, dx: 1, dz: 2 });
+    expect(e.calibration).toEqual(s.calibration);
+    expect(sanitizeSpec(JSON.parse(JSON.stringify(e)))!.calibration).toEqual(s.calibration);
     expect(s.zone).toBeDefined();
   });
 

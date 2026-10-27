@@ -22,3 +22,8 @@ export const setActiveGround = (fn: ((x: number, z: number) => number) | null): 
 const autoAlignSignal = signal(false);
 export const autoAlignFlights = computed(() => autoAlignSignal());
 export const setAutoAlign = (on: boolean): void => autoAlignSignal.set(on);
+
+/** The active site uses a hidden origin; its local GPS reference stays private. */
+const hiddenSignal = signal(false);
+export const hiddenSite = computed(() => hiddenSignal());
+export const setHiddenSite = (hidden: boolean): void => hiddenSignal.set(hidden);

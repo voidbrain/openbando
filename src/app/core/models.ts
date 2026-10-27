@@ -7,6 +7,8 @@ export interface Calibration {
   /** Shift of the geographic origin inside the model, metres. */
   dx: number;
   dz: number;
+  /** Private local GPS reference for a hidden site; removed when sharing it. */
+  reference?: GeoPoint;
 }
 
 export interface GeoPoint {
