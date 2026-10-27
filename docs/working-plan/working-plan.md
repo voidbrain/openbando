@@ -115,7 +115,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 #### Outstanding requests from the 27 October review
 
 - Villetta: verify restored annex walls and their openings against photos; verify the release 7 greenhouse east frame against IMG_4341 (support dimensions are estimates); verify the release 8 centre roof strip and separate blue-ladder cabin; cabin dimensions and placement are estimates.
-- Terrain: investigate the gallery road/terrain and warehouse perimeter/terrain flicker; investigate basement lighting. Verify fixes visually from multiple viewpoints.
+- Terrain: investigate the gallery road/terrain and warehouse perimeter/terrain flicker; the ground-floor slab now casts shadows over the basement except through its opening; verify the lighting and seams visually from multiple viewpoints.
 - Studio: 2D and 3D now share compass styling, closing Studio exits indoor mode, the editor can expand, and the inspector can dock right at full height. Verify these visually. 3D indoor editing is implemented for above-ground floors; browser verification remains open.
 - Measures: 2D and 3D share chains, Select-mode highlighting and expandable labels; 3D supports drawing points and selecting lines or labels. Verify interaction visually and review other 2D/3D feature differences.
 - 3D placement: two-point fences, bridges and tunnels show a ground-following construction line; visually verify. Hedge and bramble now support click and brush/lasso placement in the Trees tools; verify their appearance and editing in the browser.
@@ -177,3 +177,7 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 - In 2D indoor mode, the basement has edge handles and supports Cut and Wing to build rectilinear outlines independently of G. Non-centred outlines are re-centred for floor editing and rendering without moving the building above; rotated basement collision centers follow the rendered geometry. Undo and save/import are covered by tests.
 - Browser verification remains pending. The underlying building geometry supports rectilinear outlines, so freeform diagonal vertex editing and holes or disconnected outline pieces remain open.
+
+### Follow-up — basement shadow
+
+- The ground-floor slab above a basement casts shadows, with the stairwell opening left clear. An automated ray test verifies the shadow-casting surface and opening; browser lighting verification remains pending. Gallery-road and warehouse-perimeter flicker remain open.

@@ -406,7 +406,7 @@ function buildFloorAndColumns(ctx: Ctx, b: BuildingSpec, l: LevelSpec, inner: TH
   for (const v of voids) rects = rects.flatMap((r) => cutRect(r, v));
   for (const r of rects) {
     const cx = (r.x0 + r.x1) / 2, cz = (r.z0 + r.z1) / 2, w = r.x1 - r.x0, d = r.z1 - r.z0;
-    if (l.baseY === 0) ctx.addBox(inner, cx, 0.05, cz, w, 0.1, d, floorMat, !!b.basement, false);
+    if (l.baseY === 0) ctx.addBox(inner, cx, 0.05, cz, w, 0.1, d, floorMat, !!b.basement, !!b.basement);
     else if (!ctx.noSlabs) ctx.addBox(inner, cx, l.baseY, cz, w, 0.2, d, floorMat, false, false); // a deep ruin has lost its upper floors
   }
   if (l.baseY === 0) {

@@ -173,3 +173,16 @@ it('undoes and imports a shaped basement without changing the upper building', a
   ed.undo(); expect(ed.draft().buildings[0]!.basement!.outline).toBeUndefined();
   ed.redo(); expect(ed.draft().buildings[0]!.basement!.outline!.length).toBeGreaterThan(4);
 });
+
+it('casts a shadow from the ground-floor slab but leaves the opening uncovered', () => {
+  const b = building(); b.levels[0]!.voids = [{ x0: 4, z0: 3, x1: 6, z1: 5 }];
+  const s = emptySpec(); s.extent = 60; s.buildings = [b]; s.pads = [];
+  const model = buildSiteFromSpec(s, { merge: true });
+  model.group.updateMatrixWorld(true);
+  const shadowAt = (x: number, z: number): boolean => {
+    const ray = new THREE.Raycaster(new THREE.Vector3(x, 1, z), new THREE.Vector3(0, -1, 0));
+    return ray.intersectObject(model.group, true).some(h => h.object instanceof THREE.Mesh && h.object.visible && h.object.castShadow && Math.abs(h.point.y - 0.1) < 0.01);
+  };
+  expect(shadowAt(3, 0)).toBe(true);
+  expect(shadowAt(0, 0)).toBe(false);
+});
