@@ -109,7 +109,7 @@ npm run check:i18n                        # every UI text has its Italian
 - `npm run e2e` (Playwright, also a CI job): every guide step plays alone in a headless browser without errors, and the first visit, the editor with the library and a running guide step pass axe (WCAG 2.1 A / AA). Locate panels by `app-panel[data-id=…]` or by role: component hosts have no box of their own. Software WebGL is slow there: keep the long timeouts.
 - A test that fails because the code changed is stale: fix the test deliberately and say why. Tests that encoded the old
   demo site now set their site up explicitly (origin, take-off pad).
-- UI code (templates, pointer handling) is not covered by tests; keep logic in `core/` so it is.
+- Keep logic in `core/` where possible. Playwright covers selected UI and pointer workflows, but coverage is not exhaustive.
 - Do not leave dead code behind when replacing a feature: a panel removed means its store, helpers and tests go too.
 
 ### Testing the joins
@@ -183,7 +183,7 @@ npm run check:i18n                        # every UI text has its Italian
 
 ## Terrain
 - `core/terrain.ts`: the height grid (`TerrainSpec`: cell, half, base, strokes). The base heights are NOT in the spec (it is JSON-cloned on every edit): `setTerrainBase(key, heights)` registers them; `ElevationService` downloads (AWS terrarium tiles), caches them in IndexedDB and re-registers them when a saved bando opens.
-- `core/site-ground.ts` `siteGround(spec)` is the one place the ground is built, in order: base + strokes (edges feathered to 0 only when there is no real ground; real ground keeps its heights, and `heightAt` continues the nearest edge outside the grid, drawn by `skirtMesh`) → water basins dug → roads levelled across → building / take-off pads levelled → underground cut mask. It is memoised on its inputs; everything (3D model, collider, editor contours, height readout, flight paths through `activeGround`) reads it. A spec without `terrain` is flat at y = 0 and must build exactly as before.
+- `core/site-ground.ts` `siteGround(spec)` is the one place the ground is built, in order: base + strokes (edges feathered to 0 only when there is no real ground; real ground keeps its heights, and `heightAt` continues the nearest edge outside the grid, drawn by `skirtMesh`) → water basins dug → roads levelled across → building / take-off pads levelled → underground cut mask. It is memoised on its inputs; everything (3D model, collider, editor contours, height readout, flight paths through `activeGround`) reads it. A spec without `terrain` is flat at y = 0 unless underground volumes or basements require an automatically generated flat terrain for cuts.
 - OSM ways can come back with null points where they cross the query box: `areaData` drops them first.
 - `core/layers.ts`: roads (`RoadSpec`, centre lines), surfaces, water; `sanitizeLayers` checks them and migrates old road pads. All roads are levelled together in ONE pass (`levelRoads`; `levelRoad` is the single-road wrapper): every cell takes the height of the nearest point of the nearest road, sampled from the untouched grid — levelling one road after the other used to carve a zig-zag trough where two crossed. `core/underground.ts`: `cutMask` flags vertices within the footprint (including a half-cell border) where `floor < ground <= ceiling`, then fills each connected band's grid bounding box clipped to that footprint. Ceiling equality is essential for basement pads; ground above the ceiling stays intact. Portal alignment still needs visual review on slopes. `floorUnder` gives the floor inside one; the collider's `groundAt(x, z, y)` uses it, so physics passes the drone's y.
 - A new element that stands on the ground lifts its mesh AND its collider boxes by `ground.at(...)` (see `liftSolids`, `liftCylinder`).
@@ -204,12 +204,12 @@ npm run check:i18n                        # every UI text has its Italian
 - Pins: pinning the start slides the path; pinning the end turns it about its start when the start is fixed (`SceneService.startFixed`: pinned, or a bando without its place, whose flights start on the take-off pad), else slides it. `rotateCalibrationAbout` / `turnTowards` (`core/geo.ts`) do the turn; the result is the pilot's calibration, saved in the bando.
 - With `privacy` set and no pilot calibration yet, the next loaded flight is shifted so its first fix lands on the take-off pad (`autoAlignFlights`, once).
 - The inspector's Modules section lists the library's pattern blocks (`kind: 'pattern'`); there are no hard-coded presets any more. The catalogue syncs in the background at start-up.
-- Basements: `BuildingSpec.basement = { height }` → `basementVolume` (core/underground.ts) under the levelled pad, added to `SiteGround.vols` (terrain cut + collider floor); walls and floor in `buildBasement`. Reached through a void in the ground floor; not editable indoors.
+- Basements use separate `BuildingSpec.basement` data and `basementVolume` (core/underground.ts), added to `SiteGround.vols` for terrain cuts and floor collision. The −1 floor is editable in 2D and 3D indoor mode; its outline vertices are editable in 2D. See `docs/BACKLOG.md` for current limitations and known defects.
 - Ground styles: `SiteModel.setGroundStyle('natural' | 'height' | 'wire')` recolours the terrain mesh from `heightColor` / toggles wireframe; the editor's "ground" picker also draws the height map under the 2D plan. The 3D editor view reports `hover` ground points in draw mode (height readout, `SiteViewRenderer.setCursor` brush ring).
 - `SiteEditor.canUndo / canRedo` read the draft signal on purpose: the history lists are plain arrays. Each history step keeps the selected building too: undo / redo bring the selection back, never one that no longer exists.
 - Storage: `LibraryStore.health` counts writes the browser refused (IndexedDB errors and aborts, localStorage quota) and says why (`storageProblem`); the app tells the pilot once per kind, and the Bandos panel shows the way out (Back up all). Never swallow a failed write silently.
 - `tools/ai-proxy.php` refuses to run with the placeholder or a short token (`OPENBANDO_AI_TOKEN` / `OPENBANDO_AI_KEY` can come from the environment).
-- Deploy runs the fast CI checks first (`workflow_call` with `e2e: false`: unit, types, translations, examples, build). The browser tests are intended for pull requests, but the current `inputs.e2e != false` guard skips them there too (observed on PR #69); explicitly handle `github.event_name == 'pull_request'` before relying on automatic browser coverage. They do not block a deploy: with software WebGL on CI a guide step takes minutes and times out now and then.
+- Deploy runs fast CI checks first (`workflow_call` with `e2e: false`: unit, types, translations, examples, build). Pull requests run the complete Playwright suite in four shards and the focused racing/editor job. Browser tests do not block the deploy workflow directly; the 3D guide timeout remains unresolved (see `docs/BACKLOG.md`).
 
 ## Ruins, example bandos
 - `BuildingSpec.ruin` (0..1, absent = intact) is a property, not a kind (`core/ruin.ts`). The roof goes first: `roofRuns` / `roofCells` leave holes in gable, vault and flat roofs (each kept part has its own collider, so the holes can be flown through), gone from `ROOFLESS` (0.6); upper slabs go from `NO_SLABS` (0.75). Once the building is open to the sky (past `ROOFLESS`, or `roofless`), each wall loses its upper part along one smooth broken line over the whole building height (`wallTop`, seeded per wall; `wallPieces` cuts each stretch to it) and never has holes lower down. `BuildingSpec.ruinWalls` gives single walls of a rectangle their own level (local sides n/s/e/w; inspector "ruin by wall", AI `set_ruin` with `side`). `BuildingSpec.roofless` makes an open shell at any level; `crenels` adds battlements, none where a wall's top has fallen. Inspector: "ruined %", "open shell", "battlements"; AI: `set_ruin` (ruin percent, roofless, crenels).
@@ -295,7 +295,7 @@ npm run check:i18n                        # every UI text has its Italian
 
 ## Maintenance status
 
-- Keep numbered bug status and pending visual checks in [the working plan](docs/working-plan/working-plan.md). Bug 4 is partial; bugs 5 and 6 have automated coverage but await visual confirmation. Do not equate a passing unit test with a verified visual fix.
+- Keep current bug status and pending visual checks in [the backlog](docs/BACKLOG.md). Do not equate a passing unit test with a verified visual fix.
 
 ## Road overlap rules
 
@@ -304,7 +304,7 @@ npm run check:i18n                        # every UI text has its Italian
 
 ## Villetta measured example
 
-- `library/bandos/villetta-no-place.json` remains the place-hidden source (no private coordinate inputs). Its release 8 applies the October survey, facade and central roof-strip corrections; interpretations and remaining assumptions live in the working plan. Keep its exported counterpart in `public/library/` generated with `tools/build-catalog.mjs`.
+- `library/bandos/villetta-no-place.json` remains the place-hidden source (no private coordinate inputs). Its release 8 applies the October survey, facade and central roof-strip corrections; interpretations live in the archived working plan and remaining checks in the backlog. Keep its exported counterpart in `public/library/` generated with `tools/build-catalog.mjs`.
 - Greenhouse `BuildingSpec.ribSpacing` optionally sets a measured pitch; absent = the old evenly spaced ~2.5 m ribs. `vaultK` sets the ellipse crown (`width / 2 * vaultK + baseY`), not `height`. Bare frames are intact; only glazed frames get a torn stretch.
 - Store vault crown is wall height + `((width - roofCenterStrip) / roofCount / 2) * vaultK` when `roofTurn` is true; `roofRise` alone does not set a barrel crown. Annex slabs are centred on `baseY` with thickness 0.20 m; a measured underside of 6.20 m means baseY 6.30 m.
 - `abando/cage-ladder` v2 is the reusable open cage, not a solid cylinder. Refresh Villetta's fixture from this block, never maintain an independent ladder shape list. Regenerate Playground and bump its release when this shared placement changes.
@@ -313,7 +313,7 @@ npm run check:i18n                        # every UI text has its Italian
 
 - `docs/mascot/README.md` is the character bible. Do not replace the approved coarse pixel direction with smooth chibi art. Radio: ergonomic, mostly black, orange details, no antenna, controls face the pilot. Goggles: continuous 360° head strap. Cap emblem black; shirt emblem white. Drone: exposed-prop freestyle quad.
 - `public/mascot/timeline.json` drives `core/mascot.ts` and `tools/mascot/build.py` (Pillow). Keep generated poses/GIF in step. Preserve reviewed source rectangles: the imagegen master is not an exact grid.
-- `ui/mascot.ts` uses the shared frame loop only while Welcome is shown, with Play/Pause, reduced-motion and a still fallback. Decorative art never appears over the flight/editor work surfaces. Keep its design-system exception scoped to Welcome.
+- `ui/mascot.ts` uses the shared frame loop only while Welcome is shown, with reduced-motion and a still fallback; Welcome has no animation pause control. Decorative art never appears over the flight/editor work surfaces. Keep its design-system exception scoped to Welcome.
 
 ## Multipath racing
 
@@ -321,12 +321,17 @@ npm run check:i18n                        # every UI text has its Italian
 - `RaceService` has its own clock/metadata and derives local tracks from FlightService. Do not advance PlaybackService/video clocks from racing. Shared tracks retain their exported coordinates: never re-project them through local GPS calibration. A site geometry/scale change clears external tracks and disconnects links.
 - `RaceLinksService` owns independent WS/SSE sources and optional authenticated room snapshots. Incoming/outgoing limits, stale hiding, disconnect cleanup and opt-in broadcasting are part of the feature. The single LiveLinkService remains unchanged. Tokens live in memory and Authorization headers, never query strings/localStorage.
 - `RaceRenderer` draws identity-colour non-colliding ghosts in every scene view; normal path heat colours remain outside racing. Throttle trail rebuilds, not live ghost freshness. Closed-loop timings are GPS estimates, not official timing or anti-cheat.
-- `docs/racing/README.md` documents the server-free and optional relay workflows and field limitations. Relay runs separately via `npm run race:relay`; no server is provisioned by the app. `npm run test:race-relay` and `npx tsc -p tools/racing/tsconfig.json` are required alongside normal checks. The focused race-browser PR job intentionally avoids the old full-guide e2e input guard.
+- `docs/racing/README.md` documents the server-free and optional relay workflows and field limitations. Relay runs separately via `npm run race:relay`; no server is provisioned by the app. `npm run test:race-relay` and `npx tsc -p tools/racing/tsconfig.json` are required alongside normal checks. The focused race-browser PR job runs alongside the full-guide browser shards.
+
+## Work tracking
+
+- `docs/BACKLOG.md` is the active status ledger; update an item and its evidence when behavior or verification changes. Historical working plans are archived in `docs/working-plan/` and are not current status. The scoped audit is in `docs/audits/2026-10-27.md`.
+- Preserve the distinction between a confirmed bug, a candidate fix awaiting review, an unimplemented feature and a completed check. Do not mark a visual or device-dependent item done on unit tests alone.
 
 ## Terrain and editor regression rules
 
 - `three/underground-cut.ts` clips terrain and road triangles against actual 3D volume interiors, interpolating UVs/colours. Do not replace this with dropping all cells touching `ground.cut`; that mask is only a coarse overlay. `core/underground.ts:tunnelSection` is shared by linings, cuts and shell colliders. Portal ends stay open for pipes/vaults.
-- Basement parameters live separately from `BuildingSpec.levels` to keep G/L1 indices compatible. `core/basement.ts` derives the −1 preview/building. Keep `siteGround`, rendering, sanitizer, preview and inspector in step. Dimension controls make a centred rectangle; arbitrary polygon vertex editing remains pending.
+- Basement parameters live separately from `BuildingSpec.levels` to keep G/L1 indices compatible. `core/basement.ts` derives the −1 preview/building. Keep `siteGround`, rendering, sanitizer, preview and inspector in step. Dimension controls make a centred rectangle; the 2D indoor plan can move, insert and remove vertices of a simple diagonal outline. Cut/Wing remain rectilinear-only; holes, disconnected islands and 3D vertex handles are not supported. Preserve simulator, rendering, opening and saved-file consistency.
 - `three/site-pick.ts` resolves the nearest visible mesh for both stage and editor, including instanced trees. Do not select buried elements through terrain. Stage selection requests use `StudioService.focus` and are consumed after the editor map is ready.
 - Choosing a roof explicitly restores it by clearing open shell and lowering global ruin to at most 55%; explain this effect in the inspector. A high-ruin roof shape is otherwise intentionally invisible.
 - Speed-trail colours never change racing drone identity colours or name-label colours. Labels are drawn as plain canvas text.
