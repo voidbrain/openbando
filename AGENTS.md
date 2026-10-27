@@ -346,3 +346,5 @@ npm run check:i18n                        # every UI text has its Italian
 - X-ray uses only the actively followed replay or armed simulator; free orbit, manual pan and an idle parked simulator do not trace to a parked drone; a surface immediately in front of the camera can still fade. See `core/xray-policy.ts`.
 
 - `ui/widgets/camera-compass.ts` is the fixed north widget in the main stage and editor 3D view; it follows each camera and calibration. Keep the old ground north marker removed.
+
+- A hidden site's flight calibration may contain a private GPS `reference` established from the first accepted flight or live fix. Replay, pin/rotation, inverse projection and live GPS use the same fixed local frame. Keep the reference through local save/import and remove the entire calibration when sharing hidden sites. Never include the reference in race packages. Existing calibrations without a reference migrate by preserving the first fix.

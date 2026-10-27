@@ -1,7 +1,7 @@
 import { DestroyRef, Injectable, effect, inject, signal, untracked } from '@angular/core';
 import { normalizeLive, hasFix } from '../core/live/live-normalizer';
 import { toLocal } from '../core/geo';
-import { activeGround } from '../core/takeoff';
+import { activeGround, hiddenSite } from '../core/takeoff';
 import { MAX_PILOTS, parseRacePack } from '../core/racing/race';
 import { CalibrationStore } from '../state/calibration.store';
 import { RaceService } from './race.service';
@@ -96,8 +96,12 @@ export class RaceLinksService {
           continue;
         const now = performance.now() / 1000;
         if (now - last < 0.2) continue;
-        const [x, z] = toLocal(m.lat, m.lon, this.cal.calibration());
+        let [x, z] = toLocal(m.lat, m.lon, this.cal.calibration());
         if (Math.abs(x) > 20000 || Math.abs(z) > 20000) continue;
+        if (hiddenSite() && !this.cal.calibration().reference) {
+          this.cal.setReference({ lat: m.lat, lon: m.lon });
+          [x, z] = toLocal(m.lat, m.lon, this.cal.calibration());
+        }
         if (start === null) {
           start = now;
           base = (activeGround()?.(x, z) ?? 0) - (m.alt ?? 0) + 0.3;

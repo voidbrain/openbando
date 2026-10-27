@@ -1,7 +1,7 @@
 import { Injectable, effect, inject, signal, untracked } from '@angular/core';
 import { findFlips, findLiftoff } from '../core/flight/analysis';
 import { createFlight, flightStats, maxSpeed, prepareFlight } from '../core/flight/flight';
-import { activeGround, autoAlignFlights, setAutoAlign, takeoffSpot } from '../core/takeoff';
+import { activeGround, autoAlignFlights, hiddenSite, setAutoAlign, takeoffSpot } from '../core/takeoff';
 import { alignShift } from '../core/share';
 import { parseLogFile } from './log-parse';
 import { Vec3 } from '../core/math3d';
@@ -75,6 +75,11 @@ export class FlightService {
       this.calibration.shift(s.dx, s.dz);
       prepareFlight(f, this.calibration.calibration(), activeGround() ?? undefined);
       this.toast.show('This bando has no real place: the flight starts on its take-off pad. Pin start / end and the compass fine-tune it.', 4500);
+    }
+    // Preserve the legacy start position while anchoring all subsequent points to one private local reference.
+    if (hiddenSite() && !this.calibration.calibration().reference && pts[0]) {
+      this.calibration.setReference({ lat: pts[0].lat, lon: pts[0].lon });
+      prepareFlight(f, this.calibration.calibration(), activeGround() ?? undefined);
     }
     this.byId.set(f.id, f);
     this.store.add({ id: f.id, name: f.name, live: f.live, stats: this.describe(f) });

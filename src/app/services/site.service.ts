@@ -9,7 +9,7 @@ import { bounds, edgesOf, recentre, rectilinear, type Pt } from '../core/footpri
 import type { BuildingSpec, LocationInfo, SiteSpec, StructureSpec, TreeSpec, Vec2, WallOpening, ZoneSpec } from '../core/site-spec';
 import { keepInsideAreas } from '../core/areas';
 import { emptySpec, uid } from '../core/site-spec';
-import { setActiveGround, setAutoAlign, setTakeoff } from '../core/takeoff';
+import { setActiveGround, setAutoAlign, setHiddenSite, setTakeoff } from '../core/takeoff';
 import { decodeHeights, shareCopy, type Privacy } from '../core/share';
 import { emptyGrid, getTerrainBase } from '../core/terrain';
 import { cacheBase } from './elevation.service';
@@ -98,7 +98,7 @@ export class SiteService {
     const a = this.active();
     if (!a.id) return;
     const wanted = a.calibration ?? calibrationForSpec(a);
-    if (Math.abs(wanted.rot - c.rot) < 1e-9 && Math.abs(wanted.dx - c.dx) < 1e-9 && Math.abs(wanted.dz - c.dz) < 1e-9) return;
+    if (Math.abs(wanted.rot - c.rot) < 1e-9 && Math.abs(wanted.dx - c.dx) < 1e-9 && Math.abs(wanted.dz - c.dz) < 1e-9 && wanted.reference?.lat === c.reference?.lat && wanted.reference?.lon === c.reference?.lon) return;
     a.calibration = { ...c };
     this.editor.live((s) => {
       s.calibration = { ...c };
@@ -498,6 +498,7 @@ export class SiteService {
     if (!sameSpec(this.editor.draft(), spec)) this.editor.load(spec);
     if (remember) writeStoredId(spec.id);
     setSiteOrigin(spec.origin);
+    setHiddenSite(spec.privacy === 'hidden');
     const ground = siteGround(spec);
     setTakeoff({ ...spec.droneStart, y: ground.start });
     setAutoAlign(!!spec.privacy && !spec.calibration);

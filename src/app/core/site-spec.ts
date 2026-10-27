@@ -268,7 +268,7 @@ export interface ZoneSpec {
 
 export interface SiteSpec {
   /** How the pilot aligned the logged paths with this site (pins, compass): kept with the bando so Save / edits do not undo it. */
-  calibration?: { rot: number; dx: number; dz: number };
+  calibration?: { rot: number; dx: number; dz: number; reference?: { lat: number; lon: number } };
   /** Free-standing walls / fences. */
   walls?: WallSpec[];
   /** Towers and bridges. */
@@ -450,7 +450,7 @@ export function sanitizeSpec(raw: unknown): SiteSpec | null {
     origin: { lat: s.origin.lat, lon: typeof s.origin.lon === 'number' ? s.origin.lon : 0 },
     calibration:
       s.calibration && [s.calibration.rot, s.calibration.dx, s.calibration.dz].every((v) => typeof v === 'number' && isFinite(v))
-        ? { rot: s.calibration.rot, dx: s.calibration.dx, dz: s.calibration.dz }
+        ? { rot: s.calibration.rot, dx: s.calibration.dx, dz: s.calibration.dz, ...(s.calibration.reference && Number.isFinite(s.calibration.reference.lat) && Number.isFinite(s.calibration.reference.lon) && Math.abs(s.calibration.reference.lat) <= 90 && Math.abs(s.calibration.reference.lon) <= 180 ? { reference: { lat: s.calibration.reference.lat, lon: s.calibration.reference.lon } } : {}) }
         : undefined,
     zone:
       s.zone && [s.zone.lat, s.zone.lon, s.zone.halfE, s.zone.halfN].every((v) => typeof v === 'number' && isFinite(v))

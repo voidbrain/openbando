@@ -7,8 +7,8 @@ export const metresPerDegLon = (lat: number): number => 111320 * Math.cos((lat *
 
 /** Latitude/longitude -> local model metres [x, z], around the given geographic origin. */
 export function toLocalAt(origin: GeoPoint, lat: number, lon: number, cal: Calibration): [number, number] {
-  // east metres at the point's own latitude: the same as the origin's anywhere near it, and still true for a bando
-  // without its place (origin 0, 0), whose flights are far from the origin until they are moved onto the take-off pad
+  // Legacy projection around the supplied origin. Hidden flights use a nearby fixed reference through toLocal.
+  // Keep this explicit-origin formula for existing map and calibration compatibility.
   const e = (lon - origin.lon) * metresPerDegLon(lat);
   const n = (lat - origin.lat) * METRES_PER_DEG_LAT;
   const a = cal.rot * RAD;
@@ -77,14 +77,23 @@ export function courseDegrees(vx: number, vz: number, cal: Calibration): number 
 
 // ---- origin-aware shorthands: they read the *active* site origin (core/constants -> siteOrigin) ----
 
-/** {@link toLocalAt} with the active site origin. */
-export function toLocal(lat: number, lon: number, cal: Calibration): [number, number] {
-  return toLocalAt(siteOrigin(), lat, lon, cal);
+/** A hidden flight's fixed local reference is stored privately with its calibration. */
+function localFrame(cal: Calibration): { origin: GeoPoint; local: Calibration } | null {
+  if (!cal.reference) return null;
+  const [dx, dz] = toLocalAt(siteOrigin(), cal.reference.lat, cal.reference.lon, cal);
+  return { origin: cal.reference, local: { rot: cal.rot, dx, dz } };
 }
 
-/** {@link toGeoAt} with the active site origin. */
+/** {@link toLocalAt} with the active site origin and optional local reference. */
+export function toLocal(lat: number, lon: number, cal: Calibration): [number, number] {
+  const frame = localFrame(cal);
+  return frame ? toLocalAt(frame.origin, lat, lon, frame.local) : toLocalAt(siteOrigin(), lat, lon, cal);
+}
+
+/** Inverse of the active site's projection. */
 export function toGeo(x: number, z: number, cal: Calibration): [number, number] {
-  return toGeoAt(siteOrigin(), x, z, cal);
+  const frame = localFrame(cal);
+  return frame ? toGeoAt(frame.origin, x, z, frame.local) : toGeoAt(siteOrigin(), x, z, cal);
 }
 
 /**
@@ -94,7 +103,7 @@ export function toGeo(x: number, z: number, cal: Calibration): [number, number] 
 export function rotateCalibrationAbout(cal: Calibration, pivot: { x: number; z: number }, deg: number): Calibration {
   const a = deg * RAD, c = Math.cos(a), s = Math.sin(a);
   const ox = cal.dx - pivot.x, oz = cal.dz - pivot.z;
-  return { rot: cal.rot + deg, dx: pivot.x + ox * c - oz * s, dz: pivot.z + ox * s + oz * c };
+  return { ...cal, rot: cal.rot + deg, dx: pivot.x + ox * c - oz * s, dz: pivot.z + ox * s + oz * c };
 }
 
 /** The turn (degrees) that aims the line from `pivot` through `from` at `to`, about the vertical. */

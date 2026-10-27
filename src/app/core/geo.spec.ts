@@ -110,3 +110,28 @@ describe('a flight far from the origin (a bando without its place)', () => {
     expect(back[1]).toBeCloseTo(9.191, 9);
   });
 });
+
+describe('hidden flight projection', () => {
+  beforeEach(() => setSiteOrigin({lat: 0, lon: 0}));
+  afterEach(() => setSiteOrigin({lat: 0, lon: 0}));
+  it('keeps north straight, preserves pin shifts and rotation, and round-trips saved calibration', () => {
+    const start = {lat: 45, lon: 9}; // neutral coordinates
+    const pad = {x: 40, z: -50};
+    const initial = toLocalAt({lat: 0, lon: 0}, start.lat, start.lon, DEFAULT_CALIBRATION);
+    const cal = {rot: 0, dx: pad.x - initial[0], dz: pad.z - initial[1], reference: start};
+    const north = toLocal(start.lat + 0.001, start.lon, cal);
+    expect(north[0]).toBeCloseTo(pad.x, 4);
+    expect(north[1]).toBeCloseTo(pad.z - 111.132, 3);
+    const moved = {...cal, dz: cal.dz + 10};
+    expect(toLocal(start.lat, start.lon, moved)[0]).toBeCloseTo(pad.x, 4);
+    expect(toLocal(start.lat, start.lon, moved)[1]).toBeCloseTo(pad.z + 10, 4);
+    const restored = JSON.parse(JSON.stringify(moved)) as typeof moved;
+    expect(toLocal(start.lat, start.lon, restored)).toEqual(toLocal(start.lat, start.lon, moved));
+    const turned = rotateCalibrationAbout(cal, pad, 90);
+    expect(turned.reference).toEqual(start);
+    expect(toLocal(start.lat + 0.001, start.lon, turned)[0]).toBeCloseTo(pad.x + 111.132, 3);
+    const back = toGeo(north[0], north[1], cal);
+    expect(back[0]).toBeCloseTo(start.lat + 0.001, 8);
+    expect(back[1]).toBeCloseTo(start.lon, 8);
+  });
+});
