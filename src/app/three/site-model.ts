@@ -724,7 +724,7 @@ function roadMesh(ground: SiteGround, r: RoadSpec, order: number): THREE.Mesh {
 const UNDER_MAT = new THREE.MeshStandardMaterial({ color: '#6b6d66', roughness: 0.95, side: THREE.DoubleSide });
 
 /** One underground volume as meshes: a slab of its outline at the floor, then walls and a flat ceiling, a pipe or a vault. */
-function buildUnderground(v: UndergroundSpec): THREE.Group {
+export function buildUnderground(v: UndergroundSpec): THREE.Group {
   const out = new THREE.Group();
   const slab = (y: number, holes: readonly { x: number; z: number }[][] = []): void => {
     const shape = new THREE.Shape(v.outline.map((q) => new THREE.Vector2(q.x, -q.z)));

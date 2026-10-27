@@ -4,7 +4,7 @@ import { sanitizeSpec } from '../core/site-spec';
 import { expandShapes, shapeSolids } from '../core/shapes';
 import * as THREE from 'three';
 import { emptySpec, type BuildingSpec, type SiteSpec } from '../core/site-spec';
-import { buildSiteFromSpec } from './site-model';
+import { buildSiteFromSpec, buildUnderground } from './site-model';
 import { Vec3 } from '../core/math3d';
 
 /** A small but complete site: ground 528 m wide (extent 240), two buildings, a few pads, a tower and a bridge. */
@@ -228,10 +228,8 @@ describe('site model ground layers', () => {
 
 describe('site model underground', () => {
   it('draws only the slab at the vault floor while retaining the arch above', () => {
-    const s = emptySpec(); s.buildings = []; s.pads = [];
-    s.underground = [{ id: 'vault', name: 'Vault', outline: [{x:-10,z:-4},{x:10,z:-4},{x:10,z:4},{x:-10,z:4}], floor: 0, ceiling: 4.5, shape: 'vault', wall: 0.6 }];
-    const model = buildSiteFromSpec(s);
-    const group = model.group.children.find(o => (o.userData['pick'] as {id?: string} | undefined)?.id === 'vault')!;
+    // Exercise the actual vault geometry without constructing an entire site and its meadow.
+    const group = buildUnderground({ id: 'vault', name: 'Vault', outline: [{x:-10,z:-4},{x:10,z:-4},{x:10,z:4},{x:-10,z:4}], floor: 0, ceiling: 4.5, shape: 'vault', wall: 0.6 });
     group.updateMatrixWorld(true);
     const down = new THREE.Raycaster(new THREE.Vector3(2, 1, 0.5), new THREE.Vector3(0, -1, 0));
     const floor = down.intersectObject(group, true).filter(hit => Math.abs(hit.point.y) < 0.001);
