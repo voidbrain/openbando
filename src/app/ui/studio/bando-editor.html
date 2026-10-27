@@ -416,7 +416,7 @@
     />
   }
   @if (!(overlayOn() && view3d())) {
-    <app-camera-compass class="compass" [camera]="northUpCamera" />
+    <app-camera-compass class="compass" [camera]="northUpCamera" [interactive]="false" />
   }
   @if (mode() === 'model' && overlayOn()) {
     <div #pal class="palette" role="toolbar" aria-label="Tools" aria-orientation="vertical" [style.left.px]="dock.palXY().x" [style.top.px]="dock.palXY().y" [style.z-index]="dock.palZ()" (pointerdown)="$event.stopPropagation(); dock.raise('pal')">

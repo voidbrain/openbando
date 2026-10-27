@@ -41,7 +41,7 @@ OpenBando is a dark, dense instrument for FPV pilots: a 3D map and site editor, 
 ### Spacing and layout
 
 - A 2–12px scale: `space-2` inside palettes, `space-4` toolbars, `space-6` the default row gap, `space-8` panel padding, `space-10` / `space-12` for overlays. Exact values from the code, not a 4px grid (button padding is 4 × 9px, inputs 3 × 6px).
-- Panels float over the full-screen stage and remember their place and size. Inside the editor, map controls are pinned 8px from the edges: palette top-left, options bar to its right, compass top-right, readout bottom-centre.
+- Panels float over the full-screen stage and remember their place and size. Inside the editor, map controls are pinned 8px from the edges: palette top-left, options bar to its right, compass bottom-left, readout bottom-centre.
 - Inspector fields go two to a row (`.sec`); sections are divided by a `line` rule, not by cards.
 
 ### Borders, radii, shadows
@@ -87,4 +87,4 @@ is `.row` scoped to `ElementsBox`; the guideline calls it `.el-row` to keep it a
 - New user-facing text: its Italian goes in `src/app/i18n/it.ts`; a control the guided tour uses keeps its `data-tour` mark.
 - Text on a fill keeps 4.5:1 contrast (3:1 for icons, borders and focus rings), as `AGENTS.md` requires.
 
-The main 3D view and the editor 3D view each show the same fixed north compass overlay (`app-camera-compass`) using existing surface and text tokens; it rotates with the camera.
+The main 3D view and the editor 3D view each show the same fixed north compass overlay (`app-camera-compass`) using existing surface and text tokens; it rotates with the camera. North is red; click resets the camera north, drag rotates it, and arrow keys turn it in five-degree steps.

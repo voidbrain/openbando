@@ -304,7 +304,7 @@ npm run check:i18n                        # every UI text has its Italian
 
 ## Villetta measured example
 
-- `library/bandos/villetta-no-place.json` remains the place-hidden source (no private coordinate inputs). Its release 8 applies the October survey, facade and central roof-strip corrections; interpretations live in the archived working plan and remaining checks in the backlog. Keep its exported counterpart in `public/library/` generated with `tools/build-catalog.mjs`.
+- `library/bandos/villetta-no-place.json` remains the place-hidden source (no private coordinate inputs). Its release 10 applies the October survey, facade, central roof-strip and revised clear column spacing; interpretations live in the archived working plan and remaining checks in the backlog. Keep its exported counterpart in `public/library/` generated with `tools/build-catalog.mjs`.
 - Greenhouse `BuildingSpec.ribSpacing` optionally sets a measured pitch; absent = the old evenly spaced ~2.5 m ribs. `vaultK` sets the ellipse crown (`width / 2 * vaultK + baseY`), not `height`. Bare frames are intact; only glazed frames get a torn stretch.
 - Store vault crown is wall height + `((width - roofCenterStrip) / roofCount / 2) * vaultK` when `roofTurn` is true; `roofRise` alone does not set a barrel crown. Annex slabs are centred on `baseY` with thickness 0.20 m; a measured underside of 6.20 m means baseY 6.30 m.
 - `abando/cage-ladder` v2 is the reusable open cage, not a solid cylinder. Refresh Villetta's fixture from this block, never maintain an independent ladder shape list. Regenerate Playground and bump its release when this shared placement changes.
@@ -341,7 +341,7 @@ npm run check:i18n                        # every UI text has its Italian
 - Road vertices sample the rendered terrain triangles and use polygon offset; cut coplanar basement-ceiling triangles without treating them as outside fragments. Confirm terrain seams visually before closing the bugs.
 - The mascot pokes the grounded drone twice (pose 17), retracting his hand between pokes (pose 18), then sits for takeoff. Keep canvas and GIF placement in step.
 
-- Villetta store north is the rotated building’s local east (`doors.e`); keep its two covered windows and one exposed eastern door. Release 6 restores the annex south interior partition, the three eastern door-separated wall sections, and the first-floor end wall; verify their placement against the survey photographs. The remaining door-bearing freestanding walls extend to the 6.20 m slab underside.
+- Villetta store north is the rotated building’s local east (`doors.e`); keep its two covered windows and one exposed eastern door. Release 10 removes the duplicate annex south partition, retains the first south opening with the wall closed to its east end, and raises the three door-separated east wall sections to the 6.20 m slab underside. The central column rows leave a 1 m clear gap between their faces. Verify these placements against the survey photographs.
 
 - X-ray uses only the actively followed replay or armed simulator; free orbit, manual pan and an idle parked simulator do not trace to a parked drone; a surface immediately in front of the camera can still fade. See `core/xray-policy.ts`.
 

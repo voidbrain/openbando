@@ -23,7 +23,7 @@ import { ViewStore } from '../../state/view.store';
   imports: [CameraCompass],
   template: `
     <div #gl class="gl" [hidden]="view.mainSource() !== '3d'" [style.cursor]="scene.pin() ? 'crosshair' : null"></div>
-    @if (view.mainSource() === '3d') { <app-camera-compass [camera]="mainCamera" [view]="view.cameraView()" /> }
+    @if (view.mainSource() === '3d') { <app-camera-compass [camera]="mainCamera" [view]="view.cameraView()" (orient)="orientCompass($event)" /> }
     <div #videoSlot class="vmain" [hidden]="view.mainSource() !== 'video'">
       @if (!video.loaded()) {
         <div class="dim">Main page: video — open the Video panel and load a file</div>
@@ -70,6 +70,12 @@ export class Stage {
   private readonly studio = inject(StudioService);
   private readonly layout = inject(LayoutStore);
   private readonly ray = new THREE.Raycaster();
+  protected orientCompass(angle: number): void {
+    this.scene.autoOrbit.set(false);
+    this.view.setCameraView('orbit');
+    this.scene.mainOrbit.th = (angle - this.cal.rot()) * Math.PI / 180;
+    this.scene.noteInput();
+  }
   protected readonly mainCamera = () => this.scene.host?.mainCamera ?? null;
   private readonly sim = inject(SimulatorService);
   private readonly flights = inject(FlightService);

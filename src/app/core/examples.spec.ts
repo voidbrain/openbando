@@ -109,7 +109,7 @@ describe('Villetta survey refinements', () => {
       else expect(o.sill).toBe(2.69);
     }
     const rows = [...new Set(l.columns!.map((c) => c.z))].sort((a, b) => a - b);
-    expect(rows[2]! - rows[1]!).toBeCloseTo(1);
+    expect(rows[2]! - rows[1]! - l.columns![0]!.size).toBeCloseTo(1); // clear gap between column faces
   });
   it('keeps the north facade mostly closed with two covered windows and one door on the exposed eastern end', () => {
     const north = store.levels[0]!.doors.e!; // the rotated store's local east side faces site north
@@ -129,14 +129,14 @@ describe('Villetta survey refinements', () => {
     expect(contains(0, 1, -0.9)).toBe(false); // doorway remains open
     expect(contains(0, 2.25, 0)).toBe(true); // a roof closes the cabin
   });
-  it('retains the south interior wall and door-bearing east end, with the first-floor end closed', () => {
-    expect(annex.levels[0]!.partitions).toHaveLength(1);
-    expect(annex.levels[0]!.partitions[0]![0].z).toBeCloseTo(17.179);
+  it('keeps the south and east walls and their openings without a duplicate partition', () => {
+    expect(annex.levels[0]!.partitions).toHaveLength(0);
+    expect(v.walls![8]!.b).toEqual(v.walls![11]!.b); // the south wall reaches the east corner
     expect(annex.levels[0]!.sides.w).toBe(false);
     expect(annex.levels[1]!.sides.w).toBe(true);
     expect(annex.levels[0]!.columns!.length).toBeGreaterThan(0);
     expect(v.walls).toHaveLength(12);
-    expect(v.walls!.filter(w => w.height === 3)).toHaveLength(3);
+    expect(v.walls!.slice(9, 12).every(w => w.height === 6.2)).toBe(true);
   });
   it('keeps the greenhouse footprint but uses the measured crown and rib pitch', () => {
     expect(greenhouse.width).toBeCloseTo(20.289);

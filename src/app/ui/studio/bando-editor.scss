@@ -383,11 +383,10 @@ input.mini {
 .compass {
   position: absolute;
   z-index: 1100;
-  right: 8px;
-  top: 8px;
-  width: 46px;
-  height: 46px;
-  pointer-events: none;
+  left: 8px;
+  bottom: 8px;
+  top: auto;
+  right: auto;
 }
 .spin {
   display: inline-block;
