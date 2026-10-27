@@ -49,6 +49,6 @@ The user confirmed the warehouse seam and basement appearance on 27 October 2026
 
 | Change | PR / evidence | Status | Reviewed |
 |---|---|---|---|
-| Record PR #109 merge and current checks. | [#109](https://github.com/voidbrain/openbando/pull/109); [CI](https://github.com/voidbrain/openbando/actions/runs/40564909915) | Merged; check passed, browser jobs running. | 2026-10-27 |
+| Record PR #109 merge and current checks. | [#109](https://github.com/voidbrain/openbando/pull/109); [CI](https://github.com/voidbrain/openbando/actions/runs/40564909915); [#110](https://github.com/voidbrain/openbando/pull/110) (tracking) | Merged; check passed, browser jobs running. | 2026-10-27 |
 | Archive the old working plan and create the active backlog and audit. | [#102](https://github.com/voidbrain/openbando/pull/102) | Merged; continued guide review is tracked as F-011. | 2026-10-27 |
 | Track PR links and review dates; require backlog updates for every change. | [#104](https://github.com/voidbrain/openbando/pull/104) | Merged; CI in progress. | 2026-10-27 |
