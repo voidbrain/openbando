@@ -20,6 +20,29 @@ test('the showcase link plays to the end', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
+test('showcase keeps Welcome open for a complete mascot loop', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/?tour=showcase&lang=en');
+  const bar = page.locator('app-tour-overlay .bar');
+  await expect(bar).toHaveAttribute('data-action', 'hook:mascotLoop', { timeout: 20_000 });
+  await page.waitForTimeout(18_000); // shorter than the 19.7 s loop, measured from the start of this hook
+  await expect(page.locator('app-panel[data-id="welcome"]')).toBeVisible();
+  await expect(bar).toHaveAttribute('data-action', 'hook:mascotLoop');
+  await expect(bar).not.toHaveAttribute('data-action', 'hook:mascotLoop', { timeout: 90_000 });
+  await bar.getByRole('button', { name: /Stop/ }).click();
+  await expect(bar).toBeHidden();
+});
+
+test('reduced motion does not wait for an animation', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/?tour=showcase&lang=en');
+  const bar = page.locator('app-tour-overlay .bar');
+  await expect(bar).toBeVisible({ timeout: 20_000 });
+  await expect(bar).toContainText('2 /', { timeout: 15_000 });
+  await bar.getByRole('button', { name: /Stop/ }).click();
+  await expect(bar).toBeHidden();
+});
+
 test('stopping the showcase returns to Welcome', async ({ page }) => {
   await page.goto('/?tour=showcase&lang=en');
   const bar = page.locator('app-tour-overlay .bar');

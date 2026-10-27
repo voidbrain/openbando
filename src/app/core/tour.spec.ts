@@ -60,8 +60,10 @@ describe('the showcase', () => {
     expect(showcaseLink('?tour=showcase&lang=xx')).toEqual({ lang: null });
     expect(showcaseLink('?lang=it')).toBeNull();
   });
-  it('keeps its finished screen and stays out of the Guide sections', () => {
+  it('returns to Welcome and stays out of the Guide sections', () => {
     expect(SHOWCASE.returnToWelcome).toBe(true);
+    const intro = SNIPPETS.find((snippet) => snippet.id === 'sc-welcome')!;
+    expect(intro.beats[0]!.actions).toContainEqual({ do: 'hook', hook: 'mascotLoop' });
     expect(SHOWCASE.snippets.every((id) => SNIPPETS.find((s) => s.id === id)?.section === 'showcase')).toBe(true);
     expect(checkGuide()).toEqual([]);
   });

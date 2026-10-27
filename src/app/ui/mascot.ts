@@ -3,6 +3,7 @@ import { AfterViewInit, Component, DestroyRef, ElementRef, inject, signal, viewC
 import { mascotFrame, MASCOT_POSES } from '../core/mascot';
 import { FrameLoopService, FrameOrder } from '../services/frame-loop.service';
 import { LayoutStore } from '../state/layout.store';
+import { MascotProgressService } from '../services/mascot-progress.service';
 
 /** Welcome-only pixel animation. No timers or decoding while hidden; reduced motion is a still pose. */
 @Component({
@@ -26,10 +27,11 @@ export class Mascot implements AfterViewInit {
   private readonly loop = inject(FrameLoopService);
   private readonly layout = inject(LayoutStore);
   private readonly destroy = inject(DestroyRef);
+  private readonly progress = inject(MascotProgressService);
   ngAfterViewInit(): void {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)');
     this.paused.set(media.matches);
-    const change = () => { if (media.matches) this.paused.set(true); };
+    const change = () => this.paused.set(media.matches);
     media.addEventListener('change', change);
     const images = MASCOT_POSES.map((name, i) => { const im = new Image(); im.src = `mascot/poses/${String(i).padStart(2, '0')}-${name}.png`; return im; });
     const drone = new Image(); drone.src = 'mascot/drone.png';
@@ -65,7 +67,7 @@ export class Mascot implements AfterViewInit {
         }
       }
       painted = true;
-      if (!still) { ms += dt; painted = false; }
+      if (!still) { ms += dt; this.progress.elapsed += dt; painted = false; }
     });
     this.destroy.onDestroy(() => { stop(); media.removeEventListener('change', change); });
   }
