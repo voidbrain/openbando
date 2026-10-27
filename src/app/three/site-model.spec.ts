@@ -226,6 +226,15 @@ describe('site model ground layers', () => {
   });
 });
 
+it('builds a raised greenhouse floor as a solid platform', () => {
+  const s = emptySpec(); s.extent = 20; s.pads = [];
+  s.buildings = [{ id: 'raised', name: 'Raised greenhouse', pos: {x: 0, z: 0}, rotDeg: 0, length: 10, width: 6, frame: 'greenhouse', glass: false,
+    levels: [{ baseY: 0.35, height: 3, sides: {n: true, s: true, e: true, w: true}, doors: {}, partitions: [], roof: 'vault', roofRise: 3, vaultK: 1 }] }];
+  const model = buildSiteFromSpec(s);
+  expect(model.collider.hit(new Vec3(0, 0.2, 0))).toBe(true);
+  expect(model.collider.hit(new Vec3(0, 1, 0))).toBe(false);
+});
+
 describe('site model underground', () => {
   it('draws only the slab at the vault floor while retaining the arch above', () => {
     // Exercise the actual vault geometry without constructing an entire site and its meadow.

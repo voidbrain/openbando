@@ -144,6 +144,8 @@ describe('Villetta survey refinements', () => {
     expect(greenhouse.ribSpacing).toBe(4.61);
     expect(greenhouse.glass).toBe(false);
     expect(greenhouse.archShape).toBe('parabola');
+    expect(greenhouse.levels[0]!.baseY).toBeCloseTo(0.35); // 30–40 cm above its levelled ground, estimated
+    expect(greenhouse.fixtures?.find(f => f.id === 'villetta-greenhouse-east-frame')?.y).toBeCloseTo(0.35);
     const end = greenhouse.fixtures?.find(f => f.id === 'villetta-greenhouse-east-frame');
     expect(end?.x).toBeCloseTo(-greenhouse.length / 2);
     const placed = fixturesInSite(greenhouse).find(f => f.id === end?.id)!;
