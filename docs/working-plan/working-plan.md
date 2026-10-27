@@ -196,4 +196,4 @@ Local checks and CI results are recorded in the associated PR. Chromium installa
 
 ### Follow-up — indoor browser regression
 
-- The focused browser suite now exercises placing a basement column in 2D, switching to 3D with −1 selected, an axe scan of the 3D view, and switching between G and −1 without leaking the column. The new check requires a successful GitHub browser run; manual 3D placement, handles, lighting and gallery/warehouse visual checks remain open.
+- The focused browser suite now exercises placing a basement column in 2D, switching to 3D with −1 selected, an axe scan of the 3D view, and switching between G and −1 without leaking the column. The focused browser job passed in GitHub Actions run 40502283521; manual 3D placement, handles, lighting and gallery/warehouse visual checks remain open. The cloud browser could inspect the 2D basement controls but its WebGL could not start.
