@@ -708,7 +708,7 @@
         }
         @case ('void') {
           @if (voidSel(); as v) {
-            <div class="f"><span class="dim">Void · {{ (v.x1 - v.x0).toFixed(1) }} × {{ (v.z1 - v.z0).toFixed(1) }} m · floor {{ levelName(level()) }}</span></div>
+            <div class="f"><span class="dim">Void · {{ (v.x1 - v.x0).toFixed(1) }} × {{ (v.z1 - v.z0).toFixed(1) }} m · floor {{ activeLevelName() }}</span></div>
             @if (level() === 0) {
               <div class="f"><label><input type="checkbox" [checked]="!!v.water" (change)="setVoid({ water: checked($event) })" /> water (basin)</label></div>
             }
