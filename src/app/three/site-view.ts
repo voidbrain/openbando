@@ -9,7 +9,8 @@ import { buildMeasureView, type MeasureViewItem } from './measure-view';
 
 import {pickModel,type SitePick} from './site-pick';
 import { floorPoint, indoorSourcePick, indoorViewSpec, type IndoorFloor } from './indoor-view';
-import { buildingHandles, type BuildingHandle } from './building-handles';
+import { basementHandles, buildingHandles, type BuildingHandle } from './building-handles';
+import { siteGround } from '../core/site-ground';
 export type {SitePick} from './site-pick';
 
 /**
@@ -325,13 +326,18 @@ export class SiteViewRenderer {
     if (b.isEmpty()) return;
     this.box = new THREE.Box3Helper(b, 0xffd166);
     this.scene.add(this.box);
-    if (this.handlesEnabled && sel.kind === 'building' && !this.indoorFloor) {
-      const building = this.spec.buildings.find((item) => item.id === sel.id);
+    if (this.handlesEnabled) {
+      const basementId = this.indoorFloor?.li === -1 ? this.indoorFloor.id : null;
+      const id = basementId ?? (sel.kind === 'building' && !this.indoorFloor ? sel.id : null);
+      const building = id ? this.spec.buildings.find(item => item.id === id) : undefined;
       if (building) {
         this.handles = new THREE.Group();
         const size = Math.max(0.6, Math.min(2, Math.max(building.length, building.width) * 0.035));
-        for (const handle of buildingHandles(building, this.model.ground.building.get(building.id) ?? 0)) {
-          const mesh = new THREE.Mesh(new THREE.BoxGeometry(size, size, size), new THREE.MeshBasicMaterial({ color: handle.kind === 'move' ? 0x38d6ff : 0xffd166, depthTest: false }));
+        const items = basementId ? basementHandles(building, siteGround(this.spec).building.get(building.id) ?? 0)
+          : buildingHandles(building, this.model.ground.building.get(building.id) ?? 0);
+        for (const handle of items) {
+          const geometry = handle.kind === 'basementVertex' ? new THREE.SphereGeometry(size * 0.6, 12, 8) : new THREE.BoxGeometry(size, size, size);
+          const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: handle.kind === 'move' ? 0x38d6ff : 0xffd166, depthTest: false }));
           mesh.position.set(handle.x, handle.y, handle.z);
           mesh.renderOrder = 20;
           mesh.userData['handle'] = handle;

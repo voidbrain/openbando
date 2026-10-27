@@ -1,6 +1,7 @@
-import { Component, DestroyRef, ElementRef, afterNextRender, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterNextRender, computed, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core';
 import { CameraCompass } from '../widgets/camera-compass';
 import { CalibrationStore } from '../../state/calibration.store';
+import { basementOutline } from '../../core/basement';
 import type { Flight } from '../../core/models';
 import type { SiteSpec } from '../../core/site-spec';
 import { SiteViewRenderer, type SitePick } from '../../three/site-view';
@@ -20,6 +21,18 @@ import type { BuildingHandle } from '../../three/building-handles';
           <button [attr.aria-pressed]="m.selected" (click)="measurePicked.emit({ index: m.index, label: true })">{{ m.label }}</button>
         }
       </div>
+    }
+    @if (basementVertices().length) {
+      <details class="vertex-access" (keydown)="$event.stopPropagation()">
+        <summary>Basement vertices</summary>
+        @for (index of basementVertices(); track index) {
+          <span class="vertex-row">
+            <button class="vertex-key" type="button" [attr.aria-label]="'Move basement vertex ' + (index + 1)" title="Drag or use arrows to move; Insert adds and Delete removes a vertex" (keydown)="basementVertexKey.emit({event: $event, index})">{{ index + 1 }}</button>
+            <button type="button" aria-label="Insert basement vertex" (click)="basementVertexInsert.emit(index)"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><path d="M6 1V11M1 6H11" fill="none" stroke="currentColor"/></svg></button>
+            <button type="button" aria-label="Remove basement vertex" (click)="basementVertexRemove.emit(index)"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><path d="M2 2L10 10M10 2L2 10" fill="none" stroke="currentColor"/></svg></button>
+          </span>
+        }
+      </details>
     }
     @if (!failed()) { <app-camera-compass [camera]="compassCamera" (orient)="orientCompass($event)" /> }
     @if (failed()) {
@@ -51,6 +64,11 @@ import type { BuildingHandle } from '../../three/building-handles';
       border-radius: 6px;
       pointer-events: none;
     }
+    .vertex-access { position: absolute; top: 8px; left: 8px; z-index: 21; max-width: 220px; max-height: 50%; overflow: auto; background: var(--panel-solid); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius-control); padding: 4px; }
+    .vertex-access summary { cursor: pointer; }
+    .vertex-row { display: inline-flex; gap: 2px; margin: 2px; }
+    .vertex-access button { color: var(--text); background: var(--panel-solid); border: 1px solid var(--line); padding: 4px; }
+    .vertex-access button:focus-visible, .vertex-access summary:focus-visible { outline: 2px solid var(--accent); }
     .measure-access { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
     .measure-access:focus-within { width: auto; height: auto; clip-path: none; overflow: auto; top: 8px; left: 8px; z-index: 20; background: var(--panel-solid); padding: 4px; }
     .measure-access button { color: var(--text); background: var(--panel-solid); border: 1px solid var(--line); padding: 4px; }
@@ -74,6 +92,14 @@ export class SiteView {
   readonly indoorFloor = input<{ id: string; li: number } | null>(null);
   readonly drawPlaneY = input<number | null>(null);
   readonly handlesEnabled = input(false);
+  readonly basementVertexKey = output<{event: KeyboardEvent; index: number}>();
+  readonly basementVertexInsert = output<number>();
+  readonly basementVertexRemove = output<number>();
+  protected readonly basementVertices = computed(() => {
+    const f = this.indoorFloor();
+    const b = f?.li === -1 && this.handlesEnabled() ? this.spec().buildings.find(item => item.id === f.id) : undefined;
+    return b?.basement ? basementOutline(b).map((_, index) => index) : [];
+  });
   readonly transformed = output<{ phase: 'down' | 'move' | 'up'; handle: BuildingHandle; x: number; z: number }>();
   readonly flights = input<Flight[]>([]);
   readonly speedMax = input(10);
