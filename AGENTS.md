@@ -376,3 +376,5 @@ npm run check:i18n                        # every UI text has its Italian
 - Change generated guide text in `tools/build-guide.mjs` or the tour source, then regenerate with `node tools/build-guide.mjs`. Do not describe that as re-recording clips: `npm run clips` and `npm run films` are separate browser/media workflows. Clips/films last changed on 24 October and still need review against the current UI (F-011).
 
 - Backlog tables start with a status signal: 🔴 Open, 🟠 Investigate, 🟡 Implemented, 🟢 Verified, 🟣 Blocked, 🔵 Closed. Update the marker whenever the written status changes. Keep priority separate and preserve stable ID order; colour never replaces status text or verification evidence.
+
+- Backlog priorities use **🔺 P1**, **🔶 P2**, **🔹 P3** in the Priority column. Keep each shape paired with its written label when adding or reprioritizing an item; circles in the first column encode status only. Do not change status or verification just to change priority.
