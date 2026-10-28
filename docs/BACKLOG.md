@@ -171,7 +171,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#156](https://github.com/voidbrain/openbando/pull/156) |
+| PR / evidence | [#156](https://github.com/voidbrain/openbando/pull/156); [#157](https://github.com/voidbrain/openbando/pull/157) (follow-up: quick order, plain editor row, Follow label, 18px icons) |
 | Opened | 2026-10-28 |
 | Verification | Unit/integration + Documentation · 2026-10-28 · local checks passed; Browser/accessibility · Pending |
 | Reviewed | 2026-10-28 |
@@ -473,9 +473,9 @@ Each item has a compact summary, followed by **→ Human action required** first
 |:---:|---|---|---|---|
 | 🟡 | F-020 | 🔶 P2 | Implemented | Views hierarchy and scoped camera options |
 
-**→ Human action required:** 💻 **No**<br />Run Views default folds, quick controls and camera-mode checks.
+**→ Human action required:** 💻 **No**<br />Confirm the follow-up Views browser test and full suite in PR CI.
 
-**Next action / closure evidence:** Bandos editor plus Flights/Timeline/Video remain directly available. Telemetry, Simulator and Tools default folded, preserving saved preferences; Reset restores default folds. Camera groups hide in Video main mode. Options is closed by default. Orbit/Top follow the drone; Chase/FPV retain separately labelled replay-follow. Roof visibility affects shared geometry, satellite has separate main/Studio controls, X-ray retains FPV camera-near fading, and Reset returns to Orbit/parks the simulator. Browser checks pending.
+**Next action / closure evidence:** Flights/Timeline/Video then Bandos editor remain directly available; user follow-up: the editor is now a plain `.vis` row at the end (no accent full-width row), the text "Follow replay" label is removed (the Follow icon keeps its replay title/aria-label in Chase/FPV) and Options icons are 18px so the five fit one row. Telemetry, Simulator and Tools default folded, preserving saved preferences; Reset restores default folds. Camera groups hide in Video main mode. Options is closed by default. Orbit/Top follow the drone; Chase/FPV reuse the Follow icon for replay-follow. Roof visibility affects shared geometry, satellite has separate main/Studio controls, X-ray retains FPV camera-near fading, and Reset returns to Orbit/parks the simulator. Browser checks pending.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -484,7 +484,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 |---|---|
 | PR / evidence | [#156](https://github.com/voidbrain/openbando/pull/156) |
 | Opened | 2026-10-28 |
-| Verification | Unit/integration + Documentation · 2026-10-28 · local checks passed; Browser/accessibility · Pending |
+| Verification | Unit/integration + Documentation · 2026-10-28 · local checks passed; Browser/accessibility · 2026-10-28 · local Playwright run of the Views test passed after the follow-up (quick order, plain editor row, 18px Options icons, no Follow replay text); the #156 version failed locally on an ambiguous FPV locator, now scoped to the camera group; CI · Pending |
 | Reviewed | 2026-10-28 |
 
 </details>

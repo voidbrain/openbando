@@ -26,7 +26,8 @@ function ids(f: (p: PanelDef) => boolean): PanelId[] {
   return PANELS.filter((p) => p.id !== 'views' && p.id !== 'features' && f(p)).map((p) => p.id);
 }
 
-const QUICK: readonly PanelId[] = ['studio', 'flights', 'timeline', 'video'];
+/** Promoted panels, in this order (the Bandos editor last). */
+const QUICK: readonly PanelId[] = ['flights', 'timeline', 'video', 'studio'];
 const DEFAULT_CLOSED = ['telemetry', 'simulator', 'tools'];
 const CLOSED_KEY = 'abando-float-views-closed';
 const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'camChase', fpv: 'camFpv', top: 'camTop' };
@@ -39,7 +40,6 @@ const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'cam
   selector: 'app-views-panel',
   imports: [Panel, ToolIcon],
   styles: `
-    .quick .editor { grid-column: 1 / -1; font-weight: 700; padding: 5px 0; color: var(--accent); }
     .options summary { cursor: pointer; color: var(--dim); margin-top: 4px; }
     .top {
       display: flex;
@@ -184,7 +184,7 @@ const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'cam
 
       <div class="sec quick list">
         @for (p of quick; track p.id) {
-          <button class="vis" [class.editor]="p.id === 'studio'" [attr.data-panel]="p.id" [class.on]="layout.panels()[p.id].visible" (click)="layout.toggle(p.id)" [attr.aria-pressed]="layout.panels()[p.id].visible">
+          <button class="vis" [attr.data-panel]="p.id" [class.on]="layout.panels()[p.id].visible" (click)="layout.toggle(p.id)" [attr.aria-pressed]="layout.panels()[p.id].visible">
             <app-tool-icon [name]="layout.panels()[p.id].visible ? 'eye' : 'eyeOff'" /><span>{{ short(p) }}</span>
           </button>
         }
@@ -221,12 +221,11 @@ const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'cam
           <details class="options"><summary>Options</summary>
           <div class="cams" role="group" aria-label="View options">
             <span class="lab">view</span>
-            @if (!orbitLike()) { <span class="dim small">Follow replay</span> }
-            <button class="btn ib" [class.on]="follow()" (click)="toggleFollow()" [title]="followHint()" [attr.aria-label]="followHint()" [attr.aria-pressed]="follow()"><app-tool-icon name="follow" /></button>
-            <button class="btn ib" [class.on]="view.roofHidden()" (click)="view.toggleRoof()" [title]="view.roofHidden() ? 'Roofs hidden: show them again' : 'Hide the roofs (see inside the buildings)'" aria-label="Hide roofs" [attr.aria-pressed]="view.roofHidden()"><app-tool-icon name="roof" /></button>
-            <button class="btn ib" [class.on]="view.satGround()" (click)="view.toggleSatGround()" title="Satellite ground on the main 3D view; Studio has its own ground selector (imagery © Esri, Maxar)" aria-label="Satellite ground" [attr.aria-pressed]="view.satGround()"><app-tool-icon name="satellite" /></button>
-            <button class="btn ib" [class.on]="view.xray()" (click)="toggleXray()" title="X-ray: obstacles fade while following the drone; FPV only fades surfaces close to the camera" aria-label="X-ray" [attr.aria-pressed]="view.xray()"><app-tool-icon name="xray" /></button>
-            <button class="btn ib" (click)="scene.resetCamera()" title="Reset to Orbit and park the simulator drone" aria-label="Reset the camera"><app-tool-icon name="recentre" /></button>
+            <button class="btn ib" [class.on]="follow()" (click)="toggleFollow()" [title]="followHint()" [attr.aria-label]="followHint()" [attr.aria-pressed]="follow()"><app-tool-icon [size]="18" name="follow" /></button>
+            <button class="btn ib" [class.on]="view.roofHidden()" (click)="view.toggleRoof()" [title]="view.roofHidden() ? 'Roofs hidden: show them again' : 'Hide the roofs (see inside the buildings)'" aria-label="Hide roofs" [attr.aria-pressed]="view.roofHidden()"><app-tool-icon [size]="18" name="roof" /></button>
+            <button class="btn ib" [class.on]="view.satGround()" (click)="view.toggleSatGround()" title="Satellite ground on the main 3D view; Studio has its own ground selector (imagery © Esri, Maxar)" aria-label="Satellite ground" [attr.aria-pressed]="view.satGround()"><app-tool-icon [size]="18" name="satellite" /></button>
+            <button class="btn ib" [class.on]="view.xray()" (click)="toggleXray()" title="X-ray: obstacles fade while following the drone; FPV only fades surfaces close to the camera" aria-label="X-ray" [attr.aria-pressed]="view.xray()"><app-tool-icon [size]="18" name="xray" /></button>
+            <button class="btn ib" (click)="scene.resetCamera()" title="Reset to Orbit and park the simulator drone" aria-label="Reset the camera"><app-tool-icon [size]="18" name="recentre" /></button>
           </div>
           </details>
         }
@@ -264,7 +263,7 @@ export class ViewsPanel {
   protected readonly scene = inject(SceneService);
   private readonly toast = inject(ToastService);
   protected readonly cameras = CAMERA_VIEWS;
-  protected readonly quick = PANELS.filter(panel => QUICK.includes(panel.id));
+  protected readonly quick = QUICK.map((id) => PANELS.find((p) => p.id === id)!);
   protected readonly camIcon = CAMERA_ICON;
   protected readonly names: Record<CameraView, string> = { orbit: 'Orbit', chase: 'Chase', fpv: 'FPV', top: 'Top' };
   protected readonly camHint: Record<CameraView, string> = {
