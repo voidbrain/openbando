@@ -116,6 +116,10 @@ test('basement controls and explicit roof choice update the selected building', 
   await expect(page.locator('.debug-readout')).toContainText(/x .+ · y .+ · z .+ m/);
   await expect(page.locator('[data-pk="meas:0"]')).toHaveCount(1);
   await topBar.getByLabel('Debug coordinates', {exact: true}).uncheck();
+  // Clear the measurement overlay before exercising unrelated placement tools.
+  await page.locator('app-bando-editor .palette button[title^="Measure ·"]').click();
+  await page.getByRole('button', {name: 'Clear all', exact: true}).click();
+  await expect(page.locator('[data-pk="meas:0"]')).toHaveCount(0);
   await page.locator('app-bando-editor .palette button[title^="Select ·"]').click();
 
   await expect(page.getByText(/Floor −1: roof off in 3D/)).toBeVisible();

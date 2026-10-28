@@ -8,7 +8,7 @@ test('the showcase link plays to the end', async ({ page }) => {
   await page.goto('/?tour=showcase&lang=it');
   const bar = page.locator('app-tour-overlay .bar');
   await expect(bar).toBeVisible({ timeout: 20_000 });
-  await expect(bar).toContainText('OpenBando'); // Italian captions (the app name stays)
+  await expect(bar).toContainText('Welcome'); // persistent tour title; the opening caption is intentionally brief
   await expect(bar).toBeHidden({ timeout: 300_000 });
   const shown = await page.locator('app-panel:not([hidden])').evaluateAll((els) => els.map((e) => `${e.getAttribute('data-id')}${e.classList.contains('ghost') ? '*' : ''}`));
   expect(shown).toEqual(['welcome']);
