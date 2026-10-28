@@ -58,7 +58,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 | Field | Value |
 |---|---|
-| PR / evidence | Human-cue/CI follow-up PR pending; [#124](https://github.com/voidbrain/openbando/pull/124) (merged; action-order checks passed in #124 CI); [CI failure](https://github.com/voidbrain/openbando/actions/runs/40650990021/job/122690744193); [#107](https://github.com/voidbrain/openbando/pull/107) (fix; browser checks pending); [#109](https://github.com/voidbrain/openbando/pull/109) (merged; visual/browser verification pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending)  [#148](https://github.com/voidbrain/openbando/pull/148); [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout) |
+| PR / evidence | [#150](https://github.com/voidbrain/openbando/pull/150); [#124](https://github.com/voidbrain/openbando/pull/124) (merged; action-order checks passed in #124 CI); [CI failure](https://github.com/voidbrain/openbando/actions/runs/40650990021/job/122690744193); [#107](https://github.com/voidbrain/openbando/pull/107) (fix; browser checks pending); [#109](https://github.com/voidbrain/openbando/pull/109) (merged; visual/browser verification pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending)  [#148](https://github.com/voidbrain/openbando/pull/148); [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout) |
 | Opened | 2026-10-27 |
 | Verification | Browser/accessibility · 2026-10-28 · [#149 shard 4](https://github.com/voidbrain/openbando/actions/runs/40745098159/job/123016650449) passed full replay/continuation, distributed card films, reduced motion, Stop and Auto-sync; #148 continuation failure corrected by #149. Human presentation review · Pending. |
 | Reviewed | 2026-10-28 |
@@ -146,7 +146,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 | Field | Value |
 |---|---|
-| PR / evidence | Human-cue/CI follow-up PR pending; [#145](https://github.com/voidbrain/openbando/pull/145); [#146](https://github.com/voidbrain/openbando/pull/146) (green CI); [#148](https://github.com/voidbrain/openbando/pull/148); [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout) |
+| PR / evidence | [#150](https://github.com/voidbrain/openbando/pull/150); [#145](https://github.com/voidbrain/openbando/pull/145); [#146](https://github.com/voidbrain/openbando/pull/146) (green CI); [#148](https://github.com/voidbrain/openbando/pull/148); [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout) |
 | Opened | 2026-10-28 |
 | Verification | Browser/accessibility · 2026-10-28 · [#149](https://github.com/voidbrain/openbando/actions/runs/40745098159/job/123016651142) still timed out: editor software-rendering latency and occluded guide hover; fixes pending new CI. Unit/integration + contrast analysis · 2026-10-28 · #145/#146 CI green; 53 shared text/surface pairs passed; broader interaction suite pending; Browser/accessibility · Pending; Browser/accessibility · 2026-10-28 · [#148 CI](https://github.com/voidbrain/openbando/actions/runs/40738619197) failed in repeated contrast probes and continuation fixture; fixes pending new browser run. |
 | Reviewed | 2026-10-28 |
