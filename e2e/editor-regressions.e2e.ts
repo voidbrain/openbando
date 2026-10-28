@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import type { SiteSpec } from '../src/app/core/site-spec';
 
 /** Check actual CSS cascade states: a palette-pair check cannot catch a hover override. */
-async function expectFilledButtonContrast(button: Locator): Promise<void> {
+async function expectButtonContrast(button: Locator): Promise<void> {
   const read = () => button.evaluate(el => {
     const style = getComputedStyle(el);
     return {text: style.color, fill: style.backgroundColor};
@@ -48,7 +48,7 @@ test('Welcome shows the approved wordmark, Features link and revised pose assets
   const asset = await page.request.get('/mascot/poses/16-confused-a.png');
   expect(asset.ok()).toBe(true);
   await expect(page.getByRole('button', { name: 'Features' })).toBeVisible();
-  await expectFilledButtonContrast(page.locator('app-welcome-panel .btn.primary'));
+  await expectButtonContrast(page.locator('app-welcome-panel .btn.primary'));
   const axe = await new AxeBuilder({ page })
     .include('app-welcome-panel')
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
@@ -64,7 +64,8 @@ test('active Views icon buttons retain contrast on hover', async ({page}) => {
   if (await roofs.getAttribute('aria-pressed') !== 'true') await roofs.click();
   await expect(roofs).toHaveClass(/\bib\b/);
   await expect(roofs).toHaveClass(/\bon\b/);
-  await expectFilledButtonContrast(roofs);
+  await expectButtonContrast(roofs);
+  await expectButtonContrast(page.locator('app-views-panel').getByRole('button', {name: 'Reset UI', exact: true}));
 });
 
 test('basement controls and explicit roof choice update the selected building', async ({
@@ -147,7 +148,7 @@ test('basement controls and explicit roof choice update the selected building', 
   const topBar = page.locator('app-bando-editor > .bar');
   await topBar.getByRole('button', { name: 'Indoors', exact: true }).click();
   await expect(topBar.getByRole('button', { name: '−1', exact: true })).toHaveClass(/on/);
-  await expectFilledButtonContrast(topBar.getByRole('button', {name: '−1', exact: true}));
+  await expectButtonContrast(topBar.getByRole('button', {name: '−1', exact: true}));
   // Click the building itself: bubbling used to immediately end an indoor measurement.
   await page.locator('app-bando-editor .palette button[title^="Measure ·"]').click();
   const floor = page.locator('[data-pk="building:b"]').first();
