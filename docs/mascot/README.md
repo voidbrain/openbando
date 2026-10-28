@@ -36,7 +36,7 @@ The two original sheets in [the working plan](../working-plan/mascotte-img/) are
 | `drone-source.png` | Separate imagegen quad master, unchanged |
 | `turnaround.png` | Front/profile/back plus drone/radio design reference |
 | `../../public/mascot/poses/*.png` | Individual numbered 128×128 pose keyframes |
-| `../../public/mascot/keyframes.png` | Packed 4×5 keyframe preview (18 poses) |
+| `../../public/mascot/keyframes.png` | Packed 4×5 keyframe preview (19 poses) |
 | `../../public/mascot/poster.png` | Still fallback / reduced-motion art |
 | `../../public/mascot/drone.png` | Drone runtime sprite |
 | `../../public/mascot/drone-right.png` | Right-facing exit sprite |
@@ -86,6 +86,6 @@ The canvas and GIF read the same JSON timeline. README uses the GIF below the pi
 
 ## Generation brief / provenance
 
-Built-in imagegen was used with the repository's Pixel FPV Pilot Animation Sheet as the identity reference. Final briefs required a coarse 16-bit treatment; orange backwards cap with black alien emblem; white shirt emblem; 360° dark goggle strap; mostly black ergonomic radio with orange trim and no antennas, control surface facing the torso; open-frame 5-inch black/orange quad. The final pose brief enumerated the sixteen keyframes in the table and required transparent padding with no labels/shadows. The drone brief extracted the turnaround quad as a separate pixel sprite and explicitly removed glow/halos. Future generations must carry all these invariants, not only the word “pixel”.
+Built-in imagegen was used with the repository's Pixel FPV Pilot Animation Sheet as the identity reference. Final briefs required a coarse 16-bit treatment; orange backwards cap with black alien emblem; white shirt emblem; 360° dark goggle strap; mostly black ergonomic radio with orange trim and no antennas, control surface facing the torso; open-frame 5-inch black/orange quad. The original pose brief enumerated sixteen pilot keyframes; confusion, poke and poke-middle extend the current table to nineteen and required transparent padding with no labels/shadows. The drone brief extracted the turnaround quad as a separate pixel sprite and explicitly removed glow/halos. Future generations must carry all these invariants, not only the word “pixel”.
 
 Sources live in this directory; production assets live under `public/mascot/`. No proprietary character identity is intended; the originals and generated character belong to this project's art direction.

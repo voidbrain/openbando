@@ -49,3 +49,11 @@ Close fixes after their recorded criteria pass and no action remains; Verified i
 Move closed records, including completed maintenance-only changes, into a dated archive linked from the active ledger. Retain original ID/priority, PR history, evidence, resolution and closure date. Preserve the bug/feature human-action field when archiving newer rows; older archives need not invent missing historical fields. Historical Closed records keep their closure cues if an item is later reopened; the active record describes the new work and links its prior history.
 
 Closing a documentation audit or recording change does not close a product/media feature whose checks remain pending. Put that pending work on its own active item rather than keeping the completed maintenance entry yellow indefinitely.
+
+## Documentation consistency
+
+README summarizes capabilities; AGENTS directs repository work; this file owns backlog maintenance procedure; BACKLOG holds current records and the quick lifecycle legend. Design-system guides own application UI conventions and explicitly scoped component exceptions; mascot/wordmark guides own art requirements. User instructions take precedence. Dated archives, audits and draft articles preserve context and do not override current rules. Generated guide pages follow the tour/generator source; regenerating Markdown does not regenerate clips.
+
+When changing shared rules, reconcile linked summaries and component exceptions in the same PR. Scope the app no-emoji rule to application UI: repository backlog markers are permitted. Scope red navigation/selection exceptions explicitly; do not generalize them into new UI colours. Keep historical evidence dated rather than rewriting it as current verification.
+
+For **every modification**, including a backlog-only edit, check README, AGENTS, BACKLOG, BACKLOG-RULES, design-system/component guides and applicable mascot/style guides for affected claims, rules, links and exceptions. Update every affected document in the same PR; do not edit an unaffected file merely to mark it reviewed. Preserve user changes. State the consistency check and any outstanding discrepancy in the PR validation notes. A backlog state/evidence change can require README or guide corrections even when application code did not change.

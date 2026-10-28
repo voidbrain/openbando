@@ -9,4 +9,4 @@ The approved reference is [`public/mascot/openbando-wordmark.png`](../../public/
 - Keep the background transparent, including the spaces inside letters. Preserve generous contrast on a dark background and maintain the original proportions; do not stretch or crop letters.
 - Future variants must be reviewed against this reference before replacing it. The image is decorative branding, not a font: never use it as the sole accessible text.
 
-The reference was generated with the built-in image generator from the supplied four-option image. The brief specified solid cracked concrete and small graffiti on OPEN, the original pixel-art orange bricks on BANDO, exactly nine letters and a dark background.
+The reference was generated with the built-in image generator from the supplied four-option image. The brief specified solid cracked concrete and small graffiti on OPEN, the original pixel-art orange bricks on BANDO, exactly nine letters and a dark background in the original generation. That background is historical source context: the approved runtime PNG uses transparent margins and letter counters, as required above.
