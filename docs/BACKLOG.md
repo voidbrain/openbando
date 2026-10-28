@@ -425,7 +425,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 |:---:|---|---|---|---|
 | 🟡 | F-019 | 🔶 P2 | Implemented | Tour step remaining-time ring |
 
-**→ Human action required:** 💻 **No**<br />Confirm the corrected pause check in this follow-up PR's CI.
+**→ Human action required:** 💻 **No**<br />Confirm the corrected pause check in #159 CI.
 
 **Next action / closure evidence:** Emptying ring beside the tour title resets per snippet; Welcome uses rendered progress through one 19.7-second mascot loop and replay uses playback progress. Other guides use an explicitly labelled active-time estimate that retains a small remainder while unfinished. Pause holds progress. New browser checks exercise the circle and pause. In CI the pause check failed in #155–#157 and needed a retry in #158: the test read the ring immediately after Pause, before the last mascot frame (≈20 ms of progress) reached it on the next 30 ms refresh. The ring does freeze; the test now waits until two readings 300 ms apart agree, then checks it holds (passed 4/4 locally). Final Welcome presentation review remains B-011.
 
@@ -434,7 +434,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#155](https://github.com/voidbrain/openbando/pull/155); `fix/reset-ui-e2e-and-audit` (settled pause read) |
+| PR / evidence | [#155](https://github.com/voidbrain/openbando/pull/155); [#159](https://github.com/voidbrain/openbando/pull/159) (settled pause read) |
 | Opened | 2026-10-28 |
 | Verification | Unit/integration · 2026-10-28 · local suite passed; Browser/accessibility · 2026-10-28 · pause check failed in CI [#155](https://github.com/voidbrain/openbando/actions/runs/40765867282), [#156](https://github.com/voidbrain/openbando/actions/runs/40769519651), [#157](https://github.com/voidbrain/openbando/actions/runs/40773605465) (both attempts) and passed on retry in [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395); corrected test passed 4/4 locally; CI · Pending |
 | Reviewed | 2026-10-28 |
@@ -447,7 +447,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 |:---:|---|---|---|---|
 | 🟡 | F-020 | 🔶 P2 | Implemented | Views hierarchy and scoped camera options |
 
-**→ Human action required:** 💻 **No**<br />Confirm the Reset UI fix and the full browser suite in this follow-up PR's CI.
+**→ Human action required:** 💻 **No**<br />Confirm the Reset UI fix and the full browser suite in #159 CI.
 
 **Next action / closure evidence:** Flights/Timeline/Video then Bandos editor remain directly available; user follow-up: the editor is now a plain `.vis` row at the end (no accent full-width row), the text "Follow replay" label is removed (the Follow icon keeps its replay title/aria-label in Chase/FPV) and Options icons are 18px so the five fit one row. Telemetry, Simulator and Tools default folded, preserving saved preferences; Reset restores default folds. Camera groups hide in Video main mode. Options is closed by default. Quick rows now carry the same Show / Hide title as grouped rows: #156 dropped it, so the Reset UI browser case (and any title lookup) could no longer find Timeline, and Speed is inside the folded Telemetry section. Orbit/Top follow the drone; Chase/FPV reuse the Follow icon for replay-follow. Roof visibility affects shared geometry, satellite has separate main/Studio controls, X-ray retains FPV camera-near fading, and Reset returns to Orbit/parks the simulator. Browser checks pending.
 
@@ -456,7 +456,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#156](https://github.com/voidbrain/openbando/pull/156); [#157](https://github.com/voidbrain/openbando/pull/157) (follow-up: quick order, plain editor row, Follow label, 18px icons); `fix/reset-ui-e2e-and-audit` (quick-row titles, Reset UI test) |
+| PR / evidence | [#156](https://github.com/voidbrain/openbando/pull/156); [#157](https://github.com/voidbrain/openbando/pull/157) (follow-up: quick order, plain editor row, Follow label, 18px icons); [#159](https://github.com/voidbrain/openbando/pull/159) (quick-row titles, Reset UI test) |
 | Opened | 2026-10-28 |
 | Verification | Browser/accessibility · 2026-10-28 · user-reported CI: shard 1 and the race-browser job failed on “Reset UI restores hidden panels…” (6 min locator wait, retried; race-browser cancelled at its 15 min limit); after the fix the 12 racing/editor-regression cases passed locally in 1.6 min. The Views hierarchy test passed in [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) (failed in #156 on the ambiguous FPV locator, corrected by #157). Unit/integration + Documentation · 2026-10-28 · local checks passed; Browser/accessibility · 2026-10-28 · local Playwright run of the Views test passed after the follow-up (quick order, plain editor row, 18px Options icons, no Follow replay text); the #156 version failed locally on an ambiguous FPV locator, now scoped to the camera group; CI · Pending |
 | Reviewed | 2026-10-28 |
