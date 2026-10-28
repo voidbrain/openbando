@@ -59,4 +59,4 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | 🟡 | Add first-column status signals with a legend; retain written status and separate priority, and preserve ID ordering. | [#126](https://github.com/voidbrain/openbando/pull/126) | Implemented | Documentation · 2026-10-28 · row/legend consistency checked | 2026-10-28 |
 
-| 🟡 | Add distinct priority shapes beside P1/P2/P3 and document the separate status/priority cues. | PR pending | Implemented | Documentation · 2026-10-28 · priority labels, markers and table widths checked | 2026-10-28 |
+| 🟡 | Add distinct priority shapes beside P1/P2/P3 and document the separate status/priority cues. | [#127](https://github.com/voidbrain/openbando/pull/127) | Implemented | Documentation · 2026-10-28 · priority labels, markers and table widths checked | 2026-10-28 |
