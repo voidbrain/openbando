@@ -14,6 +14,6 @@ Panel is the app's floating window: a translucent `panel` box with a draggable t
 
 ## Consumer provides
 
-The title, the content, and (in the app) an id in `PANEL_BY_ID` with its anchor and default size. Position and size are remembered by `LayoutStore`. Reset UI restores default positions and sizes while preserving which panels are open; the timeline retains its bottom anchor when flight panels open.
+The title, the content, and (in the app) an id in `PANEL_BY_ID` with its anchor and default size. Position and size are remembered by `LayoutStore`. Reset UI restores default positions and sizes while preserving which panels are open; after Hide all it restores the previously visible panels; the timeline retains its bottom anchor when flight panels open.
 
 Source: `src/app/ui/panel/panel.ts`.

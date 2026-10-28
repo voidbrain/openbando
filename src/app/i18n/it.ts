@@ -5,6 +5,9 @@
  * Voice as in English: short, direct, "tu", no exclamation marks. "Bando" stays (it is the app's word).
  */
 export const IT: Readonly<Record<string, string>> = {
+  'Click through buildings to read ground coordinates in metres': 'Clicca attraverso gli edifici per leggere le coordinate del terreno in metri',
+  'Debug coordinates': 'Coordinate di debug',
+
   'Vegetation': 'Vegetazione',
   'Plant vegetation here': 'Pianta vegetazione qui',
   'Click the map to plant a tree, hedge or bramble': 'Clicca la mappa per piantare un albero, una siepe o un rovo',

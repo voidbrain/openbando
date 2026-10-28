@@ -85,6 +85,11 @@ test('basement controls and explicit roof choice update the selected building', 
     .click();
   await page.locator('[data-pk="building:b"]').first().click({ force: true });
   const inspector = page.locator('[data-tour="inspector"]');
+  await expect(inspector).toHaveClass(/docked/);
+  const work = page.locator('app-bando-editor .work');
+  const workBox = await work.boundingBox(), inspectorBox = await inspector.boundingBox();
+  expect(workBox!.x + workBox!.width).toBeLessThanOrEqual(inspectorBox!.x);
+
   await inspector.getByRole('button', { name: '−1', exact: true }).click();
   await expect(inspector.locator('.st').filter({ hasText: /^Basement · −1$/ })).toBeVisible();
   await inspector.getByLabel('length m', { exact: true }).last().fill('8');
@@ -98,6 +103,21 @@ test('basement controls and explicit roof choice update the selected building', 
   const topBar = page.locator('app-bando-editor > .bar');
   await topBar.getByRole('button', { name: 'Indoors', exact: true }).click();
   await expect(topBar.getByRole('button', { name: '−1', exact: true })).toHaveClass(/on/);
+  // Click the building itself: bubbling used to immediately end an indoor measurement.
+  await page.locator('app-bando-editor .palette button[title^="Measure ·"]').click();
+  const floor = page.locator('[data-pk="building:b"]').first();
+  const fb = await floor.boundingBox();
+  await floor.click({position: {x: fb!.width * 0.3, y: fb!.height * 0.4}, force: true});
+  await floor.click({position: {x: fb!.width * 0.7, y: fb!.height * 0.4}, force: true});
+  await expect(page.locator('[data-pk="meas:0"]')).toHaveCount(1);
+  await page.locator('app-bando-editor .wrap').press('Escape');
+  await topBar.getByLabel('Debug coordinates', {exact: true}).check();
+  await floor.click({position: {x: fb!.width * 0.5, y: fb!.height * 0.5}, force: true});
+  await expect(page.locator('.debug-readout')).toContainText(/x .+ · y .+ · z .+ m/);
+  await expect(page.locator('[data-pk="meas:0"]')).toHaveCount(1);
+  await topBar.getByLabel('Debug coordinates', {exact: true}).uncheck();
+  await page.locator('app-bando-editor .palette button[title^="Select ·"]').click();
+
   await expect(page.getByText(/Floor −1: roof off in 3D/)).toBeVisible();
   const height = inspector.getByLabel('wall height m', { exact: true });
   await height.fill('3.5'); await height.press('Tab');

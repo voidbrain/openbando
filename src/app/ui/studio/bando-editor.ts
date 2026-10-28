@@ -1,3 +1,4 @@
+import { indoorFloorHeight } from '../../three/indoor-view';
 import type { BuildingHandle } from '../../three/building-handles';
 import { Component, DestroyRef, ElementRef, afterNextRender, afterRenderEffect, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { tr } from '../../services/i18n.service';
@@ -123,6 +124,7 @@ export class BandoEditor {
   private readonly destroyRef = inject(DestroyRef);
   private readonly mapEl = viewChild.required<ElementRef<HTMLElement>>('el');
   private readonly wrapEl = viewChild.required<ElementRef<HTMLElement>>('wrap');
+  private readonly workEl = viewChild.required<ElementRef<HTMLElement>>('work');
   private readonly svgEl = viewChild<ElementRef<SVGSVGElement>>('svg');
 
   protected readonly num = numberFrom;
@@ -279,6 +281,12 @@ export class BandoEditor {
   protected readonly basementFocus = signal(false);
   private readonly basementFocusId = signal('');
   protected readonly indoor = signal(false);
+  protected readonly inspectorDocked = signal(true);
+  private readonly fullWidth = signal(760);
+  protected readonly inspectorWidth = computed(() => Math.min(300, Math.max(160, this.fullWidth() * 0.4)));
+  protected readonly debugMode = signal(false);
+  protected readonly debugPoint = signal<{x: number; y: number; z: number} | null>(null);
+  protected debugAt(p: Pt): void { this.debugPoint.set({x: p.x, y: this.ground().at(p.x, p.z), z: p.z}); }
   protected readonly level = signal(0);
   protected readonly pick = signal<Pick>(null);
   protected levelName = (i: number): string => (i === 0 ? 'G' : `L${i}`);
@@ -467,20 +475,16 @@ export class BandoEditor {
   }
   protected readonly hasModel = computed(() => !this.studio.isNew() && this.ed.draft().buildings.length + this.ed.draft().trees.length > 0);
   protected readonly overlayOn = computed(() => this.mode() === 'model' && this.hasModel() && this.ed.draft().bearingDeg === 0);
-  protected readonly captures = computed(() => this.tool() !== 'select' || this.pinMode() !== null || this.indoor() || this.shiftHeld() || !!this.blocks.armed());
+  protected readonly captures = computed(() => this.debugMode() || this.tool() !== 'select' || this.pinMode() !== null || this.indoor() || this.shiftHeld() || !!this.blocks.armed());
   protected readonly indoorFloor3d = computed(() => {
     const b = this.b();
     return this.indoor() && b ? { id: b.id, li: this.basementFocus() && b.basement ? -1 : Math.min(this.level(), b.levels.length - 1) } : null;
   });
-  protected readonly indoorPlaneY = computed(() => {
-    const b = this.floorBuilding();
-    if (!b || !this.indoor() || !['wall', 'void', 'door', 'window', 'column', 'stairs'].includes(this.tool())) return null;
-    return (this.ground().building.get(b.id) ?? 0) + (b.levels[this.basementFocus() ? 0 : this.level()]?.baseY ?? 0);
-  });
+  protected readonly indoorPlaneY = computed(() => indoorFloorHeight(this.ed.draft(), this.indoorFloor3d()));
   protected readonly drawLine3d = computed(() => {
     if (this.tool() === 'measure') {
       const a = this.measure.chain().a, b = this.measure.hover();
-      return a && b ? { a, b, color: this.tc('measure') } : null;
+      return a && b ? { a, b, color: this.tc('measure'), height: this.indoorPlaneY() ?? undefined } : null;
     }
     const d = this.drag();
     const bd = this.floorBuilding(), height = this.indoorPlaneY();
@@ -810,7 +814,7 @@ export class BandoEditor {
   }
   protected readonly blocks = new BlockTool(this.host, this.blockLib);
   /** The palette and the options bar: dragged places and stacking. */
-  protected readonly dock = new ToolbarDock(this.size, () => this.wrapEl().nativeElement);
+  protected readonly dock = new ToolbarDock(this.size, () => this.workEl().nativeElement);
   private readonly palEl = viewChild<ElementRef<HTMLElement>>('pal');
 
   constructor() {
@@ -868,7 +872,7 @@ export class BandoEditor {
     });
     effect(() => {
       if (uiResets() === 0) return;
-      untracked(() => this.dock.resetAll());
+      untracked(() => { this.dock.resetAll(); this.inspectorDocked.set(true); this.debugMode.set(false); this.debugPoint.set(null); });
     });
     effect(() => {
       // a multi-selection of trees only lives while a tree is selected and the trees stay the same list
@@ -954,7 +958,7 @@ export class BandoEditor {
 
   private init(): void {
     const st = this.studio.start();
-    const map = L.map(this.mapEl().nativeElement, { zoomControl: false, minZoom: 15, maxZoom: 21, zoomSnap: 0.25, zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false, attributionControl: true, doubleClickZoom: false, boxZoom: false }).setView([st.lat, st.lon], st.zoom);
+    const map = L.map(this.mapEl().nativeElement, { zoomControl: false, minZoom: 15, maxZoom: 25, zoomSnap: 0.25, zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false, attributionControl: true, doubleClickZoom: false, boxZoom: false }).setView([st.lat, st.lon], st.zoom);
     this.map = map;
     // the outlines get their own renderer, created now: one created lazily by the first outline clipped it away
     map.addLayer(this.areaRenderer);
@@ -992,10 +996,12 @@ export class BandoEditor {
       }
     });
     const ro = new ResizeObserver(() => {
+      this.fullWidth.set(this.wrapEl().nativeElement.clientWidth);
       map.invalidateSize();
       sync();
     });
     ro.observe(this.wrapEl().nativeElement);
+    ro.observe(this.workEl().nativeElement);
     sync();
     // starting state
     const sh = this.studio.startHalf();
@@ -1021,8 +1027,8 @@ export class BandoEditor {
     if (base === 'off') return;
     this.tiles =
       base === 'sat'
-        ? L.tileLayer(SAT, { maxZoom: 21, maxNativeZoom: 19, opacity, attribution: 'Imagery © Esri, Maxar, Earthstar Geographics' })
-        : L.tileLayer(STREET, { maxZoom: 21, maxNativeZoom: 19, opacity, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' });
+        ? L.tileLayer(SAT, { maxZoom: 25, maxNativeZoom: 19, opacity, attribution: 'Imagery © Esri, Maxar, Earthstar Geographics' })
+        : L.tileLayer(STREET, { maxZoom: 25, maxNativeZoom: 19, opacity, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' });
     this.tiles.addTo(map);
   }
 
@@ -1105,7 +1111,7 @@ export class BandoEditor {
 
   private toWorld(e: { clientX: number; clientY: number }): Pt {
     if (this.world3d) return this.world3d; // a 3D ground event being replayed through the tool code
-    const host = this.wrapEl().nativeElement.getBoundingClientRect();
+    const host = this.workEl().nativeElement.getBoundingClientRect();
     const k = this.ppm(), c = this.siteC();
     return { x: c.x + (e.clientX - host.left - host.width / 2) / k, z: c.z + (e.clientY - host.top - host.height / 2) / k };
   }
@@ -1204,6 +1210,9 @@ export class BandoEditor {
   }
 
   protected bgDown(e: PointerEvent): void {
+    // Inner SVG elements delegate here too; never process the same click again on the SVG root.
+    e.stopPropagation();
+    if (this.debugMode()) { this.debugAt(this.toWorld(e)); return; }
     // only reached while the overlay captures (a drawing tool or a pin is armed)
     const p = this.toWorld(e);
     this.capture(e);
@@ -1562,6 +1571,7 @@ export class BandoEditor {
 
   /** A drag / click on the ground in 3D with a tool active: the same code path as in 2D, with the ground point as the pointer. */
   protected onGround3d(g: { phase: 'down' | 'move' | 'up' | 'hover'; x: number; z: number }): void {
+    if (this.debugMode()) { if (g.phase === 'down') this.debugAt(g); return; }
     if (g.phase === 'hover') {
       this.hover.set({ x: g.x, z: g.z }); // the height readout and the brush ring follow the pointer
       if (this.tool() === 'measure' && this.measure.chain().a) this.measure.hover.set(this.measure.point({ x: g.x, z: g.z }));
@@ -1900,7 +1910,7 @@ export class BandoEditor {
         break;
       case 'frame': {
         // only the dragged edge / corner moves: the opposite side stays where it is on the map
-        const host = this.wrapEl().nativeElement.getBoundingClientRect();
+        const host = this.workEl().nativeElement.getBoundingClientRect();
         const r = (this.rot() * Math.PI) / 180;
         const px = (e.clientX - (host.left + host.width / 2)) * this.mpp(), pz = (e.clientY - (host.top + host.height / 2)) * this.mpp();
         const u = px * Math.cos(r) + pz * Math.sin(r), v = -px * Math.sin(r) + pz * Math.cos(r); // pointer in the frame's axes
@@ -1920,7 +1930,7 @@ export class BandoEditor {
       }
       case 'frameRot': {
         const f = this.fb();
-        const host = this.wrapEl().nativeElement.getBoundingClientRect();
+        const host = this.workEl().nativeElement.getBoundingClientRect();
         const cx = host.left + f.l + f.w / 2, cy = host.top + f.t + f.h / 2;
         const ang = (Math.atan2(e.clientY - cy, e.clientX - cx) * 180) / Math.PI + 90;
         this.rot.set((((snap(ang, e.shiftKey ? 15 : 1) % 360) + 540) % 360) - 180);
@@ -2317,7 +2327,7 @@ export class BandoEditor {
     e.preventDefault();
     const map = this.map;
     if (!map) return;
-    const r = this.wrapEl().nativeElement.getBoundingClientRect();
+    const r = this.workEl().nativeElement.getBoundingClientRect();
     map.setZoomAround(L.point(e.clientX - r.left, e.clientY - r.top), Math.min(21, Math.max(15, map.getZoom() - Math.sign(e.deltaY) * 0.5)), { animate: false });
   }
 
@@ -2347,7 +2357,7 @@ export class BandoEditor {
     }
     const items = this.ctxItems(t.closest('[data-pk]')?.getAttribute('data-pk') ?? '', this.toWorld(e));
     if (!items.length) return;
-    const r = this.wrapEl().nativeElement.getBoundingClientRect();
+    const r = this.workEl().nativeElement.getBoundingClientRect();
     this.ctx.set({ x: Math.max(4, Math.min(e.clientX - r.left, r.width - 190)), y: Math.max(4, Math.min(e.clientY - r.top, r.height - 12 - items.length * 28)), items });
   }
 

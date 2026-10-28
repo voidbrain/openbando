@@ -63,7 +63,8 @@ describe('the showcase', () => {
   it('returns to Welcome and stays out of the Guide sections', () => {
     expect(SHOWCASE.returnToWelcome).toBe(true);
     const intro = SNIPPETS.find((snippet) => snippet.id === 'sc-welcome')!;
-    expect(intro.beats[0]!.actions).toContainEqual({ do: 'hook', hook: 'mascotLoop' });
+    expect(intro.beats[0]!.actions).not.toContainEqual({ do: 'hook', hook: 'mascotLoop' });
+    expect(intro.beats[1]!.actions.at(-1)).toEqual({ do: 'hook', hook: 'mascotLoop' });
     expect(SHOWCASE.snippets.every((id) => SNIPPETS.find((s) => s.id === id)?.section === 'showcase')).toBe(true);
     expect(checkGuide()).toEqual([]);
   });

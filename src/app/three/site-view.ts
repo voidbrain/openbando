@@ -8,7 +8,7 @@ import { rayGround } from '../core/terrain';
 import { buildMeasureView, type MeasureViewItem } from './measure-view';
 
 import {pickModel,type SitePick} from './site-pick';
-import { floorPoint, indoorSourcePick, indoorViewSpec, type IndoorFloor } from './indoor-view';
+import { floorPoint, indoorFloorHeight, indoorSourcePick, indoorViewSpec, type IndoorFloor } from './indoor-view';
 import { basementHandles, buildingHandles, type BuildingHandle } from './building-handles';
 import { siteGround } from '../core/site-ground';
 export type {SitePick} from './site-pick';
@@ -21,7 +21,7 @@ export type {SitePick} from './site-pick';
 export class SiteViewRenderer {
   private readonly renderer: THREE.WebGLRenderer;
   private readonly scene = new THREE.Scene();
-  private readonly camera = new THREE.PerspectiveCamera(50, 1, 0.5, 6000);
+  private readonly camera = new THREE.PerspectiveCamera(50, 1, 0.02, 6000);
   get compassCamera(): THREE.Camera { return this.camera; }
   orientCompass(angle: number, calibration: number): void { this.yaw = (angle - calibration) * Math.PI / 180; }
   private model: SiteModel | null = null;
@@ -42,6 +42,7 @@ export class SiteViewRenderer {
   private readonly ray = new THREE.Raycaster();
   /** 'select': drag orbits and a click selects. 'draw': left-drag reports ground points instead (right-drag / Shift still orbit). */
   mode: 'select' | 'draw' = 'select';
+  debugGround = false;
   onPick: (p: SitePick | null) => void = () => undefined;
   onGround: (phase: 'down' | 'move' | 'up' | 'hover', x: number, z: number) => void = () => undefined;
   /** How the terrain is drawn (natural, height map, wireframe). */
@@ -153,7 +154,7 @@ export class SiteViewRenderer {
     on('contextmenu', (e) => e.preventDefault());
     on('wheel', (e) => {
       e.preventDefault();
-      this.dist = Math.min(2500, Math.max(4, this.dist * (1 + e.deltaY * 0.001)));
+      this.dist = Math.min(2500, Math.max(0.25, this.dist * (1 + e.deltaY * 0.001)));
     }, { passive: false });
     this.raf = requestAnimationFrame(this.tick);
   }
@@ -208,7 +209,8 @@ export class SiteViewRenderer {
   setMeasures(items: readonly MeasureViewItem[]): void {
     this.clearMeasures();
     if (!this.model || !items.length) return;
-    this.measures = buildMeasureView(items, (x, z) => this.model!.ground.at(x, z));
+    const y = this.spec ? indoorFloorHeight(this.spec, this.indoorFloor) : null;
+    this.measures = buildMeasureView(items, (x, z) => y ?? this.model!.ground.at(x, z));
     this.scene.add(this.measures);
   }
 
@@ -276,8 +278,8 @@ export class SiteViewRenderer {
   private groundPoint(e: { clientX: number; clientY: number }): { x: number; z: number } | null {
     const r = this.canvas.getBoundingClientRect();
     this.ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
-    if (this.drawPlaneY !== null) return floorPoint(this.ray.ray, this.drawPlaneY);
-    const grid = this.model?.ground.grid;
+    if (!this.debugGround && this.drawPlaneY !== null) return floorPoint(this.ray.ray, this.drawPlaneY);
+    const grid = this.debugGround && this.spec ? siteGround(this.spec).grid : this.model?.ground.grid;
     if (grid) return rayGround(grid, this.ray.ray.origin, this.ray.ray.direction);
     const p = new THREE.Vector3();
     return this.ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), p) ? { x: p.x, z: p.z } : null;

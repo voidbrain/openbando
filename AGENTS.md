@@ -348,3 +348,11 @@ npm run check:i18n                        # every UI text has its Italian
 - `ui/widgets/camera-compass.ts` is the fixed north widget in the main stage and editor 3D view; it follows each camera and calibration. Keep the old ground north marker removed.
 
 - A hidden site's flight calibration may contain a private GPS `reference` established from the first accepted flight or live fix after alignment. Do not save a live reference while the initial recorded-flight alignment is still pending. Replay, pin/rotation, inverse projection and live GPS use the same fixed local frame. Keep the reference through local save/import and remove the entire calibration when sharing hidden sites. Never include the reference in race packages. Existing calibrations without a reference migrate by preserving the first fix.
+
+## Studio precision and Welcome regression checks
+
+- Inspector is docked right by default; `.work` owns the map, SVG, 3D canvas and compass. Use its bounds for pointer conversion and map sizing. The inspector must never consume invisible editing space beneath itself.
+- Ground-coordinate debug mode is transient and does not edit the spec. Coordinates are local x east, y up, z south in metres; ignore buildings and indoor floor planes when sampling ground. Do not reveal hidden geographic coordinates.
+- Inner SVG handlers delegate to `bgDown`; it must stop propagation so an indoor measure is processed once. 3D measure lines and placement use the selected floor height, including basement −1.
+- Welcome tour card highlights run alongside the mascot; the loop gate is last, before closing Welcome. Count rendered animation time from the entry-screen restart. Hide the main compass during the tour and replay/race paths while Welcome is open. Keep the main compass above the version badge.
+- Hide all records the visible workspace. Reset restores that set with default geometry. Repeated Hide all must not replace it with an empty snapshot.

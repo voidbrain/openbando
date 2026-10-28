@@ -123,10 +123,11 @@ export class SceneService {
       untracked(() => this.host?.paths.rebuild(this.flights.all, this.flights.speedMax));
     });
     effect(() => {
-      const on=this.race.enabled(),tracks=on?this.race.tracks():[],gate=on?this.race.gate():null,speedTrails=this.race.speedTrails();
+      const welcome = this.layout.panels().welcome.visible;
+      const on=this.race.enabled() && !welcome,tracks=on?this.race.tracks():[],gate=on?this.race.gate():null,speedTrails=this.race.speedTrails();
       this.ready();
       if(this.raceRenderer) {this.raceRenderer.group.visible=on;this.raceRenderer.synchronize(on?tracks:[],on?gate:null,speedTrails);}
-      if(this.host)this.host.paths.group.visible=!on;
+      if(this.host)this.host.paths.group.visible=!on && !welcome;
     });
     effect(() => {
       const v = this.view.cameraView();
@@ -211,7 +212,7 @@ export class SceneService {
 
   /** True when chase / FPV / orbit-follow track the replayed drone instead of the simulator drone. */
   followingReplay(): boolean {
-    return this.view.replayFollow() && !!this.flights.active && !this.sim.state.armed;
+    return !this.layout.panels().welcome.visible && this.view.replayFollow() && !!this.flights.active && !this.sim.state.armed;
   }
 
   subject(): FollowSubject {
@@ -219,7 +220,7 @@ export class SceneService {
   }
 
   rigContext(): RigContext {
-    return { followingReplay: this.followingReplay(), flight: this.race.enabled() ? null : this.flights.active, simPosition: this.sim.state.p, replayPosition: this.playback.pose.p };
+    return { followingReplay: this.followingReplay(), flight: this.race.enabled() || this.layout.panels().welcome.visible ? null : this.flights.active, simPosition: this.sim.state.p, replayPosition: this.playback.pose.p };
   }
 
   private placeOptions(): PlaceOptions {
@@ -358,7 +359,7 @@ export class SceneService {
     const host = this.host;
     if (!host) return;
     host.drones.syncSim(this.sim.state, dt);
-    host.drones.syncGhost(this.playback.pose.p, this.playback.pose.q, this.race.enabled()?null:this.flights.active);
+    host.drones.syncGhost(this.playback.pose.p, this.playback.pose.q, this.race.enabled() || this.layout.panels().welcome.visible ? null : this.flights.active);
     this.raceRenderer?.update(this.race.time,host.mainCamera,id=>this.race.stale(id));
     if (this.autoOrbit() && this.view.cameraView() === 'orbit') this.mainOrbit.th += dt * 0.07;
     // a look-around the pilot started from the chase camera ends by itself: idle for a moment, back to the chase

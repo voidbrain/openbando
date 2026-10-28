@@ -221,3 +221,11 @@ Racing can colour trails by speed while drones and pilot-name labels retain each
 The mascot loop now includes the cross-legged confused keyframe and keeps the drone invisible until takeoff. Sources and timing are in [the character guide](docs/mascot/README.md). Browser visual verification of these changes is pending; local Chromium installation failed.
 
 The main 3D view and the editor’s 3D view show a fixed north compass that follows the camera. X-ray fades obstructions for the active followed drone and for surfaces immediately in front of the camera, rather than tracking an inactive parked drone while orbiting.
+
+### Precision in Studio
+
+The Inspector starts docked on the right; the plan and 3D canvas occupy the remaining space. Undock it with its header button. The plan supports zoom level 25 (imagery is enlarged beyond its native detail); the 3D editor can approach to 25 cm with a 2 cm near clipping plane.
+
+Enable **Debug coordinates** in the Studio top bar and click to read local x (east), y (up), z (south), in metres. It samples ground through buildings, including in indoor mode, and does not change the model or expose a hidden bando’s geographic location. Indoor measures use the edited floor’s height.
+
+The simulator quad geometry spans approximately 0.39 m on each horizontal axis before display scaling. The replay quad starts at four times that size, and both scene markers enlarge with camera distance for readability. Their visible dimensions do not define the simulator collision size.
