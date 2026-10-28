@@ -379,21 +379,21 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-011 | 🔹 P3 | Open | Guide and historical documentation drift |
+| 🟡 | F-011 | 🔹 P3 | Implemented | Guide and historical documentation drift |
 
-**→ Human action required:** 💻 **No**<br />Agent can re-record guide clips/films and review them against the current UI.
+**→ Human action required:** 💻 **No**<br />Confirm the media PR's CI, then close.
 
-**Next action / closure evidence:** README and AGENTS corrected for diagonal Cut/Wing, 3D vertices, release 11 and showcase exit. Regenerated guide pages and corrected generator entry instructions. Clips and Welcome films last changed 24 October; re-record and visually review them against current UI.
+**Next action / closure evidence:** Re-recorded 2026-10-29: all 13 guide clips (`npm run clips`, GPU) and the three Welcome films (`npm run films`). Reviewed frames at 40 % and 95 % of every clip and 10/50/90 % of every film against the current UI (indigo chrome, caption countdown ring, current Views): the old clips still showed the pre-indigo Views panel. The first fly film filmed the tour caption: the recorder added its hiding style after the page loaded, too late in a parallel run; it now injects it before load (re-recorded, no caption). The place clip types Chiari e Forti's published coordinates (a public example), as before. Clips still end on about a second after the step's panels close, as the old ones did. Guide Markdown unchanged. History: README and AGENTS corrected for diagonal Cut/Wing, 3D vertices, release 11 and showcase exit. Regenerated guide pages and corrected generator entry instructions. Clips and Welcome films last changed 24 October; re-record and visually review them against current UI.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#102](https://github.com/voidbrain/openbando/pull/102) (audit; review remains open) |
+| PR / evidence | [#167](https://github.com/voidbrain/openbando/pull/167) (re-recorded clips and films, recorder fix); [#102](https://github.com/voidbrain/openbando/pull/102) (audit) |
 | Opened | 2026-10-27 |
-| Verification | Documentation · 2026-10-28 · source/history audit and guide regeneration; media visual verification · Pending |
-| Reviewed | 2026-10-28 |
+| Verification | Documentation · 2026-10-28 · source/history audit and guide regeneration; Media review · 2026-10-29 · agent frame review of every re-recorded clip and film (contact sheets); CI · Pending |
+| Reviewed | 2026-10-29 |
 
 </details>
 

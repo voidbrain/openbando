@@ -62,9 +62,14 @@ test('film: build', async ({ page }) => {
 
 test('film: fly (from the showcase)', async ({ page }) => {
   const t0 = Date.now();
+  // the films have no caption or drawn cursor: they play under any language. Inject before the page loads: a style
+  // added after goto came too late in a parallel run and the caption was filmed.
+  await page.addInitScript(() => document.addEventListener('DOMContentLoaded', () => {
+    const style = document.createElement('style');
+    style.textContent = 'app-tour-overlay { visibility: hidden !important; }';
+    document.head.append(style);
+  }));
   await page.goto('/?tour=showcase&lang=en');
-  // the films have no caption or drawn cursor: they play under any language
-  await page.addStyleTag({ content: 'app-tour-overlay { visibility: hidden !important; }' });
   const say = page.locator('app-tour-overlay .bar .say');
   await expect(say).toContainText('every number of the flight', { timeout: 120_000 });
   const relive = (Date.now() - t0) / 1000 + 1.5;
