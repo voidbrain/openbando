@@ -105,3 +105,5 @@ Require WCAG AA text contrast (4.5:1 for ordinary text; 3:1 only for qualifying 
 
 
 Interaction contrast probes reuse one axe engine in the main document and batch discovery of distinct style/state representatives; page-wide axe remains a separate check. This avoids repeated engine/frame setup without changing contrast thresholds or removing interaction states.
+
+UI contrast tests use a small real model rather than a large surveyed site: geometry complexity is unrelated to text contrast. Running-guide caption probes are separate from static Views/Guide and editor probes to avoid covered controls. Keep page-wide axe and real hover/focus states, and label bounded actionability failures.

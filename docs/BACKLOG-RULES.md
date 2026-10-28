@@ -29,7 +29,7 @@ Staleness prompts review, not a status change by itself. During a full review, f
 - PR / evidence identifies actual changes or checks with links and labels. Use `—` if no PR is known. Link latest relevant evidence without discarding important historical context.
 - Verification records date, method, result and evidence separately from Reviewed. Methods: Human, Unit/integration, Browser/accessibility, Real-device and Documentation. Use Pending where applicable; different checks may have different dates. A unit test does not prove visual/field behavior, and an overall CI result does not replace checking which jobs ran.
 - Reviewed is when status/evidence were actually reconciled, not an inferred merge date. Preserve existing dated history; do not invent dates.
-- Human action required is a visible paragraph immediately after Next action in every active bug/feature record: `**Yes**<br />One short sentence naming the human action.` or `**No**<br />One short sentence naming the agent's next action.` Reassess whenever the next step changes. One manual review can cover related IDs; reference the shared item instead of implying separate approvals.
+- Human action required is a visible paragraph immediately after Next action in every active bug/feature record: `🧑 **Yes**<br />One short sentence naming the human action.` or `💻 **No**<br />One short sentence naming the agent's next action.` Reassess whenever the next step changes. One manual review can cover related IDs; reference the shared item instead of implying separate approvals.
 
 ## Visual cues and table integrity
 
@@ -63,3 +63,5 @@ On every change or review, actively reassess whether each affected bug/feature s
 For the active record layout, also validate one summary per stable ID, exactly one visible Next action and Human action paragraph per item, and a complete metadata table with PR/evidence, Opened, Verification and Reviewed. Keep expandable details balanced. Reformatting must preserve content, dates and evidence; it is not verification of the product.
 
 Run `npm run check:backlog` after every ledger edit. CI validates active summary widths, visible next/human actions, metadata fields, date formats, unique IDs, status/priority cues and balanced details. Historical archives remain outside this active-layout schema.
+
+Human-action cues identify the next actor: 🧑 Yes requires a human; 💻 No is agent-owned and does not mean complete. Keep the written Yes/No and recap; do not infer status or priority from this cue. Validate cue/value agreement. Historical archives retain their original cues.

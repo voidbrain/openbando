@@ -243,3 +243,5 @@ The main compass appears with a nonblank model and stays hidden while Welcome is
 The Welcome showcase plays each introductory card film and the complete demo flight before returning to Welcome. It restores an overview rather than following the old replay; loaded logs remain available. Shared contrast checks (`npm run check:contrast`) complement browser axe checks of page text and representative hover/focus states.
 
 The backlog keeps each next action directly below its compact item summary, with human dependencies visible and PR/date/verification history expandable.
+
+Backlog human-action cues use 🧑 Yes for human input and 💻 No for agent-owned work; neither replaces the item status.

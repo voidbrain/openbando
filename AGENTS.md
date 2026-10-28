@@ -399,3 +399,6 @@ Follow [docs/BACKLOG-RULES.md](docs/BACKLOG-RULES.md), the authoritative mainten
 
 - Backlog layout: compact five-column item summaries; keep Next action and Human action visible immediately below each item, outside expandable metadata. PR history, Opened, Verification and Reviewed belong in its two-column details table. Preserve complete records and historical archive layouts; follow BACKLOG-RULES.
 - Contrast probes reuse one in-page axe engine and discover style representatives in a single DOM pass; keep full-page accessibility checks separate. Do not inflate browser budgets or drop contrast thresholds to hide slow test orchestration. Showcase examples are temporary; continuation tests must create their own saved bando fixture.
+
+- Human-action cues in active backlog records: 🧑 **Yes** for a required human action, 💻 **No** for agent-owned next action. Keep text/recap and validate the pairing; No does not mean closed.
+- UI contrast fixtures use a small real model to avoid unrelated software-rendering load. Running-guide probes target the caption; static Views/Guide and editor cases cover their own controls. Label each hover/focus probe and bound actionability waits so occluded controls fail diagnostically.
