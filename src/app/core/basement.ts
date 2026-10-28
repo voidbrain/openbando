@@ -92,10 +92,39 @@ export function saveBasementFloor(b: BuildingSpec, floor: BuildingSpec, saveOutl
   return true;
 }
 
+/** Restore old boundary breakpoints so collinear edges with different wall states never merge. */
+function reshapePerimeter(old: Vec2[], flags: boolean[], next: Vec2[]): { outline: Vec2[]; walls: boolean[] } | null {
+  const onSegment = (p: Vec2, a: Vec2, b: Vec2): number | null => {
+    const dx = b.x - a.x, dz = b.z - a.z, length = Math.hypot(dx, dz);
+    if (length < 1e-6) return null;
+    const t = ((p.x - a.x) * dx + (p.z - a.z) * dz) / (length * length);
+    return t >= -1e-6 && t <= 1 + 1e-6 && Math.abs((p.x - a.x) * dz - (p.z - a.z) * dx) / length < 1e-6 ? t : null;
+  };
+  const outline = next.flatMap((a, i) => {
+    const b = next[(i + 1) % next.length]!;
+    const splits = old.map(p => ({p, t: onSegment(p, a, b)}))
+      .filter((cut): cut is {p: Vec2; t: number} => cut.t !== null && cut.t > 1e-6 && cut.t < 1 - 1e-6)
+      .sort((x, y) => x.t - y.t);
+    return [{...a}, ...splits.map(cut => ({...cut.p}))];
+  });
+  if (!validOutline(outline)) return null;
+  const walls = outline.map((a, i) => {
+    const b = outline[(i + 1) % outline.length]!;
+    const edge = old.findIndex((p, j) => {
+      const q = old[(j + 1) % old.length]!;
+      return onSegment(a, p, q) !== null && onSegment(b, p, q) !== null;
+    });
+    return edge < 0 ? true : flags[edge]!;
+  });
+  return {outline, walls};
+}
+
 /** Add or cut a rectangular section of the basement, leaving the upper building unchanged. */
 export function reshapeBasement(b: BuildingSpec, rect: Rect, op: 'add' | 'cut'): boolean {
-  if (!b.basement || b.basement.wallEdges?.some(v => !v) || Object.values(b.basement.sides ?? {}).includes(false)) return false;
-  if (isRectilinear(basementOutline(b))) {
+  if (!b.basement) return false;
+  const flags = perimeterWalls(b);
+  if (!flags) return false;
+  if (isRectilinear(basementOutline(b)) && flags.every(Boolean)) {
     const floor = basementBuilding(b);
     floor.levels[0]!.partitions = structuredClone(floor.levels[0]!.partitions);
     if (!reshapeBuilding(floor, rect, op)) return false;
@@ -103,13 +132,18 @@ export function reshapeBasement(b: BuildingSpec, rect: Rect, op: 'add' | 'cut'):
   }
   // The tool rectangle is relative to the centred basement view; the saved outline is building-local.
   const old = basementOutline(b), before = bounds(old), ox = (before.x0 + before.x1) / 2, oz = (before.z0 + before.z1) / 2;
-  const next = polygonRect(old, {x0: rect.x0 + ox, x1: rect.x1 + ox, z0: rect.z0 + oz, z1: rect.z1 + oz}, op);
-  if (!next || next.some(p => Math.abs(p.x) > BASEMENT_COORD_LIMIT || Math.abs(p.z) > BASEMENT_COORD_LIMIT)) return false;
+  const result = polygonRect(old, {x0: rect.x0 + ox, x1: rect.x1 + ox, z0: rect.z0 + oz, z1: rect.z1 + oz}, op);
+  const perimeter = result && reshapePerimeter(old, flags, result);
+  if (!perimeter) return false;
+  const next = perimeter.outline;
+  if (next.some(p => Math.abs(p.x) > BASEMENT_COORD_LIMIT || Math.abs(p.z) > BASEMENT_COORD_LIMIT)) return false;
   // Convert and validate openings first; never commit a shape that would discard one or an interior item.
   const copy = structuredClone(b);
   if (!moveBasementVertex(copy, 0, old[0]!)) return false;
   const after = bounds(next), dx = before.x0 - after.x0, dz = before.z0 - after.z0, basement = copy.basement!;
   basement.outline = next;
+  if (perimeter.walls.some(v => !v)) basement.wallEdges = perimeter.walls;
+  else delete basement.wallEdges;
   if (basement.columns) basement.columns = basement.columns.map(c => ({...c, x:c.x + dx, z:c.z + dz}));
   if (basement.partitions) basement.partitions = basement.partitions.map(w => w.map(p => ({x:p.x + dx,z:p.z + dz})) as [Vec2, Vec2]);
   if (basement.voids) basement.voids = basement.voids.map(v => ({...v,x0:v.x0 + dx,x1:v.x1 + dx,z0:v.z0 + dz,z1:v.z1 + dz}));
