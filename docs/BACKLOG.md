@@ -156,6 +156,28 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+### B-023
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-023 | 🔶 P2 | Implemented | Welcome navigation leaves tour overlays; focus detaches on resize |
+
+**→ Human action required:** 💻 **No**<br />Run cancellation, destination preservation and resize-focus browser checks.
+
+**Next action / closure evidence:** Welcome links and a real user close cancel/clean the tour before navigation, suppressing the tour’s return-to-Welcome restoration. Focus follows its live target bounds each frame and clears if removed. Unit checks cover cancellation during preparation and moving/resizing/detached targets; browser workflow added. Stop remains the separate return-to-Welcome action.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | FOLLOWUP_PR |
+| Opened | 2026-10-28 |
+| Verification | Unit/integration + Documentation · 2026-10-28 · local checks passed; Browser/accessibility · Pending |
+| Reviewed | 2026-10-28 |
+
+</details>
+
 ## Features and limitations
 
 ### F-001
@@ -441,6 +463,28 @@ Each item has a compact summary, followed by **→ Human action required** first
 | PR / evidence | [#155](https://github.com/voidbrain/openbando/pull/155) |
 | Opened | 2026-10-28 |
 | Verification | Unit/integration · 2026-10-28 · local suite passed; Browser/accessibility · Pending |
+| Reviewed | 2026-10-28 |
+
+</details>
+
+### F-020
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | F-020 | 🔶 P2 | Implemented | Views hierarchy and scoped camera options |
+
+**→ Human action required:** 💻 **No**<br />Run Views default folds, quick controls and camera-mode checks.
+
+**Next action / closure evidence:** Bandos editor plus Flights/Timeline/Video remain directly available. Telemetry, Simulator and Tools default folded, preserving saved preferences; Reset restores default folds. Camera groups hide in Video main mode. Options is closed by default. Orbit/Top follow the drone; Chase/FPV retain separately labelled replay-follow. Roof visibility affects shared geometry, satellite has separate main/Studio controls, X-ray retains FPV camera-near fading, and Reset returns to Orbit/parks the simulator. Browser checks pending.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | FOLLOWUP_PR |
+| Opened | 2026-10-28 |
+| Verification | Unit/integration + Documentation · 2026-10-28 · local checks passed; Browser/accessibility · Pending |
 | Reviewed | 2026-10-28 |
 
 </details>

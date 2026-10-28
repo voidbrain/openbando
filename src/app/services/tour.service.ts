@@ -1,5 +1,6 @@
-import { Service, inject, signal } from '@angular/core';
+import { DestroyRef, Service, inject, signal } from '@angular/core';
 import { animateTour, TourAnimationClock } from '../core/tour-animation';
+import { FrameLoopService, FrameOrder } from './frame-loop.service';
 import { AI_SCRIPTS, SNIPPET_BY_ID, backTarget, playTime, type At, type Beat, type Hook, type Need, type Snippet, type Tour, type TourAction } from '../core/tour';
 import { sanitizeSpec } from '../core/site-spec';
 import { MASCOT_DURATION } from '../core/mascot';
@@ -78,6 +79,7 @@ export class TourService {
   readonly state = signal<TourState | null>(null);
   /** Current action for browser-test diagnostics when a guide fails to finish. */
   readonly diagnostic = signal('');
+  readonly navigating = signal(false);
   /** Remaining fraction of this snippet; variable guide work uses a labelled estimate. */
   readonly stepRemaining = signal(1);
   private stepStarted = 0;
@@ -101,6 +103,30 @@ export class TourService {
 
   editor: TourEditor | null = null;
   private stop = false;
+  private navigationExit = false;
+  private focusTarget: HTMLElement | null = null;
+
+  constructor() {
+    const remove = inject(FrameLoopService).add(FrameOrder.widgets, () => {
+      if (!this.focus() || !this.focusTarget) return;
+      if (!this.focusTarget.isConnected) { this.focus.set(null); this.focusTarget = null; return; }
+      const r = this.focusTarget.getBoundingClientRect(), f = this.focus()!;
+      if (!r.width || !r.height) { this.focus.set(null); this.focusTarget = null; return; }
+      if (r.left !== f.x || r.top !== f.y || r.width !== f.w || r.height !== f.h)
+        this.focus.set({x: r.left, y: r.top, w: r.width, h: r.height});
+    });
+    inject(DestroyRef).onDestroy(remove);
+  }
+
+  /** Finish cleanup before a user's navigation; do not replace their destination with Welcome. */
+  async leaveForNavigation(): Promise<void> {
+    if (!this.state()) return;
+    this.navigationExit = true;
+    this.navigating.set(true);
+    this.end();
+    this.focus.set(null); this.focusTarget = null; this.cursor.set(null); this.ring.set(null);
+    while (this.state()) await new Promise(resolve => setTimeout(resolve, 30));
+  }
   private paused = false;
   private readonly animationClock = new TourAnimationClock();
   private activeTime(): number { return this.animationClock.time(performance.now()); }
@@ -180,6 +206,8 @@ export class TourService {
     if (this.state()) this.end();
     while (this.state()) await new Promise((r) => setTimeout(r, 50));
     this.stop = this.paused = this.skip = false;
+    this.navigationExit = false;
+    this.navigating.set(false);
     this.animationClock.pause(false, performance.now());
     this.jump = null;
     this.firsts = beats.map((b) => b.first);
@@ -204,6 +232,7 @@ export class TourService {
           this.state.update((s) => (s ? { ...s, preparing: false } : s));
         }
         for (const a of b.actions) {
+          if (this.stop) throw new Stopped();
           if (this.skip) break;
           this.diagnostic.set(a.do === 'hook' ? `hook:${a.hook}${a.hook === 'welcomePart' ? ':' + a.arg : ''}` : 'at' in a ? `${a.do}:${a.at}` : a.do);
           await this.act(a);
@@ -231,8 +260,8 @@ export class TourService {
         this.playback.transport.setLoop(transportBefore.loop);
         this.playback.transport.setSpeed(transportBefore.speed);
         this.playback.transport.setDirection(transportBefore.direction);
-        this.entryScreen();
-      } else {
+        if (!this.navigationExit) this.entryScreen();
+      } else if (!this.navigationExit) {
         this.layout.restore(before);
       }
       this.ai.demo.set(false);
@@ -240,6 +269,7 @@ export class TourService {
       this.state.set(null);
       this.cursor.set(null);
       this.focus.set(null);
+      this.focusTarget = null;
       this.ring.set(null);
     }
   }
@@ -403,6 +433,7 @@ export class TourService {
   /** Move the cursor in a slight arc, outlining the target. */
   private async glide(x: number, y: number, el?: HTMLElement): Promise<void> {
     if (el) {
+      this.focusTarget = el;
       const r = el.getBoundingClientRect();
       this.focus.set({ x: r.left, y: r.top, w: r.width, h: r.height });
     }

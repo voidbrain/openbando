@@ -85,7 +85,7 @@ const PILLARS: readonly Pillar[] = [
           }
           <button class="btn" [class.primary]="!tour.welcomeSeen()" (click)="showcase()" data-tour="welcome-tour">▶ Watch <span translate="no">Welcome</span></button>
           <button class="btn" (click)="go(['guide'], false)">Guide me</button>
-          <button class="btn" (click)="layout.setVisible('features', true)">Features</button>
+          <button class="btn" (click)="go(['features'], false)">Features</button>
           <span class="grow"></span>
           <span class="dim small">No account needed. Your logs, videos and places stay on this computer.</span>
         </footer>
@@ -218,10 +218,11 @@ export class WelcomePanel {
 
 
   /** A link: close Welcome, open the panels for that job (the Bandos panel on its list) side by side, on top. */
-  protected go(open: readonly PanelId[], list: boolean): void {
+  protected async go(open: readonly PanelId[], list: boolean): Promise<void> {
+    await this.tour.leaveForNavigation();
     if (list && this.studio.view() !== 'list') this.studio.back();
     this.layout.setVisible('welcome', false);
-    void this.placer.open(open);
+    await this.placer.open(open);
   }
 
   protected showcase(): void {

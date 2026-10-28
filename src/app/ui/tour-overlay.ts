@@ -30,7 +30,7 @@ import { TourService } from '../services/tour.service';
         <path d="M3 2 L3 19 L8 14.5 L11.5 22 L14.5 20.6 L11 13.2 L17.5 13.2 Z" />
       </svg>
     }
-    @if (tour.state(); as s) {
+    @if (tour.navigating() ? null : tour.state(); as s) {
       <div #bar class="bar" role="status" aria-live="polite" [attr.data-preparing]="s.preparing || null" [attr.data-action]="tour.diagnostic() || null" [style.left.px]="barAt().left" [style.top.px]="barAt().top" [style.bottom.px]="barAt().bottom">
         <div class="head">
           <span class="grip" title="Drag to move" aria-hidden="true" (pointerdown)="gripDown($event)" (pointermove)="gripMove($event)" (pointerup)="gripUp($event)" (pointercancel)="gripUp($event)">⠿</span>

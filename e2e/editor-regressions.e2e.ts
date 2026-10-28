@@ -60,6 +60,7 @@ test('Welcome shows the approved wordmark, Features link and revised pose assets
 test('active Views icon buttons retain contrast on hover', async ({page}) => {
   await page.goto('/');
   await page.getByRole('button', {name: 'Close Welcome', exact: true}).click();
+  await page.locator('app-views-panel .options > summary').click();
   const roofs = page.locator('app-views-panel').getByRole('button', {name: 'Hide roofs', exact: true});
   if (await roofs.getAttribute('aria-pressed') !== 'true') await roofs.click();
   await expect(roofs).toHaveClass(/\bib\b/);
@@ -562,4 +563,23 @@ test('basement Cut preserves open perimeter spans in plan and 3D', async ({page}
   await expect(page.locator('app-site-view .fail')).toHaveCount(0);
   await page.locator('app-site-view .vertex-access summary').click();
   await expect(page.locator('app-site-view .vertex-key')).toHaveCount(8);
+});
+
+
+test('Views promotes workflow panels and scopes camera controls to the 3D main page', async ({page}) => {
+  await page.goto('/');
+  await page.getByRole('button', {name: 'Close Welcome', exact: true}).click();
+  const views = page.locator('app-views-panel');
+  for (const id of ['studio', 'flights', 'timeline', 'video'])
+    await expect(views.locator(`.quick [data-panel="${id}"]`)).toBeVisible();
+  for (const name of ['Telemetry', 'Simulator', 'Tools'])
+    await expect(views.getByRole('button', {name: '▾ ' + name, exact: true})).toHaveAttribute('aria-expanded', 'false');
+  await expect(views.locator('.options')).not.toHaveAttribute('open');
+  await views.getByRole('radio', {name: 'Video', exact: true}).check();
+  await expect(views.getByRole('group', {name: 'Main page camera', exact: true})).toHaveCount(0);
+  await views.getByRole('radio', {name: '3D model', exact: true}).check();
+  await expect(views.getByRole('group', {name: 'Main page camera', exact: true})).toBeVisible();
+  await views.locator('.options > summary').click();
+  await views.getByRole('button', {name: 'FPV', exact: true}).click();
+  await expect(views.getByText('Follow replay', {exact: true})).toBeVisible();
 });
