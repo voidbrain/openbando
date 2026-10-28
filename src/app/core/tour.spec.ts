@@ -64,7 +64,9 @@ describe('the showcase', () => {
     expect(SHOWCASE.returnToWelcome).toBe(true);
     const intro = SNIPPETS.find((snippet) => snippet.id === 'sc-welcome')!;
     expect(intro.beats[0]!.actions).not.toContainEqual({ do: 'hook', hook: 'mascotLoop' });
-    expect(intro.beats[1]!.actions.at(-1)).toEqual({ do: 'hook', hook: 'mascotLoop' });
+    expect(intro.beats[1]!.actions.filter(a => a.do === 'hook')).toEqual(['build', 'fly', 'share'].map(arg => ({do: 'hook', hook: 'welcomePart', arg})));
+    expect(intro.beats[1]!.actions.filter(a => a.do === 'wait')).toHaveLength(0);
+    expect(SNIPPETS.find(s => s.id === 'sc-replay')!.beats.at(-1)!.actions.at(-1)).toEqual({do: 'hook', hook: 'replayEnd'});
     expect(SHOWCASE.snippets.every((id) => SNIPPETS.find((s) => s.id === id)?.section === 'showcase')).toBe(true);
     expect(checkGuide()).toEqual([]);
   });

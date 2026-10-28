@@ -197,10 +197,10 @@ export class WelcomePanel {
   constructor() {
     // the film in focus plays, the others rest
     effect(() => {
-      const id = this.focus();
+      const id = this.focus(), visible = this.layout.panels().welcome.visible;
       for (const f of this.films()) {
         const v = f.nativeElement;
-        if (v.dataset['id'] === id) void v.play().catch(() => undefined);
+        if (visible && v.dataset['id'] === id) void v.play().catch(() => undefined);
         else v.pause();
       }
     });

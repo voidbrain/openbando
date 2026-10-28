@@ -13,7 +13,8 @@
     "clips": "playwright test --config=playwright.clips.config.ts e2e/clips.record.ts && node tools/build-guide.mjs",
     "films": "playwright test --config=playwright.clips.config.ts e2e/welcome-films.record.ts",
     "race:relay": "esbuild tools/racing/relay.ts --bundle --platform=node --format=esm --outfile=.angular/race-relay.mjs --log-level=warning && node .angular/race-relay.mjs",
-    "test:race-relay": "esbuild tools/racing/relay.ts --bundle --platform=node --format=esm --outfile=.angular/race-relay.mjs --log-level=warning && node --test tools/racing/relay.test.mjs"
+    "test:race-relay": "esbuild tools/racing/relay.ts --bundle --platform=node --format=esm --outfile=.angular/race-relay.mjs --log-level=warning && node --test tools/racing/relay.test.mjs",
+    "check:contrast": "node tools/check-contrast.mjs"
   },
   "private": true,
   "packageManager": "npm@11.17.0",

@@ -26,3 +26,5 @@ The Welcome-only pixel mascot sits beside the title. This is the explicit decora
 The Welcome tour highlights Build/Fly/Share while the mascot plays, then waits for the first full rendered mascot loop before closing the panel. Returning to Welcome hides replay and race paths.
 
 Features opens its own panel and is reachable with `?panel=features`; it is excluded from Views. Its marketing card grid is an explicit content exception to the instrument UI field-manual voice, not permission to add promotional copy to editing controls.
+
+The showcase highlights Build, Fly and Share in turn, playing each eight-second film completely and distributing mascot progress across the three stages. Films pause while Welcome is hidden. There is no separate long wait after the third card.

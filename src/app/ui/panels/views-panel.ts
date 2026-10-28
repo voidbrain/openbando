@@ -230,7 +230,7 @@ const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'cam
               @if (s.title) { <div class="sub">{{ s.title }}</div> }
               <div class="list">
                 @for (p of s.panels; track p.id) {
-                  <button class="vis" [class.on]="layout.panels()[p.id].visible" (click)="layout.toggle(p.id)" [attr.aria-pressed]="layout.panels()[p.id].visible" [title]="(layout.panels()[p.id].visible ? 'Hide ' : 'Show ') + p.title">
+                  <button class="vis" [attr.data-panel]="p.id" [class.on]="layout.panels()[p.id].visible" (click)="layout.toggle(p.id)" [attr.aria-pressed]="layout.panels()[p.id].visible" [title]="(layout.panels()[p.id].visible ? 'Hide ' : 'Show ') + p.title">
                     <app-tool-icon [name]="layout.panels()[p.id].visible ? 'eye' : 'eyeOff'" /><span>{{ short(p) }}</span>
                   </button>
                 }

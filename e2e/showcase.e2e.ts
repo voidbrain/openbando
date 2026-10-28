@@ -20,6 +20,16 @@ test('the showcase link plays to the end', async ({ page }) => {
   await page.waitForTimeout(2000);
   await expect(bar).toBeHidden();
   await expect(page.locator('app-panel[data-id=welcome]')).toBeVisible();
+  const media = await replayVideo.evaluate(video => ({time: (video as HTMLVideoElement).currentTime, duration: (video as HTMLVideoElement).duration}));
+  expect(media.time).toBeGreaterThan(media.duration - 1);
+  await page.locator('[data-tour=close-welcome]').click();
+  const views = page.locator('app-views-panel');
+  await expect(views.locator('.cams .seg button').first()).toHaveAttribute('aria-pressed', 'true');
+  await expect(views.locator('button.btn.ib').filter({has: page.locator('app-tool-icon[name="follow"]')})).toHaveAttribute('aria-pressed', 'false');
+  await views.locator('button.vis[data-panel=studio]').click();
+  const studio = page.locator('app-studio-panel');
+  await studio.locator('.card:not(.ex)').filter({hasText: 'Villetta'}).first().locator('button.title').click();
+  await expect(page.locator('app-stage app-camera-compass')).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -28,7 +38,13 @@ test('showcase keeps Welcome open for a complete mascot loop', async ({ page }) 
   // Observe before navigation: short cursor actions can finish between Playwright polls.
   await page.addInitScript(() => {
     const actions: string[] = [];
-    Object.assign(window, { welcomeActions: actions });
+    const films: Record<string, number> = {};
+    Object.assign(window, { welcomeActions: actions, welcomeFilmProgress: films });
+    document.addEventListener('timeupdate', event => {
+      const film = event.target;
+      if (film instanceof HTMLVideoElement && film.closest('app-welcome-panel') && film.dataset['id'])
+        films[film.dataset['id']] = Math.max(films[film.dataset['id']] ?? 0, film.currentTime);
+    }, true);
     new MutationObserver(records => {
       for (const record of records) {
         if (!(record.target instanceof Element) || !record.target.matches('app-tour-overlay .bar')) continue;
@@ -39,20 +55,19 @@ test('showcase keeps Welcome open for a complete mascot loop', async ({ page }) 
   });
   await page.goto('/?tour=showcase&lang=en');
   const bar = page.locator('app-tour-overlay .bar');
-  // The card highlights must run before the end-of-loop gate, alongside the mascot.
-  await expect(bar).toHaveAttribute('data-action', 'hook:mascotLoop', { timeout: 20_000 });
-  const actions = await page.evaluate(() => (window as unknown as { welcomeActions: string[] }).welcomeActions);
-  const build = actions.findIndex(action => action.startsWith('point:welcome-build'));
-  const fly = actions.findIndex(action => action.startsWith('click:welcome-fly'));
-  const share = actions.findIndex(action => action.startsWith('point:welcome-share'));
-  const gate = actions.indexOf('hook:mascotLoop');
-  expect(build, JSON.stringify(actions)).toBeGreaterThanOrEqual(0);
-  expect(fly).toBeGreaterThan(build);
-  expect(share).toBeGreaterThan(fly);
-  expect(gate).toBeGreaterThan(share);
-  await expect(page.locator('app-panel[data-id="welcome"]')).toBeVisible();
-  await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
-  await expect(bar).not.toHaveAttribute('data-action', 'hook:mascotLoop', { timeout: 90_000 });
+  // Observe each distributed gate; there is no long, separate gate after Share.
+  for (const part of ['build', 'fly', 'share']) {
+    await expect(bar).toHaveAttribute('data-action', `hook:welcomePart:${part}`, {timeout: 90_000});
+    await expect(page.locator('app-panel[data-id="welcome"]')).toBeVisible();
+    await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
+  }
+  await expect(bar).not.toHaveAttribute('data-action', 'hook:welcomePart:share', {timeout: 90_000});
+  const actions = await page.evaluate(() => (window as unknown as {welcomeActions: string[]}).welcomeActions);
+  for (const part of ['build', 'fly', 'share']) expect(actions).toContain(`hook:welcomePart:${part}`);
+  expect(actions).not.toContain('hook:mascotLoop');
+  const films = await page.evaluate(() => (window as unknown as {welcomeFilmProgress: Record<string, number>}).welcomeFilmProgress);
+  // The packaged films last eight seconds; check real media progress rather than a nominal wait.
+  for (const part of ['build', 'fly', 'share']) expect(films[part], part).toBeGreaterThan(7.5);
   await bar.getByRole('button', { name: /Stop/ }).click();
   await expect(bar).toBeHidden();
 });

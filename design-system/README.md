@@ -94,3 +94,12 @@ is `.row` scoped to `ElementsBox`; the guideline calls it `.el-row` to keep it a
 The main 3D view and the editor 3D view each show the same fixed north compass overlay (`app-camera-compass`) using existing surface and text tokens; it rotates with the camera. North is red; click resets the camera north, drag rotates it, and arrow keys turn it in five-degree steps.
 
 The accepted indigo/purple chrome palette (28 October 2026) preserves warning, danger, success, telemetry, pilot and tool colours. Button and field surfaces use shared `control`, `control-hover` and `field` tokens; active/primary fills keep `accent-ink`. Artwork and world materials are outside the chrome theme.
+
+## Contrast and readability in every state
+
+Treat foreground and background as a pair for every surface: text, links, inputs, selects, textareas, tabs, menus, summaries, badges, notices and controls, not only buttons. Dark `accent-ink` belongs only on the light `accent` fill; dark surfaces use `text` or `dim`. Preserve semantic colours, and check their actual background. Hover, keyboard focus, active, selected, expanded and validation states must retain readable text and a visible focus indicator. Do not apply a blanket white-text override that erases status/tool meanings.
+
+Require WCAG AA text contrast (4.5:1 for ordinary text; 3:1 only for qualifying large text), and 3:1 for meaningful control/focus graphics. Keep text labels and units, usable wrapping/scrolling and the existing typography rules: contrast alone does not establish overall readability. Disabled controls are exempt from contrast requirements, but must remain distinguishable.
+
+`npm run check:contrast` checks shared text/surface pairs (including translucent fills over black and white) and CSS/token-catalog agreement in CI. Page-wide axe covers visible labels, notices and text; `e2e/contrast.ts` probes representative rendered control styles on hover and keyboard focus. Browser-specific, canvas/video and visual readability limits still require their named checks; these tests do not prove every possible content/state combination.
+
