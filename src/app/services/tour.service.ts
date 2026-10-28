@@ -473,7 +473,7 @@ export class TourService {
     if (was.visible || id === 'views') return;
     await this.sleep(60); // let it render to measure it (a timer: animation frames stop in a background tab)
     const el = document.querySelector<HTMLElement>(`app-panel[data-id="${id}"]`);
-    if (el?.offsetWidth) centre(el.offsetWidth, el.offsetHeight); // layout size: the fade-in still scales it
+    if (el?.offsetWidth) centre(el.offsetWidth, el.offsetHeight); // layout size: the entrance still scales it
   }
 
   /** Buttons, labels and inputs get a plain click; anything else (the map, the plan) the full pointer sequence. */
@@ -741,7 +741,7 @@ export class TourService {
     place(); // with the sizes known so far
     for (const id of keep) if (!this.layout.panels()[id].visible) this.layout.setVisible(id, true);
     await this.sleep(60);
-    place(); // with their real sizes, before the fade-in shows them
+    place(); // with their real sizes, before the entrance shows them
     return this.sleep(300);
   }
 

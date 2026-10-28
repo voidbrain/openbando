@@ -75,17 +75,14 @@ import { CASCADE_STEP, PANEL_BY_ID, cascadeIndex, type PanelId } from '../panel-
       max-width: calc(100vw - 8px);
       max-height: calc(100vh - 8px);
       min-width: 90px;
-      /* a panel that shows (again) eases in instead of popping */
-      animation: panel-in 0.7s cubic-bezier(0.25, 0.6, 0.3, 1) both;
+      /* a panel that shows (again) slides in instead of popping. Never animate its opacity: when the main thread is busy
+         with the 3D scene (or frames stop) the animation stalls near its start, and an opacity entrance left the panel
+         half-transparent or invisible while the app already counted it as shown. */
+      animation: panel-in 0.35s cubic-bezier(0.25, 0.6, 0.3, 1);
     }
     @keyframes panel-in {
       from {
-        opacity: 0;
-        transform: translateY(18px) scale(0.97);
-      }
-      to {
-        opacity: 1;
-        transform: none;
+        transform: translateY(12px) scale(0.985);
       }
     }
     @media (prefers-reduced-motion: reduce) {

@@ -588,3 +588,24 @@ test('Views promotes workflow panels and scopes camera controls to the 3D main p
   await expect(views.getByText('Follow replay', {exact: true})).toHaveCount(0);
   await expect(options.getByRole('button', {name: 'Follow the replay (Chase & FPV)', exact: true})).toBeVisible();
 });
+
+
+test('a shown panel is fully opaque even when its entrance animation stalls', async ({page}) => {
+  // Frames stall when the 3D scene loads the main thread (or the page is not painted): freeze every entrance at its start.
+  const frozen = () => page.evaluate(() => {
+    for (const a of document.getAnimations()) if (String((a as CSSAnimation).animationName ?? '').includes('panel-in')) { a.pause(); a.currentTime = 0; }
+  });
+  const opacity = (id: string) => page.locator(`app-panel[data-id="${id}"]`).evaluate(el => getComputedStyle(el).opacity);
+  await page.addInitScript(() => localStorage.setItem('openbando-welcome', JSON.stringify({completed: true})));
+  await page.goto('/');
+  await page.locator('app-welcome-panel footer').getByRole('button', {name: 'Open the bandos', exact: true}).click();
+  await frozen();
+  await expect(page.locator('app-panel[data-id="views"]')).toBeVisible();
+  expect(await opacity('views')).toBe('1');
+  expect(await opacity('studio')).toBe('1');
+  await page.getByRole('button', {name: 'Close Views', exact: true}).click();
+  await page.getByRole('button', {name: 'Open the Views panel', exact: true}).click();
+  await frozen();
+  expect(await opacity('views')).toBe('1');
+  await expect(page.getByRole('button', {name: 'Open the Views panel', exact: true})).toHaveCount(0);
+});
