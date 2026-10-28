@@ -20,7 +20,7 @@ export const SECTIONS: readonly { id: Section; title: string }[] = [
 ];
 
 /** What the player can do besides moving the cursor; each one is implemented in the tour service. */
-export const HOOKS = ['panel', 'list', 'fakeGenerate', 'tool', 'select', 'view', 'ai', 'demoLog', 'demoVideo', 'autoSync', 'play', 'pause', 'closeBoxes', 'layoutReset', 'mascotLoop', 'orbit', 'flightSite', 'hide', 'camera', 'fakeSync', 'arrange', 'ghost', 'show'] as const;
+export const HOOKS = ['panel', 'list', 'fakeGenerate', 'tool', 'select', 'view', 'ai', 'demoLog', 'demoVideo', 'autoSync', 'play', 'pause', 'closeBoxes', 'layoutReset', 'welcomePart', 'replayEnd', 'orbit', 'flightSite', 'hide', 'camera', 'fakeSync', 'arrange', 'ghost', 'show'] as const;
 export type Hook = (typeof HOOKS)[number];
 
 export type At = readonly [number, number];
@@ -223,7 +223,7 @@ export const SNIPPETS: readonly Snippet[] = [
     title: 'Welcome',
     beats: [
       { say: 'OpenBando: your bandos in 3D, and your flights back inside them.', actions: [hook('layoutReset'), hook('orbit', 'on')] },
-      { say: 'Build the place. Fly it again. Share it, or keep it secret.', actions: [p('welcome-build', [0.5, 0.3]), wait(900), click('welcome-fly', [0.5, 0.3]), wait(2200), p('welcome-share', [0.5, 0.3]), wait(900), hook('mascotLoop')] },
+      { say: 'Build the place. Fly it again. Share it, or keep it secret.', actions: [p('welcome-build', [0.5, 0.3]), hook('welcomePart', 'build'), click('welcome-fly', [0.5, 0.3]), hook('welcomePart', 'fly'), p('welcome-share', [0.5, 0.3]), hook('welcomePart', 'share')] },
     ],
   },
   {
@@ -251,13 +251,13 @@ export const SNIPPETS: readonly Snippet[] = [
       { say: 'Speed, attitude, sticks and the path: every number of the flight, in step with the video.', actions: [hook('arrange', 'replay'), hook('camera', 'chase'), click('play'), wait(8500)] },
       { say: 'Ride along: the FPV camera, in step with the video.', actions: [hook('arrange', 'cameras'), wait(7000)] },
       { say: 'The video turns to glass: the model behind it, in step.', actions: [hook('ghost', 'video'), wait(6000)] },
-      { say: 'OpenBando. Build, Fly, Share.', actions: [wait(3500)] },
+      { say: 'OpenBando. Build, Fly, Share.', actions: [hook('replayEnd')] },
     ],
   },
 ];
 
-/** The welcome tour (the showcase), about a minute: Welcome, a bando without its address, a log and its video synced, every camera. */
-export const SHOWCASE: Tour = { id: 'showcase', title: 'Welcome', about: 'What OpenBando does, in a minute, played by itself.', snippets: ['sc-welcome', 'sc-bando', 'sc-load', 'sc-replay'], returnToWelcome: true };
+/** The welcome tour (the showcase), including the complete demo flight: Welcome, a bando without its address, a log and its video synced, every camera. */
+export const SHOWCASE: Tour = { id: 'showcase', title: 'Welcome', about: 'What OpenBando does, played automatically through the complete flight.', snippets: ['sc-welcome', 'sc-bando', 'sc-load', 'sc-replay'], returnToWelcome: true };
 
 export const TOURS: readonly Tour[] = [
   SHOWCASE,

@@ -168,6 +168,8 @@ export class TourService {
     const before = Object.fromEntries(Object.entries(this.layout.panels()).map(([id, p]) => [id, { visible: p.visible, x: p.x, y: p.y, minimized: p.minimized }]));
     const c = this.cursor() ?? { x: innerWidth / 2, y: innerHeight / 2, down: false };
     this.cursor.set({ ...c, down: false });
+    const transportBefore = {loop: this.playback.transport.loop(), speed: this.playback.transport.speed(), direction: this.playback.transport.direction()};
+    if (returnToWelcome) { this.playback.transport.setLoop(false); this.playback.transport.setSpeed(1); this.playback.transport.setDirection(1); }
     try {
       for (let i = 0; i < beats.length; i++) {
         const { beat: b, snippet, first } = beats[i]!;
@@ -179,7 +181,7 @@ export class TourService {
         }
         for (const a of b.actions) {
           if (this.skip) break;
-          this.diagnostic.set(a.do === 'hook' ? `hook:${a.hook}` : 'at' in a ? `${a.do}:${a.at}` : a.do);
+          this.diagnostic.set(a.do === 'hook' ? `hook:${a.hook}${a.hook === 'welcomePart' ? ':' + a.arg : ''}` : 'at' in a ? `${a.do}:${a.at}` : a.do);
           await this.act(a);
         }
         if (this.jump !== null) {
@@ -195,6 +197,9 @@ export class TourService {
         // The showcase must stop its looping replay and return to Welcome on completion or cancellation.
         this.haltReplay();
         this.heldReplay = false;
+        this.playback.transport.setLoop(transportBefore.loop);
+        this.playback.transport.setSpeed(transportBefore.speed);
+        this.playback.transport.setDirection(transportBefore.direction);
         this.entryScreen();
       } else {
         this.layout.restore(before);
@@ -439,13 +444,35 @@ export class TourService {
         // a clean screen: only Welcome over the empty world, turning (a showcase may run on a visit with a bando open)
         this.entryScreen();
         return this.sleep(400);
-      case 'mascotLoop': {
-        // Count rendered animation time, not wall time: hidden tabs and slow image loading cannot cut the loop short.
-        while (this.mascotProgress.elapsed < MASCOT_DURATION && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && !this.skip) {
-          await this.sleep(100);
+      case 'welcomePart': {
+        const index = ['build', 'fly', 'share'].indexOf(arg ?? '');
+        if (index < 0) return;
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const film = document.querySelector<HTMLVideoElement>(`app-welcome-panel video[data-id="${arg}"]`);
+        const target = MASCOT_DURATION * (index + 1) / 3;
+        document.querySelector(`[data-tour="welcome-${arg}"]`)?.dispatchEvent(new MouseEvent('mouseenter'));
+        const loop = film?.loop;
+        if (film && !reduced) {
+          film.loop = false;
+          film.currentTime = 0;
+          void film.play().catch(() => undefined);
         }
+        try {
+          // Each card owns one third of rendered mascot time and a complete, non-looping film.
+          const started = this.activeTime();
+          while (!this.skip) {
+            const unavailable = !film || !!film.error ||
+              (this.activeTime() - started > 10_000 && (film.readyState < 2 || film.paused && !film.ended));
+            if ((reduced || this.mascotProgress.elapsed >= target) && (reduced || unavailable || film?.ended)) return;
+            await this.sleep(50);
+          }
+        } finally { if (film && loop !== undefined) film.loop = loop; }
         return;
       }
+      case 'replayEnd':
+        while (!this.skip && this.playback.duration > 0 && this.playback.time < this.playback.duration - .1) await this.sleep(100);
+        this.haltReplay();
+        return;
       case 'orbit':
         this.scene.autoOrbit.set(arg === 'on');
         return;
@@ -534,6 +561,8 @@ export class TourService {
    * panel at all), so the pilot always returns to a working app with Welcome open.
    */
   private entryScreen(): void {
+    this.view.setMainSource('3d');
+    if (this.view.orbitFollow()) this.view.toggleOrbitFollow();
     this.site.showVoid();
     this.layout.reset();
     for (const id of Object.keys(this.layout.panels()) as PanelId[]) if (id !== 'welcome') this.layout.setVisible(id, false);

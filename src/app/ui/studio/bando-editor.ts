@@ -1141,8 +1141,9 @@ export class BandoEditor {
     this.hover.set(null);
     this.dragPlacement.set(null);
     this.blocks.armed.set(null); // a block picked in the Library is let go when another tool is chosen
+    // Entering indoors resets the tool to Select; do that before selecting Wall, and never re-enter an edited floor.
+    if (t === 'wall' && this.b() && !this.indoor()) this.enterIndoor();
     this.tool.set(t);
-    if (t === 'wall' && this.b()) this.enterIndoor();
     if (t !== 'measure') {
       this.measure.chain.update((m) => ({ ...m, a: null, start: null }));
       this.measure.sel.set(null);

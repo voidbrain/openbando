@@ -385,6 +385,8 @@ export class SceneService {
   private renderAll(dt: number): void {
     const host = this.host;
     if (!host) return;
+    // Apply at the render boundary too: a scene rebuild and a panel change can happen in the same frame.
+    host.paths.group.visible = !this.layout.panels().welcome.visible && !this.race.enabled();
     const ctx = this.rigContext();
     const subject = this.subject();
     const opts = this.placeOptions();

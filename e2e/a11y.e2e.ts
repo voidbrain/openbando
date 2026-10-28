@@ -1,4 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
+import {expectInteractionContrast} from './contrast';
 import { expect, test, type Page } from '@playwright/test';
 
 /** axe on the page as it is now (WCAG 2 A and AA); the 3D canvases and the map tiles are left out. */
@@ -13,6 +14,7 @@ test('first visit: Welcome over the empty world', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('app-panel[data-id="welcome"]')).toBeVisible();
   expect(await axe(page)).toEqual([]);
+  await expectInteractionContrast(page, 'app-panel:not([hidden])');
 });
 
 test('after Welcome: Views and Guide me', async ({ page }) => {
@@ -21,6 +23,7 @@ test('after Welcome: Views and Guide me', async ({ page }) => {
   await expect(page.locator('app-panel[data-id="views"]')).toBeVisible();
   await expect(page.locator('app-panel[data-id="guide"]')).toBeVisible();
   expect(await axe(page)).toEqual([]);
+  await expectInteractionContrast(page, 'app-panel:not([hidden])');
 });
 
 test('the editor with a model, the inspector and the library', async ({ page }) => {
@@ -32,11 +35,13 @@ test('the editor with a model, the inspector and the library', async ({ page }) 
   await page.locator('app-bando-editor button').filter({ hasText: /^\W*Library$/ }).first().click();
   await expect(page.getByPlaceholder('Search blocks…')).toBeVisible();
   expect(await axe(page)).toEqual([]);
+  await expectInteractionContrast(page, 'app-panel:not([hidden])');
   await page.locator('app-bando-editor button').filter({ hasText: /^\W*Library$/ }).first().click();
   await page.locator('app-bando-editor button[data-tour="ai"]').click();
   await page.getByRole('button', { name: 'Server / home PC', exact: true }).click();
   await expect(page.getByLabel('token (optional)')).toHaveAccessibleDescription("The token is saved in this browser's local storage.");
   expect(await axe(page)).toEqual([]);
+  await expectInteractionContrast(page, 'app-panel:not([hidden])');
 });
 
 test('a guide step running (caption bar)', async ({ page }) => {
@@ -44,5 +49,7 @@ test('a guide step running (caption bar)', async ({ page }) => {
   await page.getByRole('button', { name: 'Guide me', exact: true }).click();
   await page.getByRole('button', { name: 'Play: Start a bando: find the place', exact: true }).click();
   await expect(page.locator('app-tour-overlay .bar')).toBeVisible();
+  await page.locator('app-tour-overlay .bar').getByRole('button', {name: /Pause/}).click();
   expect(await axe(page)).toEqual([]);
+  await expectInteractionContrast(page, 'app-panel:not([hidden]), app-tour-overlay .bar');
 });

@@ -20,3 +20,5 @@ current target, the caption bar, and the hover tips.
 Source: `src/app/ui/tour-overlay.ts`.
 
 Cursor and drag animations use elapsed active time; slow frames skip intermediate samples instead of stretching the animation. Pause freezes that timeline, Next advances to the end, and Stop releases any synthetic pointer.
+
+The Welcome showcase gives Build/Fly/Share separate thirds of mascot progress and waits for each complete card film, with no separate trailing mascot gate. Normal motion uses actual media completion; reduced motion bypasses animation waits, and Stop/Next still release work. The replay runs to its real end with looping temporarily disabled. Exit restores the previous transport preferences, pauses playback and returns to a 3D overview with orbit Follow off; paths stay hidden behind Welcome.

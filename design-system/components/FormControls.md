@@ -17,3 +17,5 @@ A visible label for every control (a `.fld` caption, a `label.check`, or `aria-l
 Source: `src/styles.scss (inputs, label.check)`.
 
 Chrome uses the shared indigo/purple surface tokens. Keep status colours unchanged and pair lime active fills with `accent-ink`; do not reintroduce literal green control backgrounds.
+
+Apply the [shared contrast rules](../README.md#contrast-and-readability-in-every-state) to entered text, labels, descriptions, validation messages and focus states. Pair field fills with light text; hover/focus browser checks include fields and selects as well as buttons.

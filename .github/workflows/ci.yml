@@ -46,6 +46,9 @@ jobs:
       - name: Every UI text has its Italian
         run: npm run check:i18n
 
+      - name: Shared surface text contrast
+        run: npm run check:contrast
+
       - name: Type check
         run: npx tsc -p tsconfig.app.json --noEmit --noUnusedLocals --noUnusedParameters && npx tsc -p tools/examples/tsconfig.json && npx tsc -p tools/i18n/tsconfig.json && npx tsc -p tools/racing/tsconfig.json
 

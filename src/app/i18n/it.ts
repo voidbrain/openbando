@@ -1153,7 +1153,7 @@ export const IT: Readonly<Record<string, string>> = {
   'OpenBando: your bandos in 3D, and your flights back inside them.': 'OpenBando: i tuoi bando in 3D, e i tuoi voli di nuovo lì dentro.',
   'Build the place. Fly it again. Share it, or keep it secret.': 'Costruisci il posto. Rivolalo. Condividilo, o tienilo segreto.',
   'OpenBando. Build, Fly, Share.': 'OpenBando. Costruisci, vola, condividi.',
-  'What OpenBando does, in a minute, played by itself.': 'Cosa fa OpenBando, in un minuto, mostrato da solo.',
+  'What OpenBando does, played automatically through the complete flight.': 'Cosa fa OpenBando, mostrato automaticamente fino alla fine del volo.',
   'Build, Fly, Share.': 'Costruisci, vola, condividi.',
   'Build': 'Costruisci',
   'Fly': 'Vola',

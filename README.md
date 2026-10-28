@@ -15,7 +15,7 @@ share it, with or without its address.
 The core app runs in the browser (Angular 22, Three.js, signals), with no required backend. Optional AI-server and race-relay connections are described separately. Bandos, blocks and the cached real ground
 stay in the browser (IndexedDB); videos and logs are read from your disk and never uploaded.
 
-**The welcome tour**, a minute, played by itself: 
+**The welcome tour**, including the complete demo flight, played by itself:
 [English](https://voidbrain.github.io/openbando/?tour=showcase&lang=en) ·
 [Italiano](https://voidbrain.github.io/openbando/?tour=showcase&lang=it). Any address of the app takes
 `?tour=showcase` and `lang=en` / `lang=it`.
@@ -239,3 +239,5 @@ The [28 October follow-up audit](docs/audits/2026-10-28.md) records current CI e
 Backlog maintenance follows [Backlog rules](docs/BACKLOG-RULES.md): evidence-based status updates, PR/CI reconciliation, stale-item review and closure/archiving. Current work remains in [the backlog](docs/BACKLOG.md).
 
 The main compass appears with a nonblank model and stays hidden while Welcome is open, including after the showcase finishes.
+
+The Welcome showcase plays each introductory card film and the complete demo flight before returning to Welcome. It restores an overview rather than following the old replay; loaded logs remain available. Shared contrast checks (`npm run check:contrast`) complement browser axe checks of page text and representative hover/focus states.
