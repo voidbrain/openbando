@@ -19,3 +19,5 @@ The title, the content, and (in the app) an id in `PANEL_BY_ID` with its anchor 
 Source: `src/app/ui/panel/panel.ts`.
 
 Chrome uses the shared indigo/purple surface tokens. Keep status colours unchanged and pair lime active fills with `accent-ink`; do not reintroduce literal green control backgrounds.
+
+Views keeps Bandos editor, Flights, Timeline and Video as direct controls. Telemetry, Simulator and Tools start folded unless the pilot saved another preference; Reset restores these folds. Camera groups appear with the 3D main source. Camera Options uses a native details disclosure closed by default. See ViewsPanel.md.

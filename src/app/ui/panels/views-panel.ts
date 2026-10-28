@@ -26,6 +26,8 @@ function ids(f: (p: PanelDef) => boolean): PanelId[] {
   return PANELS.filter((p) => p.id !== 'views' && p.id !== 'features' && f(p)).map((p) => p.id);
 }
 
+const QUICK: readonly PanelId[] = ['studio', 'flights', 'timeline', 'video'];
+const DEFAULT_CLOSED = ['telemetry', 'simulator', 'tools'];
 const CLOSED_KEY = 'abando-float-views-closed';
 const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'camChase', fpv: 'camFpv', top: 'camTop' };
 
@@ -37,6 +39,8 @@ const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'cam
   selector: 'app-views-panel',
   imports: [Panel, ToolIcon],
   styles: `
+    .quick .editor { grid-column: 1 / -1; font-weight: 700; padding: 5px 0; color: var(--accent); }
+    .options summary { cursor: pointer; color: var(--dim); margin-top: 4px; }
     .top {
       display: flex;
       align-items: center;
@@ -178,6 +182,13 @@ const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'cam
         <button class="btn ib" (click)="resetLayout()" title="Reset UI: restore panel positions and sizes" aria-label="Reset UI"><app-tool-icon name="resetLayout" /></button>
       </div>
 
+      <div class="sec quick list">
+        @for (p of quick; track p.id) {
+          <button class="vis" [class.editor]="p.id === 'studio'" [attr.data-panel]="p.id" [class.on]="layout.panels()[p.id].visible" (click)="layout.toggle(p.id)" [attr.aria-pressed]="layout.panels()[p.id].visible">
+            <app-tool-icon [name]="layout.panels()[p.id].visible ? 'eye' : 'eyeOff'" /><span>{{ short(p) }}</span>
+          </button>
+        }
+      </div>
       <div class="sec">
         <div class="head">
           <button class="fold" [attr.aria-expanded]="isOpen('main')" (click)="fold('main')"><span class="chev">▾</span> Main page</button>
@@ -191,6 +202,7 @@ const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'cam
         }
       </div>
 
+      @if (view.mainSource() === '3d') {
       <div class="sec">
         <div class="head">
           <button class="fold" [attr.aria-expanded]="isOpen('camera')" (click)="fold('camera')"><span class="chev">▾</span> 3D camera</button>
@@ -206,16 +218,20 @@ const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'cam
             </div>
           </div>
           <!-- how the 3D is shown, whatever the camera: independent toggles, and the reset -->
+          <details class="options"><summary>Options</summary>
           <div class="cams" role="group" aria-label="View options">
             <span class="lab">view</span>
+            @if (!orbitLike()) { <span class="dim small">Follow replay</span> }
             <button class="btn ib" [class.on]="follow()" (click)="toggleFollow()" [title]="followHint()" [attr.aria-label]="followHint()" [attr.aria-pressed]="follow()"><app-tool-icon name="follow" /></button>
             <button class="btn ib" [class.on]="view.roofHidden()" (click)="view.toggleRoof()" [title]="view.roofHidden() ? 'Roofs hidden: show them again' : 'Hide the roofs (see inside the buildings)'" aria-label="Hide roofs" [attr.aria-pressed]="view.roofHidden()"><app-tool-icon name="roof" /></button>
-            <button class="btn ib" [class.on]="view.satGround()" (click)="view.toggleSatGround()" title="Satellite picture on the 3D ground (bandos with a place and real ground; imagery © Esri, Maxar)" aria-label="Satellite ground" [attr.aria-pressed]="view.satGround()"><app-tool-icon name="satellite" /></button>
-            <button class="btn ib" [class.on]="view.xray()" (click)="toggleXray()" title="X-ray: whatever stands between the camera and the drone fades" aria-label="X-ray" [attr.aria-pressed]="view.xray()"><app-tool-icon name="xray" /></button>
-            <button class="btn ib" (click)="scene.resetCamera()" title="Reset the camera" aria-label="Reset the camera"><app-tool-icon name="recentre" /></button>
+            <button class="btn ib" [class.on]="view.satGround()" (click)="view.toggleSatGround()" title="Satellite ground on the main 3D view; Studio has its own ground selector (imagery © Esri, Maxar)" aria-label="Satellite ground" [attr.aria-pressed]="view.satGround()"><app-tool-icon name="satellite" /></button>
+            <button class="btn ib" [class.on]="view.xray()" (click)="toggleXray()" title="X-ray: obstacles fade while following the drone; FPV only fades surfaces close to the camera" aria-label="X-ray" [attr.aria-pressed]="view.xray()"><app-tool-icon name="xray" /></button>
+            <button class="btn ib" (click)="scene.resetCamera()" title="Reset to Orbit and park the simulator drone" aria-label="Reset the camera"><app-tool-icon name="recentre" /></button>
           </div>
+          </details>
         }
       </div>
+      }
 
       @for (g of groups(); track g.key) {
         <div class="sec">
@@ -248,6 +264,7 @@ export class ViewsPanel {
   protected readonly scene = inject(SceneService);
   private readonly toast = inject(ToastService);
   protected readonly cameras = CAMERA_VIEWS;
+  protected readonly quick = PANELS.filter(panel => QUICK.includes(panel.id));
   protected readonly camIcon = CAMERA_ICON;
   protected readonly names: Record<CameraView, string> = { orbit: 'Orbit', chase: 'Chase', fpv: 'FPV', top: 'Top' };
   protected readonly camHint: Record<CameraView, string> = {
@@ -261,7 +278,7 @@ export class ViewsPanel {
     { value: 'video', label: 'Video' },
   ];
   /** Follow means one thing per camera pair: Orbit & Top keep the drone in the middle, Chase & FPV ride along the replay. */
-  private readonly orbitLike = computed(() => this.view.cameraView() === 'orbit' || this.view.cameraView() === 'top');
+  protected readonly orbitLike = computed(() => this.view.cameraView() === 'orbit' || this.view.cameraView() === 'top');
   protected readonly follow = computed(() => (this.orbitLike() ? this.view.orbitFollow() : this.view.replayFollow()));
   protected readonly followHint = computed(() =>
     this.orbitLike() ? 'Follow the drone (Orbit & Top; panning stops it, double-click recentres)' : 'Follow the replay (Chase & FPV)',
@@ -273,14 +290,14 @@ export class ViewsPanel {
 
   protected readonly groups = computed(() => {
     const vis = this.layout.panels();
-    return GROUPS.map((g) => {
+    return GROUPS.filter(g => g.key !== 'views' || this.view.mainSource() === '3d').map((g) => {
       const all = g.subs.flatMap((s) => s.ids);
       const shown = all.filter((id) => vis[id].visible).length;
-      return { ...g, ids: all, subs: g.subs.map((s) => ({ title: s.title, panels: s.ids.map((id) => PANELS.find((p) => p.id === id)!) })), all: shown === all.length, some: shown > 0 };
+      return { ...g, ids: all, subs: g.subs.map((s) => ({ title: s.title, panels: s.ids.filter(id => !QUICK.includes(id)).map((id) => PANELS.find((p) => p.id === id)!) })), all: shown === all.length, some: shown > 0 };
     }).filter((g) => g.ids.length);
   });
 
-  /** Folded sections, remembered (Reset UI opens them all again). */
+  /** Folded sections, remembered (Reset UI restores the default folds). */
   private readonly closed = signal<ReadonlySet<string>>(loadClosed());
   protected isOpen = (key: string): boolean => !this.closed().has(key);
   protected fold(key: string): void {
@@ -300,7 +317,7 @@ export class ViewsPanel {
   constructor() {
     effect(() => {
       if (uiResets() === 0) return;
-      untracked(() => this.closed.set(new Set()));
+      untracked(() => this.closed.set(new Set(DEFAULT_CLOSED)));
     });
   }
 
@@ -332,9 +349,9 @@ export class ViewsPanel {
 
 function loadClosed(): ReadonlySet<string> {
   try {
-    const v = JSON.parse(localStorage.getItem(CLOSED_KEY) ?? '[]') as unknown;
+    const v = JSON.parse(localStorage.getItem(CLOSED_KEY) ?? JSON.stringify(DEFAULT_CLOSED)) as unknown;
     return new Set(Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
   } catch {
-    return new Set();
+    return new Set(DEFAULT_CLOSED);
   }
 }

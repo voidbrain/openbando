@@ -25,6 +25,7 @@ test('the showcase link plays to the end', async ({ page }) => {
   await page.locator('[data-tour=close-welcome]').click();
   const views = page.locator('app-views-panel');
   await expect(views.locator('.cams .seg button').first()).toHaveAttribute('aria-pressed', 'true');
+  await views.locator('.options > summary').click();
   await expect(views.locator('button.btn.ib').filter({has: page.locator('app-tool-icon[name="follow"]')})).toHaveAttribute('aria-pressed', 'false');
   await views.locator('button.vis[data-panel=studio]').click();
   const studio = page.locator('app-studio-panel');
@@ -141,4 +142,22 @@ test('the showcase offset is what Auto-sync finds', async ({ page }) => {
   await expect(status).toContainText(/offset -?\d+\.\d+ s/, { timeout: 240_000 });
   const found = Number(/offset (-?\d+\.\d+) s/.exec((await status.textContent()) ?? '')![1]);
   expect(Math.abs(found - -0.54)).toBeLessThan(0.15); // DEMO_OFFSET in services/tour.service.ts
+});
+
+test('Welcome navigation cancels the tour overlays and keeps the requested destination', async ({page}) => {
+  await page.goto('/?tour=showcase&lang=en');
+  const bar = page.locator('app-tour-overlay .bar');
+  await expect(bar).toHaveAttribute('data-action', 'hook:welcomePart:build', {timeout: 30_000});
+  await bar.getByRole('button', {name: /Pause/}).click();
+  await page.setViewportSize({width: 1100, height: 850});
+  await expect.poll(async () => {
+    const target = await page.locator('[data-tour=welcome-build]').boundingBox();
+    const focus = await page.locator('app-tour-overlay .focus').boundingBox();
+    return !!target && !!focus && Math.abs(focus.x - (target.x - 4)) < 1 && Math.abs(focus.width - (target.width + 8)) < 1;
+  }).toBe(true);
+  await page.getByRole('button', {name: 'Open the bandos', exact: true}).first().click();
+  await expect(bar).toBeHidden();
+  await expect(page.locator('app-tour-overlay .focus, app-tour-overlay .cursor')).toHaveCount(0);
+  await expect(page.locator('app-panel[data-id=studio]')).toBeVisible();
+  await expect(page.locator('app-panel[data-id=welcome]')).toBeHidden();
 });

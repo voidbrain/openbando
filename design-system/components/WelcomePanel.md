@@ -30,3 +30,5 @@ Features opens its own panel and is reachable with `?panel=features`; it is excl
 The showcase highlights Build, Fly and Share in turn, playing each eight-second film completely and distributing mascot progress across the three stages. Films pause while Welcome is hidden. There is no separate long wait after the third card.
 
 During showcase, fit each complete card film into the remaining third of the single 19.7-second mascot loop, restoring film playback rate afterwards. Hold the final mascot frame until Welcome closes; do not show a second search/run/sit while waiting for films. Pause holds the film, mascot and countdown. Ordinary Welcome keeps its repeating mascot.
+
+Real user links and Close cancel/clean up an active tour before navigating. Do not let tour cleanup reopen Welcome over the chosen destination. Scripted close in the showcase continues its sequence; Stop retains its return-to-Welcome behavior.
