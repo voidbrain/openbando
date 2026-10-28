@@ -1,5 +1,7 @@
 # OpenBando
 
+Interface chrome uses dark indigo/purple surfaces with lime active controls; status, telemetry, tool and pilot colours retain their existing meanings.
+
 ![OPENBANDO pixel-art concrete and brick wordmark](public/mascot/openbando-wordmark.png)
 
 [![Pixel pilot and drone: look, sit, confusion, run, takeoff and fly away.](public/mascot/openbando-mascot.gif)](docs/mascot/README.md)
@@ -235,5 +237,3 @@ Basement vertex edits preserve each perimeter wall’s visibility, including dia
 The [28 October follow-up audit](docs/audits/2026-10-28.md) records current CI evidence, remaining implementation limits and documentation/clip freshness. Guide clips and Welcome films were last updated on 24 October; they have not been re-recorded for the current Studio UI.
 
 Backlog maintenance follows [Backlog rules](docs/BACKLOG-RULES.md): evidence-based status updates, PR/CI reconciliation, stale-item review and closure/archiving. Current work remains in [the backlog](docs/BACKLOG.md).
-
-Interface chrome uses dark indigo/purple surfaces with lime active controls; status, telemetry, tool and pilot colours retain their existing meanings.
