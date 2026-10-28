@@ -81,7 +81,9 @@ for (const floor of ['−1', 'G', 'L1']) {
     await page.locator('[data-tour="view-3d"]').click();
     await tool('stairs', 'Stairs');
     // Isolate placement from the optional cross-floor stairwell operation.
-    await page.getByRole('checkbox', {name: 'open floor above', exact: true}).uncheck();
+    const stairwell = page.getByRole('checkbox', {name: 'open floor above', exact: true});
+    if (floor === 'L1') await expect(stairwell).toHaveCount(0);
+    else await stairwell.uncheck();
     const stairBox = await canvas.boundingBox();
     expect(stairBox).not.toBeNull();
     await canvas.click({position: {x: stairBox!.width * .42, y: stairBox!.height * .50}});
