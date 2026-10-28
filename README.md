@@ -229,3 +229,5 @@ The Inspector starts docked on the right; the plan and 3D canvas occupy the rema
 Enable **Debug coordinates** in the Studio top bar and click to read local x (east), y (up), z (south), in metres. It samples ground through buildings, including in indoor mode, and does not change the model or expose a hidden bando’s geographic location. Indoor measures use the edited floor’s height.
 
 The simulator quad geometry spans approximately 0.39 m on each horizontal axis before display scaling. The replay quad starts at four times that size, and both scene markers enlarge with camera distance for readability. Their visible dimensions do not define the simulator collision size.
+
+Basement vertex edits preserve each perimeter wall’s visibility, including diagonal walls. Polygonal basements expose **Perimeter edge** switches in the Inspector. Splitting an edge copies its wall state; removing a corner between an open and closed edge is rejected. Existing doors/windows remain stored while their wall is hidden. Enable all perimeter edges before Cut/Wing or dimension/footprint replacement; these operations do not yet remap mixed open/closed edges.

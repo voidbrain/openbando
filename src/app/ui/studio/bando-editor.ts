@@ -17,7 +17,7 @@ import { areaCorners } from '../../core/areas';
 import { roadDef, surfaceDef } from '../../core/layers';
 import { blockCategory } from '../../core/catalog';
 import { siteGround } from '../../core/site-ground';
-import { basementBuilding, basementOutline, editBasementFloor, insertBasementVertex, moveBasementVertex, removeBasementVertex, reshapeBasement, saveBasementFloor } from '../../core/basement';
+import { basementBuilding, basementOutline, editBasementFloor, insertBasementVertex, moveBasementVertex, removeBasementVertex, setBasementPerimeterWall, reshapeBasement, saveBasementFloor } from '../../core/basement';
 import { PickMenu, type PickOption } from './pick-menu';
 import { BlocksBox } from './blocks-box';
 import { paramValues, type BlockSpec, type ParamValue } from '../../core/blocks';
@@ -2652,14 +2652,26 @@ export class BandoEditor {
   });
   protected resizeBasement(axis:'length'|'width',value:number):void {
     if (!Number.isFinite(value)) return;
+    if (this.b()?.basement?.wallEdges?.some(v => !v)) { this.toast.show('Enable all perimeter edges before changing the basement dimensions or footprint.'); return; }
     const size={...this.basementSize(),[axis]:Math.max(2,Math.min(300,value))};
-    this.editBasement(b=>{if(b.basement)b.basement.outline=[{x:-size.length/2,z:-size.width/2},{x:size.length/2,z:-size.width/2},{x:size.length/2,z:size.width/2},{x:-size.length/2,z:size.width/2}];});
+    this.editBasement(b=>{if(b.basement){delete b.basement.wallEdges;b.basement.outline=[{x:-size.length/2,z:-size.width/2},{x:size.length/2,z:-size.width/2},{x:size.length/2,z:size.width/2},{x:-size.length/2,z:size.width/2}];}});
     this.applyNow();
   }
   protected basementWall(side:'n'|'s'|'e'|'w',on:boolean):void {
     this.editBasement(b=>{if(b.basement)(b.basement.sides??={})[side]=on;}); this.applyNow();
   }
-  protected resetBasementShape():void {this.editBasement(b=>{if(b.basement)delete b.basement.outline;});this.applyNow();}
+  protected readonly perimeterEdges = computed(() => {
+    const b = this.b(); if (!b?.basement) return null;
+    const outline = basementOutline(b);
+    return b.basement.wallEdges ?? (outline.length !== 4 || !isRectilinear(outline) ? outline.map(() => true) : null);
+  });
+  protected basementEdgeWall(i:number,on:boolean):void {
+    let changed = false;
+    this.editBasement(b=>{changed=setBasementPerimeterWall(b,i,on);});
+    if (!changed) this.toast.show('Cannot reshape basement: check its outline, wall openings and floor items.');
+    this.applyNow();
+  }
+  protected resetBasementShape():void {if(this.b()?.basement?.wallEdges?.some(v=>!v)){this.toast.show('Enable all perimeter edges before changing the basement dimensions or footprint.');return;}this.editBasement(b=>{if(b.basement){delete b.basement.outline;delete b.basement.wallEdges;}});this.applyNow();}
   protected addBasementWall():void {
     this.editBasement(b=>{if(b.basement)(b.basement.partitions??=[]).push([{x:1,z:1},{x:Math.max(2,this.basementSize().length-1),z:1}]);});this.applyNow();
   }

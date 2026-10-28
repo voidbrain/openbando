@@ -111,7 +111,7 @@ export function previewOpening(b: BuildingSpec, li: number, p: Pt, kind: 'door' 
   const l = b.levels[li];
   if (!l) return null;
   const hit = nearestWall(b, p, maxDist);
-  if (!hit) return null;
+  if (!hit || l.wallEdges?.[Number(hit.wall.key.slice(1))] === false) return null;
   const { w } = openingSize(l, kind);
   const { wall, along } = hit;
   if (wall.to - wall.from < w + 0.3) return null;
@@ -128,7 +128,7 @@ export function addOpening(b: BuildingSpec, li: number, p: Pt, kind: 'door' | 'w
   const l = b.levels[li];
   if (!l) return null;
   const hit = nearestWall(b, p, maxDist);
-  if (!hit) return null;
+  if (!hit || l.wallEdges?.[Number(hit.wall.key.slice(1))] === false) return null;
   const best = hit.wall;
   const { w, h, sill } = openingSize(l, kind);
   const len = best.to - best.from;

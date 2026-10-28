@@ -7,6 +7,20 @@ import { BASEMENT_COORD_LIMIT, bounds, contains, isRectilinear, rectPoly, validO
 export function basementOutline(b: BuildingSpec): Vec2[] {
   return b.basement?.outline ?? outlineOf(b);
 }
+/** Convert legacy rectilinear compass-side flags without guessing which diagonal edge they meant. */
+function perimeterWalls(b: BuildingSpec): boolean[] | null {
+  const basement = b.basement!, poly = basementOutline(b);
+  if (basement.wallEdges) return basement.wallEdges.length === poly.length ? [...basement.wallEdges] : null;
+  if (!Object.values(basement.sides ?? {}).includes(false)) return poly.map(() => true);
+  if (!isRectilinear(poly)) return null;
+  const area = poly.reduce((sum, a, i) => { const z = poly[(i + 1) % poly.length]!; return sum + a.x * z.z - z.x * a.z; }, 0);
+  return poly.map((a, i) => {
+    const z = poly[(i + 1) % poly.length]!, dx = z.x - a.x, dz = z.z - a.z, sign = Math.sign(area);
+    const side = Math.abs(dx) > Math.abs(dz) ? (dx * sign > 0 ? 'n' : 's') : (dz * sign > 0 ? 'e' : 'w');
+    return basement.sides?.[side] !== false;
+  });
+}
+
 export function basementBuilding(b: BuildingSpec): BuildingSpec {
   const h = Math.min(12, Math.max(2, b.basement?.height ?? 3));
   const outline = basementOutline(b);
@@ -19,6 +33,7 @@ export function basementBuilding(b: BuildingSpec): BuildingSpec {
     height: h,
     sides: { n: true, s: true, e: true, w: true, ...b.basement?.sides },
     doors: structuredClone(b.basement?.doors ?? {}),
+    wallEdges: b.basement?.wallEdges ? [...b.basement.wallEdges] : undefined,
     wallOpenings: b.basement?.wallOpenings?.map(o => ({ ...o, x: o.x - offset.x, z: o.z - offset.z })),
     columns: structuredClone(b.basement?.columns),
     voids: structuredClone(b.basement?.voids),
@@ -39,7 +54,7 @@ export function basementBuilding(b: BuildingSpec): BuildingSpec {
     pos: { x: b.pos.x + offset.x * c - offset.z * s, z: b.pos.z + offset.x * s + offset.z * c },
     length,
     width,
-    footprint: rectangular && !b.basement?.wallOpenings?.length ? undefined : centred,
+    footprint: rectangular && !b.basement?.wallOpenings?.length && !b.basement?.wallEdges ? undefined : centred,
     levels: [level],
     basement: undefined,
     fixtures: undefined,
@@ -67,18 +82,19 @@ export function saveBasementFloor(b: BuildingSpec, floor: BuildingSpec, saveOutl
   const dx = floor.pos.x - b.pos.x, dz = floor.pos.z - b.pos.z;
   const offset = { x: dx * c + dz * s, z: -dx * s + dz * c };
   const level = floor.levels[0]!;
-  const next = { ...b.basement, sides: { ...level.sides }, partitions: level.partitions, doors: level.doors,
+  const next = { ...b.basement, sides: { ...level.sides }, partitions: level.partitions, doors: level.doors, wallEdges: level.wallEdges?.some(v => !v) ? [...level.wallEdges] : undefined,
     wallOpenings: level.wallOpenings?.map(o => ({ ...o, x: o.x + offset.x, z: o.z + offset.z })), columns: level.columns, voids: level.voids,
     ...(saveOutline ? { outline: (floor.footprint ?? rectPoly(floor.length, floor.width)).map(p => ({ x: p.x + offset.x, z: p.z + offset.z })) } : {}) };
   const valid = (p: Vec2): boolean => Number.isFinite(p.x) && Number.isFinite(p.z) && Math.abs(p.x) <= BASEMENT_COORD_LIMIT && Math.abs(p.z) <= BASEMENT_COORD_LIMIT;
   if ((next.outline && (!validOutline(next.outline) || !next.outline.every(valid))) || (next.wallOpenings ?? []).some(o => !valid(o)) || (next.columns ?? []).some(c => !valid(c)) || (next.partitions ?? []).some(w => w.some(p => !valid(p))) || (next.voids ?? []).some(v => !valid({ x: v.x0, z: v.z0 }) || !valid({ x: v.x1, z: v.z1 }))) return false;
+  if (next.wallEdges && (next.wallEdges.length !== (next.outline ?? basementOutline(b)).length || !next.wallEdges.every(v => typeof v === 'boolean'))) return false;
   b.basement = next;
   return true;
 }
 
 /** Add or cut a rectangular section of the basement, leaving the upper building unchanged. */
 export function reshapeBasement(b: BuildingSpec, rect: Rect, op: 'add' | 'cut'): boolean {
-  if (!b.basement) return false;
+  if (!b.basement || b.basement.wallEdges?.some(v => !v) || Object.values(b.basement.sides ?? {}).includes(false)) return false;
   if (isRectilinear(basementOutline(b))) {
     const floor = basementBuilding(b);
     floor.levels[0]!.partitions = structuredClone(floor.levels[0]!.partitions);
@@ -105,7 +121,9 @@ export function reshapeBasement(b: BuildingSpec, rect: Rect, op: 'add' | 'cut'):
 /** Move one basement vertex, preserving floor objects in building coordinates and openings on their wall. */
 export function moveBasementVertex(b: BuildingSpec, index: number, point: Vec2): boolean {
   const basement = b.basement;
-  if (!basement || Object.values(basement.sides ?? {}).some(v => v === false)) return false;
+  if (!basement) return false;
+  const wallEdges = perimeterWalls(b);
+  if (!wallEdges) return false;
   const old = basementOutline(b), next = old.map((p, i) => i === index ? { ...point } : { ...p });
   const validPoint = (p: Vec2): boolean => Number.isFinite(p.x) && Number.isFinite(p.z) && Math.abs(p.x) <= BASEMENT_COORD_LIMIT && Math.abs(p.z) <= BASEMENT_COORD_LIMIT;
   if (index < 0 || index >= old.length || !validOutline(next) || !next.every(validPoint)) return false;
@@ -158,11 +176,27 @@ export function moveBasementVertex(b: BuildingSpec, index: number, point: Vec2):
   });
   if (openings.some(o => !o || !validPoint(o))) return false;
   basement.outline = next;
+  delete basement.sides;
+  if (wallEdges.some(v => !v)) basement.wallEdges = wallEdges;
+  else delete basement.wallEdges;
   basement.doors = {};
   basement.wallOpenings = openings.filter(o => o !== null);
   if (basement.columns) basement.columns = basement.columns.map(c => ({ ...c, x: c.x + dx, z: c.z + dz }));
   if (basement.partitions) basement.partitions = basement.partitions.map(w => w.map(p => ({ x: p.x + dx, z: p.z + dz })) as [Vec2, Vec2]);
   if (basement.voids) basement.voids = basement.voids.map(v => ({ ...v, x0: v.x0 + dx, x1: v.x1 + dx, z0: v.z0 + dz, z1: v.z1 + dz }));
+  return true;
+}
+
+/** Set one explicit perimeter wall, converting old doors and compass-side flags atomically. */
+export function setBasementPerimeterWall(b: BuildingSpec, edge: number, on: boolean): boolean {
+  const old = basementOutline(b);
+  if (!b.basement || !Number.isInteger(edge) || edge < 0 || edge >= old.length) return false;
+  const copy = structuredClone(b);
+  if (!moveBasementVertex(copy, 0, old[0]!)) return false;
+  const walls = copy.basement!.wallEdges ?? old.map(() => true);
+  walls[edge] = on;
+  copy.basement!.wallEdges = walls;
+  b.basement = copy.basement;
   return true;
 }
 
@@ -179,6 +213,7 @@ export function insertBasementVertex(b: BuildingSpec, edge: number): boolean {
     const distance = Math.abs(x * (z.z - a.z) - y * (z.x - a.x)) / len;
     if (distance < 0.08 && Math.abs(along - mid) < o.w / 2 + 0.1) return false;
   }
+  copy.basement!.wallEdges?.splice(edge + 1, 0, copy.basement!.wallEdges[edge]!);
   copy.basement!.outline!.splice(edge + 1, 0, { x: (a.x + z.x) / 2, z: (a.z + z.z) / 2 });
   b.basement = copy.basement;
   return true;
@@ -197,11 +232,14 @@ export function removeBasementVertex(b: BuildingSpec, index: number): boolean {
   };
   const previous = old[(index + old.length - 1) % old.length]!, vertex = old[index]!, next = old[(index + 1) % old.length]!;
   if ((copy.basement!.wallOpenings ?? []).some(o => onEdge(o, previous, vertex) || onEdge(o, vertex, next))) return false;
+  const flags = copy.basement!.wallEdges;
+  if (flags && flags[(index + old.length - 1) % old.length] !== flags[index]) return false;
   const outline = old.filter((_, i) => i !== index);
   if (!validOutline(outline)) return false;
   const before = bounds(old), after = bounds(outline), dx = before.x0 - after.x0, dz = before.z0 - after.z0;
   const basement = copy.basement!;
   basement.outline = outline;
+  if (flags) basement.wallEdges = flags.filter((_, i) => i !== index);
   if (basement.columns) basement.columns = basement.columns.map(c => ({ ...c, x: c.x + dx, z: c.z + dz }));
   if (basement.partitions) basement.partitions = basement.partitions.map(w => w.map(p => ({ x: p.x + dx, z: p.z + dz })) as [Vec2, Vec2]);
   if (basement.voids) basement.voids = basement.voids.map(v => ({ ...v, x0: v.x0 + dx, x1: v.x1 + dx, z0: v.z0 + dz, z1: v.z1 + dz }));

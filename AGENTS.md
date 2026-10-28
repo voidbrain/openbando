@@ -358,3 +358,9 @@ npm run check:i18n                        # every UI text has its Italian
 - Hide all records the visible workspace. Reset restores that set with default geometry. Repeated Hide all must not replace it with an empty snapshot.
 
 - Backlog status vocabulary: Open, Investigate, Implemented (checks pending), Verified (all stated checks passed), Blocked, Closed (accepted/resolved). Each item records its Opened date (first ledger entry, preserved on reopening) and a separate Verification entry with date, method, result and evidence. Human acceptance, unit/integration, browser/accessibility, real-device and documentation checks are distinct; Reviewed is only the ledger-update date. Do not promote a pending implementation to Verified or Closed based on a merge.
+
+## Basement perimeter wall identity
+
+- `basement.wallEdges` stores one boolean per outline edge. The isolated `LevelSpec.wallEdges` carries it to preview/indoor rendering. Convert legacy compass flags before a vertex edit; clockwise and counterclockwise outlines must agree. Never silently re-enable a wall when its edge becomes diagonal.
+- Split edges inherit their old flag. Removing a corner between different flags is rejected; openings and floor items keep the existing preservation checks. Cut/Wing and dimension/footprint replacement are guarded while perimeter edges are disabled, until a topology remapping policy exists.
+- Inspector uses per-edge switches for polygonal or converted basements. Hidden walls retain existing opening data for later re-enabling, but new openings cannot be placed on absent edges. Keep saved-file sanitization, save/undo, rendering and collision in step.

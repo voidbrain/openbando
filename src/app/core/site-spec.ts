@@ -120,6 +120,8 @@ export interface LevelSpec {
   doors: Partial<Record<'n' | 's' | 'e' | 'w', OpeningSpec[]>>;
   /** Openings of a shaped building ({@link BuildingSpec.footprint}); rectangular buildings use `doors`. */
   wallOpenings?: WallOpening[];
+  /** Per-footprint-edge wall visibility, used by edited basement previews. */
+  wallEdges?: boolean[];
   /** Interior partition walls (solid, no openings): segment endpoints in building-local metres. */
   partitions: [Vec2, Vec2][];
   /** 'gable' = pitched roof over the long axis, 'vault' = barrel vault(s), 'flat' = parapet slab. */
@@ -183,7 +185,7 @@ export interface BuildingSpec {
    */
   fixtures?: StructureSpec[];
   /** A basement under the ground floor, `height` metres deep inside (see core/underground.ts basementVolume). */
-  basement?: { height: number; outline?: Vec2[]; sides?: Partial<Record<'n'|'s'|'e'|'w', boolean>>; partitions?: [Vec2,Vec2][]; doors?: LevelSpec['doors']; wallOpenings?: WallOpening[]; columns?: ColumnSpec[]; voids?: VoidSpec[] };
+  basement?: { height: number; outline?: Vec2[]; wallEdges?: boolean[]; sides?: Partial<Record<'n'|'s'|'e'|'w', boolean>>; partitions?: [Vec2,Vec2][]; doors?: LevelSpec['doors']; wallOpenings?: WallOpening[]; columns?: ColumnSpec[]; voids?: VoidSpec[] };
   /** Placed from a library block. */
   block?: BlockRef;
   /** Its name came from the map data (a shop, a hospital): a copy shared without its place drops it. */
@@ -424,6 +426,7 @@ function cleanBasement(raw: BuildingSpec['basement']): BuildingSpec['basement'] 
   if (!raw || !Number.isFinite(raw.height)) return undefined;
   const point=(p:Vec2):boolean=>!!p && Number.isFinite(p.x) && Number.isFinite(p.z) && Math.abs(p.x)<=BASEMENT_COORD_LIMIT && Math.abs(p.z)<=BASEMENT_COORD_LIMIT;
   const outline=Array.isArray(raw.outline) && raw.outline.every(point) && validOutline(raw.outline) ? raw.outline.map(p=>({x:p.x,z:p.z})) : undefined;
+  const wallEdges = outline && Array.isArray(raw.wallEdges) && raw.wallEdges.length === outline.length && raw.wallEdges.every(v => typeof v === 'boolean') ? [...raw.wallEdges] : undefined;
   const sides=raw.sides ? Object.fromEntries((['n','s','e','w'] as const).map(k=>[k,raw.sides?.[k]!==false])) : undefined;
   const partitions=Array.isArray(raw.partitions) ? raw.partitions.filter(w=>Array.isArray(w) && w.length===2 && w.every(point)).slice(0,100).map(([a,b])=>[{x:a.x,z:a.z},{x:b.x,z:b.z}] as [Vec2,Vec2]) : undefined;
   const validOpening = (o: OpeningSpec): boolean => !!o && (o.kind === 'door' || o.kind === 'window') && Number.isFinite(o.c) && Number.isFinite(o.w) && Number.isFinite(o.h) && o.w > 0 && o.h > 0 && (o.sill === undefined || Number.isFinite(o.sill));
@@ -435,7 +438,7 @@ function cleanBasement(raw: BuildingSpec['basement']): BuildingSpec['basement'] 
   const wallOpenings = Array.isArray(raw.wallOpenings) ? raw.wallOpenings.filter(o => !!o && point(o) && (o.kind === 'door' || o.kind === 'window') && Number.isFinite(o.w) && o.w > 0 && Number.isFinite(o.h) && o.h > 0 && (o.sill === undefined || Number.isFinite(o.sill))).slice(0, 100).map(o => ({ ...o })) : undefined;
   const columns = Array.isArray(raw.columns) ? raw.columns.filter(c => !!c && point(c) && Number.isFinite(c.size) && c.size > 0 && c.size <= 50).slice(0, 500).map(c => ({ ...c })) : undefined;
   const voids = Array.isArray(raw.voids) ? raw.voids.filter(v => !!v && [v.x0, v.z0, v.x1, v.z1].every(n => Number.isFinite(n) && Math.abs(n) <= BASEMENT_COORD_LIMIT) && v.x1 > v.x0 && v.z1 > v.z0).slice(0, 100).map(v => ({ ...v, water: false })) : undefined;
-  return {height:Math.min(12,Math.max(2,raw.height)),...(outline?{outline}:{}),...(sides?{sides}:{}),...(partitions?{partitions}:{}),...(Object.keys(doors).length?{doors}:{}),...(wallOpenings?{wallOpenings}:{}),...(columns?{columns}:{}),...(voids?{voids}:{})};
+  return {height:Math.min(12,Math.max(2,raw.height)),...(outline?{outline}:{}),...(wallEdges?{wallEdges}:{}),...(sides?{sides}:{}),...(partitions?{partitions}:{}),...(Object.keys(doors).length?{doors}:{}),...(wallOpenings?{wallOpenings}:{}),...(columns?{columns}:{}),...(voids?{voids}:{})};
 }
 
 export function sanitizeSpec(raw: unknown): SiteSpec | null {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { basementBuilding, insertBasementVertex, moveBasementVertex, removeBasementVertex, reshapeBasement } from './basement';
+import { basementBuilding, insertBasementVertex, moveBasementVertex, removeBasementVertex, reshapeBasement, setBasementPerimeterWall } from './basement';
 import { addOpening, listOpenings, moveOpening } from './openings';
 import { emptySpec, sanitizeSpec, type BuildingSpec } from './site-spec';
 import { siteGround } from './site-ground';
@@ -381,4 +381,72 @@ for (const shape of ['pipe', 'vault'] as const) it(`opens a basement floor into 
   const ray = new THREE.Raycaster(new THREE.Vector3(0, -2, 0), new THREE.Vector3(0, -1, 0));
   const first = ray.intersectObject(model.group, true).find(h => h.object instanceof THREE.Mesh && h.object.visible);
   expect(first?.point.y).toBeCloseTo(-7, 1);
+});
+
+
+describe('basement perimeter wall identity', () => {
+  it('preserves wall flags through indoor floor tools and rejects a mismatched saved edge mask', async () => {
+    const {editBasementFloor,saveBasementFloor}=await import('./basement');
+    const b=building();expect(setBasementPerimeterWall(b,1,false)).toBe(true);
+    editBasementFloor(b,floor=>{floor.levels[0]!.columns=[{x:5,z:4,size:0.4}];});
+    expect(b.basement!.wallEdges).toEqual([true,false,true,true]);
+    expect(b.basement!.columns).toHaveLength(1);
+    const before=structuredClone(b), floor=basementBuilding(b);
+    floor.levels[0]!.wallEdges=[false];
+    expect(saveBasementFloor(b,floor)).toBe(false);expect(b).toEqual(before);
+  });
+  it('toggles an explicit edge while retaining openings for when the wall is enabled again', () => {
+    const b=building(); b.basement={height:3,doors:{n:[{kind:'door',c:3,w:1,h:2}]}};
+    expect(setBasementPerimeterWall(b,0,false)).toBe(true);
+    expect(b.basement!.wallEdges).toEqual([false,true,true,true]);
+    expect(listOpenings(basementBuilding(b),0)).toHaveLength(1);
+    expect(setBasementPerimeterWall(b,0,true)).toBe(true);
+    expect(b.basement!.wallEdges).toEqual([true,true,true,true]);
+    expect(listOpenings(basementBuilding(b),0)).toHaveLength(1);
+    const before=structuredClone(b);
+    expect(setBasementPerimeterWall(b,9,false)).toBe(false); expect(b).toEqual(before);
+  });
+  it('maps legacy side flags correctly with clockwise winding', () => {
+    const b=building();b.basement={height:3,sides:{e:false},outline:[{x:-5,z:-4},{x:-5,z:4},{x:5,z:4},{x:5,z:-4}]};
+    expect(moveBasementVertex(b,3,{x:6,z:-4})).toBe(true);
+    expect(b.basement!.wallEdges).toEqual([true,true,false,true]);
+  });
+  it('keeps a disabled east wall open after a diagonal vertex edit, save/import and undo', async () => {
+    const {SiteEditor} = await import('./site-editor');
+    const {indoorViewSpec} = await import('../three/indoor-view');
+    const b = building(); b.basement = {height:3, sides:{e:false}, doors:{n:[{kind:'door',c:3,w:1,h:2}]}};
+    const s=emptySpec(); s.extent=30; s.buildings=[b]; s.pads=[];
+    const ed=new SiteEditor(); ed.load(s);
+    ed.commitSite(d=>expect(moveBasementVertex(d.buildings[0]!,1,{x:6,z:-4})).toBe(true));
+    const changed=ed.draft().buildings[0]!;
+    expect(changed.basement!.wallEdges).toEqual([true,false,true,true]);
+    expect(listOpenings(basementBuilding(changed),0)).toHaveLength(1);
+    const saved=sanitizeSpec(JSON.parse(JSON.stringify(ed.draft())))!;
+    expect(saved.buildings[0]!.basement!.wallEdges).toEqual([true,false,true,true]);
+    for(const spec of [saved,indoorViewSpec(saved,{id:'b',li:-1})]) {
+      const model=buildSiteFromSpec(spec);
+      expect(model.collider.hit(new Vec3(5.5,-1.5,0))).toBe(false);
+      expect(model.collider.hit(new Vec3(0,-1.5,-4))).toBe(true);
+      model.group.updateMatrixWorld(true);
+      const ray=new THREE.Raycaster(new THREE.Vector3(0,-1.5,0),new THREE.Vector3(1,0,0),0,7);
+      expect(ray.intersectObject(model.group,true)).toHaveLength(0);
+    }
+    const mini=basementBuilding(changed);
+    expect(addOpening(mini,0,{x:5.5,z:0},'door',0.5)).toBeNull();
+    ed.undo();expect(ed.draft().buildings[0]!.basement!.sides).toEqual({e:false});
+    ed.redo();expect(ed.draft().buildings[0]!.basement!.wallEdges).toEqual([true,false,true,true]);
+  });
+  it('inherits wall visibility on split and refuses to merge open and closed edges', () => {
+    const b=building(); b.basement={height:3,sides:{e:false}};
+    expect(insertBasementVertex(b,1)).toBe(true);
+    expect(b.basement!.wallEdges).toEqual([true,false,false,true,true]);
+    expect(moveBasementVertex(b,2,{x:6,z:0})).toBe(true);
+    expect(removeBasementVertex(b,2)).toBe(true);
+    expect(b.basement!.wallEdges).toEqual([true,false,true,true]);
+    const before=structuredClone(b);
+    expect(removeBasementVertex(b,1)).toBe(false);
+    expect(b).toEqual(before);
+    expect(reshapeBasement(b,{x0:4,x1:7,z0:-1,z1:1},'add')).toBe(false);
+    expect(b).toEqual(before);
+  });
 });
