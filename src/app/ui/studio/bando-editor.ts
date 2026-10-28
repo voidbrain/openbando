@@ -2329,7 +2329,7 @@ export class BandoEditor {
     const map = this.map;
     if (!map) return;
     const r = this.workEl().nativeElement.getBoundingClientRect();
-    map.setZoomAround(L.point(e.clientX - r.left, e.clientY - r.top), Math.min(21, Math.max(15, map.getZoom() - Math.sign(e.deltaY) * 0.5)), { animate: false });
+    map.setZoomAround(L.point(e.clientX - r.left, e.clientY - r.top), Math.min(map.getMaxZoom(), Math.max(map.getMinZoom(), map.getZoom() - Math.sign(e.deltaY) * 0.5)), { animate: false });
   }
 
   // ---- right-click menu: what it offers depends on what is under the pointer ----
