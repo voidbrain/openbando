@@ -171,7 +171,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | FOLLOWUP_PR |
+| PR / evidence | [#156](https://github.com/voidbrain/openbando/pull/156) |
 | Opened | 2026-10-28 |
 | Verification | Unit/integration + Documentation · 2026-10-28 · local checks passed; Browser/accessibility · Pending |
 | Reviewed | 2026-10-28 |
@@ -482,7 +482,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | FOLLOWUP_PR |
+| PR / evidence | [#156](https://github.com/voidbrain/openbando/pull/156) |
 | Opened | 2026-10-28 |
 | Verification | Unit/integration + Documentation · 2026-10-28 · local checks passed; Browser/accessibility · Pending |
 | Reviewed | 2026-10-28 |
