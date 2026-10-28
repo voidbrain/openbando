@@ -53,4 +53,4 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 |---|---|---|---|---|
 | Replace ambiguous Verify/Done statuses with Implemented/Verified/Closed; record verification date, method, result and evidence separately from ledger review. | [#120](https://github.com/voidbrain/openbando/pull/120) | Implemented | Documentation · 2026-10-28 · table schema checked | 2026-10-28 |
 
-| Follow-up code/documentation audit; refresh CI evidence and generated guide text without claiming clip regeneration. | PR pending; [audit](audits/2026-10-28.md) | Implemented | Documentation · 2026-10-28 · source and CI review; media checks pending | 2026-10-28 |
+| Follow-up code/documentation audit; refresh CI evidence and generated guide text without claiming clip regeneration. | [#125](https://github.com/voidbrain/openbando/pull/125); [audit](audits/2026-10-28.md) | Implemented | Documentation · 2026-10-28 · source and CI review; media checks pending | 2026-10-28 |
