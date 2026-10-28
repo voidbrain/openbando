@@ -1,15 +1,24 @@
 /* Global design tokens and the small set of shared control styles used by every panel. */
 :root {
-  --bg: #0e1411;
-  --panel: rgba(22, 31, 26, 0.9);
-  --panel-solid: #1a251f;
-  --line: #3a4a41;
-  --text: #eef4ed;
-  --dim: #aab9af;
+  --bg: #10101d;
+  --panel: rgba(27, 25, 47, 0.94);
+  --panel-solid: #211e38;
+  --line: #504968;
+  --text: #f1eff8;
+  --dim: #b8b2cb;
   --accent: #b7ed83;
   --accent-ink: #12200b;
   --warn: #ff9a2e;
   --danger: #ff6b6b;
+  --control: #302b49;
+  --control-hover: #352f50;
+  --field: #161425;
+  --map-ground: #0c0b17;
+  --overlay: rgba(15, 13, 28, 0.96);
+  --overlay-soft: rgba(15, 13, 28, 0.90);
+  --badge: rgba(15, 13, 28, 0.90);
+  --badge-ink: #f1eff8;
+  --frame-shade: rgba(12, 10, 25, 0.5);
   --radius: 10px;
   --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   color-scheme: dark;
@@ -44,14 +53,14 @@ textarea {
 }
 
 .btn {
-  background: #27352c;
+  background: var(--control);
   border: 1px solid var(--line);
   border-radius: 7px;
   padding: 4px 9px;
   cursor: pointer;
   white-space: nowrap;
   &:hover:not(:disabled) {
-    background: #31443a;
+    background: var(--control-hover);
   }
   &:disabled {
     opacity: 0.45;
@@ -124,7 +133,7 @@ input[type='number'],
 input[type='text'],
 input[type='url'],
 select {
-  background: #121a15;
+  background: var(--field);
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 3px 6px;
@@ -208,7 +217,7 @@ app-video-panel .slot video {
   left: 50%;
   bottom: 18px;
   transform: translate(-50%, 20px);
-  background: rgba(10, 16, 12, 0.92);
+  background: var(--overlay);
   border: 1px solid var(--line);
   padding: 7px 14px;
   border-radius: 8px;

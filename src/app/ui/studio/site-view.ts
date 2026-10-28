@@ -59,7 +59,7 @@ import type { BuildingHandle } from '../../three/building-handles';
       position: absolute;
       left: 8px;
       bottom: 68px;
-      background: rgba(10, 16, 12, 0.7);
+      background: var(--badge);
       padding: 1px 7px;
       border-radius: 6px;
       pointer-events: none;

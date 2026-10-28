@@ -384,3 +384,5 @@ Follow [docs/BACKLOG-RULES.md](docs/BACKLOG-RULES.md), the authoritative mainten
 - Every modification, including backlog-only changes, requires a consistency check across README, AGENTS, BACKLOG, BACKLOG-RULES, design-system/component guides and applicable mascot/style guides. Sync affected claims and rules in the same PR, preserve user edits, and record the check/remaining discrepancies in PR validation. Unaffected documents need no cosmetic edit.
 
 - Every change/review must reassess affected item status, actions, next action, human dependency/blocker, verification and evidence. Perform authorized feasible next steps rather than leaving “Agent can…” notes; close/archive when criteria pass. Only actual dependencies or required missing human evidence block dependent work; continue independent work. Follow `docs/BACKLOG-RULES.md`.
+
+- Chrome theme: use shared indigo/purple surface tokens for panels, fields, menus and buttons. Keep the existing lime accent/ink pair and all semantic, telemetry, tool and pilot palettes unchanged. Art and model materials are separate from UI chrome.

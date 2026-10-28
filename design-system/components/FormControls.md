@@ -15,3 +15,5 @@ FormControls are the native inputs, styled once globally: `field` fill, `line` b
 A visible label for every control (a `.fld` caption, a `label.check`, or `aria-label` when the context is unambiguous).
 
 Source: `src/styles.scss (inputs, label.check)`.
+
+Chrome uses the shared indigo/purple surface tokens. Keep status colours unchanged and pair lime active fills with `accent-ink`; do not reintroduce literal green control backgrounds.
