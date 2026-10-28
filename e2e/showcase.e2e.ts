@@ -62,9 +62,21 @@ test('showcase keeps Welcome open for a complete mascot loop', async ({ page }) 
   });
   await page.goto('/?tour=showcase&lang=en');
   const bar = page.locator('app-tour-overlay .bar');
+  const countdown = bar.locator('.step-clock .clock-left');
+  await expect(countdown).toBeVisible();
   // Observe each distributed gate; there is no long, separate gate after Share.
   for (const part of ['build', 'fly', 'share']) {
     await expect(bar).toHaveAttribute('data-action', `hook:welcomePart:${part}`, {timeout: 90_000});
+    const offset = Number(await countdown.getAttribute('stroke-dashoffset'));
+    expect(offset).toBeGreaterThanOrEqual(0);
+    expect(offset).toBeLessThanOrEqual(1);
+    if (part === 'fly') {
+      await bar.getByRole('button', {name: /Pause/}).click();
+      const held = await countdown.getAttribute('stroke-dashoffset');
+      await page.waitForTimeout(500);
+      await expect(countdown).toHaveAttribute('stroke-dashoffset', held!);
+      await bar.getByRole('button', {name: /Resume/}).click();
+    }
     await expect(page.locator('app-panel[data-id="welcome"]')).toBeVisible();
     await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
   }

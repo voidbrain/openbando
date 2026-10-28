@@ -249,3 +249,5 @@ Backlog human-action cues use 🧑 Yes for human input and 💻 No for agent-own
 After a completed Welcome showcase, Open the bandos becomes the primary Welcome action. Fly on a saved bando opens the model and telemetry workspace (excluding Live link); it does not arm the simulator. Loading a log or video exposes its matching panel. Views can close and reopen from the bottom menu; Flights opens below Video. Video decoding shows loading/error feedback instead of an unexplained black frame.
 
 The [guided Fly workflow proposal](docs/fly-workflow-plan.md) is planned work (F-018), covering recorded replay, simulator and live/racing routes; it is not an implemented wizard.
+
+The tour caption shows a circular remaining-time indicator. Welcome uses one rendered mascot loop with card films fitted across its thirds; it holds the final pose instead of beginning another search/run/sit before closing. Other guides show estimated timing, held while paused.

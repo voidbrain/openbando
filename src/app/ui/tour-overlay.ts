@@ -35,6 +35,10 @@ import { TourService } from '../services/tour.service';
         <div class="head">
           <span class="grip" title="Drag to move" aria-hidden="true" (pointerdown)="gripDown($event)" (pointermove)="gripMove($event)" (pointerup)="gripUp($event)" (pointercancel)="gripUp($event)">⠿</span>
           <!-- the showcase is called "Welcome" in every language: a name, not a word to translate -->
+          <svg class="step-clock" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Step time remaining (estimated for guides)">
+            <circle class="clock-track" cx="12" cy="12" r="9" />
+            <circle class="clock-left" cx="12" cy="12" r="9" pathLength="1" stroke-dasharray="1" [attr.stroke-dashoffset]="1 - tour.stepRemaining()" />
+          </svg>
           <b [attr.translate]="s.title === showcaseName ? 'no' : null">{{ s.title }}</b>
           <span class="dim small mono">{{ s.index }} / {{ s.total }}</span>
           <span class="sp"></span>
@@ -62,6 +66,10 @@ import { TourService } from '../services/tour.service';
       z-index: 100002;
       pointer-events: none;
     }
+    .step-clock { flex: 0 0 24px; transform: rotate(-90deg); }
+    .step-clock circle { fill: none; stroke-width: 3; }
+    .clock-track { stroke: var(--line); }
+    .clock-left { stroke: var(--accent); stroke-linecap: round; }
     .cursor {
       position: fixed;
       margin: -3px 0 0 -4px;

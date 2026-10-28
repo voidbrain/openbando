@@ -1,6 +1,6 @@
 import { NgOptimizedImage } from '@angular/common';
 import { AfterViewInit, Component, DestroyRef, ElementRef, inject, signal, viewChild } from '@angular/core';
-import { mascotFrame, MASCOT_POSES } from '../core/mascot';
+import { mascotFrame, MASCOT_DURATION, MASCOT_POSES } from '../core/mascot';
 import { FrameLoopService, FrameOrder } from '../services/frame-loop.service';
 import { LayoutStore } from '../state/layout.store';
 import { MascotProgressService } from '../services/mascot-progress.service';
@@ -42,10 +42,10 @@ export class Mascot implements AfterViewInit {
       const panel = this.layout.panels().welcome;
       if (!panel.visible) { wasVisible = false; return; }
       if (!wasVisible || revision !== this.progress.revision) { ms = 0; painted = false; wasVisible = true; revision = this.progress.revision; }
-      if (panel.minimized || document.hidden) return;
+      if (panel.minimized || document.hidden || this.progress.paused) return;
       const still = this.paused();
       if (still && painted) return;
-      const f = mascotFrame(ms), pilot = images[f.pose]!;
+      const f = mascotFrame(this.progress.holdAtEnd ? Math.min(ms, MASCOT_DURATION - 1) : ms), pilot = images[f.pose]!;
       const quad = f.droneRight ? droneRight : drone;
       if (!pilot.complete || !pilot.naturalWidth || !quad.complete || !quad.naturalWidth) return;
       const g = this.cv()?.nativeElement.getContext('2d'); if (!g) return;

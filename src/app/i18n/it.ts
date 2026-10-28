@@ -1158,6 +1158,7 @@ export const IT: Readonly<Record<string, string>> = {
   'Build': 'Costruisci',
   'Fly': 'Vola',
   'active': 'attivo',
+  'Step time remaining (estimated for guides)': 'Tempo restante del passaggio (stimato per le guide)',
   'Close (menu opens it again)': 'Chiudi (il menu lo riapre)',
   'Loading video…': 'Caricamento video…',
   'Video could not be loaded. Try another format.': 'Impossibile caricare il video. Prova un altro formato.',

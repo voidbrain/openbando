@@ -1,6 +1,6 @@
 import { Service, inject, signal } from '@angular/core';
 import { animateTour, TourAnimationClock } from '../core/tour-animation';
-import { AI_SCRIPTS, SNIPPET_BY_ID, backTarget, type At, type Beat, type Hook, type Need, type Snippet, type Tour, type TourAction } from '../core/tour';
+import { AI_SCRIPTS, SNIPPET_BY_ID, backTarget, playTime, type At, type Beat, type Hook, type Need, type Snippet, type Tour, type TourAction } from '../core/tour';
 import { sanitizeSpec } from '../core/site-spec';
 import { MASCOT_DURATION } from '../core/mascot';
 import { MascotProgressService } from './mascot-progress.service';
@@ -78,6 +78,18 @@ export class TourService {
   readonly state = signal<TourState | null>(null);
   /** Current action for browser-test diagnostics when a guide fails to finish. */
   readonly diagnostic = signal('');
+  /** Remaining fraction of this snippet; variable guide work uses a labelled estimate. */
+  readonly stepRemaining = signal(1);
+  private stepStarted = 0;
+  private stepDuration = 1;
+  private progressKind: 'welcome' | 'replay' | 'estimate' = 'estimate';
+  private updateStepRemaining(): void {
+    const fraction = this.progressKind === 'welcome' ? this.mascotProgress.elapsed / MASCOT_DURATION
+      : this.progressKind === 'replay' && this.playback.duration > 0 ? this.playback.time / this.playback.duration
+      : (this.activeTime() - this.stepStarted) / this.stepDuration;
+    // An estimate never declares an unfinished step complete.
+    this.stepRemaining.set(Math.max(this.progressKind === 'estimate' ? .03 : 0, Math.min(1, 1 - fraction)));
+  }
   readonly cursor = signal<{ x: number; y: number; down: boolean } | null>(null);
   /** A click ring, bumped on every click. */
   readonly ring = signal<{ x: number; y: number; n: number } | null>(null);
@@ -124,6 +136,12 @@ export class TourService {
   /** Pause or resume the guide, and the replay with it. */
   togglePause(): void {
     this.paused = !this.paused;
+    if (this.mascotProgress.holdAtEnd) {
+      this.mascotProgress.paused = this.paused;
+      const film = document.querySelector<HTMLVideoElement>('app-welcome-panel .col.on video');
+      if (this.paused) film?.pause();
+      else if (film && !film.ended) void film.play().catch(() => undefined);
+    }
     this.animationClock.pause(this.paused, performance.now());
     this.state.update((s) => (s ? { ...s, paused: this.paused } : s));
     if (this.paused) this.haltReplay();
@@ -170,7 +188,7 @@ export class TourService {
     const c = this.cursor() ?? { x: innerWidth / 2, y: innerHeight / 2, down: false };
     this.cursor.set({ ...c, down: false });
     const transportBefore = {loop: this.playback.transport.loop(), speed: this.playback.transport.speed(), direction: this.playback.transport.direction()};
-    if (returnToWelcome) this.video.quietSyncNotifications = true;
+    if (returnToWelcome) { this.video.quietSyncNotifications = true; this.mascotProgress.holdAtEnd = true; }
     if (returnToWelcome) { this.playback.transport.setLoop(false); this.playback.transport.setSpeed(1); this.playback.transport.setDirection(1); }
     try {
       for (let i = 0; i < beats.length; i++) {
@@ -178,6 +196,10 @@ export class TourService {
         this.state.set({ title, index: i + 1, total: beats.length, say: b.say ?? this.state()?.say ?? '', paused: this.paused, canBack: i > 0, preparing: first });
         this.skip = false;
         if (first) {
+          this.stepStarted = this.activeTime();
+          this.stepDuration = Math.max(1000, playTime(snippet.beats) + snippet.beats.flatMap(beat => beat.actions).filter(action => action.do === 'hook').length * 1000);
+          this.progressKind = snippet.id === 'sc-welcome' ? 'welcome' : snippet.beats.some(beat => beat.actions.some(action => action.do === 'hook' && action.hook === 'replayEnd')) ? 'replay' : 'estimate';
+          this.stepRemaining.set(1);
           await this.prepare(snippet.needs ?? []);
           this.state.update((s) => (s ? { ...s, preparing: false } : s));
         }
@@ -201,6 +223,8 @@ export class TourService {
     } finally {
       if (returnToWelcome) {
         this.video.quietSyncNotifications = false;
+        this.mascotProgress.holdAtEnd = false;
+        this.mascotProgress.paused = false;
         // The showcase must stop its looping replay and return to Welcome on completion or cancellation.
         this.haltReplay();
         this.heldReplay = false;
@@ -262,6 +286,7 @@ export class TourService {
     while (this.activeTime() < end || this.paused) {
       if (this.stop) throw new Stopped();
       if (this.skip && !this.paused) return;
+      this.updateStepRemaining();
       await new Promise((r) => setTimeout(r, 30));
     }
     if (this.stop) throw new Stopped();
@@ -458,22 +483,27 @@ export class TourService {
         const film = document.querySelector<HTMLVideoElement>(`app-welcome-panel video[data-id="${arg}"]`);
         const target = MASCOT_DURATION * (index + 1) / 3;
         document.querySelector(`[data-tour="welcome-${arg}"]`)?.dispatchEvent(new MouseEvent('mouseenter'));
-        const loop = film?.loop;
+        const loop = film?.loop, rate = film?.playbackRate;
+        let fitted = false;
         if (film && !reduced) {
           film.loop = false;
           film.currentTime = 0;
           void film.play().catch(() => undefined);
         }
         try {
-          // Each card owns one third of rendered mascot time and a complete, non-looping film.
+          // Fit the complete film into its remaining third, rather than replaying the mascot.
           const started = this.activeTime();
           while (!this.skip) {
+            if (film && !fitted && Number.isFinite(film.duration) && film.duration > 0) {
+              film.playbackRate = Math.min(4, Math.max(.25, film.duration / Math.max(.5, (target - this.mascotProgress.elapsed) / 1000)));
+              fitted = true;
+            }
             const unavailable = !film || !!film.error ||
               (this.activeTime() - started > 10_000 && (film.readyState < 2 || film.paused && !film.ended));
             if ((reduced || this.mascotProgress.elapsed >= target) && (reduced || unavailable || film?.ended)) return;
             await this.sleep(50);
           }
-        } finally { if (film && loop !== undefined) film.loop = loop; }
+        } finally { if (film && loop !== undefined) film.loop = loop; if (film && rate !== undefined) film.playbackRate = rate; }
         return;
       }
       case 'replayEnd':
