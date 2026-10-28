@@ -46,6 +46,9 @@ jobs:
       - name: Every UI text has its Italian
         run: npm run check:i18n
 
+      - name: Backlog records and layout
+        run: npm run check:backlog
+
       - name: Shared surface text contrast
         run: npm run check:contrast
 

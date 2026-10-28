@@ -103,3 +103,5 @@ Require WCAG AA text contrast (4.5:1 for ordinary text; 3:1 only for qualifying 
 
 `npm run check:contrast` checks shared text/surface pairs (including translucent fills over black and white) and CSS/token-catalog agreement in CI. Page-wide axe covers visible labels, notices and text; `e2e/contrast.ts` probes representative rendered control styles on hover and keyboard focus. Browser-specific, canvas/video and visual readability limits still require their named checks; these tests do not prove every possible content/state combination.
 
+
+Interaction contrast probes reuse one axe engine in the main document and batch discovery of distinct style/state representatives; page-wide axe remains a separate check. This avoids repeated engine/frame setup without changing contrast thresholds or removing interaction states.
