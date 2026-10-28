@@ -72,4 +72,4 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | 🟡 | Use neutral grey priority markers for Closed and Blocked items, retaining historical P1/P2/P3; apply to the closed archive and document reopening behavior. | [#128](https://github.com/voidbrain/openbando/pull/128) | Implemented | Documentation · 2026-10-28 · closed priorities and table widths checked | 2026-10-28 |
 
-| 🟡 | Add compact lifecycle legend with requirements, conditional transitions and priority-cue effects. | PR pending | Implemented | Documentation · 2026-10-28 · six statuses and transition/colour rules reviewed | 2026-10-28 |
+| 🟡 | Add compact lifecycle legend with requirements, conditional transitions and priority-cue effects. | [#129](https://github.com/voidbrain/openbando/pull/129) | Implemented | Documentation · 2026-10-28 · six statuses and transition/colour rules reviewed | 2026-10-28 |
