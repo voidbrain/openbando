@@ -119,6 +119,35 @@ function reshapePerimeter(old: Vec2[], flags: boolean[], next: Vec2[]): { outlin
   return {outline, walls};
 }
 
+/** Drop the vertices between two collinear edges in the same wall state (the old corners `reshapePerimeter` keeps). */
+function joinCollinear(p: { outline: Vec2[]; walls: boolean[] }): { outline: Vec2[]; walls: boolean[] } {
+  const n = p.outline.length;
+  const keep = p.outline.map((v, i) => {
+    const a = p.outline[(i + n - 1) % n]!, b = p.outline[(i + 1) % n]!;
+    const straight = Math.abs((v.x - a.x) * (b.z - v.z) - (v.z - a.z) * (b.x - v.x)) < 1e-9;
+    return !straight || p.walls[(i + n - 1) % n] !== p.walls[i];
+  });
+  return { outline: p.outline.filter((_, i) => keep[i]), walls: p.walls.filter((_, i) => keep[i]) };
+}
+
+/** Every open old edge is covered, end to end, by open edges of the new perimeter. */
+function openSpansSurvive(old: Vec2[], flags: boolean[], next: { outline: Vec2[]; walls: boolean[] }): boolean {
+  const length = (a: Vec2, b: Vec2): number => Math.hypot(b.x - a.x, b.z - a.z);
+  const on = (p: Vec2, a: Vec2, b: Vec2): boolean => {
+    const l = length(a, b), t = ((p.x - a.x) * (b.x - a.x) + (p.z - a.z) * (b.z - a.z)) / (l * l);
+    return t >= -1e-6 && t <= 1 + 1e-6 && Math.abs((p.x - a.x) * (b.z - a.z) - (p.z - a.z) * (b.x - a.x)) / l < 1e-6;
+  };
+  return old.every((a, j) => {
+    if (flags[j]) return true;
+    const b = old[(j + 1) % old.length]!;
+    const kept = next.outline.reduce((sum, p, i) => {
+      const q = next.outline[(i + 1) % next.outline.length]!;
+      return !next.walls[i] && on(p, a, b) && on(q, a, b) ? sum + length(p, q) : sum;
+    }, 0);
+    return Math.abs(kept - length(a, b)) < 1e-6;
+  });
+}
+
 /** Add or cut a rectangular section of the basement, leaving the upper building unchanged. */
 export function reshapeBasement(b: BuildingSpec, rect: Rect, op: 'add' | 'cut'): boolean {
   if (!b.basement) return false;
@@ -271,9 +300,15 @@ export function restoreBasementFootprint(b: BuildingSpec): boolean {
       copy.basement!.outline = target.map(p => ({...p}));
       copy.basement!.wallEdges = mapped;
     } else { delete copy.basement!.outline; delete copy.basement!.wallEdges; }
-  } else {
-    if (flags.some(v => !v) || !replaceBasementOutline(copy, target.map(p => ({...p})), target.map(() => true))) return false;
+  } else if (flags.every(Boolean)) {
+    if (!replaceBasementOutline(copy, target.map(p => ({...p})), target.map(() => true))) return false;
     delete copy.basement!.outline;
+  } else {
+    // Different topology with open walls: a new edge keeps an old edge's state only where it lies exactly on that edge
+    // (as Cut/Wing does), and every open span must survive whole. Anything less would silently close a wall: refuse.
+    const split = reshapePerimeter(old, flags, target);
+    const perimeter = split && joinCollinear(split);
+    if (!perimeter || !openSpansSurvive(old, flags, perimeter) || !replaceBasementOutline(copy, perimeter.outline, perimeter.walls)) return false;
   }
   b.basement = copy.basement;
   return true;
