@@ -488,6 +488,7 @@ export class BandoEditor {
     }
     const d = this.drag();
     const bd = this.floorBuilding(), height = this.indoorPlaneY();
+    if (bd && height !== null && d?.t === 'shape') return { a: this.fromLocal(bd, d.a), b: this.fromLocal(bd, d.b), color: this.tc(d.op === 'cut' ? 'cut' : 'wing'), height };
     if (bd && height !== null && (d?.t === 'wallDraw' || d?.t === 'voidDraw')) {
       const world = (p: Pt) => this.fromLocal(bd, { x: p.x - bd.length / 2, z: p.z - bd.width / 2 });
       return { a: world(d.a), b: world(d.b), color: this.tc(d.t === 'wallDraw' ? 'wall' : 'void'), height };
@@ -646,7 +647,7 @@ export class BandoEditor {
         (t.where === 'both' || (t.where === 'in') === this.indoor() || (this.indoor() && this.basementFocus() && (t.id === 'cut' || t.id === 'wing'))) &&
         // cut / wing / merge stay in the palette: without a selected building they ask for one (their hint says so)
 
-        (!this.view3d() || ['select', 'measure', 'building', 'structure', 'tree', 'scatter', 'fence', 'terrain', 'tunnel', 'road', 'surface', 'water', 'wall', 'void', 'door', 'window', 'column', 'stairs'].includes(t.id)), // on the ground in 3D: what a click can place or paint
+        (!this.view3d() || ['select', 'measure', 'building', 'structure', 'tree', 'scatter', 'fence', 'terrain', 'tunnel', 'road', 'surface', 'water', 'wall', 'void', 'door', 'window', 'column', 'stairs'].includes(t.id) || (this.indoor() && this.basementFocus() && (t.id === 'cut' || t.id === 'wing'))), // on the ground in 3D: what a click can place or paint
     ),
   );
   protected readonly placing = computed(() => PLACE.includes(this.tool()));
@@ -2291,7 +2292,7 @@ export class BandoEditor {
       if (Math.abs(rect.x1 - rect.x0) >= 0.5 && Math.abs(rect.z1 - rect.z0) >= 0.5) {
         if (this.indoor() && this.basementFocus()) {
           const probe = structuredClone(this.b());
-          if (!probe || !reshapeBasement(probe, rect, d.op)) this.toast.show(d.op === 'cut' ? 'That cut would split the basement or leave a hole.' : 'The wing has to touch the basement.');
+          if (!probe || !reshapeBasement(probe, rect, d.op)) this.toast.show('Cannot reshape basement: check its outline, wall openings and floor items.');
           else { this.ed.commitSite(s => { const b = this.index(s, bd.id); if (b) reshapeBasement(b, rect, d.op); }); this.applyNow(); }
         } else {
         const probe = cloneSpec({ ...this.ed.draft(), buildings: [bd] }).buildings[0]!;

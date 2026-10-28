@@ -142,10 +142,23 @@ test('basement controls and explicit roof choice update the selected building', 
   await expect(page.locator('[data-pk^="basement-vertex:"]')).toHaveCount(4);
   await page.locator('app-bando-editor .palette button[title^="Column ·"]').click();
   const svg = page.locator('app-bando-editor svg.ov');
-  const mapBox = await svg.boundingBox(), buildingBox = await page.locator('[data-pk="building:b"]').first().boundingBox();
-  expect(mapBox).not.toBeNull(); expect(buildingBox).not.toBeNull();
-  await svg.click({ position: { x: buildingBox!.x + buildingBox!.width / 2 - mapBox!.x, y: buildingBox!.y + buildingBox!.height / 2 - mapBox!.y }, force: true });
-  await expect(page.locator('[data-pk="col:0"]')).toHaveCount(1);
+  await expect(page.locator('app-bando-editor .palette button[title^="Column ·"]')).toHaveClass(/on/);
+  const buildingBox = await page.locator('[data-pk="building:b"]').first().boundingBox();
+  expect(buildingBox).not.toBeNull();
+  // A docked inspector changes available space; click visible floor, never through a toolbar.
+  const target = await svg.evaluate((el, box) => {
+    for (const [u, v] of [[0.5, 0.5], [0.6, 0.6], [0.4, 0.6], [0.5, 0.65]]) {
+      const x = box.x + box.width * u!, y = box.y + box.height * v!;
+      const hit = document.elementFromPoint(x, y);
+      if (hit && el.contains(hit) && !hit.closest('.palette, .opts, app-float-box, .mhit'))
+        return {x, y, hit: hit.outerHTML.slice(0, 500)};
+    }
+    return null;
+  }, buildingBox!);
+  expect(target, 'No visible floor point is available for column placement').not.toBeNull();
+  await page.mouse.click(target!.x, target!.y);
+  const feedback = await page.locator('app-toast, .toast, app-bando-editor .read').allTextContents();
+  await expect(page.locator('[data-pk="col:0"]'), JSON.stringify({target, feedback})).toHaveCount(1);
   // Placement switches away from Select; reselect the building before reading its handles.
   await page.locator('app-bando-editor .palette button[title^="Select ·"]').click();
   await page.locator('[data-pk="building:b"]').first().click({ force: true });

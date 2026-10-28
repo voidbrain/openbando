@@ -1,5 +1,6 @@
 import type { BuildingSpec, LevelSpec, Vec2 } from './site-spec';
 import { listOpenings, outlineOf, reshapeBuilding } from './openings';
+import { polygonRect } from './polygon-rect';
 import { BASEMENT_COORD_LIMIT, bounds, contains, isRectilinear, rectPoly, validOutline, type Rect } from './footprint';
 
 /** Basement dimensions are independent of the floors above, in the same centred building frame. */
@@ -77,11 +78,28 @@ export function saveBasementFloor(b: BuildingSpec, floor: BuildingSpec, saveOutl
 
 /** Add or cut a rectangular section of the basement, leaving the upper building unchanged. */
 export function reshapeBasement(b: BuildingSpec, rect: Rect, op: 'add' | 'cut'): boolean {
-  if (!b.basement || !isRectilinear(basementOutline(b))) return false;
-  const floor = basementBuilding(b);
-  floor.levels[0]!.partitions = structuredClone(floor.levels[0]!.partitions);
-  if (!reshapeBuilding(floor, rect, op)) return false;
-  return saveBasementFloor(b, floor, true);
+  if (!b.basement) return false;
+  if (isRectilinear(basementOutline(b))) {
+    const floor = basementBuilding(b);
+    floor.levels[0]!.partitions = structuredClone(floor.levels[0]!.partitions);
+    if (!reshapeBuilding(floor, rect, op)) return false;
+    return saveBasementFloor(b, floor, true);
+  }
+  // The tool rectangle is relative to the centred basement view; the saved outline is building-local.
+  const old = basementOutline(b), before = bounds(old), ox = (before.x0 + before.x1) / 2, oz = (before.z0 + before.z1) / 2;
+  const next = polygonRect(old, {x0: rect.x0 + ox, x1: rect.x1 + ox, z0: rect.z0 + oz, z1: rect.z1 + oz}, op);
+  if (!next || next.some(p => Math.abs(p.x) > BASEMENT_COORD_LIMIT || Math.abs(p.z) > BASEMENT_COORD_LIMIT)) return false;
+  // Convert and validate openings first; never commit a shape that would discard one or an interior item.
+  const copy = structuredClone(b);
+  if (!moveBasementVertex(copy, 0, old[0]!)) return false;
+  const after = bounds(next), dx = before.x0 - after.x0, dz = before.z0 - after.z0, basement = copy.basement!;
+  basement.outline = next;
+  if (basement.columns) basement.columns = basement.columns.map(c => ({...c, x:c.x + dx, z:c.z + dz}));
+  if (basement.partitions) basement.partitions = basement.partitions.map(w => w.map(p => ({x:p.x + dx,z:p.z + dz})) as [Vec2, Vec2]);
+  if (basement.voids) basement.voids = basement.voids.map(v => ({...v,x0:v.x0 + dx,x1:v.x1 + dx,z0:v.z0 + dz,z1:v.z1 + dz}));
+  if (!moveBasementVertex(copy, 0, next[0]!)) return false;
+  b.basement = copy.basement;
+  return true;
 }
 
 /** Move one basement vertex, preserving floor objects in building coordinates and openings on their wall. */
