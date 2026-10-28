@@ -422,6 +422,41 @@ for (const rotation of [0, 37]) {
     await expect(vertex).toHaveAttribute('cy', changedZ!);
     await checkWall();
     await expect(bar.getByRole('button', {name: '−1', exact: true})).toHaveClass(/on/);
+    if (rotation === 0) {
+      // Wheel events over the SVG used to stop at zoom 21 despite the map allowing 25.
+      const plan = page.locator('app-bando-editor svg.ov');
+      await plan.evaluate(el => {
+        const box = el.getBoundingClientRect();
+        for (let i = 0; i < 30; i++) el.dispatchEvent(new WheelEvent('wheel', {
+          deltaY: -100, clientX: box.x + box.width / 2, clientY: box.y + box.height / 2,
+          bubbles: true, cancelable: true,
+        }));
+      });
+      await expect.poll(() => plan.evaluate(el => Math.abs((el as SVGSVGElement).getScreenCTM()!.a))).toBeGreaterThan(100);
+      // At close 3D zoom, nearby ground clicks must resolve centimetres, not whole metres.
+      await page.locator('[data-tour="view-3d"]').click();
+      await bar.getByLabel('Debug coordinates', {exact: true}).check();
+      const canvas = page.locator('app-site-view canvas');
+      await canvas.dispatchEvent('wheel', {deltaY: -999});
+      const box = await canvas.boundingBox();
+      expect(box).not.toBeNull();
+      const readout = page.locator('.debug-readout');
+      const sample = async (u: number): Promise<number[]> => {
+        const previous = await readout.count() ? await readout.innerText() : null;
+        await canvas.click({position: {x: box!.width * u, y: box!.height * 0.5}});
+        await expect(readout).toContainText(/x [-\d.]+ · y 0\.00 · z [-\d.]+ m/);
+        if (previous) await expect(readout).not.toHaveText(previous);
+        return (await readout.innerText()).match(/-?\d+\.\d+/g)!.map(Number);
+      };
+      let distance = Infinity;
+      await expect.poll(async () => {
+        const a = await sample(0.45), b = await sample(0.55);
+        distance = Math.hypot(a[0]! - b[0]!, a[2]! - b[2]!);
+        return distance;
+      }).toBeLessThan(0.1);
+      expect(distance).toBeGreaterThan(0);
+      await bar.getByLabel('Debug coordinates', {exact: true}).uncheck();
+    }
     expect(errors).toEqual([]);
   });
 }
