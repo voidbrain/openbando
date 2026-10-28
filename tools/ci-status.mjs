@@ -22,7 +22,10 @@ for (const n of numbers) {
       console.log(`    ${state.padEnd(10)} ${job.name}`);
       if (job.status !== 'completed' || !/e2e|browser/.test(job.name)) continue;
       // Playwright's list reporter: ✘ failed, retries, flaky summary
-      const log = gh('run', 'view', '--job', String(job.databaseId), '--log').split('\n').map(l => l.replace(/^.*?Z /, ''));
+      let log;
+      try { log = gh('run', 'view', '--job', String(job.databaseId), '--log').split('\n').map(l => l.replace(/^.*?Z /, '')); }
+      catch { console.log('               (test details once the whole run has finished)'); continue; } // GitHub serves logs per run
+
       const tests = log.filter(l => /^\s+✘ |\(retry #\d\)|^\s+\d+ (flaky|failed)/.test(l)).map(l => l.trim());
       for (const t of [...new Set(tests)]) console.log(`               ${t}`);
       for (const note of log.filter(l => /^auto-sync found/.test(l))) console.log(`               ${note.trim()}`);
