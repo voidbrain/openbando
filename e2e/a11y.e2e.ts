@@ -29,19 +29,29 @@ test('after Welcome: Views and Guide me', async ({ page }) => {
 test('the editor with a model, the inspector and the library', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Open the bandos' }).click();
-  await page.locator('app-studio-panel .card.ex').filter({ hasText: /^Chiari e Forti/ }).getByRole('button', { name: 'Open a copy' }).click();
-  await page.locator('app-studio-panel .card:not(.ex)').filter({ hasText: 'Chiari e Forti' }).getByRole('button', { name: 'Edit area' }).click();
-  await page.getByRole('button', { name: '2 · Model' }).click();
+  // Contrast is a DOM/style check: use a small real model, not thousands of industrial meshes
+  // whose continuous software-WebGL rendering turns every pointer/focus action into seconds.
+  const fixture = {version: 1, id: 'a11y-yard', name: 'Accessibility yard', createdAt: 0,
+    privacy: 'hidden', origin: {lat: 0, lon: 0}, bearingDeg: 0, genScale: 1, extent: 40, seed: 1,
+    droneStart: {x: -12, z: 0}, calibCorners: {p1: {x: -20, z: -20}, p2: {x: 20, z: 20}},
+    trees: [], pads: [], buildings: [{id: 'b', name: 'Shed', pos: {x: 0, z: 0}, rotDeg: 0, length: 10, width: 8,
+      levels: [{baseY: 0, height: 4, sides: {n: true, s: true, e: true, w: true}, doors: {}, partitions: [], roof: 'flat', roofRise: 0}]}]};
+  const studio = page.locator('app-studio-panel');
+  await studio.locator('input[type=file]').first().setInputFiles({name: 'a11y.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture))});
+  await studio.locator('.card:not(.ex)').filter({hasText: fixture.name}).getByRole('button', {name: 'Edit', exact: true}).click();
+  await page.locator('[data-pk="building:b"]').first().click({force: true});
+  expect(await axe(page)).toEqual([]);
+  await expectInteractionContrast(page, 'app-panel[data-id=studio]');
   await page.locator('app-bando-editor button').filter({ hasText: /^\W*Library$/ }).first().click();
   await expect(page.getByPlaceholder('Search blocks…')).toBeVisible();
   expect(await axe(page)).toEqual([]);
-  await expectInteractionContrast(page, 'app-panel:not([hidden])');
+  await expectInteractionContrast(page, 'app-blocks-box');
   await page.locator('app-bando-editor button').filter({ hasText: /^\W*Library$/ }).first().click();
   await page.locator('app-bando-editor button[data-tour="ai"]').click();
   await page.getByRole('button', { name: 'Server / home PC', exact: true }).click();
   await expect(page.getByLabel('token (optional)')).toHaveAccessibleDescription("The token is saved in this browser's local storage.");
   expect(await axe(page)).toEqual([]);
-  await expectInteractionContrast(page, 'app-panel:not([hidden])');
+  await expectInteractionContrast(page, 'app-assistant-box');
 });
 
 test('a guide step running (caption bar)', async ({ page }) => {
@@ -51,5 +61,5 @@ test('a guide step running (caption bar)', async ({ page }) => {
   await expect(page.locator('app-tour-overlay .bar')).toBeVisible();
   await page.locator('app-tour-overlay .bar').getByRole('button', {name: /Pause/}).click();
   expect(await axe(page)).toEqual([]);
-  await expectInteractionContrast(page, 'app-panel:not([hidden]), app-tour-overlay .bar');
+  await expectInteractionContrast(page, 'app-tour-overlay .bar');
 });

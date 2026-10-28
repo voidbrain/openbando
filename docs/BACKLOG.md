@@ -17,7 +17,7 @@ Current work ledger, reviewed 28 October 2026 against merged PR #148 and its act
 
 Follow [Backlog rules](BACKLOG-RULES.md) for updating records, reconciling PR/CI evidence, stale-state review, closure/archiving, human dependencies and table validation. The lifecycle table above is the quick reference. Preserve stable IDs and existing user edits.
 
-Each item has a compact summary, followed immediately by its full-width next action and human dependency. Expand its details for PR history, opened/reviewed dates and verification evidence.
+Each item has a compact summary, followed immediately by its full-width next action and human dependency. Expand its details for PR history, opened/reviewed dates and verification evidence. Human-action cues: 🧑 **Yes** = a human is needed; 💻 **No** = agent-owned next action, not completion.
 
 ## Bugs and reliability
 
@@ -29,7 +29,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** Manually exercise simulator entry/exit, collision and selected-flight/video replay and synchronization after editor/racing changes.
 
-**Human action required:** **Yes**<br />Manually check simulator entry, collisions and selected-flight/video replay.
+**Human action required:** 🧑 **Yes**<br />Manually check simulator entry, collisions and selected-flight/video replay.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -49,18 +49,18 @@ Each item has a compact summary, followed immediately by its full-width next act
 |:---:|---|---|---|---|
 | 🟡 | B-011 | 🔺 P1 | Implemented | Welcome tour presentation and exit |
 
-**Next action / closure evidence:** User reports truncated Fly, a trailing mascot wait and leaked path after return. Replaced fixed waits with complete card films and three mascot checkpoints; replay now waits for the full flight. Entry restores 3D overview/Follow off and render boundary suppresses paths. Recheck full showcase and visual timing. The #148 eight-second card completion/distributed mascot, reduced-motion and Stop checks passed; full replay reached completion but its continuation assumed a nonexistent saved demo card. Replace that assumption with an imported saved fixture.
+**Next action / closure evidence:** User reports truncated Fly, a trailing mascot wait and leaked path after return. Replaced fixed waits with complete card films and three mascot checkpoints; replay now waits for the full flight. Entry restores 3D overview/Follow off and render boundary suppresses paths. All #149 showcase browser checks passed; final human presentation review remains. The #148 eight-second card completion/distributed mascot, reduced-motion and Stop checks passed; full replay reached completion but its continuation assumed a nonexistent saved demo card. The #149 saved fixture continuation passed.
 
-**Human action required:** **Yes**<br />Review Welcome timing, presentation and the final Welcome-only screen.
+**Human action required:** 🧑 **Yes**<br />Review Welcome timing, presentation and the final Welcome-only screen.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#124](https://github.com/voidbrain/openbando/pull/124) (merged; action-order checks passed in #124 CI); [CI failure](https://github.com/voidbrain/openbando/actions/runs/40650990021/job/122690744193); [#107](https://github.com/voidbrain/openbando/pull/107) (fix; browser checks pending); [#109](https://github.com/voidbrain/openbando/pull/109) (merged; visual/browser verification pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending)  [#148](https://github.com/voidbrain/openbando/pull/148);; [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout) |
+| PR / evidence | [#150](https://github.com/voidbrain/openbando/pull/150); [#124](https://github.com/voidbrain/openbando/pull/124) (merged; action-order checks passed in #124 CI); [CI failure](https://github.com/voidbrain/openbando/actions/runs/40650990021/job/122690744193); [#107](https://github.com/voidbrain/openbando/pull/107) (fix; browser checks pending); [#109](https://github.com/voidbrain/openbando/pull/109) (merged; visual/browser verification pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending)  [#148](https://github.com/voidbrain/openbando/pull/148); [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout) |
 | Opened | 2026-10-27 |
-| Verification | Unit/integration · 2026-10-28 · new exit/load join passed; Browser/accessibility + Human presentation · Pending for this correction (earlier CI remains historical).; Browser/accessibility · 2026-10-28 · [#148 CI](https://github.com/voidbrain/openbando/actions/runs/40738619197) failed in repeated contrast probes and continuation fixture; fixes pending new browser run. |
+| Verification | Browser/accessibility · 2026-10-28 · [#149 shard 4](https://github.com/voidbrain/openbando/actions/runs/40745098159/job/123016650449) passed full replay/continuation, distributed card films, reduced motion, Stop and Auto-sync; #148 continuation failure corrected by #149. Human presentation review · Pending. |
 | Reviewed | 2026-10-28 |
 
 </details>
@@ -73,7 +73,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** User confirms video and log timing is synchronized and that the greenhouse is approximately 30–40 cm above the surrounding ground; release 11 models an estimated 35 cm raised floor and frame. Investigate spatial displacement around the main store and greenhouse west exit. The [demo investigation](audits/2026-10-27-villetta-replay.md) matches the screenshots and identifies a separate hidden-origin projection defect (B-018), but does not establish its effect in the saved session. The greenhouse arch control uses a dimensionless crown-height-to-half-width ratio; the inspector now labels it and displays the resulting height in metres. Confirm which control was changed.
 
-**Human action required:** **Yes**<br />Provide the affected saved alignment/session and confirm the changed arch control.
+**Human action required:** 🧑 **Yes**<br />Provide the affected saved alignment/session and confirm the changed arch control.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -95,7 +95,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** A fixed local reference corrects the false sideways component and is kept with private local calibration; hidden sharing removes it. Tests cover start alignment, pin shifts, rotation, saved/imported calibration, multiple flights and the common live projection. A follow-up avoids saving a live reference before the first recorded-flight alignment; verify the pilot’s flight and real live devices. See [investigation](audits/2026-10-27-villetta-replay.md).
 
-**Human action required:** **Yes**<br />Compare the corrected path with the real flight and test real GPS devices.
+**Human action required:** 🧑 **Yes**<br />Compare the corrected path with the real flight and test real GPS devices.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -117,7 +117,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** Focused editor workflow passed indoor 2D measurements, debug coordinates, basement keyboard editing, 3D view and measure selection. Review indoor 3D measurement placement specifically; this is not every floor/tool combination.
 
-**Human action required:** **Yes**<br />Check measurement placement on basement and upper floors in 3D indoor mode.
+**Human action required:** 🧑 **Yes**<br />Check measurement placement on basement and upper floors in 3D indoor mode.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -137,44 +137,21 @@ Each item has a compact summary, followed immediately by its full-width next act
 |:---:|---|---|---|---|
 | 🟡 | B-020 | 🔶 P2 | Implemented | Shared foreground/background contrast |
 
-**Next action / closure evidence:** Expanded coverage beyond buttons to text, links, inputs, menus and representative hover/focus styles; new shared token/surface CI check. Generic hover changed the lime fill to purple while retaining dark accent text. Every enabled button variant now pairs dark hover fill with light text; browser regression checks computed contrast at rest and hover. Batch representative discovery and reuse one axe engine for same-document hover/focus probes; retain the separate full-page axe checks and all thresholds.
+**Next action / closure evidence:** Expanded coverage beyond buttons to text, links, inputs, menus and representative hover/focus styles; new shared token/surface CI check. Generic hover changed the lime fill to purple while retaining dark accent text. Every enabled button variant now pairs dark hover fill with light text; browser regression checks computed contrast at rest and hover. Batch representative discovery and reuse one axe engine for same-document hover/focus probes; retain the separate full-page axe checks and all thresholds. The #149 report shows large-scene hover/focus latency and an occluded guide control; use a small model, exposed representatives and separate base/library/assistant/caption scenes.
 
-**Human action required:** **No**<br />Run page-text, representative hover/focus and shared palette checks in CI; inspect any contrast failures.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#145](https://github.com/voidbrain/openbando/pull/145); [#146](https://github.com/voidbrain/openbando/pull/146) (green CI); [#148](https://github.com/voidbrain/openbando/pull/148);; [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout) |
-| Opened | 2026-10-28 |
-| Verification | Unit/integration + contrast analysis · 2026-10-28 · #145/#146 CI green; 53 shared text/surface pairs passed; broader interaction suite pending; Browser/accessibility · Pending; Browser/accessibility · 2026-10-28 · [#148 CI](https://github.com/voidbrain/openbando/actions/runs/40738619197) failed in repeated contrast probes and continuation fixture; fixes pending new browser run. |
-| Reviewed | 2026-10-28 |
-
-</details>
-
-### B-021
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-021 | 🔶 P2 | Implemented | Stored model after showcase exit |
-
-**Next action / closure evidence:** After the showcase, closing Welcome and opening a stored bando can leave only the old path in view. Exit now disables orbit Follow and restores the 3D overview. The new integration test loads real model geometry after exit; browser continuation and visual checks remain. The tour model is intentionally temporary, so the browser continuation now imports its own saved fixture before selecting it.
-
-**Human action required:** **No**<br />Check full-showcase continuation and stored-model loading in browser CI.
+**Human action required:** 💻 **No**<br />Run page-text, representative hover/focus and shared palette checks in CI; inspect any contrast failures.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#148](https://github.com/voidbrain/openbando/pull/148); [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout) |
+| PR / evidence | [#150](https://github.com/voidbrain/openbando/pull/150); [#145](https://github.com/voidbrain/openbando/pull/145); [#146](https://github.com/voidbrain/openbando/pull/146) (green CI); [#148](https://github.com/voidbrain/openbando/pull/148); [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout) |
 | Opened | 2026-10-28 |
-| Verification | Unit/integration · 2026-10-28 · exit + visible stored-model join passed; Browser/accessibility · Pending; Browser/accessibility · 2026-10-28 · [#148 CI](https://github.com/voidbrain/openbando/actions/runs/40738619197) failed in repeated contrast probes and continuation fixture; fixes pending new browser run. |
+| Verification | Browser/accessibility · 2026-10-28 · [#149](https://github.com/voidbrain/openbando/actions/runs/40745098159/job/123016651142) still timed out: editor software-rendering latency and occluded guide hover; fixes pending new CI. Unit/integration + contrast analysis · 2026-10-28 · #145/#146 CI green; 53 shared text/surface pairs passed; broader interaction suite pending; Browser/accessibility · Pending; Browser/accessibility · 2026-10-28 · [#148 CI](https://github.com/voidbrain/openbando/actions/runs/40738619197) failed in repeated contrast probes and continuation fixture; fixes pending new browser run. |
 | Reviewed | 2026-10-28 |
 
 </details>
-
 
 
 ## Features and limitations
@@ -187,7 +164,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** Recovered #117 onto current main: its merge into the former feature branch did not reach main. Diagonal Cut/Wing and 3D floor-height previews are implemented; verify browser editing and persistence. Open perimeter edges remain guarded for Cut/Wing (F-004).
 
-**Human action required:** **Yes**<br />Review diagonal Cut/Wing editing and saved/imported outlines.
+**Human action required:** 🧑 **Yes**<br />Review diagonal Cut/Wing editing and saved/imported outlines.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -209,7 +186,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** Design a representation and editing, saving, terrain cuts, floor/wall rendering and collision for courtyards and separate pieces; currently one simple perimeter only. Floor voids are separate and already exist.
 
-**Human action required:** **No**<br />Agent can implement perimeter holes and disconnected basement pieces.
+**Human action required:** 💻 **No**<br />Agent can implement perimeter holes and disconnected basement pieces.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -231,7 +208,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** 3D indoor −1 now has draggable vertex handles and keyboard move/insert/remove controls using the 2D validation and undo paths. Verify pointer, keyboard, rotated buildings, persistence and accessibility in browser CI.
 
-**Human action required:** **Yes**<br />Drag 3D basement vertices on rotated buildings and confirm save/undo behavior.
+**Human action required:** 🧑 **Yes**<br />Drag 3D basement vertices on rotated buildings and confirm save/undo behavior.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -253,7 +230,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** Cut/Wing passed #141 CI. Length/width now scale the existing outline, preserving edge identity and item world positions; footprint restoration supports matching normalized boundaries with either winding, and validates closed-wall topology replacement. Rejects ambiguous open-wall topology/legacy shaped compass-door data and destructive edits. Resize/restore browser checks passed in #142 CI. Ambiguous open-wall topology changes and legacy shaped compass-door migration remain guarded; investigate safe correspondence before relaxing those guards.
 
-**Human action required:** **No**<br />Investigate safe correspondence for ambiguous open-wall topology and legacy shaped compass doors.
+**Human action required:** 💻 **No**<br />Investigate safe correspondence for ambiguous open-wall topology and legacy shaped compass doors.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -275,7 +252,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** Browser-test wall, void, door, window, column and stair placement, rotated buildings, upper floors and −1; exercise move/resize handles and keyboard/accessibility. The #147 floor matrix exposed Wall selection resetting itself to Select on all floors; corrected the indoor-entry order. New real-pointer tests cover column/wall/void placement at −1/G/L1 on a rotated building, column undo/redo, exported floor isolation and axe ([#147](https://github.com/voidbrain/openbando/pull/147); failed historically; corrected in #148). Doors, windows, stairs and full handle coverage remain open.
 
-**Human action required:** **No**<br />Extend coverage to doors, windows, stairs and remaining handles.
+**Human action required:** 💻 **No**<br />Extend coverage to doors, windows, stairs and remaining handles.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -297,7 +274,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** Review compass consistency, expand/dock controls, 3D construction previews, measures and hedge/bramble brush shapes in both views.
 
-**Human action required:** **No**<br />Agent can check Studio controls and vegetation previews in both views.
+**Human action required:** 💻 **No**<br />Agent can check Studio controls and vegetation previews in both views.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -319,7 +296,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** User accepted the animation apart from the Welcome tour timing in B-011; retain responsive and reduced-motion checks.
 
-**Human action required:** **Yes**<br />Review the remaining Welcome timing/presentation points tracked by B-011.
+**Human action required:** 🧑 **Yes**<br />Review the remaining Welcome timing/presentation points tracked by B-011.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -341,7 +318,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** Follow the [field checklist](racing/README.md): align two devices, compare timing, connect two real GPS streams, verify stale hiding, GPS loss, relay disconnect/rejoin and crowded paths in every camera. No field-readiness claim until completed.
 
-**Human action required:** **Yes**<br />Run the two-device race/GPS field checklist with real telemetry feeds.
+**Human action required:** 🧑 **Yes**<br />Run the two-device race/GPS field checklist with real telemetry feeds.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -363,7 +340,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** README and AGENTS corrected for diagonal Cut/Wing, 3D vertices, release 11 and showcase exit. Regenerated guide pages and corrected generator entry instructions. Clips and Welcome films last changed 24 October; re-record and visually review them against current UI.
 
-**Human action required:** **No**<br />Agent can re-record guide clips/films and review them against the current UI.
+**Human action required:** 💻 **No**<br />Agent can re-record guide clips/films and review them against the current UI.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -385,7 +362,7 @@ Each item has a compact summary, followed immediately by its full-width next act
 
 **Next action / closure evidence:** User accepted compass controls. Hide on every Welcome screen and blank scene, and show with a nonblank model; regression checks passed for initial/final Welcome and model load in [#143 CI](https://github.com/voidbrain/openbando/actions/runs/40729835588) ([#143](https://github.com/voidbrain/openbando/pull/143)). Keep the widget above the version badge.
 
-**Human action required:** **Yes**<br />Confirm compass hiding and clearance during the Welcome tour, as in B-011.
+**Human action required:** 🧑 **Yes**<br />Confirm compass hiding and clearance during the Welcome tour, as in B-011.
 
 <details>
 <summary>PR history, dates and verification</summary>

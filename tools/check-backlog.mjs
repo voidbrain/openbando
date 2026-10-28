@@ -28,7 +28,9 @@ for (let i = 0; i < headings.length; i++) {
   const marker = ['Closed', 'Blocked'].includes(status) ? '◻️' : {1: '🔺', 2: '🔶', 3: '🔹'}[level];
   assert.equal(priority, `${marker} P${level}`, `${id}: priority cue mismatch`);
   assert.equal((block.match(/^\*\*Next action \/ closure evidence:\*\* .+/gm) ?? []).length, 1, `${id}: next action must be visible exactly once`);
-  assert.equal((block.match(/^\*\*Human action required:\*\* \*\*(Yes|No)\*\*<br \/>.+/gm) ?? []).length, 1, `${id}: missing visible human action`);
+  const human = [...block.matchAll(/^\*\*Human action required:\*\* (🧑|💻) \*\*(Yes|No)\*\*<br \/>.+/gm)];
+  assert.equal(human.length, 1, `${id}: missing visible human action/cue`);
+  assert.equal(human[0][1], human[0][2] === 'Yes' ? '🧑' : '💻', `${id}: human-action cue mismatch`);
   const detail = block.match(/<details>\s*<summary>[^<]+<\/summary>([\s\S]*?)<\/details>/);
   assert(detail, `${id}: missing/broken metadata details`);
   assert(block.indexOf('**Next action') < block.indexOf('<details>'), `${id}: next action hidden in details`);
