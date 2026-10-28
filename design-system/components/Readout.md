@@ -13,3 +13,5 @@ Readout is the mono pill at the bottom of the map showing live distances and ang
 The text; position it centred 12px above the map's bottom edge.
 
 Source: `src/app/ui/studio/bando-editor.scss (.read)`.
+
+Studio Debug coordinates uses a top-bar checkbox and a readout of local x (east), y (up), z (south) in metres, sampled from ground through buildings. It does not edit the model.

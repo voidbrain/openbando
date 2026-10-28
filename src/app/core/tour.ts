@@ -222,8 +222,8 @@ export const SNIPPETS: readonly Snippet[] = [
     section: 'showcase',
     title: 'Welcome',
     beats: [
-      { say: 'OpenBando: your bandos in 3D, and your flights back inside them.', actions: [hook('layoutReset'), hook('orbit', 'on'), hook('mascotLoop')] },
-      { say: 'Build the place. Fly it again. Share it, or keep it secret.', actions: [p('welcome-build', [0.5, 0.3]), wait(900), click('welcome-fly', [0.5, 0.3]), wait(2200), p('welcome-share', [0.5, 0.3]), wait(900)] },
+      { say: 'OpenBando: your bandos in 3D, and your flights back inside them.', actions: [hook('layoutReset'), hook('orbit', 'on')] },
+      { say: 'Build the place. Fly it again. Share it, or keep it secret.', actions: [p('welcome-build', [0.5, 0.3]), wait(900), click('welcome-fly', [0.5, 0.3]), wait(2200), p('welcome-share', [0.5, 0.3]), wait(900), hook('mascotLoop')] },
     ],
   },
   {

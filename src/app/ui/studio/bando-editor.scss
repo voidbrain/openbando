@@ -547,3 +547,6 @@ details.sec.mods {
 .btn.cur:not(.on) {
   border-color: var(--accent);
 }
+
+.work { position: absolute; inset: 0; }
+.ov.debug * { pointer-events: none !important; }

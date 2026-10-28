@@ -22,3 +22,5 @@ themselves"), no feature lists, no superlatives.
 Source: `src/app/ui/panels/welcome-panel.ts` (films: `public/welcome/`, `npm run films`).
 
 The Welcome-only pixel mascot sits beside the title. This is the explicit decorative-motion exception requested by the mascot task: black/orange artwork, no new UI colours. Use the shared timeline, still fallback and reduced-motion support. On narrow panels keep the title readable and let the illustration shrink. Sources/rules: `docs/mascot/README.md`.
+
+The Welcome tour highlights Build/Fly/Share while the mascot plays, then waits for the first full rendered mascot loop before closing the panel. Returning to Welcome hides replay and race paths.

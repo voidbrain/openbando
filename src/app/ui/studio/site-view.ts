@@ -86,6 +86,7 @@ export class SiteView {
   readonly frameKey = input('');
   /** 'select': a click selects what is under it. 'draw': left-drag on the ground reports points for the active tool. */
   readonly mode = input<'select' | 'draw'>('select');
+  readonly debugGround = input(false);
   readonly selection = input<SitePick | null>(null);
   /** One floor of one building to show solid, the rest of that building ghosted. */
   readonly focus = input<{ id: string; li: number } | null>(null);
@@ -129,6 +130,7 @@ export class SiteView {
         return;
       }
       this.r.mode = this.mode();
+      this.r.debugGround = this.debugGround();
       this.r.drawPlaneY = this.drawPlaneY();
       this.r.handlesEnabled = this.handlesEnabled();
       this.r.onTransform = (phase, handle, x, z) => this.transformed.emit({ phase, handle, x, z });
@@ -139,6 +141,8 @@ export class SiteView {
       this.schedule(0);
     });
     effect(() => {
+      const debug = this.debugGround();
+      if (this.r) this.r.debugGround = debug;
       const m = this.mode();
       if (this.r) this.r.mode = m;
     });

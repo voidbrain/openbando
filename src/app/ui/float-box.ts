@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, afterNextRender, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterNextRender, inject, input, model, signal } from '@angular/core';
 import { raiseZ } from './stacking';
 
 interface Geo {
@@ -145,7 +145,7 @@ export class FloatBox {
   /** Measure the default `x` from the right edge of the parent instead of the left. */
   readonly right = input(false);
   readonly dockable = input(false);
-  protected readonly docked = signal(false);
+  readonly docked = model(false);
 
   protected readonly open = signal(true);
   private ro: ResizeObserver | null = null;

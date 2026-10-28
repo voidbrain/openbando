@@ -431,8 +431,7 @@ export class TourService {
         return this.sleep(400);
       case 'mascotLoop': {
         // Count rendered animation time, not wall time: hidden tabs and slow image loading cannot cut the loop short.
-        const start = this.mascotProgress.elapsed;
-        while (this.mascotProgress.elapsed - start < MASCOT_DURATION && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && !this.skip) {
+        while (this.mascotProgress.elapsed < MASCOT_DURATION && !window.matchMedia('(prefers-reduced-motion: reduce)').matches && !this.skip) {
           await this.sleep(100);
         }
         return;
@@ -529,6 +528,7 @@ export class TourService {
     this.layout.reset();
     for (const id of Object.keys(this.layout.panels()) as PanelId[]) if (id !== 'welcome') this.layout.setVisible(id, false);
     this.layout.setVisible('welcome', true);
+    this.mascotProgress.restart();
     this.scene.resetCamera();
     this.scene.autoOrbit.set(true);
   }

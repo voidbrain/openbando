@@ -33,6 +33,7 @@
     <button class="btn" [class.on]="blocks.open()" (click)="blocks.open.set(!blocks.open())" data-tour="library" title="Library: ready-made objects, buildings and patterns, yours and from the online catalogue">▦ Library</button>
     <button class="btn" [class.on]="elementsOpen()" (click)="elementsOpen.set(!elementsOpen())" title="Elements: list of all buildings, structures, walls and trees (grouped by area), with thumbnails and links">☰ Elements</button>
     <button class="btn" [class.on]="ai.open()" (click)="ai.open.set(!ai.open())" data-tour="ai" title="Chat with the AI assistant to edit buildings and interiors">💬 AI @if (ai.busy()) { <i class="spin"></i> }</button>
+    <label class="lay" title="Click through buildings to read ground coordinates in metres"><input type="checkbox" [checked]="debugMode()" (change)="debugMode.set(checked($event)); debugPoint.set(null)" /> Debug coordinates</label>
     <button class="btn primary" (click)="save()">Save</button>
   }
   <span class="vgrp" role="group" aria-label="What is drawn under the model">
@@ -66,7 +67,8 @@
   </span>
   <button class="btn" [attr.aria-pressed]="expanded()" [attr.aria-label]="expanded() ? 'Restore studio size' : 'Expand studio'" [title]="expanded() ? 'Restore studio size' : 'Expand studio'" (click)="toggleExpand()">{{ expanded() ? '↙' : '⛶' }}</button>
 </div>
-<div class="wrap" #wrap tabindex="0" data-tour="map" [class.v3]="view3d() && overlayOn()" (keydown)="key($event)" (pointerdown)="closeMenus()" (contextmenu)="onContext($event)">
+<div class="wrap" #wrap tabindex="0" [class.v3]="view3d() && overlayOn()" (keydown)="key($event)" (pointerdown)="closeMenus()" (contextmenu)="onContext($event)">
+  <div class="work" #work data-tour="map" [style.right.px]="mode() === 'model' && overlayOn() && inspectorDocked() ? inspectorWidth() + 4 : 0">
   <div class="map" #el></div>
 
   @if (overlayOn() && !view3d()) {
@@ -77,6 +79,7 @@
       [class.sel]="tool() === 'select'"
       [class.placing]="placing()"
       [class.indoor]="indoor()"
+      [class.debug]="debugMode()"
       [attr.viewBox]="vb()"
       preserveAspectRatio="none"
       (pointerdown)="bgDown($event)"
@@ -397,12 +400,13 @@
       [spec]="ed.draft()"
       [roofHidden]="!roofs3d()"
       [frameKey]="ed.draft().id"
-      [mode]="tool() === 'select' ? 'select' : 'draw'"
+      [mode]="!debugMode() && tool() === 'select' ? 'select' : 'draw'"
+      [debugGround]="debugMode()"
       [selection]="sel3d()"
       [focus]="focus3d()"
       [indoorFloor]="indoorFloor3d()"
-      [drawPlaneY]="indoorPlaneY()"
-      [handlesEnabled]="tool() === 'select' && (!indoor() || basementFocus())"
+      [drawPlaneY]="debugMode() ? null : indoorPlaneY()"
+      [handlesEnabled]="!debugMode() && tool() === 'select' && (!indoor() || basementFocus())"
       (basementVertexKey)="basementVertexKey($event.event, $event.index)"
       (basementVertexInsert)="insertVertex($event)"
       (basementVertexRemove)="removeVertex($event)"
@@ -421,6 +425,10 @@
   @if (!(overlayOn() && view3d())) {
     <app-camera-compass class="compass" [camera]="northUpCamera" [interactive]="false" />
   }
+  @if (debugMode() && debugPoint(); as p) {
+    <output class="read debug-readout" aria-live="polite" translate="no">x {{ p.x.toFixed(2) }} · y {{ p.y.toFixed(2) }} · z {{ p.z.toFixed(2) }} m</output>
+  }
+  </div>
   @if (mode() === 'model' && overlayOn()) {
     <div #pal class="palette" role="toolbar" aria-label="Tools" aria-orientation="vertical" [style.left.px]="dock.palXY().x" [style.top.px]="dock.palXY().y" [style.z-index]="dock.palZ()" (pointerdown)="$event.stopPropagation(); dock.raise('pal')">
       <div class="tgrip" title="Drag to move the tools · double-click to put them back" (pointerdown)="dock.down($event, 'pal')" (pointermove)="dock.move($event)" (pointerup)="dock.up($event)" (pointercancel)="dock.up($event)" (dblclick)="dock.reset('pal')" aria-hidden="true">⠿</div>
@@ -598,7 +606,7 @@
   }
 
   @if (mode() === 'model' && overlayOn()) {
-    <app-float-box fid="inspector-v4" data-tour="inspector" title="Inspector" [x]="8" [y]="58" [w]="300" [h]="340" [right]="true" [cols]="true" [dockable]="true">
+    <app-float-box fid="inspector-v4" data-tour="inspector" title="Inspector" [x]="8" [y]="58" [w]="inspectorWidth()" [h]="340" [right]="true" [cols]="true" [dockable]="true" [(docked)]="inspectorDocked">
       @if (previewTarget(); as pt) {
         <app-element-preview [target]="pt" [key]="previewKey()" [caption]="previewCaption()" (picked)="onPreviewPick($event)" />
       }

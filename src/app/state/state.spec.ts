@@ -70,6 +70,21 @@ describe('stores', () => {
       expect(s.panels().flights.ghost).toBe(false);
     });
 
+    it('Reset after Hide all restores the previous panels at their default geometry', () => {
+      const s = TestBed.inject(LayoutStore);
+      s.setVisible('welcome', false); s.setVisible('views', true); s.setVisible('timeline', true);
+      s.setVisible('video', true); s.moveTo('timeline', 125, 75);
+      s.hideAll(); s.hideAll();
+      expect(s.panels().timeline.visible).toBe(false);
+      s.reset();
+      expect(s.panels().timeline.visible).toBe(true);
+      expect(s.panels().video.visible).toBe(true);
+      expect(s.panels().views.visible).toBe(true);
+      expect(s.panels().welcome.visible).toBe(false);
+      expect(s.panels().timeline.x).toBeNull();
+      expect(s.panels().timeline.y).toBeNull();
+    });
+
     it('restores the saved layout in a new session and fills in panels added later', () => {
       localStorage.setItem('abando-ng-layout', JSON.stringify({ panels: { flights: { x: 10, y: 20, visible: false } }, zTop: 40 }));
       const s = TestBed.inject(LayoutStore);

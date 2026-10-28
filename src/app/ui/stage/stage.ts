@@ -1,3 +1,4 @@
+import { TourService } from '../../services/tour.service';
 import { CameraCompass } from '../widgets/camera-compass';
 import * as THREE from 'three';
 import {pickModel} from '../../three/site-pick';
@@ -23,7 +24,7 @@ import { ViewStore } from '../../state/view.store';
   imports: [CameraCompass],
   template: `
     <div #gl class="gl" [hidden]="view.mainSource() !== '3d'" [style.cursor]="scene.pin() ? 'crosshair' : null"></div>
-    @if (view.mainSource() === '3d') { <app-camera-compass [camera]="mainCamera" [view]="view.cameraView()" (orient)="orientCompass($event)" /> }
+    @if (view.mainSource() === '3d' && tour.state()?.title !== 'Welcome') { <app-camera-compass [camera]="mainCamera" [view]="view.cameraView()" (orient)="orientCompass($event)" /> }
     <div #videoSlot class="vmain" [hidden]="view.mainSource() !== 'video'">
       @if (!video.loaded()) {
         <div class="dim">Main page: video — open the Video panel and load a file</div>
@@ -44,6 +45,7 @@ import { ViewStore } from '../../state/view.store';
       inset: 0;
       display: block;
     }
+    app-camera-compass { bottom: 44px; }
     .gl {
       position: fixed;
       inset: 0;
@@ -63,6 +65,7 @@ import { ViewStore } from '../../state/view.store';
   `,
 })
 export class Stage {
+  protected readonly tour = inject(TourService);
   protected readonly view = inject(ViewStore);
   protected readonly satAttribution = SAT_ATTRIBUTION;
   protected readonly scene = inject(SceneService);

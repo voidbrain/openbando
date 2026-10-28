@@ -26,10 +26,12 @@ test('showcase keeps Welcome open for a complete mascot loop', async ({ page }) 
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/?tour=showcase&lang=en');
   const bar = page.locator('app-tour-overlay .bar');
+  // The card highlights must run before the end-of-loop gate, alongside the mascot.
+  await expect(bar).toHaveAttribute('data-action', /^point:welcome-build/, { timeout: 10_000 });
+  await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
   await expect(bar).toHaveAttribute('data-action', 'hook:mascotLoop', { timeout: 20_000 });
-  await page.waitForTimeout(18_000); // shorter than the 19.7 s loop, measured from the start of this hook
   await expect(page.locator('app-panel[data-id="welcome"]')).toBeVisible();
-  await expect(bar).toHaveAttribute('data-action', 'hook:mascotLoop');
+  await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
   await expect(bar).not.toHaveAttribute('data-action', 'hook:mascotLoop', { timeout: 90_000 });
   await bar.getByRole('button', { name: /Stop/ }).click();
   await expect(bar).toBeHidden();

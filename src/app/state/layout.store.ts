@@ -70,6 +70,7 @@ export const LayoutStore = signalStore(
     return { panels, zTop: saved.zTop ?? Z_START, v: LAYOUT_V };
   }),
   withMethods((store) => {
+    let beforeHideAll: PanelId[] | null = null;
     const update = (id: PanelId, fn: (p: PanelState) => Partial<PanelState>): void =>
       patchState(store, (s) => ({ panels: { ...s.panels, [id]: { ...s.panels[id], ...fn(s.panels[id]) } } }));
     /** Bring a panel to the front. Renumbers everything when the counter gets large. */
@@ -89,6 +90,11 @@ export const LayoutStore = signalStore(
         return { zTop: z, panels: { ...panels, [id]: { ...panels[id], z } } };
       });
     return {
+      hideAll: () => {
+        const panels = store.panels();
+        beforeHideAll ??= (Object.keys(panels) as PanelId[]).filter(id => panels[id].visible);
+        patchState(store, { panels: Object.fromEntries(Object.entries(panels).map(([id, p]) => [id, { ...p, visible: id === 'views' }])) as Record<PanelId, PanelState> });
+      },
       /** Showing a panel also brings it to the front. */
       setVisible: (id: PanelId, visible: boolean) => {
         update(id, () => ({ visible }));
@@ -115,7 +121,8 @@ export const LayoutStore = signalStore(
       reset: () => {
         // Reset geometry and appearance while preserving which panels the pilot has open.
         const d = defaults();
-        for (const id of Object.keys(d.panels) as PanelId[]) d.panels[id].visible = store.panels()[id].visible;
+        for (const id of Object.keys(d.panels) as PanelId[]) d.panels[id].visible = beforeHideAll ? beforeHideAll.includes(id) || id === 'views' : store.panels()[id].visible;
+        beforeHideAll = null;
         patchState(store, d);
         // the float boxes and the editor's toolbars remember their place on their own
         try {

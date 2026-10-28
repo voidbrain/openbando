@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
 import { emptySpec, type BuildingSpec } from '../core/site-spec';
-import { floorPoint, indoorSourcePick, indoorViewSpec } from './indoor-view';
+import { floorPoint, indoorFloorHeight, indoorSourcePick, indoorViewSpec } from './indoor-view';
 
 const building: BuildingSpec = {
   id: 'b', name: 'B', pos: { x: 0, z: 0 }, rotDeg: 0, length: 10, width: 8,
@@ -10,6 +10,13 @@ const building: BuildingSpec = {
 };
 
 describe('3D indoor floor', () => {
+  it('uses the same upper-floor and basement height for placement and measures', () => {
+    const spec = emptySpec(); spec.buildings = [building];
+    expect(indoorFloorHeight(spec, {id: 'b', li: 1})).toBe(4);
+    expect(indoorFloorHeight(spec, {id: 'b', li: -1})).toBe(-3);
+    expect(indoorFloorHeight(spec, {id: 'b', li: 5})).toBeNull();
+    expect(indoorFloorHeight(spec, null)).toBeNull();
+  });
   it('isolates the chosen floor without changing the source and preserves the terrain cut', () => {
     const spec = emptySpec({ lat: 0, lon: 0 }, 'test');
     spec.buildings = [building];

@@ -6,6 +6,14 @@ import type { SitePick } from './site-pick';
 
 export type IndoorFloor = { id: string; li: number };
 
+/** Height shared by floor placement and measurement overlays, in site metres. */
+export function indoorFloorHeight(spec: SiteSpec, floor: IndoorFloor | null): number | null {
+  const b = floor ? spec.buildings.find(b => b.id === floor.id) : undefined;
+  if (!b || !floor || (floor.li === -1 ? !b.basement : !b.levels[floor.li])) return null;
+  const local = floor.li === -1 ? b.levels[0]!.baseY - b.basement!.height : b.levels[floor.li]!.baseY;
+  return (siteGround(spec).building.get(b.id) ?? 0) + local;
+}
+
 /** Isolate the chosen floor without changing the editable site or removing its basement terrain cut. */
 export function indoorViewSpec(spec: SiteSpec, floor: IndoorFloor): SiteSpec {
   if (floor.li === -1) {

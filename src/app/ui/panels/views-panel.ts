@@ -311,6 +311,7 @@ export class ViewsPanel {
 
   /** Every panel at once; Views itself always stays, or there would be no way back. */
   protected setAll(on: boolean): void {
+    if (!on) { this.layout.hideAll(); return; }
     for (const p of PANELS) if (p.id !== 'views' && p.id !== 'features') this.layout.setVisible(p.id, on);
   }
 
