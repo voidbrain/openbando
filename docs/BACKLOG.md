@@ -193,7 +193,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | Branch `fix/panel-entrance-opacity` (PR pending) |
+| PR / evidence | [#158](https://github.com/voidbrain/openbando/pull/158) |
 | Opened | 2026-10-28 |
 | Verification | Browser/accessibility · 2026-10-28 · local Playwright Chromium and WebKit (Desktop Safari) regression passed with the fix and failed (opacity 0) without it; CI · Pending; Human Safari check · Pending |
 | Reviewed | 2026-10-28 |
