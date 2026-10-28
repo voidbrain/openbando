@@ -24,12 +24,31 @@ test('the showcase link plays to the end', async ({ page }) => {
 
 test('showcase keeps Welcome open for a complete mascot loop', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
+  // Observe before navigation: short cursor actions can finish between Playwright polls.
+  await page.addInitScript(() => {
+    const actions: string[] = [];
+    Object.assign(window, { welcomeActions: actions });
+    new MutationObserver(records => {
+      for (const record of records) {
+        if (!(record.target instanceof Element) || !record.target.matches('app-tour-overlay .bar')) continue;
+        const action = record.target.getAttribute('data-action');
+        if (action && actions.at(-1) !== action) actions.push(action);
+      }
+    }).observe(document, { subtree: true, attributes: true, attributeFilter: ['data-action'] });
+  });
   await page.goto('/?tour=showcase&lang=en');
   const bar = page.locator('app-tour-overlay .bar');
   // The card highlights must run before the end-of-loop gate, alongside the mascot.
-  await expect(bar).toHaveAttribute('data-action', /^point:welcome-build/, { timeout: 10_000 });
-  await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
   await expect(bar).toHaveAttribute('data-action', 'hook:mascotLoop', { timeout: 20_000 });
+  const actions = await page.evaluate(() => (window as unknown as { welcomeActions: string[] }).welcomeActions);
+  const build = actions.findIndex(action => action.startsWith('point:welcome-build'));
+  const fly = actions.findIndex(action => action.startsWith('click:welcome-fly'));
+  const share = actions.findIndex(action => action.startsWith('point:welcome-share'));
+  const gate = actions.indexOf('hook:mascotLoop');
+  expect(build, JSON.stringify(actions)).toBeGreaterThanOrEqual(0);
+  expect(fly).toBeGreaterThan(build);
+  expect(share).toBeGreaterThan(fly);
+  expect(gate).toBeGreaterThan(share);
   await expect(page.locator('app-panel[data-id="welcome"]')).toBeVisible();
   await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
   await expect(bar).not.toHaveAttribute('data-action', 'hook:mascotLoop', { timeout: 90_000 });
