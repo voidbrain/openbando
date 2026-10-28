@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { readFile } from 'node:fs/promises';
+import type { SiteSpec } from '../src/app/core/site-spec';
 
 test('Welcome shows the approved wordmark, Features link and revised pose assets', async ({
   page,
@@ -303,12 +305,26 @@ test('Reset UI restores hidden panels at default geometry without reopening clos
 });
 
 for (const locale of [
-  {lang: 'en', open: 'Open the bandos', server: 'Server / home PC', notice: "The token is saved in this browser's local storage."},
-  {lang: 'it', open: 'Apri i bando', server: 'Server / PC di casa', notice: 'Il token viene salvato nella memoria locale di questo browser.'},
+  {lang: 'en', edit: 'Edit', open: 'Open the bandos', server: 'Server / home PC', notice: "The token is saved in this browser's local storage."},
+  {lang: 'it', edit: 'Modifica', open: 'Apri i bando', server: 'Server / PC di casa', notice: 'Il token viene salvato nella memoria locale di questo browser.'},
 ]) {
   test(`AI token storage notice is visible and associated with its input (${locale.lang})`, async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.addInitScript(lang => localStorage.setItem('abando-lang', lang), locale.lang);
     await page.goto(`/?lang=${locale.lang}`);
     await page.getByRole('button', {name: locale.open, exact: true}).click();
+    // Opening Bandos shows the list; import and edit a local model before opening its assistant.
+    const fixture = {
+      version: 1, id: 'notice-yard', name: 'Notice yard', createdAt: 0, privacy: 'hidden',
+      origin: {lat: 0, lon: 0}, bearingDeg: 0, genScale: 1, extent: 30, seed: 1,
+      droneStart: {x: -10, z: 0}, calibCorners: {p1: {x: -15, z: -15}, p2: {x: 15, z: 15}},
+      trees: [], pads: [], buildings: [{id: 'b', name: 'Shed', pos: {x: 0, z: 0}, rotDeg: 0,
+        length: 10, width: 8, levels: [{baseY: 0, height: 3, sides: {n: true, s: true, e: true, w: true},
+          doors: {}, partitions: [], roof: 'flat', roofRise: 0}]}],
+    };
+    const studio = page.locator('app-studio-panel');
+    await studio.locator('input[type=file]').first().setInputFiles({name: 'notice.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture))});
+    await studio.locator('.card').filter({hasText: fixture.name}).getByRole('button', {name: locale.edit, exact: true}).click();
     await page.locator('app-bando-editor [data-tour="ai"]').click();
     const assistant = page.locator('app-assistant-box');
     await assistant.getByRole('button', {name: locale.server, exact: true}).click();
@@ -319,5 +335,93 @@ for (const locale of [
     await token.fill('regression-test-token');
     await token.press('Tab');
     await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('abando-ai-server') ?? '{}').token)).toBe('regression-test-token');
+  });
+}
+
+
+for (const rotation of [0, 37]) {
+  test(`diagonal partitions and edited basement survive real export/import (${rotation} degrees)`, async ({ page }, testInfo) => {
+    test.setTimeout(180_000);
+    await page.emulateMedia({reducedMotion: 'reduce'});
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    const partition = [{x: 1, z: 1}, {x: 12, z: 8}];
+    const fixture = {
+      version: 1, id: `diagonal-yard-${rotation}`, name: `Diagonal yard ${rotation}`, createdAt: 0,
+      privacy: 'hidden', origin: {lat: 0, lon: 0}, bearingDeg: 0, genScale: 1,
+      extent: 60, seed: 1, droneStart: {x: -20, z: 0}, trees: [], pads: [],
+      calibCorners: {p1: {x: -30, z: -30}, p2: {x: 30, z: 30}},
+      buildings: [{id: 'b', name: 'Shed', pos: {x: 0, z: 0}, rotDeg: rotation, length: 14, width: 10,
+        basement: {height: 3, partitions: [partition]},
+        levels: [{baseY: 0, height: 4, sides: {n: true, s: true, e: true, w: true},
+          doors: {}, partitions: [partition], roof: 'flat', roofRise: 0}]}],
+    };
+    await page.goto('/?lang=en');
+    await page.getByRole('button', {name: 'Open the bandos', exact: true}).click();
+    const studio = page.locator('app-studio-panel');
+    const upload = async (buffer: Buffer): Promise<void> => {
+      await studio.locator('input[type=file]').first().setInputFiles({name: 'diagonal.bando.json', mimeType: 'application/json', buffer});
+    };
+    const card = studio.locator('.card').filter({hasText: fixture.name});
+    await upload(Buffer.from(JSON.stringify(fixture)));
+    await card.getByRole('button', {name: 'Edit', exact: true}).click();
+    const bar = page.locator('app-bando-editor > .bar');
+    const inspector = page.locator('[data-tour="inspector"]');
+    await page.locator('[data-pk="building:b"]').first().click({force: true});
+    await bar.getByRole('button', {name: 'Indoors', exact: true}).click();
+    const wall = page.locator('[data-pk="wall:0"]');
+    const checkWall = async (): Promise<void> => {
+      await expect(wall).toHaveCount(1);
+      for (const [attr, value] of [['x1', '-6'], ['y1', '-4'], ['x2', '5'], ['y2', '3']])
+        await expect(wall).toHaveAttribute(attr!, value!);
+    };
+    await checkWall();
+    // The same local diagonal must survive floor isolation and the rotated building transform.
+    for (const floor of ['G', '−1']) {
+      if (floor === '−1') await bar.getByRole('button', {name: floor, exact: true}).click();
+      await checkWall();
+      await page.locator('[data-tour="view-3d"]').click();
+      await expect(page.locator('app-site-view canvas')).toBeVisible();
+      await expect(page.locator('app-site-view .fail')).toHaveCount(0);
+      await testInfo.attach(`diagonal-${rotation}-${floor}`, {body: await page.locator('app-site-view').screenshot(), contentType: 'image/png'});
+      await page.locator('[data-tour="view-2d"]').click();
+      await checkWall();
+    }
+    const vertex = page.locator('[data-pk="basement-vertex:1"]');
+    const oldZ = await vertex.getAttribute('cy');
+    await vertex.focus();
+    await page.keyboard.press('ArrowDown');
+    await expect(vertex).not.toHaveAttribute('cy', oldZ!);
+    const changedZ = await vertex.getAttribute('cy');
+    await bar.getByTitle('Undo (Ctrl+Z)', {exact: true}).click();
+    await expect(vertex).toHaveAttribute('cy', oldZ!);
+    await bar.getByTitle('Redo', {exact: true}).click();
+    await expect(vertex).toHaveAttribute('cy', changedZ!);
+    const expectedOutline = await page.locator('[data-pk^="basement-vertex:"]').evaluateAll(els => els.map(el => ({x: Number(el.getAttribute('cx')), z: Number(el.getAttribute('cy'))})));
+    await bar.getByRole('button', {name: 'Save', exact: true}).click();
+    await bar.getByRole('button', {name: '← Bandos', exact: true}).click();
+    const downloading = page.waitForEvent('download');
+    await card.getByRole('button', {name: 'Export', exact: true}).click();
+    const download = await downloading;
+    const filename = await download.path();
+    expect(filename).not.toBeNull();
+    const bytes = await readFile(filename!);
+    const exported = JSON.parse(bytes.toString()) as SiteSpec;
+    expect(exported.buildings[0]!.basement!.outline).toEqual(expectedOutline);
+    expect(exported.buildings[0]!.basement!.partitions).toEqual([partition]);
+    expect(exported.buildings[0]!.levels[0]!.partitions).toEqual([partition]);
+    // Remove only this test fixture so re-import cannot accidentally reopen the original saved copy.
+    page.once('dialog', dialog => dialog.accept());
+    await card.getByRole('button', {name: 'Delete', exact: true}).click();
+    await expect(card).toHaveCount(0);
+    await upload(bytes);
+    await card.getByRole('button', {name: 'Edit', exact: true}).click();
+    await page.locator('[data-pk="building:b"]').first().click({force: true});
+    await inspector.getByRole('button', {name: '−1', exact: true}).click();
+    await bar.getByRole('button', {name: 'Indoors', exact: true}).click();
+    await expect(vertex).toHaveAttribute('cy', changedZ!);
+    await checkWall();
+    await expect(bar.getByRole('button', {name: '−1', exact: true})).toHaveClass(/on/);
+    expect(errors).toEqual([]);
   });
 }
