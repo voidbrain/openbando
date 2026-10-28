@@ -807,8 +807,14 @@
                   <label class="fld">length m <input type="number" min="2" max="300" [value]="basementSize().length" (change)="resizeBasement('length',num($event))" /></label>
                   <label class="fld">width m <input type="number" min="2" max="300" [value]="basementSize().width" (change)="resizeBasement('width',num($event))" /></label>
                   <button class="btn span2" (click)="resetBasementShape()">Use building footprint</button>
-                  @for (sd of wallSides; track sd.k) {
-                    <label class="chk"><input type="checkbox" [checked]="bd.basement.sides?.[sd.k] !== false" (change)="basementWall(sd.k,checked($event))" />{{ sd.label }} wall</label>
+                  @if (perimeterEdges(); as edges) {
+                    @for (on of edges; track $index) {
+                      <label class="chk"><input type="checkbox" [checked]="on" (change)="basementEdgeWall($index,checked($event))" />Perimeter edge {{ $index + 1 }}</label>
+                    }
+                  } @else {
+                    @for (sd of wallSides; track sd.k) {
+                      <label class="chk"><input type="checkbox" [checked]="bd.basement.sides?.[sd.k] !== false" (change)="basementWall(sd.k,checked($event))" />{{ sd.label }} wall</label>
+                    }
                   }
                   <div class="dim small span2">Basement wall coordinates start at its north-west corner.</div>
                   @for (wall of bd.basement.partitions ?? []; track $index; let i = $index) {

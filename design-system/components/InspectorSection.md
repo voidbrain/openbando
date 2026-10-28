@@ -20,3 +20,5 @@ Basements expose a −1 button in Floors, a dedicated preview and a separate sec
 In the 2D indoor plan and 3D indoor view, the selected basement shows outline vertices: drag or use the focusable vertex controls and arrow keys to move, Insert adds a midpoint, and Delete removes a vertex. In 3D a compact expandable control provides keyboard movement and pointer buttons for insertion and removal. The existing yellow outline/handle styling and visible focus treatment identify these controls.
 
 The greenhouse arch ratio is dimensionless; show the corresponding crown height in metres next to it.
+
+Polygonal or vertex-edited basements use numbered Perimeter edge checkboxes rather than compass-side checkboxes, preserving open walls as edges move or split. Replacing the footprint or dimensions while an edge is open shows an explanatory toast instead of silently closing that wall.

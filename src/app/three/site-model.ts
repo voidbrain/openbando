@@ -215,6 +215,7 @@ function buildSide(ctx: Ctx, b: BuildingSpec, l: LevelSpec, side: 'n' | 's' | 'e
 function buildPolyWalls(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object3D): void {
   const th = 0.5;
   edgesOf(b.footprint ?? []).forEach((e, k) => {
+    if (l.wallEdges?.[k] === false) return;
     const standing = standingOf(ctx, e.to - e.from, ctx.ruin?.level ?? 0, `edge${k}`);
     const ops = (l.wallOpenings ?? [])
       .filter((o) => (e.axis === 'x' ? Math.abs(o.z - e.at) < 0.08 && o.x >= e.from - 0.08 && o.x <= e.to + 0.08 : Math.abs(o.x - e.at) < 0.08 && o.z >= e.from - 0.08 && o.z <= e.to + 0.08))
@@ -795,7 +796,7 @@ export function buildUnderground(v: UndergroundSpec): THREE.Group {
 
 /**
  * A basement: walls along every edge of the outline from the ground floor slab down `height` metres, and a floor slab.
- * Building-local (the group carries the position, turn and pad height); the outline's edges are axis-aligned there.
+ * Building-local (the group carries the position, turn and pad height); outlines may have diagonal edges.
  */
 function buildBasement(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, floorMat: THREE.Material): void {
   const basement = basementBuilding(b);
@@ -852,6 +853,7 @@ function buildDiagonalBasement(ctx: Ctx, b: BuildingSpec, l: LevelSpec, room: TH
   buildWalls(ctx, interior, interior.levels[0]!, room);
 
   for (let i = 0; i < poly.length; i++) {
+    if (l.wallEdges?.[i] === false) continue;
     const a = poly[i]!, end = poly[(i + 1) % poly.length]!;
     const dx = end.x - a.x, dz = end.z - a.z, length = Math.hypot(dx, dz);
     if (length < 0.01) continue;

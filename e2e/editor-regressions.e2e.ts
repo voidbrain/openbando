@@ -126,6 +126,7 @@ test('basement controls and explicit roof choice update the selected building', 
   const height = inspector.getByLabel('wall height m', { exact: true });
   await height.fill('3.5'); await height.press('Tab');
   await expect(inspector.getByLabel('basement m', { exact: true })).toHaveValue('3.5');
+  await inspector.getByLabel('east wall', {exact: true}).last().uncheck();
   // A keyboard move changes one vertex, making a diagonal wall while keeping the −1 floor selected.
   const vertex = page.locator('[data-pk="basement-vertex:1"]');
   await expect(vertex).toBeVisible();
@@ -133,6 +134,7 @@ test('basement controls and explicit roof choice update the selected building', 
   await vertex.focus();
   await page.keyboard.press('ArrowRight');
   await expect(vertex).not.toHaveAttribute('cx', oldX!);
+  await expect(inspector.getByLabel('Perimeter edge 2', {exact: true})).not.toBeChecked();
   await expect(topBar.getByRole('button', { name: '−1', exact: true })).toHaveClass(/on/);
   await vertex.focus();
   await page.keyboard.press('Insert');
