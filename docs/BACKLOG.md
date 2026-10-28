@@ -58,4 +58,4 @@ Completed documentation and backlog changes, with PR links and verification evid
 
 | Signal | Change | PR / evidence | Status | Verification | Reviewed |
 |:---:|---|---|---|---|---|
-| 🟡 | Consolidate backlog maintenance rules and add a repeatable PR/CI and stale-state review procedure. | PR pending | Implemented | Documentation · 2026-10-28 · links, table structure and unchanged product rows checked; merge reconciliation pending | 2026-10-28 |
+| 🟡 | Consolidate backlog maintenance rules and add a repeatable PR/CI and stale-state review procedure. | [#132](https://github.com/voidbrain/openbando/pull/132) | Implemented | Documentation · 2026-10-28 · links, table structure and unchanged product rows checked; merge reconciliation pending | 2026-10-28 |
