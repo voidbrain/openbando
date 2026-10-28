@@ -460,12 +460,11 @@ for (const rotation of [0, 37]) {
         if (previous) await expect(readout).not.toHaveText(previous);
         return (await readout.innerText()).match(/-?\d+\.\d+/g)!.map(Number);
       };
-      let distance = Infinity;
-      await expect.poll(async () => {
-        const a = await sample(0.45), b = await sample(0.55);
-        distance = Math.hypot(a[0]! - b[0]!, a[2]! - b[2]!);
-        return distance;
-      }).toBeLessThan(0.1);
+      // Real pointer actions own their actionability waits; do not put two slow WebGL clicks
+      // inside a five-second assertion poll, which can expire before the second action completes.
+      const a = await sample(0.45), b = await sample(0.55);
+      const distance = Math.hypot(a[0]! - b[0]!, a[2]! - b[2]!);
+      expect(distance, JSON.stringify({a, b})).toBeLessThan(0.1);
       expect(distance).toBeGreaterThan(0);
       await bar.getByLabel('Debug coordinates', {exact: true}).uncheck();
     }
