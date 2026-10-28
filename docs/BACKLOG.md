@@ -77,4 +77,4 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | 🟡 | Add compact lifecycle legend with requirements, conditional transitions and priority-cue effects. | [#129](https://github.com/voidbrain/openbando/pull/129) | Implemented | Documentation · 2026-10-28 · six statuses and transition/colour rules reviewed | 2026-10-28 |
 
-| 🟡 | Add final Human action required column to bugs/features, retaining user legend edits and distinguishing human dependencies from agent work. | PR pending | Implemented | Documentation · 2026-10-28 · all 23 rows and original-field preservation checked | 2026-10-28 |
+| 🟡 | Add final Human action required column to bugs/features, retaining user legend edits and distinguishing human dependencies from agent work. | [#130](https://github.com/voidbrain/openbando/pull/130) | Implemented | Documentation · 2026-10-28 · all 23 rows and original-field preservation checked | 2026-10-28 |
