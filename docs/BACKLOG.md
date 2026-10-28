@@ -190,7 +190,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | `chore/harness-checks` (NgOptimizedImage, size attributes); [audit](audits/2026-10-28.md) (found 2026-10-28) |
+| PR / evidence | [#161](https://github.com/voidbrain/openbando/pull/161) (NgOptimizedImage, size attributes); [audit](audits/2026-10-28.md) (found 2026-10-28) |
 | Opened | 2026-10-29 |
 | Verification | Pending |
 | Reviewed | 2026-10-29 |
@@ -445,6 +445,6 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ## Other changes
 
-In review: `chore/harness-checks` adds `check:conventions` (AGENTS Angular conventions, `core/` imports, unused exports; in CI) and a 90 s Playwright action timeout, so a missing locator fails in 90 s instead of the whole 6-minute test budget. Moves to the maintenance history once merged with green CI.
+In review: [#161](https://github.com/voidbrain/openbando/pull/161) adds `check:conventions` (AGENTS Angular conventions, `core/` imports, unused exports; in CI) and a 90 s Playwright action timeout, so a missing locator fails in 90 s instead of the whole 6-minute test budget. Moves to the maintenance history once merged with green CI.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
