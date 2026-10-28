@@ -2,7 +2,7 @@
 
 # OpenBando guide
 
-The app plays these as animated tours on the real interface: open **Guide me** (shown on the first visit, then from Views). Every step is also a short clip, used in these pages, in the hover tips (Guide me → Show tips on hover) and for articles.
+The app plays these as animated tours on the real interface: open **Guide me** from Welcome or Views. Every step is also a short clip, used in these pages, in the hover tips (Guide me → Show tips on hover) and for articles.
 
 ## Tours
 
@@ -19,5 +19,7 @@ The app plays these as animated tours on the real interface: open **Guide me** (
 - [Flights, video and sync](04-flight.md)
 
 ## Clips
+
+The existing clips were last updated on 24 October 2026 and have not been re-recorded for the current Studio UI. They are historical walkthroughs; the in-app tours use the current interface. See [current audit](../audits/2026-10-28.md) and [backlog F-011](../BACKLOG.md).
 
 `npm run clips` plays every step in a headless browser, keeps each as `docs/guide/clips/<step>.webm` and rewrites these pages to embed them (a GIF for an article: `ffmpeg -i step.webm -vf "fps=12,scale=720:-1" step.gif`).
