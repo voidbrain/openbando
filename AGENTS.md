@@ -65,7 +65,7 @@ The app is **OpenBando** (tagline "Build, Fly, Share."). The repository is `void
 
 ### Architecture
 
-- `core/` is plain TypeScript with no Angular imports: keep it that way so it stays unit-testable. Put logic there, keep
+- `core/` is plain TypeScript: from Angular it imports only the signal primitives (`signal`, `computed`, `untracked`), which run without the framework; keep it that way so it stays unit-testable (`npm run check:conventions`). Put logic there, keep
   components thin. `three/` builds Three.js objects from the spec; `services/` and `state/` hold signals; `ui/` is templates.
 - The **spec is the source of truth** (`core/site-spec.ts`). The 3D model, the plan overlay, the inspector preview and the
   AI context are all derived from it. Edit the spec through `SiteEditor` (`commitSite` = one undo step; `beginGesture` +
@@ -106,6 +106,7 @@ npx tsc -p tools/i18n/tsconfig.json       # the translation check
 npm run check:i18n                        # every UI text has its Italian
 npm run check:contrast                    # shared text/surface pairs and token consistency
 npm run check:backlog                     # active record layout and lifecycle cues
+npm run check:conventions                 # Angular conventions above, core/ imports, unused exports
 ```
 
 - `npm run e2e` (Playwright, also a CI job): every guide step plays alone in a headless browser without errors, and the first visit, the editor with the library and a running guide step pass axe (WCAG 2.1 A / AA). Locate panels by `app-panel[data-id=…]` or by role: component hosts have no box of their own. Software WebGL is slow there: keep the long timeouts.
