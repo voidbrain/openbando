@@ -93,4 +93,4 @@ is `.row` scoped to `ElementsBox`; the guideline calls it `.el-row` to keep it a
 
 The main 3D view and the editor 3D view each show the same fixed north compass overlay (`app-camera-compass`) using existing surface and text tokens; it rotates with the camera. North is red; click resets the camera north, drag rotates it, and arrow keys turn it in five-degree steps.
 
-The indigo/purple chrome trial preserves warning, danger, success, telemetry, pilot and tool colours. Button and field surfaces use shared `control`, `control-hover` and `field` tokens; active/primary fills keep `accent-ink`. Artwork and world materials are outside the chrome theme.
+The accepted indigo/purple chrome palette (28 October 2026) preserves warning, danger, success, telemetry, pilot and tool colours. Button and field surfaces use shared `control`, `control-hover` and `field` tokens; active/primary fills keep `accent-ink`. Artwork and world materials are outside the chrome theme.

@@ -1,6 +1,6 @@
 # OpenBando
 
-Interface chrome uses dark indigo/purple surfaces with lime active controls; status, telemetry, tool and pilot colours retain their existing meanings.
+The accepted interface palette uses dark indigo/purple surfaces with lime active controls; status, telemetry, tool and pilot colours retain their existing meanings.
 
 ![OPENBANDO pixel-art concrete and brick wordmark](public/mascot/openbando-wordmark.png)
 
