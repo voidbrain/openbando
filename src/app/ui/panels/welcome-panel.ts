@@ -80,7 +80,10 @@ const PILLARS: readonly Pillar[] = [
           }
         </div>
         <footer>
-          <button class="btn primary" (click)="showcase()" data-tour="welcome-tour">▶ Watch <span translate="no">Welcome</span></button>
+          @if (tour.welcomeSeen()) {
+            <button class="btn primary" (click)="go(['studio'], true)">Open the bandos</button>
+          }
+          <button class="btn" [class.primary]="!tour.welcomeSeen()" (click)="showcase()" data-tour="welcome-tour">▶ Watch <span translate="no">Welcome</span></button>
           <button class="btn" (click)="go(['guide'], false)">Guide me</button>
           <button class="btn" (click)="layout.setVisible('features', true)">Features</button>
           <span class="grow"></span>
@@ -187,7 +190,7 @@ export class WelcomePanel {
   protected readonly pillars = PILLARS;
   private readonly layout = inject(LayoutStore);
   private readonly studio = inject(StudioService);
-  private readonly tour = inject(TourService);
+  protected readonly tour = inject(TourService);
   private readonly placer = inject(PanelPlacer);
   /** The column in focus: its film plays. */
   protected readonly focus = signal('build');

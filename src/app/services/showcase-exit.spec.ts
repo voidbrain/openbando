@@ -26,6 +26,8 @@ it('returns from showcase to an empty overview, then loads a visible stored mode
     const tour = TestBed.inject(TourService);
     await tour.playTour({id: 'exit-test', title: 'Test', about: '', snippets: [], returnToWelcome: true});
     TestBed.tick();
+    expect(tour.welcomeSeen()).toBe(true);
+    expect(JSON.parse(localStorage.getItem('openbando-welcome')!)).toEqual({completed: true});
     expect(layout.panels().welcome.visible).toBe(true);
     expect(host.paths.group.visible).toBe(false);
     // Even a same-frame rebuild cannot leak the path past the render boundary.

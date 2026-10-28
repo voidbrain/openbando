@@ -22,11 +22,17 @@ export class PanelPlacer {
     const x0 = views ? views.right + 12 : 12;
     const area = { x: x0, y: 56, w: Math.max(200, innerWidth - x0 - 12), h: innerHeight - 68 };
     // The timeline has a dedicated bottom anchor; keep it out of the row arrangement.
-    const arranged = ids.filter((id) => id !== 'timeline');
+    const pair = ids.includes('flights') && ids.includes('video');
+    const arranged = ids.filter((id) => id !== 'timeline' && !(pair && id === 'flights'));
     const sizes = arranged.map((id) => {
       const r = box(id);
       return { w: r?.width ?? 300, h: r?.height ?? 200 };
     });
     arrangeRows(sizes, area).forEach((p, i) => this.layout.moveTo(arranged[i]!, p.x, p.y));
+    if (pair) {
+      const video = box('video');
+      const position = this.layout.panels().video;
+      this.layout.moveTo('flights', position.x ?? x0, (position.y ?? area.y) + (video?.height ?? 250) + 12);
+    }
   }
 }

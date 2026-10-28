@@ -15,3 +15,12 @@ describe('panel placement', () => {
     expect(layout.panels().speed.x).not.toBeNull();
   });
 });
+
+it('places Flights below Video while retaining the bottom timeline anchor', async () => {
+  localStorage.clear(); TestBed.resetTestingModule();
+  const layout = TestBed.inject(LayoutStore);
+  await TestBed.inject(PanelPlacer).open(['video', 'flights', 'timeline']);
+  expect(layout.panels().flights.x).toBe(layout.panels().video.x);
+  expect(layout.panels().flights.y).toBeGreaterThan(layout.panels().video.y!);
+  expect(layout.panels().timeline.y).toBeNull();
+});

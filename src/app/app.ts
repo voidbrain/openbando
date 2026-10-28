@@ -97,9 +97,7 @@ export class App {
     inject(ShortcutsService).bind();
     inject(FrameLoopService).start();
 
-    // A new log brings its instruments as soon as its data is there: from the Flights panel (Welcome's "Load a log",
-    // the guide) the path and speed, and with Blackbox telemetry the Blackbox and attitude, laid out together with it.
-    // Anywhere else only the Blackbox opens, where it was.
+    // User-loaded logs expose their matching video and instruments; guides own their layout.
     const placer = inject(PanelPlacer);
     effect(() => {
       const active = this.flightStore.activeId();
@@ -108,8 +106,7 @@ export class App {
         if (!f || f.live) return; // a live link keeps its own panel open
         const tel = !!f.tel;
         if (this.tour.state()) return; // a guide lays out its own screen
-        if (this.layout.panels().flights.visible) void placer.open(['flights', 'timeline', 'path', 'speed', ...(tel ? (['attitude', 'blackbox'] as const) : [])]);
-        else if (tel) this.layout.setVisible('blackbox', true);
+        void placer.open(['flights', 'video', 'timeline', 'path', 'speed', ...(tel ? (['attitude', 'blackbox'] as const) : [])]);
       });
     });
     // The radio panel opens itself the first time a controller is seen.

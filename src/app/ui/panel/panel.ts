@@ -38,9 +38,7 @@ import { CASCADE_STEP, PANEL_BY_ID, cascadeIndex, type PanelId } from '../panel-
       <button class="gb" title="Transparent: hide the panel background, keep only the content" aria-label="Transparent" (pointerdown)="$event.stopPropagation()" (click)="layout.toggleGhost(id())">◐</button>
       <button class="gb" [class.on]="tour.tips()" [attr.aria-pressed]="tour.tips()" [title]="tour.tips() ? 'Tips on hover are on: hover a control for a moment to see how it works (click to turn off)' : 'Tips on hover: hover a control for a moment to see how it works'" aria-label="Tips on hover" (pointerdown)="$event.stopPropagation()" (click)="tour.setTips(!tour.tips())">?</button>
       <button class="gb" title="Collapse / expand" aria-label="Collapse / expand" (pointerdown)="$event.stopPropagation()" (click)="layout.toggleMinimized(id())">▾</button>
-      @if (id() !== 'views') {
-        <button class="gb" title="Close (Views shows it again)" [attr.aria-label]="'Close ' + def().title" [attr.data-tour]="'close-' + id()" (pointerdown)="$event.stopPropagation()" (click)="layout.setVisible(id(), false)">×</button>
-      }
+      <button class="gb" [title]="id() === 'views' ? 'Close (menu opens it again)' : 'Close (Views shows it again)'" [attr.aria-label]="'Close ' + def().title" [attr.data-tour]="'close-' + id()" (pointerdown)="$event.stopPropagation()" (click)="layout.setVisible(id(), false)">×</button>
     </header>
     <div class="body"><ng-content /></div>
     @if (def().resizable && !state().minimized) {

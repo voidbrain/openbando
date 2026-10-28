@@ -84,6 +84,7 @@ export class TourService {
   /** The box of the current target, outlined. */
   readonly focus = signal<{ x: number; y: number; w: number; h: number } | null>(null);
   /** Show a snippet as a tip when hovering a tool it explains. */
+  readonly welcomeSeen = signal(this.storage.read('openbando-welcome', {completed: false}).completed);
   readonly tips = signal(this.storage.read(SETTINGS, { tips: false }).tips);
 
   editor: TourEditor | null = null;
@@ -169,6 +170,7 @@ export class TourService {
     const c = this.cursor() ?? { x: innerWidth / 2, y: innerHeight / 2, down: false };
     this.cursor.set({ ...c, down: false });
     const transportBefore = {loop: this.playback.transport.loop(), speed: this.playback.transport.speed(), direction: this.playback.transport.direction()};
+    if (returnToWelcome) this.video.quietSyncNotifications = true;
     if (returnToWelcome) { this.playback.transport.setLoop(false); this.playback.transport.setSpeed(1); this.playback.transport.setDirection(1); }
     try {
       for (let i = 0; i < beats.length; i++) {
@@ -190,10 +192,15 @@ export class TourService {
         }
       }
       await this.sleep(400);
+      if (returnToWelcome && !this.stop) {
+        this.welcomeSeen.set(true);
+        this.storage.write('openbando-welcome', {completed: true});
+      }
     } catch (e) {
       if (!(e instanceof Stopped)) console.warn('tour', e);
     } finally {
       if (returnToWelcome) {
+        this.video.quietSyncNotifications = false;
         // The showcase must stop its looping replay and return to Welcome on completion or cancellation.
         this.haltReplay();
         this.heldReplay = false;
@@ -538,7 +545,7 @@ export class TourService {
       }
       case 'demoVideo': {
         const f = await this.demoFile(DEMO.video, 'demo-flight.mp4', 'video/mp4');
-        if (f) this.video.load(f);
+        if (f) this.video.load(f, {guided: true});
         return this.sleep(f ? 800 : 0);
       }
       case 'autoSync': {

@@ -1,4 +1,7 @@
 import { Component, effect, inject, signal, untracked } from '@angular/core';
+import { PanelPlacer } from '../../services/panel-placer.service';
+import { PANELS } from '../panel-defs';
+import { ViewStore } from '../../state/view.store';
 import { LayoutStore } from '../../state/layout.store';
 import { LibraryStore } from '../../services/library-store.service';
 import { storageAdvice } from '../../core/storage-errors';
@@ -50,7 +53,7 @@ import { BandoEditor } from './bando-editor';
             <div class="card" [class.active]="b.id === site.active().id">
               <button class="title" (click)="studio.open(b.id)" [title]="'Show ' + b.name + ' in 3D'">
                 <b>{{ b.name }}</b>
-                @if (b.id === site.active().id) { <span class="badge">open</span> }
+                @if (b.id === site.active().id) { <span class="badge">active</span> }
                 <span class="dim small mono">{{ b.buildings }} buildings · {{ b.privacy === 'hidden' ? 'place hidden' : b.origin.lat.toFixed(4) + ', ' + b.origin.lon.toFixed(4) }}</span>
               </button>
               @if (newer(b); as ex) {
@@ -60,6 +63,7 @@ import { BandoEditor } from './bando-editor';
                 </div>
               }
               <div class="acts">
+                <button class="btn primary" (click)="fly(b.id)">Fly</button>
                 <button class="btn" (click)="studio.edit(b.id)" [title]="b.privacy === 'hidden' ? 'Edit the model (its place is hidden, so there is no map area)' : 'Change the area on the map and regenerate'">{{ b.privacy === 'hidden' ? 'Edit' : 'Edit area' }}</button>
                 <button class="btn" (click)="rename(b.id, b.name)">Rename</button>
                 <button class="btn" (click)="duplicate(b.id)">Duplicate</button>
@@ -192,6 +196,14 @@ import { BandoEditor } from './bando-editor';
 export class StudioPanel {
   protected readonly studio = inject(StudioService);
   protected readonly site = inject(SiteService);
+  private readonly placer = inject(PanelPlacer);
+  private readonly view = inject(ViewStore);
+  protected fly(id: string): void {
+    this.studio.open(id);
+    this.view.setMainSource('3d');
+    this.layout.setVisible('studio', false);
+    void this.placer.open(PANELS.filter(panel => panel.group === 'telemetry' && panel.id !== 'live').map(panel => panel.id));
+  }
   private readonly toast = inject(ToastService);
   private readonly layout = inject(LayoutStore);
   protected readonly storage = inject(LibraryStore);

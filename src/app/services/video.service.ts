@@ -1,6 +1,7 @@
 import { Injectable, effect, inject, signal, untracked } from '@angular/core';
 import { findFirstYawFlick, findFlips } from '../core/flight/analysis';
 import { matchVideoToLog, type SyncFeatures } from '../core/sync/matcher';
+import { LayoutStore } from '../state/layout.store';
 import { FlightStore } from '../state/flight.store';
 import { PlaybackStore } from '../state/playback.store';
 import { FlightService } from './flight.service';
@@ -32,6 +33,8 @@ export class VideoService {
   readonly element: HTMLVideoElement = this.createElement();
   readonly fileName = signal('');
   readonly loaded = signal(false);
+  readonly frameReady = signal(false);
+  readonly loadFailed = signal(false);
   readonly offset = signal(0);
   /** Scan / sync progress and result line. */
   readonly status = signal('');
@@ -42,6 +45,9 @@ export class VideoService {
   readonly features = signal<SyncFeatures | null>(null);
   /** An exact render drives the video itself: normal syncing pauses. */
   suspended = false;
+
+  quietSyncNotifications = false;
+  private readonly layout = inject(LayoutStore);
 
   private objectUrl: string | null = null;
   private fileKey = '';
@@ -89,9 +95,15 @@ export class VideoService {
     });
   }
 
-  load(file: File): void {
+  load(file: File, options: {guided?: boolean} = {}): void {
+    if (!options.guided) {
+      this.layout.setVisible('flights', true);
+      this.layout.setVisible('video', true);
+    }
     if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
     this.objectUrl = URL.createObjectURL(file);
+    this.frameReady.set(false);
+    this.loadFailed.set(false);
     this.element.src = this.objectUrl;
     this.lastSeekTarget = -1;
     this.fileKey = `${file.name}:${file.size}`;
@@ -100,7 +112,7 @@ export class VideoService {
     this.features.set(null);
     this.synced.set(false);
     this.toast.show(`Video loaded: ${file.name}`);
-    this.restoreSync();
+    this.restoreSync(!options.guided);
   }
 
   setOffset(seconds: number): void {
@@ -244,14 +256,14 @@ export class VideoService {
     return this.fileKey && f ? `${SYNC_KEY_PREFIX}${this.fileKey}|${f.name}` : null;
   }
 
-  private restoreSync(): void {
+  private restoreSync(notify = true): void {
     const key = this.syncKey();
     const saved = key ? this.storage.readRaw(key) : null;
     this.synced.set(saved !== null);
     if (saved === null) return;
     this.offset.set(+saved || 0);
     this.lastSeekTarget = -1;
-    this.toast.show(`Restored saved sync (offset ${(+saved).toFixed(2)} s)`);
+    if (notify && !this.quietSyncNotifications) this.toast.show(`Restored saved sync (offset ${(+saved).toFixed(2)} s)`);
   }
 
   /** Per frame: keep the video where the replay is (playing: free-run and correct drift; paused: seek). */
@@ -282,6 +294,9 @@ export class VideoService {
     v.playsInline = true;
     v.muted = true;
     v.preload = 'auto';
+    v.addEventListener('loadeddata', () => this.frameReady.set(true));
+    v.addEventListener('canplay', () => this.frameReady.set(true));
+    v.addEventListener('error', () => this.loadFailed.set(true));
     return v;
   }
 }

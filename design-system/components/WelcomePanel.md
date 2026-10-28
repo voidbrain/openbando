@@ -11,7 +11,7 @@ The first thing a visitor sees, over the empty world turning slowly: what OpenBa
   (muted, looped, no controls; dimmed until its column is in focus), a 17 px title, two or three lines of text, and
   link buttons ("Open the bandos →") that open the panels for that job and close Welcome. The column under the pointer
   or the keyboard focus gets an `accent` border and plays its film.
-- Footer: the primary `▶ Watch the welcome tour`, `Guide me`, `Features`, and a `dim` note on privacy.
+- Footer: Watch Welcome is primary until the showcase completes; subsequent openings promote Open the bandos and retain Watch Welcome as a secondary action. Completion is remembered locally. Guide me, Features and the privacy note remain.
 - Closing it shows Views. The mascot starts its animation from the first pose whenever Welcome reopens.
 
 ## Voice
