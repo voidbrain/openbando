@@ -1,7 +1,37 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { readFile } from 'node:fs/promises';
 import type { SiteSpec } from '../src/app/core/site-spec';
+
+/** Check actual CSS cascade states: a palette-pair check cannot catch a hover override. */
+async function expectFilledButtonContrast(button: Locator): Promise<void> {
+  const read = () => button.evaluate(el => {
+    const style = getComputedStyle(el);
+    return {text: style.color, fill: style.backgroundColor};
+  });
+  const contrast = (state: {text: string; fill: string}): number => {
+    const luminance = (css: string): number => {
+      const values = css.match(/[\d.]+/g)!.map(Number);
+      // These shared controls have opaque fills; do not silently ignore alpha blending.
+      expect(values.length === 3 || values[3] === 1, css).toBe(true);
+      return values.slice(0, 3).reduce((sum, value, index) => {
+        const channel = value / 255;
+        return sum + [0.2126, 0.7152, 0.0722][index]! *
+          (channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
+      }, 0);
+    };
+    const a = luminance(state.text), b = luminance(state.fill);
+    return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  };
+  await button.page().mouse.move(0, 0);
+  const resting = await read();
+  expect(contrast(resting), JSON.stringify({state: 'rest', ...resting})).toBeGreaterThanOrEqual(4.5);
+  await button.hover();
+  const hovered = await read();
+  expect(hovered.fill).not.toBe(resting.fill);
+  expect(contrast(hovered), JSON.stringify({state: 'hover', ...hovered})).toBeGreaterThanOrEqual(4.5);
+  await button.page().mouse.move(0, 0);
+}
 
 test('Welcome shows the approved wordmark, Features link and revised pose assets', async ({
   page,
@@ -18,12 +48,23 @@ test('Welcome shows the approved wordmark, Features link and revised pose assets
   const asset = await page.request.get('/mascot/poses/16-confused-a.png');
   expect(asset.ok()).toBe(true);
   await expect(page.getByRole('button', { name: 'Features' })).toBeVisible();
+  await expectFilledButtonContrast(page.locator('app-welcome-panel .btn.primary'));
   const axe = await new AxeBuilder({ page })
     .include('app-welcome-panel')
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
     .analyze();
   expect(axe.violations.map((v) => v.id)).toEqual([]);
   expect(errors).toEqual([]);
+});
+
+test('active Views icon buttons retain contrast on hover', async ({page}) => {
+  await page.goto('/');
+  await page.getByRole('button', {name: 'Close Welcome', exact: true}).click();
+  const roofs = page.locator('app-views-panel').getByRole('button', {name: 'Hide roofs', exact: true});
+  if (await roofs.getAttribute('aria-pressed') !== 'true') await roofs.click();
+  await expect(roofs).toHaveClass(/\bib\b/);
+  await expect(roofs).toHaveClass(/\bon\b/);
+  await expectFilledButtonContrast(roofs);
 });
 
 test('basement controls and explicit roof choice update the selected building', async ({
@@ -106,6 +147,7 @@ test('basement controls and explicit roof choice update the selected building', 
   const topBar = page.locator('app-bando-editor > .bar');
   await topBar.getByRole('button', { name: 'Indoors', exact: true }).click();
   await expect(topBar.getByRole('button', { name: '−1', exact: true })).toHaveClass(/on/);
+  await expectFilledButtonContrast(topBar.getByRole('button', {name: '−1', exact: true}));
   // Click the building itself: bubbling used to immediately end an indoor measurement.
   await page.locator('app-bando-editor .palette button[title^="Measure ·"]').click();
   const floor = page.locator('[data-pk="building:b"]').first();
