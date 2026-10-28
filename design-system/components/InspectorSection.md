@@ -22,3 +22,5 @@ In the 2D indoor plan and 3D indoor view, the selected basement shows outline ve
 The greenhouse arch ratio is dimensionless; show the corresponding crown height in metres next to it.
 
 Polygonal or vertex-edited basements use numbered Perimeter edge checkboxes rather than compass-side checkboxes, preserving open walls as edges move or split. Replacing the footprint or dimensions while an edge is open shows an explanatory toast instead of silently closing that wall.
+
+Cut/Wing preserves open/closed state on surviving basement boundary spans, keeps collinear state transitions as vertices and creates solid new edges. Dimension/footprint replacement remains guarded with open edges. Continue rejecting edits which remove an existing opening or floor item.

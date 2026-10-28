@@ -362,7 +362,7 @@ npm run check:i18n                        # every UI text has its Italian
 ## Basement perimeter wall identity
 
 - `basement.wallEdges` stores one boolean per outline edge. The isolated `LevelSpec.wallEdges` carries it to preview/indoor rendering. Convert legacy compass flags before a vertex edit; clockwise and counterclockwise outlines must agree. Never silently re-enable a wall when its edge becomes diagonal.
-- Split edges inherit their old flag. Removing a corner between different flags is rejected; openings and floor items keep the existing preservation checks. Cut/Wing and dimension/footprint replacement are guarded while perimeter edges are disabled, until a topology remapping policy exists.
+- Split edges inherit their old flag. Removing a corner between different flags is rejected; openings and floor items keep the existing preservation checks. Cut/Wing remaps perimeter flags geometrically: preserve old boundary breakpoints and surviving edge state; new edges are solid. Do not merge collinear spans with different flags. Dimension/footprint replacement remains guarded while perimeter edges are disabled.
 - Inspector uses per-edge switches for polygonal or converted basements. Hidden walls retain existing opening data for later re-enabling, but new openings cannot be placed on absent edges. Keep saved-file sanitization, save/undo, rendering and collision in step.
 
 ## Guide animation timing

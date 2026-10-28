@@ -446,7 +446,81 @@ describe('basement perimeter wall identity', () => {
     const before=structuredClone(b);
     expect(removeBasementVertex(b,1)).toBe(false);
     expect(b).toEqual(before);
-    expect(reshapeBasement(b,{x0:4,x1:7,z0:-1,z1:1},'add')).toBe(false);
-    expect(b).toEqual(before);
+  });
+});
+
+describe('Cut/Wing with open basement perimeter edges', () => {
+  it.each([[false,0],[true,0],[false,37],[true,37]] as const)('preserves open spans through cut/add, save and undo (reversed=%s, rotation=%s)', async (reversed, rotation) => {
+    const {SiteEditor} = await import('./site-editor');
+    for (const op of ['cut','add'] as const) {
+      const b=building(); b.rotDeg=rotation;
+      b.basement={height:3,sides:{e:false},doors:{n:[{kind:'door',c:5,w:1,h:2}]}};
+      if (reversed) b.basement.outline=[{x:-5,z:-4},{x:-5,z:4},{x:5,z:4},{x:5,z:-4}];
+      const s=emptySpec();s.extent=30;s.buildings=[b];s.pads=[];
+      const editor=new SiteEditor();editor.load(s);
+      const rect=op==='cut'?{x0:2,x1:6,z0:-1,z1:1}:{x0:3,x1:8,z0:-2,z1:2};
+      editor.commitSite(d=>expect(reshapeBasement(d.buildings[0]!,rect,op)).toBe(true));
+      const saved=sanitizeSpec(JSON.parse(JSON.stringify(editor.draft())))!;
+      const edited=saved.buildings[0]!;
+      expect(edited.levels).toEqual(b.levels);
+      expect(listOpenings(basementBuilding(edited),0)).toHaveLength(1);
+      expect(edited.basement!.wallEdges).toContain(false);
+      expect(edited.basement!.wallEdges).toHaveLength(edited.basement!.outline!.length);
+      const angle=rotation*Math.PI/180;
+      const world=(x:number,z:number)=>new Vec3(x*Math.cos(angle)-z*Math.sin(angle),-1.5,x*Math.sin(angle)+z*Math.cos(angle));
+      const model=buildSiteFromSpec(saved);
+      expect(model.collider.hit(world(5,-3))).toBe(false);
+      expect(model.collider.hit(world(5,3))).toBe(false);
+      const newX=op==='cut'?2:8;
+      expect(model.collider.hit(world(newX,0))).toBe(true);
+      model.group.updateMatrixWorld(true);
+      const normal=new THREE.Vector3(Math.cos(angle),0,Math.sin(angle));
+      const point=world(newX-1,0);
+      const ray=new THREE.Raycaster(new THREE.Vector3(point.x,point.y,point.z),normal,0,2);
+      expect(ray.intersectObject(model.group,true).length).toBeGreaterThan(0);
+      const open=world(4,-3);
+      const throughOpen=new THREE.Raycaster(new THREE.Vector3(open.x,open.y,open.z),normal,0,2);
+      expect(throughOpen.intersectObject(model.group,true)).toHaveLength(0);
+      editor.undo();expect(editor.draft().buildings[0]!.basement).toEqual(b.basement);
+      editor.redo();expect(editor.draft().buildings[0]!.basement!.outline).toEqual(edited.basement!.outline);
+    }
+  });
+
+  it.each(['cut','add'] as const)('keeps diagonal open wall fragments after %s', op => {
+    const b=building();b.basement={height:3,outline:[{x:-6,z:-4},{x:6,z:-4},{x:5,z:4},{x:-5,z:4}],wallEdges:[true,false,true,true]};
+    const rect=op==='cut'?{x0:2,x1:7,z0:-1,z1:1}:{x0:3,x1:8,z0:-2,z1:2};
+    expect(reshapeBasement(b,rect,op)).toBe(true);
+    const spec=emptySpec();spec.extent=30;spec.buildings=[b];spec.pads=[];
+    const saved=sanitizeSpec(JSON.parse(JSON.stringify(spec)))!;
+    const model=buildSiteFromSpec(saved);
+    expect(model.collider.hit(new Vec3(5.875,-1.5,-3))).toBe(false);
+    expect(model.collider.hit(new Vec3(5.125,-1.5,3))).toBe(false);
+    expect(model.collider.hit(new Vec3(op==='cut'?2:8,-1.5,0))).toBe(true);
+  });
+
+  it('retains collinear wall-state transitions which polygon simplification would otherwise merge', () => {
+    const b=building();b.basement={height:3,outline:[{x:-5,z:-4},{x:0,z:-4},{x:5,z:-4},{x:5,z:4},{x:-5,z:4}],wallEdges:[false,true,true,true,true],columns:[{x:1,z:1,size:.5}]};
+    expect(reshapeBasement(b,{x0:-8,x1:-3,z0:-2,z1:2},'add')).toBe(true);
+    expect(b.basement.columns).toEqual([{x:4,z:1,size:.5}]);
+    const outline=b.basement.outline!,walls=b.basement.wallEdges!;
+    const transition=outline.findIndex(p=>p.x===0&&p.z===-4);
+    expect(transition).toBeGreaterThanOrEqual(0);
+    expect(walls[transition]).not.toBe(walls[(transition+walls.length-1)%walls.length]);
+    const s=emptySpec();s.extent=30;s.buildings=[b];s.pads=[];
+    const model=buildSiteFromSpec(s);
+    expect(model.collider.hit(new Vec3(-2.5,-1.5,-4))).toBe(false);
+    expect(model.collider.hit(new Vec3(2.5,-1.5,-4))).toBe(true);
+  });
+
+  it('rejects loss of openings/items or disconnected output atomically even when a perimeter is open', () => {
+    for(const item of ['door','column','island'] as const){
+      const b=building();b.basement={height:3,sides:{e:false}};
+      if(item==='door')b.basement.doors={n:[{kind:'door',c:5,w:2,h:2}]};
+      if(item==='column')b.basement.columns=[{x:5,z:1,size:.5}];
+      const before=structuredClone(b);
+      const rect=item==='island'?{x0:-1,x1:1,z0:-5,z1:5}:{x0:-2,x1:2,z0:-5,z1:0};
+      expect(reshapeBasement(b,rect,'cut')).toBe(false);
+      expect(b).toEqual(before);
+    }
   });
 });

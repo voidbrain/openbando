@@ -471,3 +471,41 @@ for (const rotation of [0, 37]) {
     expect(errors).toEqual([]);
   });
 }
+
+test('basement Cut preserves open perimeter spans in plan and 3D', async ({page}) => {
+  test.setTimeout(120_000);
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  await page.goto('/');
+  await page.getByRole('button', {name: 'Open the bandos', exact: true}).click();
+  const fixture={version:1,id:'open-wall-yard',name:'Open wall yard',createdAt:0,privacy:'hidden',
+    origin:{lat:0,lon:0},bearingDeg:0,genScale:1,extent:40,seed:1,droneStart:{x:-12,z:0},
+    calibCorners:{p1:{x:-20,z:-20},p2:{x:20,z:20}},trees:[],pads:[],
+    buildings:[{id:'b',name:'Shed',pos:{x:0,z:0},rotDeg:0,length:10,width:8,basement:{height:3,sides:{e:false}},
+      levels:[{baseY:0,height:4,sides:{n:true,s:true,e:true,w:true},doors:{},partitions:[],roof:'flat',roofRise:0}]}]};
+  const studio=page.locator('app-studio-panel');
+  await studio.locator('input[type=file]').first().setInputFiles({name:'open-wall.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture))});
+  await studio.locator('.card').filter({hasText:fixture.name}).getByRole('button',{name:'Edit',exact:true}).click();
+  await page.locator('[data-pk="building:b"]').first().click({force:true});
+  const inspector=page.locator('[data-tour="inspector"]'),bar=page.locator('app-bando-editor > .bar');
+  await inspector.getByRole('button',{name:'−1',exact:true}).click();
+  await bar.getByRole('button',{name:'Indoors',exact:true}).click();
+  await page.locator('app-bando-editor .palette button[title^="Cut ·"]').click();
+  const points=await page.locator('app-bando-editor svg.ov').evaluate(el=>{
+    const matrix=(el as SVGSVGElement).getScreenCTM()!;
+    return [[2,-1],[6,1]].map(([x,z])=>{const p=new DOMPoint(x,z).matrixTransform(matrix);return {x:p.x,y:p.y};});
+  });
+  await page.mouse.move(points[0]!.x,points[0]!.y);
+  await page.mouse.down();
+  await page.mouse.move(points[1]!.x,points[1]!.y,{steps:5});
+  await page.mouse.up();
+  await page.locator('app-bando-editor .palette button[title^="Select ·"]').click();
+  await expect(page.locator('[data-pk^="basement-vertex:"]')).toHaveCount(8);
+  const edges=inspector.getByLabel(/^Perimeter edge \d+$/);
+  await expect(edges).toHaveCount(8);
+  await expect.poll(()=>edges.evaluateAll(els=>els.filter(el=>!(el as HTMLInputElement).checked).length)).toBe(2);
+  await page.locator('[data-tour="view-3d"]').click();
+  await expect(page.locator('app-site-view canvas')).toBeVisible();
+  await expect(page.locator('app-site-view .fail')).toHaveCount(0);
+  await page.locator('app-site-view .vertex-access summary').click();
+  await expect(page.locator('app-site-view .vertex-key')).toHaveCount(8);
+});
