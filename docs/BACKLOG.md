@@ -57,4 +57,4 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Follow-up code/documentation audit; refresh CI evidence and generated guide text without claiming clip regeneration. | [#125](https://github.com/voidbrain/openbando/pull/125); [audit](audits/2026-10-28.md) | Implemented | Documentation · 2026-10-28 · source and CI review; media checks pending | 2026-10-28 |
 
-| 🟡 | Add first-column status signals with a legend; retain written status and separate priority, and preserve ID ordering. | PR pending | Implemented | Documentation · 2026-10-28 · row/legend consistency checked | 2026-10-28 |
+| 🟡 | Add first-column status signals with a legend; retain written status and separate priority, and preserve ID ordering. | [#126](https://github.com/voidbrain/openbando/pull/126) | Implemented | Documentation · 2026-10-28 · row/legend consistency checked | 2026-10-28 |
