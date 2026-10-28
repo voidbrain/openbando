@@ -584,6 +584,26 @@ describe('safe basement dimensions and footprint restoration', () => {
     for(const length of [NaN,1,301]){const b=building(),before=structuredClone(b);expect(resizeBasement(b,length,8)).toBe(false);expect(b).toEqual(before);}
   });
 
+  it('restores a different topology with open walls when every open span survives whole', () => {
+    // L-shaped basement under a 10 × 8 building, its north edge open: the footprint keeps that edge exactly
+    const b=building();b.basement={height:3,outline:[{x:-5,z:-4},{x:5,z:-4},{x:5,z:0},{x:0,z:0},{x:0,z:4},{x:-5,z:4}],wallEdges:[false,true,true,true,true,true],columns:[{x:1,z:1,size:.5}]};
+    expect(restoreBasementFootprint(b)).toBe(true);
+    expect(b.basement.outline).toEqual([{x:-5,z:-4},{x:5,z:-4},{x:5,z:4},{x:-5,z:4}]); // explicit: the open edge needs it
+    expect(b.basement.wallEdges).toEqual([false,true,true,true]);
+    expect(b.basement.columns).toEqual([{x:1,z:1,size:.5}]);
+    const saved=sanitizeSpec(JSON.parse(JSON.stringify({...emptySpec(),buildings:[b]})))!.buildings[0]!;
+    expect(saved.basement!.wallEdges).toEqual([false,true,true,true]);
+    // the open edge is the notch, which the footprint does not have: restoring would close it, so nothing changes
+    const notch=building();notch.basement={height:3,outline:[{x:-5,z:-4},{x:5,z:-4},{x:5,z:0},{x:0,z:0},{x:0,z:4},{x:-5,z:4}],wallEdges:[true,true,false,true,true,true]};
+    const before=structuredClone(notch);
+    expect(restoreBasementFootprint(notch)).toBe(false);expect(notch).toEqual(before);
+    // part of an open edge survives, part does not: still refused
+    const part=building();part.basement={height:3,outline:[{x:-5,z:-4},{x:5,z:-4},{x:5,z:0},{x:0,z:0},{x:0,z:4},{x:-5,z:4}],wallEdges:[true,true,true,true,true,false]};
+    part.basement.outline=[{x:-5,z:-4},{x:5,z:-4},{x:5,z:0},{x:0,z:0},{x:0,z:6},{x:-5,z:6}];part.basement.wallEdges=[true,true,true,true,true,false];
+    const partBefore=structuredClone(part);
+    expect(restoreBasementFootprint(part)).toBe(false);expect(part).toEqual(partBefore);
+  });
+
   it('restores closed-wall topology only when openings and floor items survive', () => {
     const b=building();b.basement={height:3,outline:[{x:-5,z:-4},{x:5,z:-4},{x:5,z:0},{x:0,z:0},{x:0,z:4},{x:-5,z:4}],columns:[{x:1,z:1,size:.5}],wallOpenings:[{kind:'door',x:-2,z:-4,w:1,h:2}]};
     expect(restoreBasementFootprint(b)).toBe(true);
