@@ -9,13 +9,17 @@ Published copy (for browsing, may lag behind this folder): https://claude.ai/art
 
 OpenBando is a dark, dense instrument for FPV pilots: a 3D map and site editor, a flight log player and a simulator, built from floating panels over a live 3D stage. The interface stays quiet so the map, the video and the flight path carry the colour. One lime-green accent marks what is active; every editing tool owns a distinct hue.
 
+## Documentation ownership
+
+This guide governs application UI; [Backlog rules](../docs/BACKLOG-RULES.md) governs repository tracking. Backlog status/priority emoji are documentation cues, not app icons, so the UI no-emoji rule does not prohibit them. Component guides refine the general rules; explicit scoped exceptions below must remain consistent with their component guide. User instructions take precedence. README describes capabilities; AGENTS directs implementation; the active backlog records current evidence and remaining work. Archives/audits are dated history, and generated guides follow their source generator.
+
 ## Content fundamentals
 
 - **Voice: a terse field manual.** Short imperatives addressed to the pilot, no "we", no exclamation marks, no emoji. Real hints: "Drag a rectangle on the map; it snaps flush to close neighbours unless auto-align is off", "Click a wall of this floor".
 - **Sentence case** for buttons, labels and hints ("Add floor above", "Clear all"). UPPERCASE only through the `panel-title`, `caption` and `section-label` styles, never typed in capitals.
 - **Join clauses with " · "** in hints, readouts and secondary lines: "3 fl · 42×18 m", "14.20 m · 90°".
 - **Units are metric and always shown:** m, km/h, °. Put units in field labels ("Height (m)"), not in inputs.
-- **Floors** are named G, L1, L2… (level 0 is G).
+- **Floors** are named −1 for the basement, G for level 0, then L1, L2….
 - **Languages.** The interface is written in English and translated through `src/app/i18n/<lang>.ts`; Italian keeps the same voice: short, direct, "tu", no exclamation marks. "Bando" is not translated.
 - **Credit the data where it shows**: map data © OpenStreetMap contributors on the map; the satellite imagery's credit (`SAT_ATTRIBUTION`) at the bottom right of the 3D view while the satellite ground is on, small `text` on a dark wash, never translated.
 - **Say what happened, then what to do.** "Map data is busy (too many requests). Try again in a minute." An AI edit is reported from what actually changed ("3 changes applied"), never from the model's own reply.
@@ -27,8 +31,8 @@ OpenBando is a dark, dense instrument for FPV pilots: a 3D map and site editor, 
 - Dark only (`color-scheme: dark`). Page on `bg`; panels on `panel` (90% opaque over a 6px blur); anything floating over the map that must stay legible on `panel-solid`.
 - Text in `text`; secondary text, captions, labels and counts in `dim`.
 - `accent` is the only brand hue in chrome. Use it for the active state (`.btn.on`, selected segment, selected row border), the one primary action, links and success text. Anything filled with `accent` carries `accent-ink` text.
-- `warn` for problems the pilot can act on (errors, the readout's warning, notice borders). `danger` / `danger-fill` / `danger-line` / `danger-text` only for destructive commands.
-- Every editing tool has its own `tool-*` colour, used for its palette dot, its active border and the shapes it draws on the plan. Never reuse a tool colour for another tool or for the area frame (accent, dashed, with the `rotate-knob` yellow knob). Measures are always `tool-measure` cyan.
+- `warn` for problems the pilot can act on (errors, the readout's warning, notice borders). `danger` / `danger-fill` / `danger-line` / `danger-text` for destructive commands, with explicit existing exceptions: red north navigation in CameraCompass and reddish selected measures in Readout. These exceptions do not make navigation or selection destructive.
+- Every editing tool has its own `tool-*` colour, used for its palette dot, its active border and the shapes it draws on the plan. Never reuse a tool colour for another tool or for the area frame (accent, dashed, with the `rotate-knob` yellow knob). Unselected measures use `tool-measure` cyan; selected lines and labels use the existing reddish selection treatment described in Readout.
 - Hover and active states on transparent buttons are white washes (`wash-hover`, `wash-on`, `wash-menu`), not new colours.
 
 ### Type
@@ -54,7 +58,7 @@ OpenBando is a dark, dense instrument for FPV pilots: a 3D map and site editor, 
 ### States and motion
 
 - Hover: one step lighter (`control-hover`) or a white wash. Disabled: 45% opacity. Selected: `accent` border or fill.
-- Motion is functional only: a panel's 0.7s fade and rise when it opens (where it appears is where it stays), the toast's 0.2s rise and fade, the 0.8s spinner, and the guided tour's cursor, click ring and target outline (they show where the action is). No decorative animation outside the explicitly requested Welcome mascot; that loop has a reduced-motion still and no pause control.
+- Motion is functional only: a panel's 0.7s fade and rise when it opens (where it appears is where it stays), the toast's 0.2s rise and fade, the 0.8s spinner, and the guided tour's cursor, click ring and target outline (they show where the action is). Decorative animation is confined to Welcome: the mascot loop has a reduced-motion still and no pause control, while Build/Fly/Share cards use their scoped muted films. Do not add decorative motion to editing or flight instruments.
 - Focus: the app relies on the browser's default focus ring today. New work should give interactive elements a visible 2px `accent` outline (about 11:1 on `panel-solid`) so it meets WCAG AA.
 
 ### Layering
@@ -65,7 +69,7 @@ OpenBando is a dark, dense instrument for FPV pilots: a 3D map and site editor, 
 
 - Tool icons are the app's own: plain outlines on a 24 × 24 grid, drawn at 20px, stroke 1.7, round caps and joins, `currentColor`. Dashed strokes (2.5 2.5) mean "area" or "to be added"; small filled dots mean trees or points. They are `TOOL_ICONS` in `src/app/ui/studio/tool-icon.ts`, drawn by `<app-tool-icon name="…">`; a new tool gets a new entry there.
 - Window chrome uses Unicode glyphs, not icons: ⠿ grip, ▾ / ▸ collapse, ◐ transparent, ▲ structure.
-- No emoji or icon font. The Welcome pixel mascot is the sole decorative illustration exception; see `docs/mascot/README.md`.
+- No emoji or icon font. The Welcome pixel mascot and approved wordmark are decorative illustration exceptions; see `docs/mascot/README.md`.
 
 ## Logo
 

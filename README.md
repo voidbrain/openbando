@@ -10,7 +10,7 @@
 map, fly it (replay your real flights from Betaflight Blackbox logs and their DVR, or the simulator with your radio), and
 share it, with or without its address.
 
-Everything runs in the browser (Angular 22, Three.js, signals). There is no backend. Bandos, blocks and the cached real ground
+The core app runs in the browser (Angular 22, Three.js, signals), with no required backend. Optional AI-server and race-relay connections are described separately. Bandos, blocks and the cached real ground
 stay in the browser (IndexedDB); videos and logs are read from your disk and never uploaded.
 
 **The welcome tour**, a minute, played by itself: 
@@ -150,7 +150,7 @@ No further configuration is required — the workflow uses the built-in
 
 ### How it works
 
-- Runs the reusable CI checks (catalogue, generated examples, unit tests, Italian translations, strict types and production build) before publishing. Browser e2e runs on pull requests; deployment calls the fast checks without browser e2e. The guide timeout is tracked in the backlog. The production build uses
+- Runs the reusable CI checks (catalogue, generated examples, unit tests, Italian translations, strict types and production build) before publishing. Browser e2e runs on pull requests; deployment calls the fast checks without browser e2e. The guide timeout correction passed all PR #124 browser shards; the backlog records current verification and remaining checks. The production build uses
   `"baseHref": "/openbando/"` set in `angular.json` so asset URLs
   resolve correctly under the project-page subpath.
 - Adds a `.nojekyll` file so GitHub Pages does **not** process the bundle
@@ -188,7 +188,7 @@ of GitHub Actions.
 - [Agent instructions](AGENTS.md): architecture, conventions and required checks.
 - [User guide](docs/guide/README.md): generated feature walkthroughs.
 
-Road overlaps use class priority (railway > road > track > path), stable draw order and full-width terrain draping. Regression coverage checks reversed drawing order; browser visual confirmation, slope-edge visuals and the example flight descent remain in the backlog.
+Road overlaps use class priority (railway > road > track > path), stable draw order and full-width terrain draping. Regression coverage checks reversed drawing order; B-005 and B-008 record the user’s acceptance of the hill-road and descent fixes in the backlog archive; this does not establish every slope/intersection combination.
 
 ## Additional Resources
 

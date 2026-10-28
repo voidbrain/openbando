@@ -11,7 +11,7 @@ The first thing a visitor sees, over the empty world turning slowly: what OpenBa
   (muted, looped, no controls; dimmed until its column is in focus), a 17 px title, two or three lines of text, and
   link buttons ("Open the bandos →") that open the panels for that job and close Welcome. The column under the pointer
   or the keyboard focus gets an `accent` border and plays its film.
-- Footer: the primary `▶ Watch the welcome tour`, `Guide me`, and a `dim` note on privacy.
+- Footer: the primary `▶ Watch the welcome tour`, `Guide me`, `Features`, and a `dim` note on privacy.
 - Closing it shows Views. The mascot starts its animation from the first pose whenever Welcome reopens.
 
 ## Voice
@@ -24,3 +24,5 @@ Source: `src/app/ui/panels/welcome-panel.ts` (films: `public/welcome/`, `npm run
 The Welcome-only pixel mascot sits beside the title. This is the explicit decorative-motion exception requested by the mascot task: black/orange artwork, no new UI colours. Use the shared timeline, still fallback and reduced-motion support. On narrow panels keep the title readable and let the illustration shrink. Sources/rules: `docs/mascot/README.md`.
 
 The Welcome tour highlights Build/Fly/Share while the mascot plays, then waits for the first full rendered mascot loop before closing the panel. Returning to Welcome hides replay and race paths.
+
+Features opens its own panel and is reachable with `?panel=features`; it is excluded from Views. Its marketing card grid is an explicit content exception to the instrument UI field-manual voice, not permission to add promotional copy to editing controls.
