@@ -178,6 +178,28 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+### B-024
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-024 | 🔺 P1 | Implemented | Shown panels stay transparent or invisible (Safari) |
+
+**→ Human action required:** 🧑 **Yes**<br />In Safari, open Views from Welcome's Open the bandos and from the menu button and confirm it appears at once.
+
+**Next action / closure evidence:** User report (Safari): Welcome's Open the bandos hid the menu button but Views did not appear; the menu button left the Views area semi-transparent, loading slowly or never. Cause: every panel's 0.7 s entrance animated opacity from 0 with fill both; when frames stall (WebKit entrance on a backdrop-filter element leaving display none, or a busy 3D main thread) the panel stayed near opacity 0 while the app counted it as shown. The entrance is now a 0.35 s transform-only slide. New browser regression freezes entrance animations at their start and requires opacity 1 for Views and Bandos after Open the bandos and after the menu button; it fails on the old fade in Chromium and WebKit and passes with the fix.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#158](https://github.com/voidbrain/openbando/pull/158) |
+| Opened | 2026-10-28 |
+| Verification | Browser/accessibility · 2026-10-28 · local Playwright Chromium and WebKit (Desktop Safari) regression passed with the fix and failed (opacity 0) without it; CI · Pending; Human Safari check · Pending |
+| Reviewed | 2026-10-28 |
+
+</details>
+
 ## Features and limitations
 
 ### F-001

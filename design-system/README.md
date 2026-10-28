@@ -58,7 +58,7 @@ This guide governs application UI; [Backlog rules](../docs/BACKLOG-RULES.md) gov
 ### States and motion
 
 - Hover: one step lighter (`control-hover`) or a white wash. Disabled: 45% opacity. Selected: `accent` border or fill.
-- Motion is functional only: a panel's 0.7s fade and rise when it opens (where it appears is where it stays), the toast's 0.2s rise and fade, the 0.8s spinner, and the guided tour's cursor, click ring and target outline (they show where the action is). Decorative animation is confined to Welcome: the mascot loop has a reduced-motion still and no pause control, while Build/Fly/Share cards use their scoped muted films. Do not add decorative motion to editing or flight instruments.
+- Motion is functional only: a panel's 0.35s rise when it opens (transform only, never opacity: a stalled animation, notably in Safari/WebKit, must not leave a shown panel transparent) (where it appears is where it stays), the toast's 0.2s rise and fade, the 0.8s spinner, and the guided tour's cursor, click ring and target outline (they show where the action is). Decorative animation is confined to Welcome: the mascot loop has a reduced-motion still and no pause control, while Build/Fly/Share cards use their scoped muted films. Do not add decorative motion to editing or flight instruments.
 - Focus: the app relies on the browser's default focus ring today. New work should give interactive elements a visible 2px `accent` outline (about 11:1 on `panel-solid`) so it meets WCAG AA.
 
 ### Layering
