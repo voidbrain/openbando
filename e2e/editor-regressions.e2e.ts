@@ -169,6 +169,23 @@ test('basement controls and explicit roof choice update the selected building', 
   await page.locator('[data-tour="view-3d"]').click();
   await expect(page.locator('app-site-view canvas')).toBeVisible();
   await expect(page.locator('app-site-view .fail')).toHaveCount(0);
+  // The docked Inspector must reserve real canvas space in 3D as well as the plan.
+  const indoorCanvas = page.locator('app-site-view canvas');
+  const canvasBox = await indoorCanvas.boundingBox(), dockBox = await inspector.boundingBox();
+  expect(canvasBox).not.toBeNull(); expect(dockBox).not.toBeNull();
+  expect(canvasBox!.x + canvasBox!.width).toBeLessThanOrEqual(dockBox!.x);
+  // Debug deliberately reads outdoor ground even while the basement editing plane is active.
+  await topBar.getByLabel('Debug coordinates', {exact: true}).check();
+  await indoorCanvas.click({position: {x: canvasBox!.width * 0.5, y: canvasBox!.height * 0.7}});
+  const debugReadout = page.locator('.debug-readout');
+  await expect(debugReadout).toContainText(/x [-\d.]+ · y 0\.00 · z [-\d.]+ m/);
+  const firstGroundPoint = await debugReadout.innerText();
+  await indoorCanvas.click({position: {x: canvasBox!.width * 0.65, y: canvasBox!.height * 0.7}});
+  await expect(debugReadout).not.toHaveText(firstGroundPoint);
+  await expect(debugReadout).toContainText(/· y 0\.00 ·/);
+  await expect(topBar.getByRole('button', {name: '−1', exact: true})).toHaveClass(/on/);
+  await topBar.getByLabel('Debug coordinates', {exact: true}).uncheck();
+  await expect(debugReadout).toHaveCount(0);
   await expect(topBar.getByRole('button', { name: '−1', exact: true })).toHaveClass(/on/);
   await page.locator('app-bando-editor .palette button[title^="Select ·"]').click();
   await page.locator('app-site-view .vertex-access summary').click();
@@ -284,3 +301,23 @@ test('Reset UI restores hidden panels at default geometry without reopening clos
   await expect(speed).toBeHidden();
   expect(await visibleIds()).toEqual(['timeline', 'views']);
 });
+
+for (const locale of [
+  {lang: 'en', open: 'Open the bandos', server: 'Server / home PC', notice: "The token is saved in this browser's local storage."},
+  {lang: 'it', open: 'Apri i bando', server: 'Server / PC di casa', notice: 'Il token viene salvato nella memoria locale di questo browser.'},
+]) {
+  test(`AI token storage notice is visible and associated with its input (${locale.lang})`, async ({ page }) => {
+    await page.goto(`/?lang=${locale.lang}`);
+    await page.getByRole('button', {name: locale.open, exact: true}).click();
+    await page.locator('app-bando-editor [data-tour="ai"]').click();
+    const assistant = page.locator('app-assistant-box');
+    await assistant.getByRole('button', {name: locale.server, exact: true}).click();
+    const token = assistant.locator('input[type="password"]');
+    await expect(assistant.locator('#ai-token-storage')).toHaveText(locale.notice);
+    await expect(assistant.locator('#ai-token-storage')).toBeVisible();
+    await expect(token).toHaveAccessibleDescription(locale.notice);
+    await token.fill('regression-test-token');
+    await token.press('Tab');
+    await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('abando-ai-server') ?? '{}').token)).toBe('regression-test-token');
+  });
+}
