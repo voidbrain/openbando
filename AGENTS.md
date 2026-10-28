@@ -374,3 +374,5 @@ npm run check:i18n                        # every UI text has its Italian
 
 - The current scoped follow-up audit is `docs/audits/2026-10-28.md`. A green CI run establishes its named checks, not absence of bugs or dead exported code. Keep real-device, pointer/visual and untested tool combinations explicit.
 - Change generated guide text in `tools/build-guide.mjs` or the tour source, then regenerate with `node tools/build-guide.mjs`. Do not describe that as re-recording clips: `npm run clips` and `npm run films` are separate browser/media workflows. Clips/films last changed on 24 October and still need review against the current UI (F-011).
+
+- Backlog tables start with a status signal: 🔴 Open, 🟠 Investigate, 🟡 Implemented, 🟢 Verified, 🟣 Blocked, 🔵 Closed. Update the marker whenever the written status changes. Keep priority separate and preserve stable ID order; colour never replaces status text or verification evidence.
