@@ -15,16 +15,7 @@ Current work ledger, reviewed 28 October 2026 against `main` at `2530d9d`. Close
 | **🔵 Closed** | Resolution recorded and item archived; fixes normally pass through Verified, while cancellation/supersession records its reason. | - **Open** or **Investigate** if reopened by new evidence<br>Retain ID, original Opened date and historical closure record. | Grey ◻️ |
 
 
-Status changes never change the P1/P2/P3 value automatically. Grey affects only its marker; reopening or unblocking restores the colour for the retained priority. A merged PR alone does not establish verification or closure. Agents may close an item once its recorded criteria are met; do not require human approval unless the item specifically needs human acceptance.
-- Priority uses distinct shapes beside the written label: **🔺 P1** affects data integrity, reliable CI or core simulator behavior; **🔶 P2** affects important workflows or reported visual defects; **🔹 P3** is an enhancement or narrower review. Priority is impact, not implementation progress; circles in the first column remain reserved for status. Closed and Blocked items use a neutral grey square beside their historical priority: **◻️ P1 / ◻️ P2 / ◻️ P3**. Restore the coloured priority marker if an item is reopened or unblocked; Verified items keep their colour until Closed.
-- Each item needs a reproducible trigger or request, the next action and evidence before closing. **PR / evidence** identifies the relevant change or check; its label distinguishes a fix from investigation or context. **Reviewed** is the date that row’s status and evidence were last checked, not an inferred PR merge date. Use `—` when no PR is known; do not invent one. Update the row, date and links when a PR, check or review changes its status. A passing unit test does not establish visual, field or end-to-end behavior.
-- **Opened** is the first date the stable ID was recorded in this ledger, not an invented original-report date. Existing audited IDs were recorded on 27 October 2026; new 28 October reports retain their later date. Reopening does not overwrite it.
-- **Verification** records the check date, method, result and evidence separately from **Reviewed**. Allowed methods: **Human** (visual/functional acceptance), **Unit/integration**, **Browser/accessibility**, **Real-device**, **Documentation**. Write **Pending** when no applicable check passed. Multiple methods can have different dates; never infer verification from a PR merge or a ledger edit.
-- **Human action required** describes the **next action**, not whether a person might ever help: **Yes** means explicit human acceptance, private session evidence or real-device work is needed; **No** means an agent can advance the item. Use `Yes/No<br />` plus one short sentence naming the action. No does not mean complete or verified. Reassess this field whenever the next action changes.
-- Every change and every PR updates the relevant bug or feature entry. Add an entry when needed; record changes that do not belong to an active item in **Other changes**. Update the record again when a PR merges or verification finishes.
-- This file is suitable for a small project. When individual ownership, discussion, notifications or cross-PR automation become important, create one GitHub issue per item and keep its issue link here; do not maintain two competing descriptions of status.
-
-The first column shows **status**, not priority: 🔴 Open · 🟠 Investigate · 🟡 Implemented (checks pending) · 🟢 Verified · 🟣 Blocked · 🔵 Closed. Keep the written Status and P1/P2/P3 columns: colour is a scanning aid, not the only way to read a row. Preserve stable ID order within each section so items remain easy to find.
+Follow [Backlog rules](BACKLOG-RULES.md) for updating records, reconciling PR/CI evidence, stale-state review, closure/archiving, human dependencies and table validation. The lifecycle table above is the quick reference. Preserve stable IDs and existing user edits.
 
 ## Bugs and reliability
 
@@ -63,4 +54,8 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ## Other changes
 
-No active maintenance-only changes. Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature tables above.
+Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature tables above.
+
+| Signal | Change | PR / evidence | Status | Verification | Reviewed |
+|:---:|---|---|---|---|---|
+| 🟡 | Consolidate backlog maintenance rules and add a repeatable PR/CI and stale-state review procedure. | [#132](https://github.com/voidbrain/openbando/pull/132) | Implemented | Documentation · 2026-10-28 · links, table structure and unchanged product rows checked; merge reconciliation pending | 2026-10-28 |

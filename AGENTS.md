@@ -325,7 +325,7 @@ npm run check:i18n                        # every UI text has its Italian
 
 ## Work tracking
 
-- `docs/BACKLOG.md` is the active status ledger. For every change and every PR, update the affected bug or feature entry with the PR/evidence link, status, review date and remaining checks. Add an entry if none exists; for a change outside an active bug or feature, record it in the backlog's other-changes table. Update the entry again when the PR or verification status changes. Label partial fixes, diagnostics and context accurately; do not imply a PR or its checks passed without evidence. Historical working plans are archived in `docs/working-plan/` and are not current status. The scoped audit is in `docs/audits/2026-10-27.md`.
+- `docs/BACKLOG.md` is the active status ledger; follow [Backlog rules](docs/BACKLOG-RULES.md) for required updates, evidence reconciliation and review. Historical working plans are archived in `docs/working-plan/` and are not current status.
 - Preserve the distinction between a confirmed bug, a candidate fix awaiting review, an unimplemented feature and a completed check. Do not mark a visual or device-dependent item done on unit tests alone.
 
 ## Terrain and editor regression rules
@@ -375,14 +375,6 @@ npm run check:i18n                        # every UI text has its Italian
 - The current scoped follow-up audit is `docs/audits/2026-10-28.md`. A green CI run establishes its named checks, not absence of bugs or dead exported code. Keep real-device, pointer/visual and untested tool combinations explicit.
 - Change generated guide text in `tools/build-guide.mjs` or the tour source, then regenerate with `node tools/build-guide.mjs`. Do not describe that as re-recording clips: `npm run clips` and `npm run films` are separate browser/media workflows. Clips/films last changed on 24 October and still need review against the current UI (F-011).
 
-- Backlog tables start with a status signal: 🔴 Open, 🟠 Investigate, 🟡 Implemented, 🟢 Verified, 🟣 Blocked, 🔵 Closed. Update the marker whenever the written status changes. Keep priority separate and preserve stable ID order; colour never replaces status text or verification evidence.
+## Backlog maintenance
 
-- Backlog priorities use **🔺 P1**, **🔶 P2**, **🔹 P3** in the Priority column. Keep each shape paired with its written label when adding or reprioritizing an item; circles in the first column encode status only. Do not change status or verification just to change priority.
-
-- When an item becomes Closed or Blocked, replace its coloured priority symbol with the neutral grey square **◻️**, retaining P1/P2/P3. Keep the status cue distinct: 🔵 Closed or 🟣 Blocked. Apply grey priorities to dated closed archives too. Reopening or unblocking restores 🔺 P1 / 🔶 P2 / 🔹 P3 in the active ledger; Verified items retain coloured priority until Closed. Historical archive records keep their closure appearance.
-
-- Use the lifecycle legend in `docs/BACKLOG.md` for status requirements and transitions. Implemented means required checks remain; Verified requires all recorded acceptance checks with dated evidence; close/archive when no action remains. PR merge alone is not verification. Record explicit reasons for cancellation/duplicate closure, blockers and reopening; preserve ID, original Opened date and priority value. Human/device acceptance is required only when the item specifies it. Grey priority markers apply only to Blocked and Closed.
-
-- Bug/feature backlog rows end with **Human action required**: **Yes/No** followed by `<br />` and a one-sentence next-action recap. Yes identifies explicit human acceptance, private session evidence or real-device work; No means an agent can advance the next action, not that the item is done. Do not add human approval for ordinary coding or automated/browser checks. Reassess this field when the next action changes, preserving verification evidence and user edits.
-
-- Markdown table rows must be contiguous, with the same number of cells as the header; blank lines terminate a table. Include the Signal cell in every row. Close and archive verified maintenance-only changes instead of leaving stale yellow Implemented entries; pending product/media checks stay on their own backlog items.
+Follow [docs/BACKLOG-RULES.md](docs/BACKLOG-RULES.md), the authoritative maintenance procedure, for every change and PR. Update the active ledger, reconcile merged PRs with actual CI and acceptance evidence, review stale/contradictory states, close and archive finished work, reassess human dependencies/blockers, and validate tables and markers. Preserve user edits and historical IDs/dates; age alone never closes an item. The lifecycle legend in [docs/BACKLOG.md](docs/BACKLOG.md) is the quick reference.

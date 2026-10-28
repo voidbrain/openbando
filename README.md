@@ -233,3 +233,5 @@ The simulator quad geometry spans approximately 0.39 m on each horizontal axis b
 Basement vertex edits preserve each perimeter wall’s visibility, including diagonal walls. Polygonal basements expose **Perimeter edge** switches in the Inspector. Splitting an edge copies its wall state; removing a corner between an open and closed edge is rejected. Existing doors/windows remain stored while their wall is hidden. Enable all perimeter edges before Cut/Wing or dimension/footprint replacement; these operations do not yet remap mixed open/closed edges.
 
 The [28 October follow-up audit](docs/audits/2026-10-28.md) records current CI evidence, remaining implementation limits and documentation/clip freshness. Guide clips and Welcome films were last updated on 24 October; they have not been re-recorded for the current Studio UI.
+
+Backlog maintenance follows [Backlog rules](docs/BACKLOG-RULES.md): evidence-based status updates, PR/CI reconciliation, stale-item review and closure/archiving. Current work remains in [the backlog](docs/BACKLOG.md).
