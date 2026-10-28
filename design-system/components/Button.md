@@ -21,3 +21,5 @@ The label (or a glyph with a `title` / `aria-label`), the click handler, and `di
 - Don't add icons inside buttons as decoration; tool icons belong on the palette.
 
 Source: `src/styles.scss (.btn)`.
+
+Chrome uses the shared indigo/purple surface tokens. Keep status colours unchanged and pair lime active fills with `accent-ink`; do not reintroduce literal green control backgrounds.

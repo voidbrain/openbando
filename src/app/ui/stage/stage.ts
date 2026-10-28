@@ -57,7 +57,7 @@ import { ViewStore } from '../../state/view.store';
       bottom: 6px;
       font-size: 10px;
       color: var(--text);
-      background: rgba(10, 16, 12, 0.6);
+      background: var(--badge);
       padding: 1px 6px;
       border-radius: 6px;
       pointer-events: none;

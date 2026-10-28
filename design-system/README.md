@@ -7,7 +7,7 @@ still use) with where it is used; `components/*.md` are the guidelines per compo
 
 Published copy (for browsing, may lag behind this folder): https://claude.ai/artifact/MH32oVjF7EmKTFnSmP7YoC
 
-OpenBando is a dark, dense instrument for FPV pilots: a 3D map and site editor, a flight log player and a simulator, built from floating panels over a live 3D stage. The interface stays quiet so the map, the video and the flight path carry the colour. One lime-green accent marks what is active; every editing tool owns a distinct hue.
+OpenBando is a dark, dense instrument for FPV pilots: a 3D map and site editor, a flight log player and a simulator, built from floating panels over a live 3D stage. The interface stays quiet so the map, the video and the flight path carry the colour. Deep indigo and dark purple surfaces replace the green chrome. The existing acid-lime accent marks what is active; every editing tool owns a distinct hue.
 
 ## Documentation ownership
 
@@ -28,7 +28,7 @@ This guide governs application UI; [Backlog rules](../docs/BACKLOG-RULES.md) gov
 
 ### Colour
 
-- Dark only (`color-scheme: dark`). Page on `bg`; panels on `panel` (90% opaque over a 6px blur); anything floating over the map that must stay legible on `panel-solid`.
+- Dark only (`color-scheme: dark`). Page on `bg`; panels on `panel` (94% opaque over a 6px blur); anything floating over the map that must stay legible on `panel-solid`.
 - Text in `text`; secondary text, captions, labels and counts in `dim`.
 - `accent` is the only brand hue in chrome. Use it for the active state (`.btn.on`, selected segment, selected row border), the one primary action, links and success text. Anything filled with `accent` carries `accent-ink` text.
 - `warn` for problems the pilot can act on (errors, the readout's warning, notice borders). `danger` / `danger-fill` / `danger-line` / `danger-text` for destructive commands, with explicit existing exceptions: red north navigation in CameraCompass and reddish selected measures in Readout. These exceptions do not make navigation or selection destructive.
@@ -92,3 +92,5 @@ is `.row` scoped to `ElementsBox`; the guideline calls it `.el-row` to keep it a
 - Text on a fill keeps 4.5:1 contrast (3:1 for icons, borders and focus rings), as `AGENTS.md` requires.
 
 The main 3D view and the editor 3D view each show the same fixed north compass overlay (`app-camera-compass`) using existing surface and text tokens; it rotates with the camera. North is red; click resets the camera north, drag rotates it, and arrow keys turn it in five-degree steps.
+
+The indigo/purple chrome trial preserves warning, danger, success, telemetry, pilot and tool colours. Button and field surfaces use shared `control`, `control-hover` and `field` tokens; active/primary fills keep `accent-ink`. Artwork and world materials are outside the chrome theme.

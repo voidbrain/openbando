@@ -47,3 +47,9 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 ## Other changes
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature tables above.
+
+## Interface trials
+
+| Signal | ID | Priority | Status | Item | Next action / closure evidence | PR / evidence | Opened | Verification | Reviewed | Human action required |
+|:---: |---|---|---|---|---|---|---|---|---|---|
+| 🟡 | F-016 | 🔹 P3 | Implemented | Indigo/purple interface chrome trial | Dark blue/purple panels, buttons, fields and overlays replace green chrome; lime active controls and existing semantic/data/tool colours retained. Review visual preference after CI contrast/accessibility checks. | [#144](https://github.com/voidbrain/openbando/pull/144) | 2026-10-28 | Documentation + contrast checks · 2026-10-28 · semantic/tool tokens unchanged; text, dim, warning and danger >=4.5:1 on opaque surfaces, active buttons 12.49:1; Browser/accessibility + Human visual preference · Pending | 2026-10-28 | **Yes**<br />Review the indigo/purple appearance and lime button contrast. |

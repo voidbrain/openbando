@@ -168,7 +168,7 @@ export interface BlockArm {
     .upd { border: 1px solid var(--warn); border-radius: 6px; padding: 4px 6px; display: flex; flex-direction: column; gap: 3px; }
     .urow { display: flex; gap: 4px; align-items: center; }
     .ai summary { cursor: pointer; font-size: 11px; color: var(--dim); }
-    .ai textarea { width: 100%; box-sizing: border-box; resize: vertical; background: #121a15; border: 1px solid var(--line); border-radius: 6px; color: var(--text); padding: 3px 6px; }
+    .ai textarea { width: 100%; box-sizing: border-box; resize: vertical; background: var(--field); border: 1px solid var(--line); border-radius: 6px; color: var(--text); padding: 3px 6px; }
     .bad { color: var(--warn); }
   `,
 })

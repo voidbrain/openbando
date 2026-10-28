@@ -62,14 +62,14 @@ let nextId = 0;
       align-items: center;
       gap: 6px;
       padding: 2px 6px;
-      background: var(--field, #121a15);
+      background: var(--field);
       border: 1px solid var(--line);
       border-radius: 6px;
       cursor: pointer;
       color: var(--text);
     }
     .pm-btn:hover {
-      background: #31443a;
+      background: var(--control-hover);
     }
     .pm-caret {
       color: var(--dim);

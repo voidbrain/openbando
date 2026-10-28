@@ -66,7 +66,7 @@ import { TourService } from '../services/tour.service';
       position: fixed;
       margin: -3px 0 0 -4px;
       fill: #ffffff;
-      stroke: #0e1411;
+      stroke: var(--bg);
       stroke-width: 1.4;
       filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
       transition: transform 0.1s;

@@ -50,7 +50,7 @@ import { Panel } from '../panel/panel';
       padding: 3px 6px;
       cursor: pointer;
       &:hover {
-        background: #27352c;
+        background: var(--control);
       }
       &.active {
         border-color: var(--accent);

@@ -57,7 +57,7 @@ import { PreviewRenderer, type PreviewTarget } from '../../three/element-preview
       padding: 0;
       border-radius: 5px;
       border: 1px solid var(--line);
-      background: rgba(10, 16, 12, 0.6);
+      background: var(--badge);
       color: var(--dim);
       cursor: pointer;
       line-height: 1;
@@ -76,7 +76,7 @@ import { PreviewRenderer, type PreviewTarget } from '../../three/element-preview
       left: 4px;
       max-width: 55%;
       font-size: 11px;
-      background: rgba(10, 16, 12, 0.75);
+      background: var(--badge);
     }
     .grip {
       height: 8px;

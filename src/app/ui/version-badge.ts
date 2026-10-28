@@ -60,8 +60,8 @@ import { APP_COMMIT, APP_VERSION } from '../version';
     }
     .ver {
       font: 600 11px monospace;
-      color: #eff7e8;
-      background: rgba(10, 16, 12, 0.75);
+      color: var(--badge-ink);
+      background: var(--badge);
       padding: 2px 7px;
       border-radius: 10px;
     }
@@ -71,11 +71,11 @@ import { APP_COMMIT, APP_VERSION } from '../version';
       padding: 3px 5px;
       border: 0;
       border-radius: 10px;
-      background: rgba(10, 16, 12, 0.75);
+      background: var(--badge);
       cursor: pointer;
     }
     .views path {
-      stroke: #eff7e8;
+      stroke: var(--badge-ink);
       stroke-width: 2.2;
       stroke-linecap: round;
     }
