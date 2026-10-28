@@ -51,7 +51,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 **→ Human action required:** 🧑 **Yes**<br />Review Welcome timing, presentation and the final Welcome-only screen.
 
-**Next action / closure evidence:** FOLLOWUP_PR also suppresses saved-sync restoration notices during the showcase (normal loads retain them). Video first-frame feedback is tracked in B-022. User reports truncated Fly, a trailing mascot wait and leaked path after return. Replaced fixed waits with complete card films and three mascot checkpoints; replay now waits for the full flight. Entry restores 3D overview/Follow off and render boundary suppresses paths. All #149 showcase browser checks passed; final human presentation review remains. The #148 eight-second card completion/distributed mascot, reduced-motion and Stop checks passed; full replay reached completion but its continuation assumed a nonexistent saved demo card. The #149 saved fixture continuation passed.
+**Next action / closure evidence:** [#154](https://github.com/voidbrain/openbando/pull/154) also suppresses saved-sync restoration notices during the showcase (normal loads retain them). Video first-frame feedback is tracked in B-022. User reports truncated Fly, a trailing mascot wait and leaked path after return. Replaced fixed waits with complete card films and three mascot checkpoints; replay now waits for the full flight. Entry restores 3D overview/Follow off and render boundary suppresses paths. All #149 showcase browser checks passed; final human presentation review remains. The #148 eight-second card completion/distributed mascot, reduced-motion and Stop checks passed; full replay reached completion but its continuation assumed a nonexistent saved demo card. The #149 saved fixture continuation passed.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -149,7 +149,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | FOLLOWUP_PR |
+| PR / evidence | [#154](https://github.com/voidbrain/openbando/pull/154) |
 | Opened | 2026-10-28 |
 | Verification | Unit/integration + Documentation · 2026-10-28 · local checks recorded in PR; Browser/accessibility · Pending |
 | Reviewed | 2026-10-28 |
@@ -394,7 +394,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | FOLLOWUP_PR |
+| PR / evidence | [#154](https://github.com/voidbrain/openbando/pull/154) |
 | Opened | 2026-10-28 |
 | Verification | Unit/integration + Documentation · 2026-10-28 · local checks recorded in PR; Browser/accessibility · Pending |
 | Reviewed | 2026-10-28 |
@@ -416,7 +416,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | FOLLOWUP_PR |
+| PR / evidence | [#154](https://github.com/voidbrain/openbando/pull/154) |
 | Opened | 2026-10-28 |
 | Verification | Documentation · 2026-10-28 · route proposal recorded; implementation and browser verification not started. |
 | Reviewed | 2026-10-28 |
