@@ -387,4 +387,4 @@ Follow [docs/BACKLOG-RULES.md](docs/BACKLOG-RULES.md), the authoritative mainten
 
 - Chrome theme: use shared indigo/purple surface tokens for panels, fields, menus and buttons. Keep the existing lime accent/ink pair and all semantic, telemetry, tool and pilot palettes unchanged. Art and model materials are separate from UI chrome.
 
-- Contrast checks must exercise rendered control states, including hover on primary and active buttons. Palette-pair calculations and axe on an unhovered page do not establish hover contrast.
+- Shared control rules must pair fill and foreground in every state: enabled `.btn` hover uses `control-hover` + `text`, lime-filled states use `accent` + `accent-ink`. Contrast checks must exercise rendered control states, including ordinary, primary, active and icon button hover. Palette-pair calculations and axe on an unhovered page do not establish hover contrast.
