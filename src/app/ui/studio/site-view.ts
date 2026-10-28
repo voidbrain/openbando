@@ -9,7 +9,7 @@ import type { GroundStyle } from '../../three/site-model';
 import type { MeasureViewItem } from '../../three/measure-view';
 import type { BuildingHandle } from '../../three/building-handles';
 
-/** The editor's 3D mode: the whole bando, orbit with the mouse. Editing happens in 2D; this is for looking. */
+/** The editor's 3D mode: orbit the site, edit the selected indoor floor and share tool/undo paths with the plan. */
 @Component({
   selector: 'app-site-view',
   imports: [CameraCompass],
