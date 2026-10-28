@@ -51,7 +51,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 **→ Human action required:** 🧑 **Yes**<br />Review Welcome timing, presentation and the final Welcome-only screen.
 
-**Next action / closure evidence:** User reports truncated Fly, a trailing mascot wait and leaked path after return. Replaced fixed waits with complete card films and three mascot checkpoints; replay now waits for the full flight. Entry restores 3D overview/Follow off and render boundary suppresses paths. All #149 showcase browser checks passed; final human presentation review remains. The #148 eight-second card completion/distributed mascot, reduced-motion and Stop checks passed; full replay reached completion but its continuation assumed a nonexistent saved demo card. The #149 saved fixture continuation passed.
+**Next action / closure evidence:** [#154](https://github.com/voidbrain/openbando/pull/154) also suppresses saved-sync restoration notices during the showcase (normal loads retain them). Video first-frame feedback is tracked in B-022. User reports truncated Fly, a trailing mascot wait and leaked path after return. Replaced fixed waits with complete card films and three mascot checkpoints; replay now waits for the full flight. Entry restores 3D overview/Follow off and render boundary suppresses paths. All #149 showcase browser checks passed; final human presentation review remains. The #148 eight-second card completion/distributed mascot, reduced-motion and Stop checks passed; full replay reached completion but its continuation assumed a nonexistent saved demo card. The #149 saved fixture continuation passed.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -133,6 +133,28 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 
 
+
+### B-022
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-022 | 🔶 P2 | Implemented | Video first-frame loading feedback |
+
+**→ Human action required:** 💻 **No**<br />Run loading/decoded/error feedback browser checks.
+
+**Next action / closure evidence:** Show Loading video until decoded data/canplay, reset it on replacement and replace it with an error message on decode failure. Unit checks pass; browser presentation remains pending.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#154](https://github.com/voidbrain/openbando/pull/154) |
+| Opened | 2026-10-28 |
+| Verification | Unit/integration + Documentation · 2026-10-28 · local checks recorded in PR; Browser/accessibility · Pending |
+| Reviewed | 2026-10-28 |
+
+</details>
 
 ## Features and limitations
 
@@ -230,9 +252,9 @@ Each item has a compact summary, followed by **→ Human action required** first
 |:---:|---|---|---|---|
 | 🟡 | F-005 | 🔶 P2 | Implemented | 3D indoor tools and handles |
 
-**→ Human action required:** 💻 **No**<br />Run the new stair-placement matrix in CI, then extend doors, windows and remaining handles.
+**→ Human action required:** 💻 **No**<br />Extend doors, windows, automatic stairwells and remaining handles after the passed stair-placement matrix.
 
-**Next action / closure evidence:** Browser-test wall, void, door, window, column and stair placement, rotated buildings, upper floors and −1; exercise move/resize handles and keyboard/accessibility. The #147 floor matrix exposed Wall selection resetting itself to Select on all floors; corrected the indoor-entry order. New real-pointer tests cover column/wall/void placement at −1/G/L1 on a rotated building, column undo/redo, exported floor isolation and axe ([#147](https://github.com/voidbrain/openbando/pull/147); failed historically; corrected in #148). Added 3D stairs placement on −1/G/L1 with undo/redo, exported floor elevation, rotation and floor-isolation assertions; the optional stairwell is disabled where an upper floor exists; the top-floor test asserts that control is absent. Basement/G passed #152 CI; its L1 test failed on an invalid checkbox expectation, corrected in [#153](https://github.com/voidbrain/openbando/pull/153); L1 execution remains pending. Doors, windows, automatic stairwell creation and full handle coverage remain open.
+**Next action / closure evidence:** Browser-test wall, void, door, window, column and stair placement, rotated buildings, upper floors and −1; exercise move/resize handles and keyboard/accessibility. The #147 floor matrix exposed Wall selection resetting itself to Select on all floors; corrected the indoor-entry order. New real-pointer tests cover column/wall/void placement at −1/G/L1 on a rotated building, column undo/redo, exported floor isolation and axe ([#147](https://github.com/voidbrain/openbando/pull/147); failed historically; corrected in #148). Added 3D stairs placement on −1/G/L1 with undo/redo, exported floor elevation, rotation and floor-isolation assertions; the optional stairwell is disabled where an upper floor exists; the top-floor test asserts that control is absent. Basement/G passed #152 CI; its L1 test failed on an invalid checkbox expectation, corrected in [#153](https://github.com/voidbrain/openbando/pull/153); L1 passed [#153 CI](https://github.com/voidbrain/openbando/actions/runs/40760899876/job/123072222211). Doors, windows, automatic stairwell creation and full handle coverage remain open.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -241,7 +263,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 |---|---|
 | PR / evidence | [#153](https://github.com/voidbrain/openbando/pull/153) (top-floor test correction); [#152](https://github.com/voidbrain/openbando/pull/152) (stair-placement browser coverage); [#86](https://github.com/voidbrain/openbando/pull/86), [#88](https://github.com/voidbrain/openbando/pull/88), [#95](https://github.com/voidbrain/openbando/pull/95) (implementation and partial browser coverage)  [#148](https://github.com/voidbrain/openbando/pull/148) (Wall selection fix); |
 | Opened | 2026-10-27 |
-| Verification | Test-source validation · 2026-10-28 · strict TypeScript and discovery of all three extended cases passed; −1/G stair placement passed in #152; L1 failed waiting for a stairwell checkbox absent on the top floor. Follow-up asserts its absence; L1 placement verification pending.  Pending — see PR/evidence for partial automated coverage; Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit)  Browser/accessibility · 2026-10-28 · [#147 CI](https://github.com/voidbrain/openbando/actions/runs/40734777783) failed at Wall activation on every floor; corrected in #148 (passing floor matrix below).; Browser/accessibility · 2026-10-28 · #148 −1/G/L1 pointer placement, undo/export floor isolation and axe passed in [shard 3](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847187) and [shard 4](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847284). |
+| Verification | Test-source validation · 2026-10-28 · strict TypeScript and discovery of all three extended cases passed; −1/G stair placement passed in #152; L1 failed waiting for a stairwell checkbox absent on the top floor. Follow-up asserts its absence; L1 passed in #153 shard 4; all #153 jobs passed.  Pending — see PR/evidence for partial automated coverage; Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit)  Browser/accessibility · 2026-10-28 · [#147 CI](https://github.com/voidbrain/openbando/actions/runs/40734777783) failed at Wall activation on every floor; corrected in #148 (passing floor matrix below).; Browser/accessibility · 2026-10-28 · #148 −1/G/L1 pointer placement, undo/export floor isolation and axe passed in [shard 3](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847187) and [shard 4](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847284). |
 | Reviewed | 2026-10-28 |
 
 </details>
@@ -356,6 +378,50 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+
+### F-017
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | F-017 | 🔶 P2 | Implemented | Returning-pilot Welcome and Fly workspace |
+
+**→ Human action required:** 💻 **No**<br />Run new entry-workspace browser checks and inspect CI.
+
+**Next action / closure evidence:** Completed Welcome promotes Open the bandos; replay remains available. Video/log loading exposes the matching panel. Bandos use active badge and Fly opens telemetry except Live link, closes Bandos and selects the 3D model. Flights sits below Video; Views can close and reopen from its menu. New browser workflow and unit checks added; CI pending.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#154](https://github.com/voidbrain/openbando/pull/154) |
+| Opened | 2026-10-28 |
+| Verification | Unit/integration + Documentation · 2026-10-28 · local checks recorded in PR; Browser/accessibility · Pending |
+| Reviewed | 2026-10-28 |
+
+</details>
+
+### F-018
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-018 | 🔶 P2 | Open | Guided Fly procedure |
+
+**→ Human action required:** 💻 **No**<br />Implement and test the proposed recorded, simulator and live/racing routes.
+
+**Next action / closure evidence:** [Workflow proposal](fly-workflow-plan.md) separates bando selection, recording availability, simulator setup and live/multi-pilot branches. Planning only; interactive wizard and guide/media updates are not implemented.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#154](https://github.com/voidbrain/openbando/pull/154) |
+| Opened | 2026-10-28 |
+| Verification | Documentation · 2026-10-28 · route proposal recorded; implementation and browser verification not started. |
+| Reviewed | 2026-10-28 |
+
+</details>
 
 User-accepted fixes are preserved in the dated archives rather than repeated here. New findings reuse an existing ID when they concern the same behavior.
 

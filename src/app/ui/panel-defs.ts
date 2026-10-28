@@ -26,7 +26,7 @@ export interface PanelDef {
 /** A first visit sees only the empty world and Welcome; closing Welcome brings Views (see WelcomePanel). */
 export const PANELS: readonly PanelDef[] = [
   { id: 'views', title: 'Views', group: 'tools', visible: false, anchor: { left: 12, top: 12 }, width: 236 },
-  { id: 'flights', title: 'Flights', group: 'telemetry', sub: 'controls', visible: false, anchor: { left: 12, top: 232 }, width: 250 },
+  { id: 'flights', title: 'Flights', group: 'telemetry', sub: 'controls', visible: false, anchor: { right: 12, top: 320 }, width: 250 },
   { id: 'simulator', title: 'Simulator', group: 'simulator', visible: false, anchor: { left: 12, bottom: 12 }, width: 250 },
   { id: 'radio', title: 'Radio controller', group: 'simulator', visible: false, anchor: { left: 280, top: 300 }, width: 280 },
   { id: 'timeline', title: 'Timeline', group: 'telemetry', sub: 'controls', visible: false, anchor: { left: 280, bottom: 12 }, width: 560 },
@@ -36,7 +36,7 @@ export const PANELS: readonly PanelDef[] = [
   { id: 'path', title: 'Flight path', group: 'telemetry', sub: 'views', visible: false, anchor: { right: 12, bottom: 12 }, width: 330, resizable: true, height: 270 },
   { id: 'studio', title: 'Bandos editor', group: 'tools', visible: false, anchor: { right: 12, top: 60 }, width: 600, resizable: true, maxHeight: 800 },
   { id: 'blackbox', title: 'Blackbox', group: 'telemetry', sub: 'controls', visible: false, anchor: { right: 12, top: 330 }, width: 360 },
-  { id: 'video', title: 'Video', group: 'telemetry', sub: 'controls', visible: false, anchor: { left: 280, top: 12 }, width: 380, resizable: true },
+  { id: 'video', title: 'Video', group: 'telemetry', sub: 'controls', visible: false, anchor: { right: 12, top: 12 }, width: 380, resizable: true },
   { id: 'live', title: 'Live link', group: 'telemetry', sub: 'controls', visible: false, anchor: { left: 280, top: 12 }, width: 300 },
   { id: 'render', title: 'Render', group: 'tools', visible: false, anchor: { left: 280, top: 12 }, width: 300 },
   { id: 'guide', title: 'Guide me', group: 'tools', visible: false, anchor: { left: 280, top: 12 }, width: 300, resizable: true, height: 420 },

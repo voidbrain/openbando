@@ -1,6 +1,6 @@
 # Panel
 
-Panel is the app's floating window: a translucent `panel` box with a draggable title bar, transparent (◐), tips on hover (?, `accent` while on), collapse (▾) and close (×, not on Views, which shows the others again) buttons, and projected content.
+Panel is the app's floating window: a translucent `panel` box with a draggable title bar, transparent (◐), tips on hover (?, `accent` while on), collapse (▾) and close (×, including Views; the bottom menu reopens Views) buttons, and projected content.
 
 ## Use
 
@@ -14,7 +14,7 @@ Panel is the app's floating window: a translucent `panel` box with a draggable t
 
 ## Consumer provides
 
-The title, the content, and (in the app) an id in `PANEL_BY_ID` with its anchor and default size. Position and size are remembered by `LayoutStore`. Reset UI restores default positions and sizes while preserving which panels are open; after Hide all it restores the previously visible panels; the timeline retains its bottom anchor when flight panels open.
+The title, the content, and (in the app) an id in `PANEL_BY_ID` with its anchor and default size. Position and size are remembered by `LayoutStore`. Flights defaults to the right below Video; opening their joint workspace places Flights below Video. Reset UI restores default positions and sizes while preserving which panels are open; after Hide all it restores the previously visible panels; the timeline retains its bottom anchor when flight panels open.
 
 Source: `src/app/ui/panel/panel.ts`.
 

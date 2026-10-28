@@ -11,7 +11,15 @@ import { Panel } from '../panel/panel';
   imports: [Panel, CanvasWidget],
   template: `
     <app-panel id="video">
-      <div class="keep slot" #slot [hidden]="view.mainSource() === 'video'"></div>
+      <div class="video-frame keep" [hidden]="view.mainSource() === 'video'">
+        <div class="slot" #slot [class.loading]="video.loaded() && !video.frameReady()"></div>
+        @if (video.loaded() && !video.frameReady()) {
+          <div class="loading-status" role="status">
+            @if (video.loadFailed()) { Video could not be loaded. Try another format. }
+            @else { <span class="spin" aria-hidden="true"></span> Loading video… }
+          </div>
+        }
+      </div>
       @if (view.mainSource() === 'video') {
         <div class="dim small">The video is on the main page (Views panel → Main page).</div>
       }
@@ -77,6 +85,12 @@ import { Panel } from '../panel/panel';
       flex: 1;
       min-width: 0;
     }
+    .video-frame { position: relative; }
+    .slot.loading { min-height: 180px; }
+    .loading-status { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--panel-solid); color: var(--text); }
+    .spin { width: 11px; height: 11px; border: 2px solid var(--dim); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
     .slot {
       display: block;
       line-height: 0;

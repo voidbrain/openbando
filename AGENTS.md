@@ -402,3 +402,7 @@ Follow [docs/BACKLOG-RULES.md](docs/BACKLOG-RULES.md), the authoritative mainten
 
 - Human-action cues in active backlog records: 🧑 **Yes** for a required human action, 💻 **No** for agent-owned next action. Keep text/recap and validate the pairing; No does not mean closed.
 - UI contrast fixtures use a small real model to avoid unrelated software-rendering load. Running-guide probes target the caption; static Views/Guide and editor cases cover their own controls. Label each hover/focus probe and bound actionability waits so occluded controls fail diagnostically.
+
+- Welcome remembers completed showcases locally and promotes Open the bandos on later openings; keep replay available. A stopped showcase does not mark completion. Guided video loads must not rearrange the guide layout; suppress saved-sync notices only for showcase scope and restore normal notifications afterwards.
+- Saved-bando Fly opens telemetry except Live link and selects 3D without arming. Keep Flights below Video and preserve timeline’s bottom anchor. Views has a close button; its bottom menu remains reachable. Video loading feedback lasts until decoded data/canplay and becomes an error on decode failure.
+- F-018 is planning only: see `docs/fly-workflow-plan.md`. Keep recorded replay, simulator and live/racing routes separate; do not claim guide or media updates before they exist.
