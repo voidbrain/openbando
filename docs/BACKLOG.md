@@ -168,7 +168,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#160](https://github.com/voidbrain/openbando/pull/160) (midpoint dating, motion preference, measured `DEMO_OFFSET`); [#159 rerun](https://github.com/voidbrain/openbando/actions/runs/40785592494) (failed both attempts, 0.18 s); [#159 CI](https://github.com/voidbrain/openbando/actions/runs/40784413716) (passed); [#154 CI](https://github.com/voidbrain/openbando/actions/runs/40765189126) (fail, pass on retry); [#155](https://github.com/voidbrain/openbando/actions/runs/40765867282), [#156](https://github.com/voidbrain/openbando/actions/runs/40769519651), [#157](https://github.com/voidbrain/openbando/actions/runs/40773605465) (failed); [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) (passed) |
+| PR / evidence | recovery PR (below; #160 merged into the #159 branch after #159 had merged, without CI, and never reached main); [#160](https://github.com/voidbrain/openbando/pull/160) (midpoint dating, motion preference, measured `DEMO_OFFSET`); [#159 rerun](https://github.com/voidbrain/openbando/actions/runs/40785592494) (failed both attempts, 0.18 s); [#159 CI](https://github.com/voidbrain/openbando/actions/runs/40784413716) (passed); [#154 CI](https://github.com/voidbrain/openbando/actions/runs/40765189126) (fail, pass on retry); [#155](https://github.com/voidbrain/openbando/actions/runs/40765867282), [#156](https://github.com/voidbrain/openbando/actions/runs/40769519651), [#157](https://github.com/voidbrain/openbando/actions/runs/40773605465) (failed); [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) (passed) |
 | Opened | 2026-10-28 |
 | Verification | Unit/integration · 2026-10-29 · 536 tests; the two new cases (midpoint dating, motion preference) fail without the fix; Browser/accessibility · 2026-10-29 · local throttled probe as above and the showcase suite 3× (Auto-sync −0.65 … −0.69 s); CI · Pending |
 | Reviewed | 2026-10-29 |
@@ -190,7 +190,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#161](https://github.com/voidbrain/openbando/pull/161) (NgOptimizedImage, size attributes); [audit](audits/2026-10-28.md) (found 2026-10-28) |
+| PR / evidence | recovery PR (#161 merged into the #160 branch, not main); [#161](https://github.com/voidbrain/openbando/pull/161) (NgOptimizedImage, size attributes); [audit](audits/2026-10-28.md) (found 2026-10-28) |
 | Opened | 2026-10-29 |
 | Verification | Pending |
 | Reviewed | 2026-10-29 |
@@ -445,6 +445,6 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ## Other changes
 
-In review: [#161](https://github.com/voidbrain/openbando/pull/161) adds `check:conventions` (AGENTS Angular conventions, `core/` imports, unused exports; in CI) and a 90 s Playwright action timeout, so a missing locator fails in 90 s instead of the whole 6-minute test budget. Moves to the maintenance history once merged with green CI.
+In review (recovery PR: #161 merged into a stacked branch, not main) — [#161](https://github.com/voidbrain/openbando/pull/161) adds `check:conventions` (AGENTS Angular conventions, `core/` imports, unused exports; in CI) and a 90 s Playwright action timeout, so a missing locator fails in 90 s instead of the whole 6-minute test budget. Moves to the maintenance history once merged with green CI.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
