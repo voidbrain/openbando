@@ -57,4 +57,4 @@ Completed documentation and backlog changes, with PR links and verification evid
 
 | Signal | Change | PR / evidence | Status | Verification | Reviewed |
 |:---:|---|---|---|---|---|
-| 🟡 | Reconcile README, AGENTS, design/mascot/racing guides and backlog ownership, exceptions and stale status references. | PR pending | Implemented | Documentation · 2026-10-28 · local links/tables/markers checked; media review remains F-011 | 2026-10-28 |
+| 🟡 | Reconcile README, AGENTS, design/mascot/racing guides and backlog ownership, exceptions and stale status references. | [#133](https://github.com/voidbrain/openbando/pull/133) | Implemented | Documentation · 2026-10-28 · local links/tables/markers checked; media review remains F-011 | 2026-10-28 |
