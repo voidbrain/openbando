@@ -18,3 +18,5 @@ current target, the caption bar, and the hover tips.
 - Esc stops a tour at any time. While recording a clip only Stop is shown.
 
 Source: `src/app/ui/tour-overlay.ts`.
+
+Cursor and drag animations use elapsed active time; slow frames skip intermediate samples instead of stretching the animation. Pause freezes that timeline, Next advances to the end, and Stop releases any synthetic pointer.

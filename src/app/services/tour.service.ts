@@ -1,4 +1,5 @@
 import { Service, inject, signal } from '@angular/core';
+import { animateTour, TourAnimationClock } from '../core/tour-animation';
 import { AI_SCRIPTS, SNIPPET_BY_ID, backTarget, type At, type Beat, type Hook, type Need, type Snippet, type Tour, type TourAction } from '../core/tour';
 import { sanitizeSpec } from '../core/site-spec';
 import { MASCOT_DURATION } from '../core/mascot';
@@ -88,6 +89,11 @@ export class TourService {
   editor: TourEditor | null = null;
   private stop = false;
   private paused = false;
+  private readonly animationClock = new TourAnimationClock();
+  private activeTime(): number { return this.animationClock.time(performance.now()); }
+  private animate(ms: number, draw: (fraction: number) => void): Promise<void> {
+    return animateTour(ms, draw, { now: () => this.activeTime(), wait: () => this.sleep(16), skipped: () => this.skip });
+  }
   private skip = false;
   /** Set by Back: the beat to play next. */
   private jump: number | null = null;
@@ -117,6 +123,7 @@ export class TourService {
   /** Pause or resume the guide, and the replay with it. */
   togglePause(): void {
     this.paused = !this.paused;
+    this.animationClock.pause(this.paused, performance.now());
     this.state.update((s) => (s ? { ...s, paused: this.paused } : s));
     if (this.paused) this.haltReplay();
     else if (this.heldReplay) {
@@ -154,6 +161,7 @@ export class TourService {
     if (this.state()) this.end();
     while (this.state()) await new Promise((r) => setTimeout(r, 50));
     this.stop = this.paused = this.skip = false;
+    this.animationClock.pause(false, performance.now());
     this.jump = null;
     this.firsts = beats.map((b) => b.first);
     // the layout before the guide: the panels it opens or moves go back when it ends
@@ -238,8 +246,8 @@ export class TourService {
 
   /** Wait, honouring pause, stop and skip. */
   private async sleep(ms: number): Promise<void> {
-    const end = performance.now() + ms;
-    while (performance.now() < end || this.paused) {
+    const end = this.activeTime() + ms;
+    while (this.activeTime() < end || this.paused) {
       if (this.stop) throw new Stopped();
       if (this.skip && !this.paused) return;
       await new Promise((r) => setTimeout(r, 30));
@@ -294,15 +302,18 @@ export class TourService {
         const target = this.hitAt(from.x, from.y) ?? el;
         this.pointer(target, 'pointerdown', from.x, from.y, 1);
         this.cursor.set({ ...from, down: true });
-        const steps = Math.max(8, Math.round((a.ms ?? 900) / 30));
-        for (let i = 1; i <= steps; i++) {
-          const t = ease(i / steps), x = from.x + (to.x - from.x) * t, y = from.y + (to.y - from.y) * t;
-          this.cursor.set({ x, y, down: true });
-          this.pointer(target, 'pointermove', x, y, 1);
-          await this.sleep((a.ms ?? 900) / steps);
+        let current = from;
+        try {
+          await this.animate(a.ms ?? 900, fraction => {
+            const t = ease(fraction), x = from.x + (to.x - from.x) * t, y = from.y + (to.y - from.y) * t;
+            current = {x, y};
+            this.cursor.set({ x, y, down: true });
+            this.pointer(target, 'pointermove', x, y, 1);
+          });
+        } finally {
+          this.pointer(target, 'pointerup', current.x, current.y, 0);
+          this.cursor.set({ ...current, down: false });
         }
-        this.pointer(target, 'pointerup', to.x, to.y, 0);
-        this.cursor.set({ ...to, down: false });
         return;
       }
     }
@@ -360,12 +371,11 @@ export class TourService {
     }
     const c = this.cursor() ?? { x, y, down: false };
     const d = Math.hypot(x - c.x, y - c.y);
-    const steps = Math.max(6, Math.min(30, Math.round(d / 25)));
-    for (let i = 1; i <= steps; i++) {
-      const t = ease(i / steps), lift = Math.sin(Math.PI * t) * Math.min(40, d * 0.12);
+    const duration = Math.max(6, Math.min(30, Math.round(d / 25))) * 16;
+    await this.animate(duration, fraction => {
+      const t = ease(fraction), lift = Math.sin(Math.PI * t) * Math.min(40, d * 0.12);
       this.cursor.set({ x: c.x + (x - c.x) * t, y: c.y + (y - c.y) * t - lift, down: false });
-      await this.sleep(16);
-    }
+    });
   }
 
   private async tap(x: number, y: number): Promise<void> {

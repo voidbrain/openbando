@@ -62,6 +62,8 @@ export class SiteViewRenderer {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     this.renderer.setClearColor(0x9fc3d8);
     this.renderer.shadowMap.enabled = true;
+    // The world and sun are static between spec rebuilds; orbiting only changes the camera.
+    this.renderer.shadowMap.autoUpdate = false;
     this.scene.add(new THREE.HemisphereLight(0xdfeeff, 0x4a5a40, 1.1));
     const sun = new THREE.DirectionalLight(0xfff2dd, 2.2);
     sun.position.set(120, 220, 90);
@@ -246,6 +248,7 @@ export class SiteViewRenderer {
     this.model.setGroundStyle(this.groundStyle);
     if (focus && !indoorFloor) this.focusFloor(spec, focus);
     this.scene.add(this.model.group);
+    this.renderer.shadowMap.needsUpdate = true;
     this.refreshSelection();
     if (frameKey !== this.framed) {
       this.framed = frameKey;
