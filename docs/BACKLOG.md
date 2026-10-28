@@ -447,7 +447,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 Merged ([#163](https://github.com/voidbrain/openbando/pull/163), CI being reconciled): splits AGENTS.md (414 → about 165 lines: conventions, architecture, checks, joins, pitfalls, privacy, work tracking) from [docs/agents/areas.md](agents/areas.md) (area rules and lessons moved verbatim, regrouped by area; the scattered Welcome/Views bullets now sit together). Backlog-procedure paragraphs that BACKLOG-RULES already owns were replaced by a pointer.
 
-In review: `chore/ci-status` adds `npm run ci:status` (per-PR CI jobs, failed and retried tests, PRs not based on main) and makes Verification cells current-state (one entry per method; earlier results move to PR / evidence as labelled history). Applied to B-011, B-024, F-003, F-004, F-005, F-006, F-008 and F-012.
+In review: [#164](https://github.com/voidbrain/openbando/pull/164) adds `npm run ci:status` (per-PR CI jobs, failed and retried tests, PRs not based on main) and makes Verification cells current-state (one entry per method; earlier results move to PR / evidence as labelled history). Applied to B-011, B-024, F-003, F-004, F-005, F-006, F-008 and F-012.
 
 In review ([#162](https://github.com/voidbrain/openbando/pull/162), recovery: #161 merged into a stacked branch, not main) — [#161](https://github.com/voidbrain/openbando/pull/161) adds `check:conventions` (AGENTS Angular conventions, `core/` imports, unused exports; in CI) and a 90 s Playwright action timeout, so a missing locator fails in 90 s instead of the whole 6-minute test budget. Moves to the maintenance history once merged with green CI.
 
