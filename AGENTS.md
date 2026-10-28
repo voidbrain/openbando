@@ -378,3 +378,5 @@ npm run check:i18n                        # every UI text has its Italian
 - Backlog tables start with a status signal: 🔴 Open, 🟠 Investigate, 🟡 Implemented, 🟢 Verified, 🟣 Blocked, 🔵 Closed. Update the marker whenever the written status changes. Keep priority separate and preserve stable ID order; colour never replaces status text or verification evidence.
 
 - Backlog priorities use **🔺 P1**, **🔶 P2**, **🔹 P3** in the Priority column. Keep each shape paired with its written label when adding or reprioritizing an item; circles in the first column encode status only. Do not change status or verification just to change priority.
+
+- When an item becomes Closed or Blocked, replace its coloured priority symbol with the neutral grey square **◻️**, retaining P1/P2/P3. Keep the status cue distinct: 🔵 Closed or 🟣 Blocked. Apply grey priorities to dated closed archives too. Reopening or unblocking restores 🔺 P1 / 🔶 P2 / 🔹 P3 in the active ledger; Verified items retain coloured priority until Closed. Historical archive records keep their closure appearance.
