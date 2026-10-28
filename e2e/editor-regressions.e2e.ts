@@ -240,3 +240,47 @@ test('basement controls and explicit roof choice update the selected building', 
   await plan.click({ position: { x: planBounds!.width * 0.25, y: planBounds!.height * 0.75 }, force: true });
   await expect(page.locator('[data-pk^="fence:"]')).toHaveCount(1);
 });
+
+test('Reset UI restores hidden panels at default geometry without reopening closed panels', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/?lang=en');
+  await page.getByRole('button', { name: 'Close Welcome', exact: true }).click();
+  const views = page.locator('app-panel[data-id="views"]');
+  await views.getByTitle('Show Timeline', { exact: true }).click();
+  await views.getByTitle('Show Speed', { exact: true }).click();
+  const timeline = page.locator('app-panel[data-id="timeline"]');
+  const speed = page.locator('app-panel[data-id="speed"]');
+  await expect(timeline).toBeVisible();
+  await expect(speed).toBeVisible();
+  const initial = await timeline.boundingBox();
+  expect(initial).not.toBeNull();
+  const grip = await timeline.locator('header.grip').boundingBox();
+  expect(grip).not.toBeNull();
+  await page.mouse.move(grip!.x + 70, grip!.y + grip!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(grip!.x + 190, grip!.y + grip!.height / 2 - 100, { steps: 6 });
+  await page.mouse.up();
+  await expect.poll(async () => (await timeline.boundingBox())!.x).toBeGreaterThan(initial!.x + 80);
+  await timeline.getByRole('button', { name: 'Transparent', exact: true }).click();
+  await timeline.getByRole('button', { name: 'Collapse / expand', exact: true }).click();
+  await expect(timeline).toHaveClass(/ghost/);
+  await expect(timeline).toHaveClass(/min/);
+  await views.getByRole('button', { name: 'Hide every panel but this one', exact: true }).click();
+  await expect(timeline).toBeHidden();
+  await expect(speed).toBeHidden();
+  // Repeated Hide all must not replace the saved working panel set with an empty one.
+  await views.getByRole('button', { name: 'Hide every panel but this one', exact: true }).click();
+  await views.getByRole('button', { name: 'Reset UI', exact: true }).click();
+  await expect(timeline).toBeVisible();
+  await expect(speed).toBeVisible();
+  await expect(timeline).not.toHaveClass(/ghost|min/);
+  await expect.poll(async () => Math.abs((await timeline.boundingBox())!.x - initial!.x)).toBeLessThan(2);
+  await expect.poll(async () => Math.abs((await timeline.boundingBox())!.y - initial!.y)).toBeLessThan(2);
+  await expect.poll(async () => Math.abs((await timeline.boundingBox())!.width - initial!.width)).toBeLessThan(2);
+  const visibleIds = () => page.locator('app-panel:not([hidden])').evaluateAll(els => els.map(el => el.getAttribute('data-id')).sort());
+  expect(await visibleIds()).toEqual(['speed', 'timeline', 'views']);
+  await speed.getByRole('button', { name: 'Close Speed', exact: true }).click();
+  await views.getByRole('button', { name: 'Reset UI', exact: true }).click();
+  await expect(speed).toBeHidden();
+  expect(await visibleIds()).toEqual(['timeline', 'views']);
+});
