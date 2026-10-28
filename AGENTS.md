@@ -65,7 +65,7 @@ The app is **OpenBando** (tagline "Build, Fly, Share."). The repository is `void
 
 ### Architecture
 
-- `core/` is plain TypeScript with no Angular imports: keep it that way so it stays unit-testable. Put logic there, keep
+- `core/` is plain TypeScript: from Angular it imports only the signal primitives (`signal`, `computed`, `untracked`), which run without the framework; keep it that way so it stays unit-testable (`npm run check:conventions`). Put logic there, keep
   components thin. `three/` builds Three.js objects from the spec; `services/` and `state/` hold signals; `ui/` is templates.
 - The **spec is the source of truth** (`core/site-spec.ts`). The 3D model, the plan overlay, the inspector preview and the
   AI context are all derived from it. Edit the spec through `SiteEditor` (`commitSite` = one undo step; `beginGesture` +
@@ -106,6 +106,7 @@ npx tsc -p tools/i18n/tsconfig.json       # the translation check
 npm run check:i18n                        # every UI text has its Italian
 npm run check:contrast                    # shared text/surface pairs and token consistency
 npm run check:backlog                     # active record layout and lifecycle cues
+npm run check:conventions                 # Angular conventions above, core/ imports, unused exports
 ```
 
 - `npm run e2e` (Playwright, also a CI job): every guide step plays alone in a headless browser without errors, and the first visit, the editor with the library and a running guide step pass axe (WCAG 2.1 A / AA). Locate panels by `app-panel[data-id=…]` or by role: component hosts have no box of their own. Software WebGL is slow there: keep the long timeouts.
@@ -251,7 +252,7 @@ npm run check:backlog                     # active record layout and lifecycle c
 - With the Views panel closed, a menu button next to the language flag opens it (`VersionBadge`).
 - Paths: the whole path is a thin washed-out line (`aheadColor`), the part already flown a thick line in the speed colours drawn up to the playhead (`Line2`, `PathRenderer.setProgress`); the Flight path panel draws the same (`drawFlightPath(…, replayed)`). Its side column has Pin start / Pin end icons and a knob that turns the path about its start (`SceneService.turnPath`; arrow keys ±1°, Shift ±10°).
 - Logs are parsed in a Web Worker (`services/log-parse.worker.ts` via `parseLogFile`; the parser itself is the pure `parseLog`); without `Worker` (tests) it parses in place.
-- Auto-sync plays the video fast to measure its motion (`scanVideo`): `scanRate` (core/sync) picks 3× up to 1080p, 2× up to 1440p, 1× for 4K so frames are not dropped. A watchdog ends the scan when no frame arrives for 8 s (a background tab stops decoding) instead of hanging.
+- Auto-sync plays the video fast to measure its motion (`scanVideo`): `scanRate` (core/sync) picks 3× up to 1080p, 2× up to 1440p, 1× for 4K so frames are not dropped. A watchdog ends the scan when no frame arrives for 8 s (a background tab stops decoding) instead of hanging. Motion features (pan, diff) are dated at the middle of their frame interval and brightness (tb) at its frame (`gridFromSamples`); the matcher keeps a high-confidence motion match over the brightness one, which lags with the camera's exposure. Both made the offset depend on how many frames a machine decoded (B-025). `DEMO_OFFSET` is a measured mean of real scans: re-measure it when the scan changes.
 
 ## Water and ground layers
 - The Water tool draws an outline by hand or, in "Line" mode, a canal along a centre line (`stripOutline`, `waterWidth`). "Merge overlapping" in the inspector joins the selected water with every water it overlaps or touches (`mergeWaters` → `unionOutline`, a grid trace, in `core/layers.ts`).

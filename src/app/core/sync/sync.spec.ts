@@ -5,8 +5,11 @@ import { matchVideoToLog } from './matcher';
 const FLICKS = [5, 8, 9.5, 14, 17, 22, 26, 31, 38, 44];
 const FLIPS = [{ at: 11, axis: 'roll' as const }, { at: 29, axis: 'pitch' as const }];
 
-/** Fake "video scan": camera motion follows the drone's rotation, shifted by `offset` (video = log + offset). */
-function fakeVideo(offset: number, from: number, to: number): VideoSample[] {
+/**
+ * Fake "video scan": camera motion follows the drone's rotation, shifted by `offset` (video = log + offset). `tbLag`
+ * delays the sky/ground brightness further, like a camera whose exposure follows the attitude.
+ */
+function fakeVideo(offset: number, from: number, to: number, tbLag = 0): VideoSample[] {
   const tel = makeTelemetry({ duration: 60, liftoff: 3, flips: FLIPS, flicks: FLICKS });
   const yp = logGrid(tel, 'yp');
   const g = logGrid(tel, 'g');
@@ -24,7 +27,7 @@ function fakeVideo(offset: number, from: number, to: number): VideoSample[] {
       pan: at(yp, lt, 0) / 60 + rnd() * 0.3,
       diff: at(g, lt, 0) / 5000 + rnd() * 0.0004,
       mag: at(g, lt, 0) / 5000 + rnd() * 0.0004,
-      tb: at(up, lt, 1) * 0.2 + rnd() * 0.01,
+      tb: at(up, lt - tbLag, 1) * 0.2 + rnd() * 0.01,
     });
   }
   return out;
@@ -64,6 +67,16 @@ describe('sync features', () => {
     expect(g[6]! > 1.5 && g[6]! < 2.5).toBeTruthy(); // interpolated between the two clusters
   });
 
+  it('dates motion at the middle of its frame interval and brightness at its frame', () => {
+    // one analysed frame every 0.4 s of video (a machine that dropped frames): motion changes over 1.0 → 1.4 s
+    const s: VideoSample[] = [0.2, 0.6, 1.0, 1.4, 1.8, 2.2].map((t) => ({ t, dt: 0.4, pan: t > 1.2 ? 4 : 0, diff: 0, mag: 0, tb: t > 1.2 ? 4 : 0 }));
+    const pan = gridFromSamples(s, 'pan', 0, 2.4);
+    const tb = gridFromSamples(s, 'tb', 0, 2.4);
+    const half = (g: Float32Array): number => g.findIndex((x) => x >= 2) * GRID_DT;
+    expect(half(pan)).toBeCloseTo(1.0, 1); // the 1.0 → 1.4 s interval, dated at 1.2 s, crosses half height before it
+    expect(half(tb) - half(pan)).toBeCloseTo(0.2, 1); // brightness stays on its frame: dt / 2 later
+  });
+
   it('detects the moment the picture starts moving, and ignores a short wave', () => {
     const quiet = (t: number): VideoSample => ({ t, pan: 0, diff: 0, mag: 0.001, tb: 0 });
     const moving = (t: number): VideoSample => ({ t, pan: 1, diff: 1, mag: 0.03, tb: 0 });
@@ -89,6 +102,12 @@ describe('video <-> log matcher', () => {
     expect(Math.abs(r.offset! - 7.3)).toBeLessThan(0.15);
     expect(r.confidence).toBe('high');
     expect(r.features).toBeTruthy();
+  });
+
+  it('prefers a confident motion match to a lagging brightness match', () => {
+    const r = matchVideoToLog(fakeVideo(7.3, 0, 60, 0.4), flight);
+    expect(r.features?.videoFeature === 'pan' || r.features?.videoFeature === 'diff').toBe(true);
+    expect(Math.abs(r.offset! - 7.3)).toBeLessThan(0.15);
   });
 
   it('also finds a video that started after the log (negative offset)', () => {

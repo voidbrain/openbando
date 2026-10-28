@@ -59,7 +59,7 @@ export async function scanVideo(video: HTMLVideoElement, from: number, to: numbe
             let bottom = 0;
             for (let i = 0; i < PIXELS / 2; i++) top += cur[i]!;
             for (let i = PIXELS / 2; i < PIXELS; i++) bottom += cur[i]!;
-            out.push({ t, pan: Math.hypot(sx, sy) / dt, diff: mag / dt, mag, tb: (top - bottom) / (PIXELS / 2) / 255 });
+            out.push({ t, dt, pan: Math.hypot(sx, sy) / dt, diff: mag / dt, mag, tb: (top - bottom) / (PIXELS / 2) / 255 });
           }
         }
         prev = cur;

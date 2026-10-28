@@ -152,7 +152,7 @@ No further configuration is required — the workflow uses the built-in
 
 ### How it works
 
-- Runs the reusable CI checks (catalogue, generated examples, unit tests, Italian translations, strict types and production build) before publishing. Browser e2e runs on pull requests; deployment calls the fast checks without browser e2e. The guide timeout correction passed all PR #124 browser shards; the backlog records current verification and remaining checks. The production build uses
+- Runs the reusable CI checks (catalogue, generated examples, unit tests, race relay, Italian translations, backlog layout, shared contrast, AGENTS conventions and unused exports, strict types and production build) before publishing. Browser e2e runs on pull requests; deployment calls the fast checks without browser e2e. The guide timeout correction passed all PR #124 browser shards; the backlog records current verification and remaining checks. The production build uses
   `"baseHref": "/openbando/"` set in `angular.json` so asset URLs
   resolve correctly under the project-page subpath.
 - Adds a `.nojekyll` file so GitHub Pages does **not** process the bundle

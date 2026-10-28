@@ -12,6 +12,8 @@ export default defineConfig({
   workers: process.env['CI'] ? 2 : 4,
   retries: process.env['CI'] ? 1 : 0,
   reporter: process.env['CI'] ? [['list'], ['html', { open: 'never' }]] : 'list',
-  use: { baseURL: 'http://localhost:4300', viewport: { width: 1400, height: 900 }, locale: 'en-US' },
+  // A single click or fill never needs minutes, even with software WebGL: without this limit a locator that no longer
+  // matches waits the whole 6-minute test budget (twice with the CI retry). Long waits use explicit expect timeouts.
+  use: { baseURL: 'http://localhost:4300', viewport: { width: 1400, height: 900 }, locale: 'en-US', actionTimeout: 90_000 },
   webServer: { command: 'npx ng serve --port 4300', url: 'http://localhost:4300', timeout: 240_000, reuseExistingServer: !process.env['CI'] },
 });
