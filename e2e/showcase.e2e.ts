@@ -73,7 +73,14 @@ test('showcase keeps Welcome open for a complete mascot loop', async ({ page }) 
     expect(offset).toBeLessThanOrEqual(1);
     if (part === 'fly') {
       await bar.getByRole('button', {name: /Pause/}).click();
-      const held = await countdown.getAttribute('stroke-dashoffset');
+      // A frame already in flight when Pause lands may still draw once: read the ring after it has settled.
+      let held = await countdown.getAttribute('stroke-dashoffset');
+      for (let settled = false, tries = 0; !settled && tries < 10; tries++) {
+        await page.waitForTimeout(300);
+        const now = await countdown.getAttribute('stroke-dashoffset');
+        settled = now === held;
+        held = now;
+      }
       await page.waitForTimeout(500);
       await expect(countdown).toHaveAttribute('stroke-dashoffset', held!);
       await bar.getByRole('button', {name: /Resume/}).click();

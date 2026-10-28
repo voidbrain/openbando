@@ -310,7 +310,9 @@ test('Reset UI restores hidden panels at default geometry without reopening clos
   await page.goto('/?lang=en');
   await page.getByRole('button', { name: 'Close Welcome', exact: true }).click();
   const views = page.locator('app-panel[data-id="views"]');
+  // Timeline is a promoted row; Speed sits in Telemetry, folded by default.
   await views.getByTitle('Show Timeline', { exact: true }).click();
+  await views.getByRole('button', { name: '▾ Telemetry', exact: true }).click();
   await views.getByTitle('Show Speed', { exact: true }).click();
   const timeline = page.locator('app-panel[data-id="timeline"]');
   const speed = page.locator('app-panel[data-id="speed"]');

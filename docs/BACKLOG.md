@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 28 October 2026 against merged PR #151 (fast checks passed; browser jobs still running) and the earlier recorded CI results. Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 28 October 2026 against main `23be8c7` (merged PR #158), with every CI job of #154–#158 read. Those PRs merged with failing browser shards: the Reset UI case (F-020), the countdown pause check (F-019) and the Auto-sync offset check (B-025). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -51,14 +51,14 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 **→ Human action required:** 🧑 **Yes**<br />Review Welcome timing, presentation and the final Welcome-only screen.
 
-**Next action / closure evidence:** [#155](https://github.com/voidbrain/openbando/pull/155) fits card films into the mascot thirds and holds its final frame during the showcase, preventing the accidental second search/run/sit; Pause holds mascot and film. Ring countdown is F-019.  [#154](https://github.com/voidbrain/openbando/pull/154) also suppresses saved-sync restoration notices during the showcase (normal loads retain them). Video first-frame feedback is tracked in B-022. User reports truncated Fly, a trailing mascot wait and leaked path after return. Replaced fixed waits with complete card films and three mascot checkpoints; replay now waits for the full flight. Entry restores 3D overview/Follow off and render boundary suppresses paths. All #149 showcase browser checks passed; final human presentation review remains. The #148 eight-second card completion/distributed mascot, reduced-motion and Stop checks passed; full replay reached completion but its continuation assumed a nonexistent saved demo card. The #149 saved fixture continuation passed.
+**Next action / closure evidence:** [#155](https://github.com/voidbrain/openbando/pull/155) fits card films into the mascot thirds and holds its final frame during the showcase, preventing the accidental second search/run/sit; Pause holds mascot and film. Ring countdown is F-019. [#154](https://github.com/voidbrain/openbando/pull/154) also suppresses saved-sync restoration notices during the showcase (normal loads retain them). Video first-frame feedback (B-022) is closed; see the [archive](archive-2026-10-28.md). User reports truncated Fly, a trailing mascot wait and leaked path after return. Replaced fixed waits with complete card films and three mascot checkpoints; replay now waits for the full flight. Entry restores 3D overview/Follow off and render boundary suppresses paths. All #149 showcase browser checks passed; final human presentation review remains. The #148 eight-second card completion/distributed mascot, reduced-motion and Stop checks passed; full replay reached completion but its continuation assumed a nonexistent saved demo card. The #149 saved fixture continuation passed.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#155](https://github.com/voidbrain/openbando/pull/155) (one-loop timing); [#150](https://github.com/voidbrain/openbando/pull/150); [#124](https://github.com/voidbrain/openbando/pull/124) (merged; action-order checks passed in #124 CI); [CI failure](https://github.com/voidbrain/openbando/actions/runs/40650990021/job/122690744193); [#107](https://github.com/voidbrain/openbando/pull/107) (fix; browser checks pending); [#109](https://github.com/voidbrain/openbando/pull/109) (merged; visual/browser verification pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending)  [#148](https://github.com/voidbrain/openbando/pull/148); [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout) |
+| PR / evidence | [#155](https://github.com/voidbrain/openbando/pull/155) (one-loop timing); [#150](https://github.com/voidbrain/openbando/pull/150); [#124](https://github.com/voidbrain/openbando/pull/124) (merged; action-order checks passed in #124 CI); [CI failure](https://github.com/voidbrain/openbando/actions/runs/40650990021/job/122690744193); [#107](https://github.com/voidbrain/openbando/pull/107) (fix; browser checks pending); [#109](https://github.com/voidbrain/openbando/pull/109) (merged; visual/browser verification pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending); [#148](https://github.com/voidbrain/openbando/pull/148); [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout) |
 | Opened | 2026-10-27 |
 | Verification | Browser/accessibility · 2026-10-28 · [#149 shard 4](https://github.com/voidbrain/openbando/actions/runs/40745098159/job/123016650449) passed full replay/continuation, distributed card films, reduced motion, Stop and Auto-sync; #148 continuation failure corrected by #149. Human presentation review · Pending. |
 | Reviewed | 2026-10-28 |
@@ -131,53 +131,6 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
-
-
-
-### B-022
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-022 | 🔶 P2 | Implemented | Video first-frame loading feedback |
-
-**→ Human action required:** 💻 **No**<br />Run loading/decoded/error feedback browser checks.
-
-**Next action / closure evidence:** Show Loading video until decoded data/canplay, reset it on replacement and replace it with an error message on decode failure. Unit checks pass; browser presentation remains pending.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#154](https://github.com/voidbrain/openbando/pull/154) |
-| Opened | 2026-10-28 |
-| Verification | Unit/integration + Documentation · 2026-10-28 · local checks recorded in PR; Browser/accessibility · Pending |
-| Reviewed | 2026-10-28 |
-
-</details>
-
-### B-023
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-023 | 🔶 P2 | Implemented | Welcome navigation leaves tour overlays; focus detaches on resize |
-
-**→ Human action required:** 💻 **No**<br />Run cancellation, destination preservation and resize-focus browser checks.
-
-**Next action / closure evidence:** Welcome links and a real user close cancel/clean the tour before navigation, suppressing the tour’s return-to-Welcome restoration. Focus follows its live target bounds each frame and clears if removed. Unit checks cover cancellation during preparation and moving/resizing/detached targets; browser workflow added. Stop remains the separate return-to-Welcome action.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#156](https://github.com/voidbrain/openbando/pull/156); [#157](https://github.com/voidbrain/openbando/pull/157) (follow-up: quick order, plain editor row, Follow label, 18px icons) |
-| Opened | 2026-10-28 |
-| Verification | Unit/integration + Documentation · 2026-10-28 · local checks passed; Browser/accessibility · Pending |
-| Reviewed | 2026-10-28 |
-
-</details>
-
 ### B-024
 
 | Signal | ID | Priority | Status | Item |
@@ -195,7 +148,29 @@ Each item has a compact summary, followed by **→ Human action required** first
 |---|---|
 | PR / evidence | [#158](https://github.com/voidbrain/openbando/pull/158) |
 | Opened | 2026-10-28 |
-| Verification | Browser/accessibility · 2026-10-28 · local Playwright Chromium and WebKit (Desktop Safari) regression passed with the fix and failed (opacity 0) without it; CI · Pending; Human Safari check · Pending |
+| Verification | Browser/accessibility · 2026-10-28 · local Playwright Chromium and WebKit (Desktop Safari) regression passed with the fix and failed (opacity 0) without it; Browser/accessibility · 2026-10-28 · opacity regression passed in [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) shard 1 (Chromium); Human Safari check · Pending |
+| Reviewed | 2026-10-28 |
+
+</details>
+
+### B-025
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟠 | B-025 | 🔺 P1 | Investigate | Auto-sync demo offset drifts on CI runners |
+
+**→ Human action required:** 💻 **No**<br />Collect the offsets CI actually finds and establish why the runner's scan differs.
+
+**Next action / closure evidence:** `e2e/showcase.e2e.ts` "the showcase offset is what Auto-sync finds" expects the real scan of the demo flight to land within 0.15 s of `DEMO_OFFSET` (−0.54 s). On GitHub runners it found offsets 0.21 s away in #155, #156 and #157 (both attempts each), failed once and passed on retry in #154, and passed in #158. Locally it passed 7/7, including with the pre-#158 opacity fade restored, so #158 is not established as the fix. Likely cause: dropped or late frames while the software-rendered runner plays the video fast (`scanRate`). Print the found offset and scan rate in the test output, compare several CI runs, then fix the scan or the demo constant from that data. Do not widen the tolerance without it.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#154 CI](https://github.com/voidbrain/openbando/actions/runs/40765189126) (fail, pass on retry); [#155](https://github.com/voidbrain/openbando/actions/runs/40765867282), [#156](https://github.com/voidbrain/openbando/actions/runs/40769519651), [#157](https://github.com/voidbrain/openbando/actions/runs/40773605465) (failed); [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) (passed) |
+| Opened | 2026-10-28 |
+| Verification | Browser/accessibility · 2026-10-28 · local Chromium 7/7 passed (3 with the old panel fade); CI intermittent, see PR / evidence |
 | Reviewed | 2026-10-28 |
 
 </details>
@@ -283,7 +258,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#101](https://github.com/voidbrain/openbando/pull/101) (context); [#122](https://github.com/voidbrain/openbando/pull/122) (perimeter visibility)  [#141](https://github.com/voidbrain/openbando/pull/141) (open-edge Cut/Wing);  [#142](https://github.com/voidbrain/openbando/pull/142) (safe resize and footprint restoration); |
+| PR / evidence | [#101](https://github.com/voidbrain/openbando/pull/101) (context); [#122](https://github.com/voidbrain/openbando/pull/122) (perimeter visibility); [#141](https://github.com/voidbrain/openbando/pull/141) (open-edge Cut/Wing); [#142](https://github.com/voidbrain/openbando/pull/142) (safe resize and footprint restoration) |
 | Opened | 2026-10-27 |
 | Verification | Browser/accessibility · 2026-10-28 · #141 open-edge Cut case passed in [CI](https://github.com/voidbrain/openbando/actions/runs/40720066164); Unit/integration · 2026-10-28 · all 528 tests passed locally (43 basement tests); Browser/accessibility · 2026-10-28 · resize/restore passed in [#142 CI](https://github.com/voidbrain/openbando/actions/runs/40724736656) |
 | Reviewed | 2026-10-28 |
@@ -305,7 +280,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#153](https://github.com/voidbrain/openbando/pull/153) (top-floor test correction); [#152](https://github.com/voidbrain/openbando/pull/152) (stair-placement browser coverage); [#86](https://github.com/voidbrain/openbando/pull/86), [#88](https://github.com/voidbrain/openbando/pull/88), [#95](https://github.com/voidbrain/openbando/pull/95) (implementation and partial browser coverage)  [#148](https://github.com/voidbrain/openbando/pull/148) (Wall selection fix); |
+| PR / evidence | [#153](https://github.com/voidbrain/openbando/pull/153) (top-floor test correction); [#152](https://github.com/voidbrain/openbando/pull/152) (stair-placement browser coverage); [#86](https://github.com/voidbrain/openbando/pull/86), [#88](https://github.com/voidbrain/openbando/pull/88), [#95](https://github.com/voidbrain/openbando/pull/95) (implementation and partial browser coverage); [#148](https://github.com/voidbrain/openbando/pull/148) (Wall selection fix) |
 | Opened | 2026-10-27 |
 | Verification | Test-source validation · 2026-10-28 · strict TypeScript and discovery of all three extended cases passed; −1/G stair placement passed in #152; L1 failed waiting for a stairwell checkbox absent on the top floor. Follow-up asserts its absence; L1 passed in #153 shard 4; all #153 jobs passed.  Pending — see PR/evidence for partial automated coverage; Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit)  Browser/accessibility · 2026-10-28 · [#147 CI](https://github.com/voidbrain/openbando/actions/runs/40734777783) failed at Wall activation on every floor; corrected in #148 (passing floor matrix below).; Browser/accessibility · 2026-10-28 · #148 −1/G/L1 pointer placement, undo/export floor isolation and axe passed in [shard 3](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847187) and [shard 4](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847284). |
 | Reviewed | 2026-10-28 |
@@ -422,29 +397,6 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
-
-### F-017
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-017 | 🔶 P2 | Implemented | Returning-pilot Welcome and Fly workspace |
-
-**→ Human action required:** 💻 **No**<br />Run new entry-workspace browser checks and inspect CI.
-
-**Next action / closure evidence:** Completed Welcome promotes Open the bandos; replay remains available. Video/log loading exposes the matching panel. Bandos use active badge and Fly opens telemetry except Live link, closes Bandos and selects the 3D model. Flights sits below Video; Views can close and reopen from its menu. New browser workflow and unit checks added; CI pending.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#154](https://github.com/voidbrain/openbando/pull/154) |
-| Opened | 2026-10-28 |
-| Verification | Unit/integration + Documentation · 2026-10-28 · local checks recorded in PR; Browser/accessibility · Pending |
-| Reviewed | 2026-10-28 |
-
-</details>
-
 ### F-018
 
 | Signal | ID | Priority | Status | Item |
@@ -473,18 +425,18 @@ Each item has a compact summary, followed by **→ Human action required** first
 |:---:|---|---|---|---|
 | 🟡 | F-019 | 🔶 P2 | Implemented | Tour step remaining-time ring |
 
-**→ Human action required:** 💻 **No**<br />Run countdown, pause and Welcome timing browser checks.
+**→ Human action required:** 💻 **No**<br />Confirm the corrected pause check in this follow-up PR's CI.
 
-**Next action / closure evidence:** Emptying ring beside the tour title resets per snippet; Welcome uses rendered progress through one 19.7-second mascot loop and replay uses playback progress. Other guides use an explicitly labelled active-time estimate that retains a small remainder while unfinished. Pause holds progress. New browser checks exercise the circle and pause; CI pending. Final Welcome presentation review remains B-011.
+**Next action / closure evidence:** Emptying ring beside the tour title resets per snippet; Welcome uses rendered progress through one 19.7-second mascot loop and replay uses playback progress. Other guides use an explicitly labelled active-time estimate that retains a small remainder while unfinished. Pause holds progress. New browser checks exercise the circle and pause. In CI the pause check failed in #155–#157 and needed a retry in #158: the test read the ring immediately after Pause, before the last mascot frame (≈20 ms of progress) reached it on the next 30 ms refresh. The ring does freeze; the test now waits until two readings 300 ms apart agree, then checks it holds (passed 4/4 locally). Final Welcome presentation review remains B-011.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#155](https://github.com/voidbrain/openbando/pull/155) |
+| PR / evidence | [#155](https://github.com/voidbrain/openbando/pull/155); `fix/reset-ui-e2e-and-audit` (settled pause read) |
 | Opened | 2026-10-28 |
-| Verification | Unit/integration · 2026-10-28 · local suite passed; Browser/accessibility · Pending |
+| Verification | Unit/integration · 2026-10-28 · local suite passed; Browser/accessibility · 2026-10-28 · pause check failed in CI [#155](https://github.com/voidbrain/openbando/actions/runs/40765867282), [#156](https://github.com/voidbrain/openbando/actions/runs/40769519651), [#157](https://github.com/voidbrain/openbando/actions/runs/40773605465) (both attempts) and passed on retry in [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395); corrected test passed 4/4 locally; CI · Pending |
 | Reviewed | 2026-10-28 |
 
 </details>
@@ -495,18 +447,18 @@ Each item has a compact summary, followed by **→ Human action required** first
 |:---:|---|---|---|---|
 | 🟡 | F-020 | 🔶 P2 | Implemented | Views hierarchy and scoped camera options |
 
-**→ Human action required:** 💻 **No**<br />Confirm the follow-up Views browser test and full suite in PR CI.
+**→ Human action required:** 💻 **No**<br />Confirm the Reset UI fix and the full browser suite in this follow-up PR's CI.
 
-**Next action / closure evidence:** Flights/Timeline/Video then Bandos editor remain directly available; user follow-up: the editor is now a plain `.vis` row at the end (no accent full-width row), the text "Follow replay" label is removed (the Follow icon keeps its replay title/aria-label in Chase/FPV) and Options icons are 18px so the five fit one row. Telemetry, Simulator and Tools default folded, preserving saved preferences; Reset restores default folds. Camera groups hide in Video main mode. Options is closed by default. Orbit/Top follow the drone; Chase/FPV reuse the Follow icon for replay-follow. Roof visibility affects shared geometry, satellite has separate main/Studio controls, X-ray retains FPV camera-near fading, and Reset returns to Orbit/parks the simulator. Browser checks pending.
+**Next action / closure evidence:** Flights/Timeline/Video then Bandos editor remain directly available; user follow-up: the editor is now a plain `.vis` row at the end (no accent full-width row), the text "Follow replay" label is removed (the Follow icon keeps its replay title/aria-label in Chase/FPV) and Options icons are 18px so the five fit one row. Telemetry, Simulator and Tools default folded, preserving saved preferences; Reset restores default folds. Camera groups hide in Video main mode. Options is closed by default. Quick rows now carry the same Show / Hide title as grouped rows: #156 dropped it, so the Reset UI browser case (and any title lookup) could no longer find Timeline, and Speed is inside the folded Telemetry section. Orbit/Top follow the drone; Chase/FPV reuse the Follow icon for replay-follow. Roof visibility affects shared geometry, satellite has separate main/Studio controls, X-ray retains FPV camera-near fading, and Reset returns to Orbit/parks the simulator. Browser checks pending.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#156](https://github.com/voidbrain/openbando/pull/156) |
+| PR / evidence | [#156](https://github.com/voidbrain/openbando/pull/156); [#157](https://github.com/voidbrain/openbando/pull/157) (follow-up: quick order, plain editor row, Follow label, 18px icons); `fix/reset-ui-e2e-and-audit` (quick-row titles, Reset UI test) |
 | Opened | 2026-10-28 |
-| Verification | Unit/integration + Documentation · 2026-10-28 · local checks passed; Browser/accessibility · 2026-10-28 · local Playwright run of the Views test passed after the follow-up (quick order, plain editor row, 18px Options icons, no Follow replay text); the #156 version failed locally on an ambiguous FPV locator, now scoped to the camera group; CI · Pending |
+| Verification | Browser/accessibility · 2026-10-28 · user-reported CI: shard 1 and the race-browser job failed on “Reset UI restores hidden panels…” (6 min locator wait, retried; race-browser cancelled at its 15 min limit); after the fix the 12 racing/editor-regression cases passed locally in 1.6 min. The Views hierarchy test passed in [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) (failed in #156 on the ambiguous FPV locator, corrected by #157). Unit/integration + Documentation · 2026-10-28 · local checks passed; Browser/accessibility · 2026-10-28 · local Playwright run of the Views test passed after the follow-up (quick order, plain editor row, 18px Options icons, no Follow replay text); the #156 version failed locally on an ambiguous FPV locator, now scoped to the camera group; CI · Pending |
 | Reviewed | 2026-10-28 |
 
 </details>
