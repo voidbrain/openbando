@@ -47,9 +47,12 @@ export interface TourState {
 const TOUR_BANDO = { id: 'tour-chiari', name: 'Chiari e Forti (tour)', file: 'library/bandos/chiari-e-forti.json' };
 /** Where the demo flight is replayed: a copy of the example without its place (the flight starts on its take-off pad). */
 const FLIGHT_BANDO = { id: 'tour-flight', name: 'Villetta (place hidden)', file: 'library/bandos/villetta-no-place.json' };
-/** A short cut of a real flight (log thinned to ~100 Hz, its GPS moved to 0, 0; video 480p): published with the app for the guide. */
-/** The video offset Auto-sync finds for the demo flight (the showcase uses it instead of scanning a minute of video). */
-const DEMO_OFFSET = -0.54;
+/**
+ * The video offset Auto-sync finds for the demo flight (the showcase uses it instead of scanning a minute of video): the
+ * mean of 8 local scans at normal and 4× slowed CPU after B-025 (range −0.54 … −0.71 s; checked in e2e/showcase.e2e.ts).
+ */
+const DEMO_OFFSET = -0.64;
+/** A short cut of a real flight (log thinned to ~100 Hz, its GPS moved to open sea at 1°N 1°E; video 720p): published with the app for the guide. */
 const DEMO = { log: 'guide-demo/flight.csv', video: 'guide-demo/flight.mp4' };
 const SETTINGS = 'abando-guide';
 

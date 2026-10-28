@@ -7,6 +7,8 @@ export const GRID_DT = 0.05;
 export interface VideoSample {
   /** Video time of the frame. */
   t: number;
+  /** Video time since the previous analysed frame; the motion fields (pan, diff) happened over it. Absent = 0. */
+  dt?: number;
   /** Global image shift between the frames (px at 64x36) per second: how fast the picture pans. */
   pan: number;
   /** Mean absolute pixel change per second. */
@@ -37,14 +39,19 @@ export function smooth(a: Float32Array, window: number): Float32Array {
   return out;
 }
 
-/** Resample irregular video samples onto the regular grid (gaps are interpolated, edges held), then smooth. */
+/**
+ * Resample irregular video samples onto the regular grid (gaps are interpolated, edges held), then smooth. Motion
+ * (pan, diff) is measured between two frames and is dated at their midpoint; brightness (tb) belongs to the frame
+ * itself. Dating motion at the later frame put it dt / 2 late, so the offset moved with how many frames the machine
+ * decoded, and disagreed with the brightness match.
+ */
 export function gridFromSamples(samples: readonly VideoSample[], field: NumericVideoField, t0: number, t1: number): Float32Array {
   const n = Math.max(2, Math.ceil((t1 - t0) / GRID_DT) + 1);
   const sum = new Float32Array(n);
   const cnt = new Uint16Array(n);
   const out = new Float32Array(n);
   for (const q of samples) {
-    const k = Math.floor((q.t - t0) / GRID_DT);
+    const k = Math.floor((q.t - (field === 'tb' ? 0 : (q.dt ?? 0) / 2) - t0) / GRID_DT);
     if (k >= 0 && k < n) {
       sum[k] = sum[k]! + q[field];
       cnt[k] = cnt[k]! + 1;

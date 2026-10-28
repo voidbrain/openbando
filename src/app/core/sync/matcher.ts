@@ -45,6 +45,9 @@ const PAIRS: readonly (readonly [VideoFeatureKey, LogFeatureKey])[] = [
   ['tbn', 'up'],
 ];
 
+/** Video features that measure camera motion (as opposed to sky/ground brightness). */
+const MOTION: readonly VideoFeatureKey[] = ['pan', 'diff'];
+
 /**
  * Find the video <-> log time offset from the scanned video samples: cross-correlate camera motion with gyro rotation
  * (and sky/ground brightness with the drone's uprightness) over the first minute of flight, refine on the first
@@ -67,11 +70,15 @@ export function matchVideoToLog(samples: readonly VideoSample[], flight: Flight)
     const F: Record<LogFeatureKey, Float32Array> = { yp: logGrid(T, 'yp'), g: logGrid(T, 'g'), up: upGrid(T) };
     const L0 = Math.max(0, (lift ?? 0) - 2);
     const L1 = Math.min(flight.dur, L0 + 60); // first minute of flight
+    let bestMotion: Candidate | null = null;
     for (const [vf, lf] of PAIRS) {
       const x = crossCorrelate(F[lf], V[vf], t0, L0, L1, t0 - 5, t1);
       const c: Candidate = { videoFeature: vf, logFeature: lf, off: x.off, r1: x.r1, r2: x.r2, score: x.r1 + Math.max(0, x.r1 - x.r2) };
       if (!best || c.score > best.score) best = c;
+      if (MOTION.includes(vf) && (!bestMotion || c.score > bestMotion.score)) bestMotion = c;
     }
+    // Sky/ground brightness lags the attitude (the camera's exposure follows it): trust it only when no motion match is sure.
+    if (bestMotion && confidenceOf(bestMotion) === 'high') best = bestMotion;
     const flip = findFlips(flight)[0];
     if (flip && best && best.r1 > 0.3) {
       const x2 = crossCorrelate(F[best.logFeature], V[best.videoFeature], t0, Math.max(0, flip.t - 4), Math.min(flight.dur, flip.t + 6), best.off - 1.5, best.off + 1.5);

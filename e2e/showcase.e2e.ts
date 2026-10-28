@@ -147,8 +147,12 @@ test('the showcase offset is what Auto-sync finds', async ({ page }) => {
   await page.locator('app-panel[data-id="video"] [data-tour~="auto-sync"]').click();
   const status = page.locator('app-panel[data-id="video"]');
   await expect(status).toContainText(/offset -?\d+\.\d+ s/, { timeout: 240_000 });
-  const found = Number(/offset (-?\d+\.\d+) s/.exec((await status.textContent()) ?? '')![1]);
-  expect(Math.abs(found - -0.54)).toBeLessThan(0.15); // DEMO_OFFSET in services/tour.service.ts
+  const text = (await status.textContent()) ?? '';
+  const found = Number(/offset (-?\d+\.\d+) s/.exec(text)![1]);
+  // Record what this machine found (B-025): the scan's spread is part of the evidence, not just pass / fail.
+  test.info().annotations.push({ type: 'auto-sync', description: /offset .*?confidence/.exec(text)?.[0] ?? String(found) });
+  console.log(`auto-sync found ${found} s: ${/whole-flight match \([^)]*\)|lift-off onset only/.exec(text)?.[0] ?? '?'}`);
+  expect(Math.abs(found - -0.64)).toBeLessThan(0.15); // DEMO_OFFSET in services/tour.service.ts
 });
 
 test('Welcome navigation cancels the tour overlays and keeps the requested destination', async ({page}) => {

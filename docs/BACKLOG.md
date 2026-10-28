@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against #159 CI (every job passed, no retries) on top of main `23be8c7`. #154–#158 merged with failing browser shards: the Reset UI case and the countdown pause check were fixed by #159; the Auto-sync offset check remains intermittent (B-025). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against #159 CI (every job passed, no retries) on top of main `23be8c7`. #154–#158 merged with failing browser shards: the Reset UI case and the countdown pause check were fixed by #159; the Auto-sync offset check is intermittent (B-025, fix in review). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -157,21 +157,21 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟠 | B-025 | 🔺 P1 | Investigate | Auto-sync demo offset drifts on CI runners |
+| 🟡 | B-025 | 🔺 P1 | Implemented | Auto-sync demo offset drifts on CI runners |
 
-**→ Human action required:** 💻 **No**<br />Collect the offsets CI actually finds and establish why the runner's scan differs.
+**→ Human action required:** 💻 **No**<br />Confirm the Auto-sync check over several CI runs, using the offsets it now logs.
 
-**Next action / closure evidence:** `e2e/showcase.e2e.ts` "the showcase offset is what Auto-sync finds" expects the real scan of the demo flight to land within 0.15 s of `DEMO_OFFSET` (−0.54 s). On GitHub runners it found offsets 0.21 s away in #155, #156 and #157 (both attempts each), failed once and passed on retry in #154, and passed in #158. Locally it passed 7/7, including with the pre-#158 opacity fade restored, so #158 is not established as the fix. Likely cause: dropped or late frames while the software-rendered runner plays the video fast (`scanRate`). Print the found offset and scan rate in the test output, compare several CI runs, then fix the scan or the demo constant from that data. Do not widen the tolerance without it.
+**Next action / closure evidence:** Cause found with a CPU-throttled probe (local Chromium, 8–9 scans per variant): the result depended on the machine. (1) Motion (pan, diff) is measured between two frames but was dated at the later one, so every sample landed half a frame gap late; a slow machine decodes fewer frames, so the gap and the shift grew with load. (2) With fewer frames the sky/ground brightness match (up vs tb) won and gave about −0.87 s, while motion matches gave −0.60 … −0.66 s; brightness lags because the camera's exposure follows the attitude. Fix: `gridFromSamples` dates motion at the interval midpoint and brightness at its frame; the matcher keeps a high-confidence motion match over brightness. After the fix every scan used a motion match: −0.54 … −0.71 s at normal and 4× slowed CPU (mean −0.64, previously −0.51 … −0.89). `DEMO_OFFSET` is now that mean (it came from one scan); the e2e tolerance stays 0.15 s and the test logs the offset and match it found. A playback-rate back-off when frames drop was tried and dropped (no clearer result, slower scans). Remaining: per-run scatter of about ±0.09 s is the method's precision. Close after the check passes in several CI runs without retries.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#159 CI](https://github.com/voidbrain/openbando/actions/runs/40784413716) (passed); [#154 CI](https://github.com/voidbrain/openbando/actions/runs/40765189126) (fail, pass on retry); [#155](https://github.com/voidbrain/openbando/actions/runs/40765867282), [#156](https://github.com/voidbrain/openbando/actions/runs/40769519651), [#157](https://github.com/voidbrain/openbando/actions/runs/40773605465) (failed); [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) (passed) |
+| PR / evidence | `fix/b025-autosync-timing` (midpoint dating, motion preference, measured `DEMO_OFFSET`); [#159 rerun](https://github.com/voidbrain/openbando/actions/runs/40785592494) (failed both attempts, 0.18 s); [#159 CI](https://github.com/voidbrain/openbando/actions/runs/40784413716) (passed); [#154 CI](https://github.com/voidbrain/openbando/actions/runs/40765189126) (fail, pass on retry); [#155](https://github.com/voidbrain/openbando/actions/runs/40765867282), [#156](https://github.com/voidbrain/openbando/actions/runs/40769519651), [#157](https://github.com/voidbrain/openbando/actions/runs/40773605465) (failed); [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) (passed) |
 | Opened | 2026-10-28 |
-| Verification | Browser/accessibility · 2026-10-28 · local Chromium 7/7 passed (3 with the old panel fade); CI intermittent, see PR / evidence |
-| Reviewed | 2026-10-28 |
+| Verification | Unit/integration · 2026-10-29 · 536 tests; the two new cases (midpoint dating, motion preference) fail without the fix; Browser/accessibility · 2026-10-29 · local throttled probe as above and the showcase suite 3× (Auto-sync −0.65 … −0.69 s); CI · Pending |
+| Reviewed | 2026-10-29 |
 
 </details>
 
