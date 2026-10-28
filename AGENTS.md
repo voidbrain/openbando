@@ -353,7 +353,7 @@ npm run check:backlog                     # active record layout and lifecycle c
 
 ## Studio precision and Welcome regression checks
 
-- The indigo/purple palette is accepted (F-016, 28 October); retain it. Indoor floor browser coverage lives in `e2e/indoor-placement.e2e.ts`: verify exported floor data after real 3D pointer placement, rather than treating a visible canvas as proof of placement. Keep uncovered tools explicit.
+- The indigo/purple palette is accepted (F-016, 28 October); retain it. Indoor floor browser coverage lives in `e2e/indoor-placement.e2e.ts`: verify exported floor data after real 3D pointer placement, rather than treating a visible canvas as proof of placement. The floor matrix also checks stairs placement, undo/redo and saved elevation with automatic stairwells disabled; new assertions require their own browser CI result. Keep uncovered tools explicit.
 
 - Inspector is docked right by default; `.work` owns the map, SVG, 3D canvas and compass. Use its bounds for pointer conversion and map sizing. The inspector must never consume invisible editing space beneath itself.
 - Ground-coordinate debug mode is transient and does not edit the spec. Coordinates are local x east, y up, z south in metres; ignore buildings and indoor floor planes when sampling ground. Do not reveal hidden geographic coordinates.

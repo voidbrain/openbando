@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 28 October 2026 against merged PR #148 and its actual CI results. Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 28 October 2026 against merged PR #151 (fast checks passed; browser jobs still running) and the earlier recorded CI results. Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -230,18 +230,18 @@ Each item has a compact summary, followed by **→ Human action required** first
 |:---:|---|---|---|---|
 | 🟡 | F-005 | 🔶 P2 | Implemented | 3D indoor tools and handles |
 
-**→ Human action required:** 💻 **No**<br />Extend coverage to doors, windows, stairs and remaining handles.
+**→ Human action required:** 💻 **No**<br />Run the new stair-placement matrix in CI, then extend doors, windows and remaining handles.
 
-**Next action / closure evidence:** Browser-test wall, void, door, window, column and stair placement, rotated buildings, upper floors and −1; exercise move/resize handles and keyboard/accessibility. The #147 floor matrix exposed Wall selection resetting itself to Select on all floors; corrected the indoor-entry order. New real-pointer tests cover column/wall/void placement at −1/G/L1 on a rotated building, column undo/redo, exported floor isolation and axe ([#147](https://github.com/voidbrain/openbando/pull/147); failed historically; corrected in #148). Doors, windows, stairs and full handle coverage remain open.
+**Next action / closure evidence:** Browser-test wall, void, door, window, column and stair placement, rotated buildings, upper floors and −1; exercise move/resize handles and keyboard/accessibility. The #147 floor matrix exposed Wall selection resetting itself to Select on all floors; corrected the indoor-entry order. New real-pointer tests cover column/wall/void placement at −1/G/L1 on a rotated building, column undo/redo, exported floor isolation and axe ([#147](https://github.com/voidbrain/openbando/pull/147); failed historically; corrected in #148). Added 3D stairs placement on −1/G/L1 with undo/redo, exported floor elevation, rotation and floor-isolation assertions; the optional stairwell is disabled to isolate placement. Browser execution of this extension is pending. Doors, windows, automatic stairwell creation and full handle coverage remain open.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#86](https://github.com/voidbrain/openbando/pull/86), [#88](https://github.com/voidbrain/openbando/pull/88), [#95](https://github.com/voidbrain/openbando/pull/95) (implementation and partial browser coverage)  [#148](https://github.com/voidbrain/openbando/pull/148) (Wall selection fix); |
+| PR / evidence | FOLLOWUP_PR (stair-placement browser coverage); [#86](https://github.com/voidbrain/openbando/pull/86), [#88](https://github.com/voidbrain/openbando/pull/88), [#95](https://github.com/voidbrain/openbando/pull/95) (implementation and partial browser coverage)  [#148](https://github.com/voidbrain/openbando/pull/148) (Wall selection fix); |
 | Opened | 2026-10-27 |
-| Verification | Pending — see PR/evidence for partial automated coverage; Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit)  Browser/accessibility · 2026-10-28 · [#147 CI](https://github.com/voidbrain/openbando/actions/runs/40734777783) failed at Wall activation on every floor; corrected in #148 (passing floor matrix below).; Browser/accessibility · 2026-10-28 · #148 −1/G/L1 pointer placement, undo/export floor isolation and axe passed in [shard 3](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847187) and [shard 4](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847284). |
+| Verification | Test-source validation · 2026-10-28 · strict TypeScript and discovery of all three extended cases passed; new browser execution pending.  Pending — see PR/evidence for partial automated coverage; Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit)  Browser/accessibility · 2026-10-28 · [#147 CI](https://github.com/voidbrain/openbando/actions/runs/40734777783) failed at Wall activation on every floor; corrected in #148 (passing floor matrix below).; Browser/accessibility · 2026-10-28 · #148 −1/G/L1 pointer placement, undo/export floor isolation and axe passed in [shard 3](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847187) and [shard 4](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847284). |
 | Reviewed | 2026-10-28 |
 
 </details>
