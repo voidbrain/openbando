@@ -28,3 +28,5 @@ The Welcome tour highlights Build/Fly/Share while the mascot plays, then waits f
 Features opens its own panel and is reachable with `?panel=features`; it is excluded from Views. Its marketing card grid is an explicit content exception to the instrument UI field-manual voice, not permission to add promotional copy to editing controls.
 
 The showcase highlights Build, Fly and Share in turn, playing each eight-second film completely and distributing mascot progress across the three stages. Films pause while Welcome is hidden. There is no separate long wait after the third card.
+
+During showcase, fit each complete card film into the remaining third of the single 19.7-second mascot loop, restoring film playback rate afterwards. Hold the final mascot frame until Welcome closes; do not show a second search/run/sit while waiting for films. Pause holds the film, mascot and countdown. Ordinary Welcome keeps its repeating mascot.
