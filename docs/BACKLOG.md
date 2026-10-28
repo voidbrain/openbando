@@ -63,18 +63,4 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ## Other changes
 
-| Signal | Change | PR / evidence | Status | Verification | Reviewed |
-|:---: |---|---|---|---|---|
-| 🟡 | Replace ambiguous Verify/Done statuses with Implemented/Verified/Closed; record verification date, method, result and evidence separately from ledger review. | [#120](https://github.com/voidbrain/openbando/pull/120) | Implemented | Documentation · 2026-10-28 · table schema checked | 2026-10-28 |
-
-| Follow-up code/documentation audit; refresh CI evidence and generated guide text without claiming clip regeneration. | [#125](https://github.com/voidbrain/openbando/pull/125); [audit](audits/2026-10-28.md) | Implemented | Documentation · 2026-10-28 · source and CI review; media checks pending | 2026-10-28 |
-
-| 🟡 | Add first-column status signals with a legend; retain written status and separate priority, and preserve ID ordering. | [#126](https://github.com/voidbrain/openbando/pull/126) | Implemented | Documentation · 2026-10-28 · row/legend consistency checked | 2026-10-28 |
-
-| 🟡 | Add distinct priority shapes beside P1/P2/P3 and document the separate status/priority cues. | [#127](https://github.com/voidbrain/openbando/pull/127) | Implemented | Documentation · 2026-10-28 · priority labels, markers and table widths checked | 2026-10-28 |
-
-| 🟡 | Use neutral grey priority markers for Closed and Blocked items, retaining historical P1/P2/P3; apply to the closed archive and document reopening behavior. | [#128](https://github.com/voidbrain/openbando/pull/128) | Implemented | Documentation · 2026-10-28 · closed priorities and table widths checked | 2026-10-28 |
-
-| 🟡 | Add compact lifecycle legend with requirements, conditional transitions and priority-cue effects. | [#129](https://github.com/voidbrain/openbando/pull/129) | Implemented | Documentation · 2026-10-28 · six statuses and transition/colour rules reviewed | 2026-10-28 |
-
-| 🟡 | Add final Human action required column to bugs/features, retaining user legend edits and distinguishing human dependencies from agent work. | [#130](https://github.com/voidbrain/openbando/pull/130) | Implemented | Documentation · 2026-10-28 · all 23 rows and original-field preservation checked | 2026-10-28 |
+No active maintenance-only changes. Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature tables above.
