@@ -30,7 +30,7 @@ This guide governs application UI; [Backlog rules](../docs/BACKLOG-RULES.md) gov
 
 - Dark only (`color-scheme: dark`). Page on `bg`; panels on `panel` (94% opaque over a 6px blur); anything floating over the map that must stay legible on `panel-solid`.
 - Text in `text`; secondary text, captions, labels and counts in `dim`.
-- `accent` is the only brand hue in chrome. Use it for the active state (`.btn.on`, selected segment, selected row border), the one primary action, links and success text. Anything filled with `accent` carries `accent-ink` text.
+- `accent` is the only brand hue in chrome. Use it for the active state (`.btn.on`, selected segment, selected row border), the one primary action, links and success text. Anything filled with `accent` carries `accent-ink` text. When a filled button hovers onto the dark `control-hover` surface, switch its label to light `text`.
 - `warn` for problems the pilot can act on (errors, the readout's warning, notice borders). `danger` / `danger-fill` / `danger-line` / `danger-text` for destructive commands, with explicit existing exceptions: red north navigation in CameraCompass and reddish selected measures in Readout. These exceptions do not make navigation or selection destructive.
 - Every editing tool has its own `tool-*` colour, used for its palette dot, its active border and the shapes it draws on the plan. Never reuse a tool colour for another tool or for the area frame (accent, dashed, with the `rotate-knob` yellow knob). Unselected measures use `tool-measure` cyan; selected lines and labels use the existing reddish selection treatment described in Readout.
 - Hover and active states on transparent buttons are white washes (`wash-hover`, `wash-on`, `wash-menu`), not new colours.

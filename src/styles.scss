@@ -61,6 +61,10 @@ textarea {
   white-space: nowrap;
   &:hover:not(:disabled) {
     background: var(--control-hover);
+    &.primary,
+    &.on {
+      color: var(--text);
+    }
   }
   &:disabled {
     opacity: 0.45;

@@ -386,3 +386,5 @@ Follow [docs/BACKLOG-RULES.md](docs/BACKLOG-RULES.md), the authoritative mainten
 - Every change/review must reassess affected item status, actions, next action, human dependency/blocker, verification and evidence. Perform authorized feasible next steps rather than leaving “Agent can…” notes; close/archive when criteria pass. Only actual dependencies or required missing human evidence block dependent work; continue independent work. Follow `docs/BACKLOG-RULES.md`.
 
 - Chrome theme: use shared indigo/purple surface tokens for panels, fields, menus and buttons. Keep the existing lime accent/ink pair and all semantic, telemetry, tool and pilot palettes unchanged. Art and model materials are separate from UI chrome.
+
+- Contrast checks must exercise rendered control states, including hover on primary and active buttons. Palette-pair calculations and axe on an unhovered page do not establish hover contrast.

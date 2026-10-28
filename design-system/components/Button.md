@@ -23,3 +23,7 @@ The label (or a glyph with a `title` / `aria-label`), the click handler, and `di
 Source: `src/styles.scss (.btn)`.
 
 Chrome uses the shared indigo/purple surface tokens. Keep status colours unchanged and pair lime active fills with `accent-ink`; do not reintroduce literal green control backgrounds.
+
+Filled `.primary` and `.on` buttons use `accent-ink` on the lime fill at rest. On hover, the shared `control-hover` purple fill pairs with light `text`; never leave `accent-ink` on that dark fill. Verify computed colour contrast after hovering a real button, as well as its resting state.
+
+Views `.btn.ib.on` icon buttons use this same active/hover pairing; their SVG `currentColor` must follow the button label colour.
