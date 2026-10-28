@@ -390,7 +390,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | `media/f011-guide-clips` (re-recorded clips and films, recorder fix); [#102](https://github.com/voidbrain/openbando/pull/102) (audit) |
+| PR / evidence | [#167](https://github.com/voidbrain/openbando/pull/167) (re-recorded clips and films, recorder fix); [#102](https://github.com/voidbrain/openbando/pull/102) (audit) |
 | Opened | 2026-10-27 |
 | Verification | Documentation · 2026-10-28 · source/history audit and guide regeneration; Media review · 2026-10-29 · agent frame review of every re-recorded clip and film (contact sheets); CI · Pending |
 | Reviewed | 2026-10-29 |
