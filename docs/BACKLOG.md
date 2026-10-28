@@ -58,10 +58,10 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#155](https://github.com/voidbrain/openbando/pull/155) (one-loop timing); [#150](https://github.com/voidbrain/openbando/pull/150); [#124](https://github.com/voidbrain/openbando/pull/124) (merged; action-order checks passed in #124 CI); [CI failure](https://github.com/voidbrain/openbando/actions/runs/40650990021/job/122690744193); [#107](https://github.com/voidbrain/openbando/pull/107) (fix; browser checks pending); [#109](https://github.com/voidbrain/openbando/pull/109) (merged; visual/browser verification pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending); [#148](https://github.com/voidbrain/openbando/pull/148); [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout) |
+| PR / evidence | [#155](https://github.com/voidbrain/openbando/pull/155) (one-loop timing); [#150](https://github.com/voidbrain/openbando/pull/150); [#124](https://github.com/voidbrain/openbando/pull/124) (merged; action-order checks passed in #124 CI); [CI failure](https://github.com/voidbrain/openbando/actions/runs/40650990021/job/122690744193); [#107](https://github.com/voidbrain/openbando/pull/107) (fix; browser checks pending); [#109](https://github.com/voidbrain/openbando/pull/109) (merged; visual/browser verification pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending); [#148](https://github.com/voidbrain/openbando/pull/148); [#149](https://github.com/voidbrain/openbando/pull/149) (CI fixes and readable record layout); history: #148 continuation failure, corrected by #149 |
 | Opened | 2026-10-27 |
-| Verification | Browser/accessibility · 2026-10-28 · [#149 shard 4](https://github.com/voidbrain/openbando/actions/runs/40745098159/job/123016650449) passed full replay/continuation, distributed card films, reduced motion, Stop and Auto-sync; #148 continuation failure corrected by #149. Human presentation review · Pending. |
-| Reviewed | 2026-10-28 |
+| Verification | Browser/accessibility · 2026-10-28 · [#149 shard 4](https://github.com/voidbrain/openbando/actions/runs/40745098159/job/123016650449) passed full replay/continuation, distributed card films, reduced motion, Stop and Auto-sync; Human presentation review · Pending |
+| Reviewed | 2026-10-29 |
 
 </details>
 
@@ -146,10 +146,10 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#158](https://github.com/voidbrain/openbando/pull/158) |
+| PR / evidence | [#158](https://github.com/voidbrain/openbando/pull/158); history: local Chromium and WebKit (Desktop Safari) regression passed with the fix and failed (opacity 0) without it, 2026-10-28 |
 | Opened | 2026-10-28 |
-| Verification | Browser/accessibility · 2026-10-28 · local Playwright Chromium and WebKit (Desktop Safari) regression passed with the fix and failed (opacity 0) without it; Browser/accessibility · 2026-10-28 · opacity regression passed in [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) shard 1 (Chromium); Human Safari check · Pending |
-| Reviewed | 2026-10-28 |
+| Verification | Browser/accessibility · 2026-10-28 · opacity regression passed in [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) shard 1 (Chromium); Human Safari check · Pending |
+| Reviewed | 2026-10-29 |
 
 </details>
 
@@ -258,10 +258,10 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#101](https://github.com/voidbrain/openbando/pull/101) (2D); [#116](https://github.com/voidbrain/openbando/pull/116) (merged; [CI](https://github.com/voidbrain/openbando/actions/runs/40595652166) passed; pointer review pending) |
+| PR / evidence | [#101](https://github.com/voidbrain/openbando/pull/101) (2D); [#116](https://github.com/voidbrain/openbando/pull/116) (merged; [CI](https://github.com/voidbrain/openbando/actions/runs/40595652166) passed; pointer review pending); history: unit + browser passed in [#116 CI](https://github.com/voidbrain/openbando/actions/runs/40595652166), 2026-10-27 |
 | Opened | 2026-10-27 |
-| Verification | Unit/integration + Browser/accessibility · 2026-10-27 · [CI passed](https://github.com/voidbrain/openbando/actions/runs/40595652166); Human pointer review · Pending; Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit) |
-| Reviewed | 2026-10-28 |
+| Verification | Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit); Human pointer review · Pending |
+| Reviewed | 2026-10-29 |
 
 </details>
 
@@ -282,8 +282,8 @@ Each item has a compact summary, followed by **→ Human action required** first
 |---|---|
 | PR / evidence | [#101](https://github.com/voidbrain/openbando/pull/101) (context); [#122](https://github.com/voidbrain/openbando/pull/122) (perimeter visibility); [#141](https://github.com/voidbrain/openbando/pull/141) (open-edge Cut/Wing); [#142](https://github.com/voidbrain/openbando/pull/142) (safe resize and footprint restoration) |
 | Opened | 2026-10-27 |
-| Verification | Browser/accessibility · 2026-10-28 · #141 open-edge Cut case passed in [CI](https://github.com/voidbrain/openbando/actions/runs/40720066164); Unit/integration · 2026-10-28 · all 528 tests passed locally (43 basement tests); Browser/accessibility · 2026-10-28 · resize/restore passed in [#142 CI](https://github.com/voidbrain/openbando/actions/runs/40724736656) |
-| Reviewed | 2026-10-28 |
+| Verification | Unit/integration · 2026-10-28 · all 528 tests passed locally (43 basement tests); Browser/accessibility · 2026-10-28 · resize/restore passed in [#142 CI](https://github.com/voidbrain/openbando/actions/runs/40724736656), open-edge Cut in [#141 CI](https://github.com/voidbrain/openbando/actions/runs/40720066164) |
+| Reviewed | 2026-10-29 |
 
 </details>
 
@@ -302,10 +302,10 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#153](https://github.com/voidbrain/openbando/pull/153) (top-floor test correction); [#152](https://github.com/voidbrain/openbando/pull/152) (stair-placement browser coverage); [#86](https://github.com/voidbrain/openbando/pull/86), [#88](https://github.com/voidbrain/openbando/pull/88), [#95](https://github.com/voidbrain/openbando/pull/95) (implementation and partial browser coverage); [#148](https://github.com/voidbrain/openbando/pull/148) (Wall selection fix) |
+| PR / evidence | [#153](https://github.com/voidbrain/openbando/pull/153) (top-floor test correction); [#152](https://github.com/voidbrain/openbando/pull/152) (stair-placement browser coverage); [#86](https://github.com/voidbrain/openbando/pull/86), [#88](https://github.com/voidbrain/openbando/pull/88), [#95](https://github.com/voidbrain/openbando/pull/95) (implementation and partial browser coverage); [#148](https://github.com/voidbrain/openbando/pull/148) (Wall selection fix); history: [#147 CI](https://github.com/voidbrain/openbando/actions/runs/40734777783) failed at Wall activation on every floor (corrected in #148); #152 L1 failed on a stairwell checkbox absent on the top floor (corrected in #153); [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed selected workflows |
 | Opened | 2026-10-27 |
-| Verification | Test-source validation · 2026-10-28 · strict TypeScript and discovery of all three extended cases passed; −1/G stair placement passed in #152; L1 failed waiting for a stairwell checkbox absent on the top floor. Follow-up asserts its absence; L1 passed in #153 shard 4; all #153 jobs passed.  Pending — see PR/evidence for partial automated coverage; Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit)  Browser/accessibility · 2026-10-28 · [#147 CI](https://github.com/voidbrain/openbando/actions/runs/40734777783) failed at Wall activation on every floor; corrected in #148 (passing floor matrix below).; Browser/accessibility · 2026-10-28 · #148 −1/G/L1 pointer placement, undo/export floor isolation and axe passed in [shard 3](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847187) and [shard 4](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847284). |
-| Reviewed | 2026-10-28 |
+| Verification | Browser/accessibility · 2026-10-28 · −1/G/L1 pointer placement, undo/export floor isolation and axe passed in #148 ([shard 3](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847187), [shard 4](https://github.com/voidbrain/openbando/actions/runs/40738619197/job/122993847284)); stair placement −1/G passed in #152, L1 in [#153 CI](https://github.com/voidbrain/openbando/actions/runs/40760899876/job/123072222211) (all jobs passed); doors, windows, automatic stairwells and remaining handles · Pending |
+| Reviewed | 2026-10-29 |
 
 </details>
 
@@ -326,8 +326,8 @@ Each item has a compact summary, followed by **→ Human action required** first
 |---|---|
 | PR / evidence | [#84](https://github.com/voidbrain/openbando/pull/84), [#85](https://github.com/voidbrain/openbando/pull/85), [#90](https://github.com/voidbrain/openbando/pull/90) (partial coverage) |
 | Opened | 2026-10-27 |
-| Verification | Pending — see PR/evidence for partial automated coverage; Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit) |
-| Reviewed | 2026-10-28 |
+| Verification | Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit); Studio controls and vegetation review in both views · Pending |
+| Reviewed | 2026-10-29 |
 
 </details>
 
@@ -346,10 +346,10 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#108](https://github.com/voidbrain/openbando/pull/108) (timing; browser checks pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending) |
+| PR / evidence | [#108](https://github.com/voidbrain/openbando/pull/108) (timing; browser checks pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending); history: timing/reduced-motion passed in [#119 CI](https://github.com/voidbrain/openbando/actions/runs/40643805473) |
 | Opened | 2026-10-27 |
-| Verification | Human · 2026-10-28 · mascot accepted; Browser/accessibility · 2026-10-28 · timing/reduced-motion tests passed in [#119 CI](https://github.com/voidbrain/openbando/actions/runs/40643805473); complete showcase passed in #124 CI; Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit) |
-| Reviewed | 2026-10-28 |
+| Verification | Human · 2026-10-28 · mascot accepted; Browser/accessibility · 2026-10-28 · complete showcase and timing/reduced-motion tests passed in [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) |
+| Reviewed | 2026-10-29 |
 
 </details>
 
@@ -412,10 +412,10 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#109](https://github.com/voidbrain/openbando/pull/109) (merged); [#115](https://github.com/voidbrain/openbando/pull/115) (first axe fix failed); [#116](https://github.com/voidbrain/openbando/pull/116) (vector fix; browser verification pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending) |
+| PR / evidence | [#109](https://github.com/voidbrain/openbando/pull/109) (merged); [#115](https://github.com/voidbrain/openbando/pull/115) (first axe fix failed); [#116](https://github.com/voidbrain/openbando/pull/116) (vector fix; browser verification pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending); history: [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows) |
 | Opened | 2026-10-27 |
-| Verification | Human · 2026-10-28 · compass controls accepted; Browser/accessibility · 2026-10-28 · #143 full CI passed, including final Welcome compass hiding; Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit) |
-| Reviewed | 2026-10-28 |
+| Verification | Human · 2026-10-28 · compass controls accepted; Browser/accessibility · 2026-10-28 · [#143](https://github.com/voidbrain/openbando/pull/143) full CI passed, including final Welcome compass hiding |
+| Reviewed | 2026-10-29 |
 
 </details>
 
@@ -445,7 +445,9 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ## Other changes
 
-In review: `docs/agents-structure` splits AGENTS.md (414 → about 165 lines: conventions, architecture, checks, joins, pitfalls, privacy, work tracking) from [docs/agents/areas.md](agents/areas.md) (area rules and lessons moved verbatim, regrouped by area; the scattered Welcome/Views bullets now sit together). Backlog-procedure paragraphs that BACKLOG-RULES already owns were replaced by a pointer.
+Merged ([#163](https://github.com/voidbrain/openbando/pull/163), CI being reconciled): splits AGENTS.md (414 → about 165 lines: conventions, architecture, checks, joins, pitfalls, privacy, work tracking) from [docs/agents/areas.md](agents/areas.md) (area rules and lessons moved verbatim, regrouped by area; the scattered Welcome/Views bullets now sit together). Backlog-procedure paragraphs that BACKLOG-RULES already owns were replaced by a pointer.
+
+In review: `chore/ci-status` adds `npm run ci:status` (per-PR CI jobs, failed and retried tests, PRs not based on main) and makes Verification cells current-state (one entry per method; earlier results move to PR / evidence as labelled history). Applied to B-011, B-024, F-003, F-004, F-005, F-006, F-008 and F-012.
 
 In review ([#162](https://github.com/voidbrain/openbando/pull/162), recovery: #161 merged into a stacked branch, not main) — [#161](https://github.com/voidbrain/openbando/pull/161) adds `check:conventions` (AGENTS Angular conventions, `core/` imports, unused exports; in CI) and a 90 s Playwright action timeout, so a missing locator fails in 90 s instead of the whole 6-minute test budget. Moves to the maintenance history once merged with green CI.
 
