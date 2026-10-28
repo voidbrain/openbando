@@ -5,7 +5,7 @@ import type {SiteSpec} from '../src/app/core/site-spec';
 
 // Exercise real canvas pointers, then inspect the exported source rather than only its rendered silhouette.
 for (const floor of ['−1', 'G', 'L1']) {
-  test(`3D indoor ${floor}: rotated placement, undo and saved floor isolation`, async ({page}) => {
+  test(`3D indoor ${floor}: rotated placement, stairs, undo and saved floor isolation`, async ({page}) => {
     test.setTimeout(180_000);
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -79,6 +79,19 @@ for (const floor of ['−1', 'G', 'L1']) {
     await expect(page.locator('[data-pk="void:0"]')).toHaveCount(1);
     await expect(bar.getByRole('button', {name: floor, exact: true})).toHaveClass(/on/);
     await page.locator('[data-tour="view-3d"]').click();
+    await tool('stairs', 'Stairs');
+    // Isolate placement from the optional cross-floor stairwell operation.
+    await page.getByRole('checkbox', {name: 'open floor above', exact: true}).uncheck();
+    const stairBox = await canvas.boundingBox();
+    expect(stairBox).not.toBeNull();
+    await canvas.click({position: {x: stairBox!.width * .42, y: stairBox!.height * .50}});
+    await page.locator('[data-tour="view-2d"]').click();
+    await expect(page.locator('[data-pk="structure:0"]')).toHaveCount(1);
+    await bar.getByTitle('Undo (Ctrl+Z)', {exact: true}).click();
+    await expect(page.locator('[data-pk="structure:0"]')).toHaveCount(0);
+    await bar.getByTitle('Redo', {exact: true}).click();
+    await expect(page.locator('[data-pk="structure:0"]')).toHaveCount(1);
+    await page.locator('[data-tour="view-3d"]').click();
     const axe = await new AxeBuilder({page}).include('app-site-view').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
     expect(axe.violations.map(violation => violation.id)).toEqual([]);
     await bar.getByRole('button', {name: 'Save', exact: true}).click();
@@ -98,6 +111,14 @@ for (const floor of ['−1', 'G', 'L1']) {
     expect(column.x).toBeGreaterThan(0); expect(column.x).toBeLessThan(30);
     expect(column.z).toBeGreaterThan(0); expect(column.z).toBeLessThan(30);
     expect(building.rotDeg).toBe(37);
+    expect(saved.structures).toHaveLength(1);
+    const stairs = saved.structures![0]!;
+    expect(stairs.kind).toBe('stairs');
+    expect(stairs.rotDeg).toBe(37);
+    expect(stairs.y).toBe(floor === '−1' ? -3 : floor === 'G' ? 0 : 4);
+    expect(stairs.height).toBe(floor === '−1' ? 3 : 4);
+    expect(stairs.length).toBeGreaterThan(2);
+    expect(Number.isFinite(stairs.x) && Number.isFinite(stairs.z)).toBe(true);
     for (const other of [building.basement!, ...building.levels].filter(item => item !== edited)) {
       expect(other.columns ?? []).toHaveLength(0);
       expect(other.partitions ?? []).toHaveLength(0);
