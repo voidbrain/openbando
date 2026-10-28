@@ -12,6 +12,7 @@ test('the showcase link plays to the end', async ({ page }) => {
   await expect(bar).toBeHidden({ timeout: 300_000 });
   const shown = await page.locator('app-panel:not([hidden])').evaluateAll((els) => els.map((e) => `${e.getAttribute('data-id')}${e.classList.contains('ghost') ? '*' : ''}`));
   expect(shown).toEqual(['welcome']);
+  await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'OpenBando', exact: true })).toBeVisible();
   const replayVideo = page.locator('app-video-panel video');
   await expect(replayVideo).toHaveCount(1);
@@ -75,6 +76,7 @@ test('stopping the showcase returns to Welcome', async ({ page }) => {
   await expect(page.locator('app-panel[data-id="welcome"]')).toBeVisible();
   const shown = await page.locator('app-panel:not([hidden])').evaluateAll((els) => els.map((e) => e.getAttribute('data-id')));
   expect(shown).toEqual(['welcome']);
+  await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
 });
 
 /** The showcase skips the scan: the offset it uses must be the one a real Auto-sync finds for the demo flight. */
