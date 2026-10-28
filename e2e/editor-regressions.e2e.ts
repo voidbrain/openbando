@@ -433,14 +433,26 @@ for (const rotation of [0, 37]) {
         }));
       });
       await expect.poll(() => plan.evaluate(el => Math.abs((el as SVGSVGElement).getScreenCTM()!.a))).toBeGreaterThan(100);
-      // At close 3D zoom, nearby ground clicks must resolve centimetres, not whole metres.
+      // A basement selection orbits around its underground centre. Clear it before a ground-level zoom test.
+      await page.locator('[data-tour="view-3d"]').click();
+      await bar.getByRole('button', {name: /Indoors/}).click();
+      let canvas = page.locator('app-site-view canvas');
+      const overview = await canvas.boundingBox();
+      expect(overview).not.toBeNull();
+      await canvas.click({position: {x: overview!.width * 0.9, y: overview!.height * 0.1}});
+      await expect(inspector.locator('app-element-preview')).toHaveCount(0);
+      // Recreate the view with no selected-object target so the camera orbits the ground origin.
+      await page.locator('[data-tour="view-2d"]').click();
       await page.locator('[data-tour="view-3d"]').click();
       await bar.getByLabel('Debug coordinates', {exact: true}).check();
-      const canvas = page.locator('app-site-view canvas');
-      await canvas.dispatchEvent('wheel', {deltaY: -999});
+      canvas = page.locator('app-site-view canvas');
       const box = await canvas.boundingBox();
       expect(box).not.toBeNull();
       const readout = page.locator('.debug-readout');
+      // A successful pick establishes renderer readiness before dispatching the wheel event.
+      await canvas.click({position: {x: box!.width * 0.5, y: box!.height * 0.5}});
+      await expect(readout).toContainText(/x [-\d.]+ · y 0\.00 · z [-\d.]+ m/);
+      await canvas.dispatchEvent('wheel', {deltaY: -999});
       const sample = async (u: number): Promise<number[]> => {
         const previous = await readout.count() ? await readout.innerText() : null;
         await canvas.click({position: {x: box!.width * u, y: box!.height * 0.5}});
