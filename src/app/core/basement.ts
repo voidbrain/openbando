@@ -137,12 +137,17 @@ export function reshapeBasement(b: BuildingSpec, rect: Rect, op: 'add' | 'cut'):
   if (!perimeter) return false;
   const next = perimeter.outline;
   if (next.some(p => Math.abs(p.x) > BASEMENT_COORD_LIMIT || Math.abs(p.z) > BASEMENT_COORD_LIMIT)) return false;
-  // Convert and validate openings first; never commit a shape that would discard one or an interior item.
+  return replaceBasementOutline(b, next, perimeter.walls);
+}
+
+/** Replace topology only after preserving openings and floor items in the new boundary. */
+function replaceBasementOutline(b: BuildingSpec, next: Vec2[], walls: boolean[]): boolean {
+  const old = basementOutline(b), before = bounds(old);
   const copy = structuredClone(b);
   if (!moveBasementVertex(copy, 0, old[0]!)) return false;
   const after = bounds(next), dx = before.x0 - after.x0, dz = before.z0 - after.z0, basement = copy.basement!;
   basement.outline = next;
-  if (perimeter.walls.some(v => !v)) basement.wallEdges = perimeter.walls;
+  if (walls.some(v => !v)) basement.wallEdges = walls;
   else delete basement.wallEdges;
   if (basement.columns) basement.columns = basement.columns.map(c => ({...c, x:c.x + dx, z:c.z + dz}));
   if (basement.partitions) basement.partitions = basement.partitions.map(w => w.map(p => ({x:p.x + dx,z:p.z + dz})) as [Vec2, Vec2]);
@@ -154,13 +159,21 @@ export function reshapeBasement(b: BuildingSpec, rect: Rect, op: 'add' | 'cut'):
 
 /** Move one basement vertex, preserving floor objects in building coordinates and openings on their wall. */
 export function moveBasementVertex(b: BuildingSpec, index: number, point: Vec2): boolean {
+  const old = basementOutline(b);
+  if (!b.basement || !Number.isInteger(index) || index < 0 || index >= old.length) return false;
+  return moveBasementVertices(b, old.map((p, i) => i === index ? {...point} : {...p}));
+}
+
+/** Move a matching set of vertices atomically, retaining edge identities and floor-item world positions. */
+function moveBasementVertices(b: BuildingSpec, next: Vec2[]): boolean {
   const basement = b.basement;
   if (!basement) return false;
   const wallEdges = perimeterWalls(b);
   if (!wallEdges) return false;
-  const old = basementOutline(b), next = old.map((p, i) => i === index ? { ...point } : { ...p });
+  const old = basementOutline(b);
+  if (next.length !== old.length) return false;
   const validPoint = (p: Vec2): boolean => Number.isFinite(p.x) && Number.isFinite(p.z) && Math.abs(p.x) <= BASEMENT_COORD_LIMIT && Math.abs(p.z) <= BASEMENT_COORD_LIMIT;
-  if (index < 0 || index >= old.length || !validOutline(next) || !next.every(validPoint)) return false;
+  if (!validOutline(next) || !next.every(validPoint)) return false;
   const before = bounds(old), after = bounds(next);
   const dx = before.x0 - after.x0, dz = before.z0 - after.z0;
   const shifted = (p: Vec2): Vec2 => ({ x: p.x + dx, z: p.z + dz });
@@ -190,6 +203,8 @@ export function moveBasementVertex(b: BuildingSpec, index: number, point: Vec2):
     return corners.some((p, i) => !segmentInside(p, corners[(i + 1) % corners.length]!));
   })) return false;
   const mini = basementBuilding(b), offsetX = (before.x0 + before.x1) / 2, offsetZ = (before.z0 + before.z1) / 2;
+  // Compass-indexed doors on an already shaped floor have no unambiguous wall mapping.
+  if (mini.footprint && Object.values(mini.levels[0]!.doors).some(list => list?.length)) return false;
   const currentOpenings = listOpenings(mini, 0);
   const expectedCount = mini.footprint ? mini.levels[0]!.wallOpenings?.length ?? 0 : Object.values(mini.levels[0]!.doors).reduce((n, list) => n + (list?.length ?? 0), 0);
   if (currentOpenings.length !== expectedCount) return false;
@@ -218,6 +233,49 @@ export function moveBasementVertex(b: BuildingSpec, index: number, point: Vec2):
   if (basement.columns) basement.columns = basement.columns.map(c => ({ ...c, x: c.x + dx, z: c.z + dz }));
   if (basement.partitions) basement.partitions = basement.partitions.map(w => w.map(p => ({ x: p.x + dx, z: p.z + dz })) as [Vec2, Vec2]);
   if (basement.voids) basement.voids = basement.voids.map(v => ({ ...v, x0: v.x0 + dx, x1: v.x1 + dx, z0: v.z0 + dz, z1: v.z1 + dz }));
+  return true;
+}
+
+/** Resize around the current basement centre, preserving its shape and each perimeter edge's identity. */
+export function resizeBasement(b: BuildingSpec, length: number, width: number): boolean {
+  if (!b.basement || ![length, width].every(v => Number.isFinite(v) && v >= 2 && v <= 300)) return false;
+  const old = basementOutline(b), box = bounds(old), cx = (box.x0 + box.x1) / 2, cz = (box.z0 + box.z1) / 2;
+  const sx = length / (box.x1 - box.x0), sz = width / (box.z1 - box.z0);
+  return moveBasementVertices(b, old.map(p => ({x: cx + (p.x - cx) * sx, z: cz + (p.z - cz) * sz})));
+}
+
+/** Restore the building's current footprint; do not guess how open walls map onto different topology. */
+export function restoreBasementFootprint(b: BuildingSpec): boolean {
+  if (!b.basement) return false;
+  const old = basementOutline(b), target = outlineOf(b), before = bounds(old), after = bounds(target);
+  if (!validOutline(old) || !validOutline(target)) return false;
+  const flags = perimeterWalls(b);
+  if (!flags) return false;
+  const norm = (p: Vec2, box: Rect): Vec2 => ({x: (p.x - box.x0) / (box.x1 - box.x0), z: (p.z - box.z0) / (box.z1 - box.z0)});
+  const same = (a: Vec2, z: Vec2): boolean => Math.hypot(a.x - z.x, a.z - z.z) < 1e-6;
+  let indices: number[] | null = null;
+  if (old.length === target.length) {
+    for (const direction of [1, -1]) for (let start = 0; start < target.length && !indices; start++) {
+      const order = old.map((_, i) => (start + direction * i + target.length) % target.length);
+      if (old.every((p, i) => same(norm(p, before), norm(target[order[i]!]!, after)))) indices = order;
+    }
+  }
+  const copy = structuredClone(b);
+  if (indices) {
+    if (!moveBasementVertices(copy, indices.map(i => ({...target[i]!})))) return false;
+    const mapped = target.map((_, i) => {
+      const a = indices.indexOf(i), next = (i + 1) % target.length;
+      return indices[(a + 1) % indices.length] === next ? flags[a]! : flags[(a + flags.length - 1) % flags.length]!;
+    });
+    if (mapped.some(v => !v)) {
+      copy.basement!.outline = target.map(p => ({...p}));
+      copy.basement!.wallEdges = mapped;
+    } else { delete copy.basement!.outline; delete copy.basement!.wallEdges; }
+  } else {
+    if (flags.some(v => !v) || !replaceBasementOutline(copy, target.map(p => ({...p})), target.map(() => true))) return false;
+    delete copy.basement!.outline;
+  }
+  b.basement = copy.basement;
   return true;
 }
 
