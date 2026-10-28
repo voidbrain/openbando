@@ -27,14 +27,14 @@ const clip = (sn) => {
 };
 const head = '<!-- Written by tools/build-guide.mjs from src/app/core/tour.ts: edit the tour, then run the script. -->\n\n';
 
-let index = `${head}# OpenBando guide\n\nThe app plays these as animated tours on the real interface: open **Guide me** (shown on the first visit, then from Views). Every step is also a short clip, used in these pages, in the hover tips (Guide me → Show tips on hover) and for articles.\n\n## Tours\n\n`;
+let index = `${head}# OpenBando guide\n\nThe app plays these as animated tours on the real interface: open **Guide me** from Welcome or Views. Every step is also a short clip, used in these pages, in the hover tips (Guide me → Show tips on hover) and for articles.\n\n## Tours\n\n`;
 for (const t of TOURS) {
   const min = Math.max(1, Math.round(playTime(tourBeats(t).map((b) => b.beat)) / 60000));
   index += `- **${t.title}** (~${min} min): ${t.about} Steps: ${t.snippets.map((id) => SNIPPETS.find((s) => s.id === id).title.toLowerCase()).join(', ')}.\n`;
 }
 index += `\n## Sections\n\n`;
 for (const s of SECTIONS) index += `- [${s.title}](${page(s)})\n`;
-index += `\n## Clips\n\n\`npm run clips\` plays every step in a headless browser, keeps each as \`docs/guide/clips/<step>.webm\` and rewrites these pages to embed them (a GIF for an article: \`ffmpeg -i step.webm -vf "fps=12,scale=720:-1" step.gif\`).\n`;
+index += `\n## Clips\n\nThe existing clips were last updated on 24 October 2026 and have not been re-recorded for the current Studio UI. They are historical walkthroughs; the in-app tours use the current interface. See [current audit](../audits/2026-10-28.md) and [backlog F-011](../BACKLOG.md).\n\n\`npm run clips\` plays every step in a headless browser, keeps each as \`docs/guide/clips/<step>.webm\` and rewrites these pages to embed them (a GIF for an article: \`ffmpeg -i step.webm -vf "fps=12,scale=720:-1" step.gif\`).\n`;
 writeFileSync(join(dir, 'README.md'), index);
 
 for (const s of SECTIONS) {

@@ -92,7 +92,7 @@ jobs:
           retention-days: 7
 
   race-browser:
-    # Focused racing UI checks run on PRs even while the old full-guide e2e input guard is unresolved.
+    # Focused racing/editor UI checks supplement the complete sharded browser suite on PRs.
     if: ${{ github.event_name == 'pull_request' }}
     needs: check
     runs-on: ubuntu-latest
