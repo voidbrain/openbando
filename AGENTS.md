@@ -397,7 +397,7 @@ Follow [docs/BACKLOG-RULES.md](docs/BACKLOG-RULES.md), the authoritative mainten
 - Showcase opening distributes mascot progress across Build/Fly/Share and plays each film to its end; the replay also completes before exit. Entry/exit restores a 3D overview with orbit Follow off. Keep paths suppressed at the render boundary while Welcome is visible and verify loading a subsequent stored model.
 
 
-- Backlog layout: compact five-column item summaries; keep Next action and Human action visible immediately below each item, outside expandable metadata. PR history, Opened, Verification and Reviewed belong in its two-column details table. Preserve complete records and historical archive layouts; follow BACKLOG-RULES.
+- Backlog layout: compact five-column item summaries; keep **→ Human action required** first, then Next action, visible immediately below each item, outside expandable metadata. PR history, Opened, Verification and Reviewed belong in its two-column details table. Preserve complete records and historical archive layouts; follow BACKLOG-RULES.
 - Contrast probes reuse one in-page axe engine and discover style representatives in a single DOM pass; keep full-page accessibility checks separate. Do not inflate browser budgets or drop contrast thresholds to hide slow test orchestration. Showcase examples are temporary; continuation tests must create their own saved bando fixture.
 
 - Human-action cues in active backlog records: 🧑 **Yes** for a required human action, 💻 **No** for agent-owned next action. Keep text/recap and validate the pairing; No does not mean closed.
