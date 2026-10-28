@@ -4,14 +4,16 @@ Current work ledger, reviewed 28 October 2026 against `main` at `2530d9d`. Close
 
 ## How to use this file
 
+
 | Status | Requirements | Next statuses and conditions | Priority cue |
 |---|---|---|---|
-| 🔴 Open | Reproducible bug or agreed capability; scope and next action recorded. | Investigate if cause/scope is uncertain; Implemented when code is complete; Blocked if a named dependency prevents progress; Closed if cancelled/superseded, with reason. | Coloured |
-| 🟠 Investigate | Report and unanswered question recorded; next diagnostic identified. | Open when scope/cause is established; Implemented when fixed; Blocked if evidence/dependency is unavailable; Closed if duplicate/not reproducible after documented investigation, with reason. | Coloured |
-| 🟡 Implemented | Code exists; required verification remains pending. | Verified when all acceptance checks pass; Open or Investigate if a check fails; Blocked if a required check cannot proceed. | Coloured |
-| 🟢 Verified | All acceptance checks passed; date, method and evidence recorded, including human/device checks when required. | Closed when no action remains and resolution is recorded; Open or Investigate if new evidence invalidates verification. Do not leave completed items here indefinitely. | Coloured |
-| 🟣 Blocked | Specific blocker, affected work/check and resume condition recorded. | Return to Open, Investigate or Implemented when unblocked, according to remaining work; Verified only after all checks pass; Closed if cancelled/superseded, with reason. | Grey ◻️ |
-| 🔵 Closed | Resolution recorded and item archived; fixes normally pass through Verified, while cancellation/supersession records its reason. | Open or Investigate if reopened by new evidence; retain ID, original Opened date and historical closure record. | Grey ◻️ |
+| **🔴 Open** | Reproducible bug or agreed capability; scope and next action recorded. | - **Investigate** if cause/scope is uncertain<br>- **Implemented** when code is complete<br>- **Blocked** if a named dependency prevents progress<br>- **Closed** if cancelled/superseded, with reason. | Coloured |
+| **🟠 Investigate** | Report and unanswered question recorded; next diagnostic identified. | - **Open** when scope/cause is established<br>- **Implemented** when fixed<br>- **Blocked** if evidence/dependency is unavailable<br>- **Closed** if duplicate/not reproducible after documented investigation, with reason. | Coloured |
+| **🟡 Implemented** | Code exists; required verification remains pending. | - **Verified** when all acceptance checks pass<br>- Open or Investigate if a check fails<br>- **Blocked** if a required check cannot proceed. | Coloured |
+| **🟢 Verified** | All acceptance checks passed; date, method and evidence recorded, including human/device checks when required. | - **Closed** when no action remains and resolution is recorded<br>- **Open** or **Investigate** if new evidence invalidates verification. Do not leave completed items here indefinitely. | Coloured |
+| **🟣 Blocked** | Specific blocker, affected work/check and resume condition recorded. | - Return to **Open**, **Investigate** or **Implemented** when unblocked, according to remaining work<br>- **Verified** only after all checks pass<br>- **Closed** if cancelled/superseded, with reason. | Grey ◻️ |
+| **🔵 Closed** | Resolution recorded and item archived; fixes normally pass through Verified, while cancellation/supersession records its reason. | - **Open** or **Investigate** if reopened by new evidence<br>Retain ID, original Opened date and historical closure record. | Grey ◻️ |
+
 
 Status changes never change the P1/P2/P3 value automatically. Grey affects only its marker; reopening or unblocking restores the colour for the retained priority. A merged PR alone does not establish verification or closure. Agents may close an item once its recorded criteria are met; do not require human approval unless the item specifically needs human acceptance.
 - Priority uses distinct shapes beside the written label: **🔺 P1** affects data integrity, reliable CI or core simulator behavior; **🔶 P2** affects important workflows or reported visual defects; **🔹 P3** is an enhancement or narrower review. Priority is impact, not implementation progress; circles in the first column remain reserved for status. Closed and Blocked items use a neutral grey square beside their historical priority: **◻️ P1 / ◻️ P2 / ◻️ P3**. Restore the coloured priority marker if an item is reopened or unblocked; Verified items keep their colour until Closed.
