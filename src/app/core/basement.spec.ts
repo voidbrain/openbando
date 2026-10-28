@@ -162,6 +162,27 @@ describe('basement floor tools', () => {
     expect(moveBasementVertex(invalid, 1, { x: -6, z: 5 })).toBe(false);
     expect(invalid).toEqual(changed);
   });
+  it('adds a wing to a diagonal basement while keeping floor items and rejects a cut through a door', async () => {
+    const { SiteEditor } = await import('./site-editor');
+    const b = building();
+    b.basement = { height: 3, outline: [{x:0,z:0},{x:8,z:0},{x:8,z:4},{x:4,z:8},{x:0,z:8}],
+      wallOpenings: [{kind:'door',x:4,z:0,w:1,h:2}], columns: [{x:2,z:2,size:0.4}] };
+    const s = emptySpec(); s.extent = 20; s.buildings = [b]; s.pads = [];
+    const ed = new SiteEditor(); ed.load(s);
+    ed.commitSite(d => expect(reshapeBasement(d.buildings[0]!, {x0:1,z0:1,x1:5,z1:3}, 'add')).toBe(true));
+    const changed = ed.draft().buildings[0]!;
+    expect(changed.basement!.columns![0]).toMatchObject({x:2,z:2});
+    expect(listOpenings(basementBuilding(changed), 0)).toHaveLength(1);
+    expect(sanitizeSpec(JSON.parse(JSON.stringify(ed.draft())))!.buildings[0]!.basement!.outline).toEqual(changed.basement!.outline);
+    const before = structuredClone(changed);
+    // This notch would remove the existing door; the operation must leave all data untouched.
+    expect(reshapeBasement(changed, {x0:-2,z0:-5,x1:0,z1:1}, 'cut')).toBe(false);
+    expect(changed).toEqual(before);
+    const model = buildSiteFromSpec(ed.draft());
+    expect(model.collider.groundAt(2, 2, -2)).toBeCloseTo(-3);
+    ed.undo(); expect(ed.draft().buildings[0]!.basement!.outline).toEqual(b.basement!.outline);
+    ed.redo(); expect(ed.draft().buildings[0]!.basement!.outline).toEqual(before.basement!.outline);
+  });
   it('places and slides an opening along a diagonal wall', () => {
     const b = building();
     b.basement = { height: 3, outline: [{ x: -5, z: -4 }, { x: 5, z: -4 }, { x: 5, z: 0 }, { x: 0, z: 4 }, { x: -5, z: 4 }] };

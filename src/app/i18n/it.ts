@@ -5,6 +5,7 @@
  * Voice as in English: short, direct, "tu", no exclamation marks. "Bando" stays (it is the app's word).
  */
 export const IT: Readonly<Record<string, string>> = {
+  'Cannot reshape basement: check its outline, wall openings and floor items.': 'Impossibile modificare il seminterrato: controlla perimetro, aperture e oggetti del piano.',
   'Click through buildings to read ground coordinates in metres': 'Clicca attraverso gli edifici per leggere le coordinate del terreno in metri',
   'Debug coordinates': 'Coordinate di debug',
 
