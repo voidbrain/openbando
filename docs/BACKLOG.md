@@ -175,6 +175,28 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+### B-026
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | B-026 | 🔶 P2 | Open | Welcome wordmark downloads 902 kB on every first visit |
+
+**→ Human action required:** 🧑 **Yes**<br />Approve a smaller wordmark export that keeps sharp pixel edges, or keep the current file.
+
+**Next action / closure evidence:** `public/mascot/openbando-wordmark.png` is 2172 × 554 px and 902 kB, drawn at a fraction of that width in Welcome; Angular warns NG0913 (oversized image) on every first visit. The image now uses `NgOptimizedImage` with its intrinsic size and `priority` (`check:conventions` requires it), which does not shrink the file. The generated master is not an exact pixel grid, so a smaller export can change letter edges: prepare candidates (nearest-neighbour at the rendered width × 2, and an optimised PNG at the current size) for the wordmark guide's visual review before replacing the approved file.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#161](https://github.com/voidbrain/openbando/pull/161) (NgOptimizedImage, size attributes); [audit](audits/2026-10-28.md) (found 2026-10-28) |
+| Opened | 2026-10-29 |
+| Verification | Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
 ## Features and limitations
 
 ### F-001
@@ -422,5 +444,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 User-accepted fixes are preserved in the dated archives rather than repeated here. New findings reuse an existing ID when they concern the same behavior.
 
 ## Other changes
+
+In review: [#161](https://github.com/voidbrain/openbando/pull/161) adds `check:conventions` (AGENTS Angular conventions, `core/` imports, unused exports; in CI) and a 90 s Playwright action timeout, so a missing locator fails in 90 s instead of the whole 6-minute test budget. Moves to the maintenance history once merged with green CI.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
