@@ -364,3 +364,8 @@ npm run check:i18n                        # every UI text has its Italian
 - `basement.wallEdges` stores one boolean per outline edge. The isolated `LevelSpec.wallEdges` carries it to preview/indoor rendering. Convert legacy compass flags before a vertex edit; clockwise and counterclockwise outlines must agree. Never silently re-enable a wall when its edge becomes diagonal.
 - Split edges inherit their old flag. Removing a corner between different flags is rejected; openings and floor items keep the existing preservation checks. Cut/Wing and dimension/footprint replacement are guarded while perimeter edges are disabled, until a topology remapping policy exists.
 - Inspector uses per-edge switches for polygonal or converted basements. Hidden walls retain existing opening data for later re-enabling, but new openings cannot be placed on absent edges. Keep saved-file sanitization, save/undo, rendering and collision in step.
+
+## Guide animation timing
+
+- Drive guide glides and drags from elapsed active time, not a fixed number of awaited frame delays: software WebGL can delay every timer by seconds. Pause time must be excluded, Next must finish without replaying missed samples, and Stop must release an active drag in a finally block. Keep the existing browser time budget as the acceptance check.
+- Studio shadows are static between scene rebuilds: disable automatic shadow-map updates and invalidate the map when rebuilding model/floor/roof state. Camera orbit must not recompute identical shadows every frame.
