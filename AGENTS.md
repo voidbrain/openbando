@@ -105,6 +105,7 @@ npx tsc -p tools/examples/tsconfig.json   # the example-bando script
 npx tsc -p tools/i18n/tsconfig.json       # the translation check
 npm run check:i18n                        # every UI text has its Italian
 npm run check:contrast                    # shared text/surface pairs and token consistency
+npm run check:backlog                     # active record layout and lifecycle cues
 ```
 
 - `npm run e2e` (Playwright, also a CI job): every guide step plays alone in a headless browser without errors, and the first visit, the editor with the library and a running guide step pass axe (WCAG 2.1 A / AA). Locate panels by `app-panel[data-id=…]` or by role: component hosts have no box of their own. Software WebGL is slow there: keep the long timeouts.
@@ -395,3 +396,6 @@ Follow [docs/BACKLOG-RULES.md](docs/BACKLOG-RULES.md), the authoritative mainten
 - Contrast rules apply to all text and controls, not only buttons. Pair foreground/background tokens in every state; use page-wide axe plus representative hover/focus checks in `e2e/contrast.ts`, and run `check:contrast`. Do not treat palette calculations or idle-page axe as proof of all interaction states.
 - Showcase opening distributes mascot progress across Build/Fly/Share and plays each film to its end; the replay also completes before exit. Entry/exit restores a 3D overview with orbit Follow off. Keep paths suppressed at the render boundary while Welcome is visible and verify loading a subsequent stored model.
 
+
+- Backlog layout: compact five-column item summaries; keep Next action and Human action visible immediately below each item, outside expandable metadata. PR history, Opened, Verification and Reviewed belong in its two-column details table. Preserve complete records and historical archive layouts; follow BACKLOG-RULES.
+- Contrast probes reuse one in-page axe engine and discover style representatives in a single DOM pass; keep full-page accessibility checks separate. Do not inflate browser budgets or drop contrast thresholds to hide slow test orchestration. Showcase examples are temporary; continuation tests must create their own saved bando fixture.

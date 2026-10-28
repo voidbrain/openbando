@@ -28,7 +28,14 @@ test('the showcase link plays to the end', async ({ page }) => {
   await expect(views.locator('button.btn.ib').filter({has: page.locator('app-tool-icon[name="follow"]')})).toHaveAttribute('aria-pressed', 'false');
   await views.locator('button.vis[data-panel=studio]').click();
   const studio = page.locator('app-studio-panel');
-  await studio.locator('.card:not(.ex)').filter({hasText: 'Villetta'}).first().locator('button.title').click();
+  // The showcase model is deliberately temporary; load a real saved fixture for this continuation.
+  const fixture = {version: 1, id: 'after-showcase', name: 'After showcase', createdAt: 0,
+    privacy: 'hidden', origin: {lat: 0, lon: 0}, bearingDeg: 0, genScale: 1, extent: 40, seed: 1,
+    droneStart: {x: -12, z: 0}, calibCorners: {p1: {x: -20, z: -20}, p2: {x: 20, z: 20}},
+    trees: [], pads: [], buildings: [{id: 'b', name: 'Shed', pos: {x: 0, z: 0}, rotDeg: 0, length: 10, width: 8,
+      levels: [{baseY: 0, height: 4, sides: {n: true, s: true, e: true, w: true}, doors: {}, partitions: [], roof: 'flat', roofRise: 0}]}]};
+  await studio.locator('input[type=file]').first().setInputFiles({name: 'after.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture))});
+  await studio.locator('.card:not(.ex)').filter({hasText: fixture.name}).locator('button.title').click();
   await expect(page.locator('app-stage app-camera-compass')).toBeVisible();
   expect(errors).toEqual([]);
 });

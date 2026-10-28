@@ -1,32 +1,48 @@
-import AxeBuilder from '@axe-core/playwright';
+import {source as axeSource} from 'axe-core';
 import {expect, type Page} from '@playwright/test';
 
-/** Exercise distinct rendered control styles; axe on an idle page cannot see hover/focus overrides. */
+/** Page-wide axe is separate; these probes exercise representative real hover/focus states in this document. */
 export async function expectInteractionContrast(page: Page, scope: string): Promise<void> {
-  const root = page.locator(scope);
-  const controls = root.locator('button, a[href], input:not([type=hidden]), select, textarea, summary, [role=button], [role=tab]');
-  expect(await controls.count()).toBeGreaterThan(0);
-  const seen = new Set<string>();
-  for (let i = 0; i < await controls.count(); i++) {
-    const control = controls.nth(i);
-    if (!await control.isVisible() || !await control.isEnabled()) continue;
-    // Include the actual resting fill/ink in the key: identical class names can have different parent/state rules.
-    const key = await control.evaluate(el => {
+  const probes = await page.evaluate(scope => {
+    const seen = new Set<string>();
+    const probes: {id: string; key: string}[] = [];
+    const selector = 'button, a[href], input:not([type=hidden]), select, textarea, summary, [role=button], [role=tab]';
+    for (const root of document.querySelectorAll(scope)) for (const el of root.querySelectorAll<HTMLElement>(selector)) {
+      if (!el.checkVisibility() || !el.getClientRects().length || el.matches(':disabled, [aria-disabled=true]')) continue;
       const css = getComputedStyle(el);
-      return [el.tagName, el.className, el.getAttribute('type'), el.getAttribute('aria-pressed'),
+      const key = [el.tagName, el.className, el.getAttribute('type'), el.getAttribute('aria-pressed'),
         el.getAttribute('aria-selected'), el.getAttribute('aria-expanded'), css.color, css.backgroundColor].join('|');
-    });
-    if (seen.has(key)) continue;
-    seen.add(key);
-    await control.evaluate(el => el.setAttribute('data-contrast-probe', ''));
-    try {
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const id = String(probes.length);
+      el.dataset['contrastProbe'] = id;
+      probes.push({id, key});
+    }
+    return probes;
+  }, scope);
+  expect(probes.length).toBeGreaterThan(0);
+  // Reuse one engine. AxeBuilder.analyze() reinjects axe and builds a multi-frame result on every call.
+  // Every probe here is explicitly in the main document; the separate page-wide check retains its frame coverage.
+  await page.evaluate(axeSource);
+  try {
+    for (const {id, key} of probes) {
+      const control = page.locator(`[data-contrast-probe="${id}"]`);
       for (const state of ['hover', 'focus'] as const) {
         if (state === 'hover') await control.hover();
         else { await page.mouse.move(0, 0); await control.focus(); }
-        const result = await new AxeBuilder({page}).include('[data-contrast-probe]').withRules(['color-contrast']).analyze();
-        expect(result.violations.map(v => ({id: v.id, nodes: v.nodes.map(n => n.failureSummary)})), `${state}: ${key}`).toEqual([]);
+        const failures = await page.evaluate(async id => {
+          const axe = (window as unknown as {axe: typeof import('axe-core')}).axe;
+          const result = await axe.run(`[data-contrast-probe="${id}"]`, {
+            runOnly: {type: 'rule', values: ['color-contrast']}, iframes: false,
+            resultTypes: ['violations'],
+          });
+          return result.violations.map(v => ({id: v.id, nodes: v.nodes.map(n => n.failureSummary)}));
+        }, id);
+        expect(failures, `${state}: ${key}`).toEqual([]);
       }
-    } finally { await control.evaluate(el => el.removeAttribute('data-contrast-probe')); }
+    }
+  } finally {
+    await page.locator('[data-contrast-probe]').evaluateAll(els => els.forEach(el => el.removeAttribute('data-contrast-probe')));
   }
   await page.mouse.move(0, 0);
 }
