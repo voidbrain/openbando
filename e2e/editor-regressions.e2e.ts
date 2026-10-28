@@ -10,7 +10,7 @@ test('Welcome shows the approved wordmark, Features link and revised pose assets
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'OpenBando', exact: true })).toBeVisible();
-  await expect(page.locator('app-stage app-camera-compass')).toBeVisible();
+  await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
   const wordmark = page.getByRole('img', { name: 'OpenBando', exact: true });
   await expect(wordmark).toBeVisible();
   await expect(wordmark).toHaveJSProperty('complete', true);
@@ -85,6 +85,7 @@ test('basement controls and explicit roof choice update the selected building', 
     .filter({ hasText: 'Regression yard' })
     .getByRole('button', { name: 'Edit', exact: true })
     .click();
+  await expect(page.locator('app-stage app-camera-compass')).toBeVisible();
   await page.locator('[data-pk="building:b"]').first().click({ force: true });
   const inspector = page.locator('[data-tour="inspector"]');
   await expect(inspector).toHaveClass(/docked/);
