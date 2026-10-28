@@ -171,7 +171,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#156](https://github.com/voidbrain/openbando/pull/156); follow-up branch `fix/views-quick-order` (PR pending) |
+| PR / evidence | [#156](https://github.com/voidbrain/openbando/pull/156); [#157](https://github.com/voidbrain/openbando/pull/157) (follow-up: quick order, plain editor row, Follow label, 18px icons) |
 | Opened | 2026-10-28 |
 | Verification | Unit/integration + Documentation · 2026-10-28 · local checks passed; Browser/accessibility · Pending |
 | Reviewed | 2026-10-28 |
