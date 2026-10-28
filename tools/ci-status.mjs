@@ -2,7 +2,7 @@
 // Usage: npm run ci:status -- [PR numbers…]   (default: the 8 most recently updated PRs). Needs an authenticated gh.
 import {execFileSync} from 'node:child_process';
 
-const gh = (...args) => execFileSync('gh', args, {encoding: 'utf8', maxBuffer: 64 * 1024 * 1024});
+const gh = (...args) => execFileSync('gh', args, {encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe']});
 const json = (...args) => JSON.parse(gh(...args));
 
 let numbers = process.argv.slice(2).map(Number).filter(Boolean);
