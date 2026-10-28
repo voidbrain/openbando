@@ -570,8 +570,10 @@ test('Views promotes workflow panels and scopes camera controls to the 3D main p
   await page.goto('/');
   await page.getByRole('button', {name: 'Close Welcome', exact: true}).click();
   const views = page.locator('app-views-panel');
-  for (const id of ['studio', 'flights', 'timeline', 'video'])
-    await expect(views.locator(`.quick [data-panel="${id}"]`)).toBeVisible();
+  const quick = views.locator('.quick [data-panel]');
+  await expect(quick).toHaveCount(4);
+  expect(await quick.evaluateAll(els => els.map(el => el.getAttribute('data-panel')))).toEqual(['flights', 'timeline', 'video', 'studio']);
+  await expect(views.locator('.quick [data-panel="studio"]')).toHaveAttribute('class', /^vis( on)?$/);
   for (const name of ['Telemetry', 'Simulator', 'Tools'])
     await expect(views.getByRole('button', {name: '▾ ' + name, exact: true})).toHaveAttribute('aria-expanded', 'false');
   await expect(views.locator('.options')).not.toHaveAttribute('open');
@@ -580,6 +582,9 @@ test('Views promotes workflow panels and scopes camera controls to the 3D main p
   await views.getByRole('radio', {name: '3D model', exact: true}).check();
   await expect(views.getByRole('group', {name: 'Main page camera', exact: true})).toBeVisible();
   await views.locator('.options > summary').click();
-  await views.getByRole('button', {name: 'FPV', exact: true}).click();
-  await expect(views.getByText('Follow replay', {exact: true})).toBeVisible();
+  const options = views.getByRole('group', {name: 'View options', exact: true});
+  await expect(options.locator('app-tool-icon svg').first()).toHaveAttribute('width', '18');
+  await views.getByRole('group', {name: 'Main page camera', exact: true}).getByRole('button', {name: 'FPV', exact: true}).click();
+  await expect(views.getByText('Follow replay', {exact: true})).toHaveCount(0);
+  await expect(options.getByRole('button', {name: 'Follow the replay (Chase & FPV)', exact: true})).toBeVisible();
 });

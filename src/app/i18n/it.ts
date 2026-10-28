@@ -1158,7 +1158,6 @@ export const IT: Readonly<Record<string, string>> = {
   'Build': 'Costruisci',
   'Fly': 'Vola',
   'active': 'attivo',
-  'Follow replay': 'Segui la riproduzione',
   'Options': 'Opzioni',
   'Satellite ground on the main 3D view; Studio has its own ground selector (imagery © Esri, Maxar)': 'Satellite sul terreno 3D principale; Studio ha un selettore separato (immagini © Esri, Maxar)',
   'X-ray: obstacles fade while following the drone; FPV only fades surfaces close to the camera': 'Raggi X: gli ostacoli sfumano seguendo il drone; in FPV sfumano solo le superfici vicine alla camera',

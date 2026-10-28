@@ -106,7 +106,7 @@ export const TOOL_ICONS: Readonly<Record<string, readonly Stroke[]>> = {
 @Component({
   selector: 'app-tool-icon',
   template: `
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <svg viewBox="0 0 24 24" [attr.width]="size()" [attr.height]="size()" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       @for (s of strokes(); track $index) {
         <path [attr.d]="s.p" [attr.fill]="s.f ? 'currentColor' : 'none'" [attr.stroke-dasharray]="s.d ? '2.5 2.5' : null" />
       }
@@ -122,5 +122,7 @@ export const TOOL_ICONS: Readonly<Record<string, readonly Stroke[]>> = {
 })
 export class ToolIcon {
   readonly name = input.required<string>();
+  /** Drawn size in px (the 24 grid scales to it); 20 everywhere unless a tight row needs less. */
+  readonly size = input(20);
   protected readonly strokes = computed(() => TOOL_ICONS[this.name()] ?? []);
 }

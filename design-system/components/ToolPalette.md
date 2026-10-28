@@ -8,7 +8,7 @@ ToolPalette is the editor's vertical tool strip: one 32px icon button per tool g
 - The palette shows ONE button per group (the active tool, else the last used); a `dim` corner triangle (`.tri`) says more tools are in the flyout (long press, right click or the triangle).
 - Active: `wash-on` fill and a border in the tool colour. Hover: `wash-hover`.
 - `.psep` hairlines separate outdoor, indoor and measuring groups.
-- Icons are 20px outlines on a 24 grid, stroke 1.7, round caps, in `currentColor` (see the Icons assets).
+- Icons are 20px outlines (the `size` input, used at 18px only in Views Options) on a 24 grid, stroke 1.7, round caps, in `currentColor` (see the Icons assets).
 - It shares one stacking order with the options bar and the float boxes (`ui/stacking.ts`): whatever was opened or
   clicked last is on top. Flyouts sit inside it.
 - A `⠿` grip (`.tgrip`) at the top drags it anywhere in the editor; the place is remembered (`abando-float-palette`) and
