@@ -17,7 +17,7 @@ import { areaCorners } from '../../core/areas';
 import { roadDef, surfaceDef } from '../../core/layers';
 import { blockCategory } from '../../core/catalog';
 import { siteGround } from '../../core/site-ground';
-import { basementBuilding, basementOutline, editBasementFloor, insertBasementVertex, moveBasementVertex, removeBasementVertex, setBasementPerimeterWall, reshapeBasement, saveBasementFloor } from '../../core/basement';
+import { basementBuilding, basementOutline, editBasementFloor, insertBasementVertex, moveBasementVertex, removeBasementVertex, setBasementPerimeterWall, reshapeBasement, resizeBasement as resizeBasementOutline, restoreBasementFootprint, saveBasementFloor } from '../../core/basement';
 import { PickMenu, type PickOption } from './pick-menu';
 import { BlocksBox } from './blocks-box';
 import { paramValues, type BlockSpec, type ParamValue } from '../../core/blocks';
@@ -2650,12 +2650,18 @@ export class BandoEditor {
     const p=basementOutline(b);
     return {length:Math.max(...p.map(p=>p.x))-Math.min(...p.map(p=>p.x)),width:Math.max(...p.map(p=>p.z))-Math.min(...p.map(p=>p.z))};
   });
-  protected resizeBasement(axis:'length'|'width',value:number):void {
-    if (!Number.isFinite(value)) return;
-    if (this.b()?.basement?.wallEdges?.some(v => !v)) { this.toast.show('Enable all perimeter edges before changing the basement dimensions or footprint.'); return; }
-    const size={...this.basementSize(),[axis]:Math.max(2,Math.min(300,value))};
-    this.editBasement(b=>{if(b.basement){delete b.basement.wallEdges;b.basement.outline=[{x:-size.length/2,z:-size.width/2},{x:size.length/2,z:-size.width/2},{x:size.length/2,z:size.width/2},{x:-size.length/2,z:size.width/2}];}});
-    this.applyNow();
+  protected resizeBasement(axis:'length'|'width',event:Event):void {
+    const input=event.target as HTMLInputElement, value=Number(input.value);
+    try {
+      if (!Number.isFinite(value)) return;
+      const b=this.b();if(!b?.basement)return;
+      const size={...this.basementSize(),[axis]:Math.max(2,Math.min(300,value))},copy=structuredClone(b);
+      if(!resizeBasementOutline(copy,size.length,size.width)){this.toast.show('Cannot reshape basement: check its outline, wall openings and floor items.');return;}
+      this.editBasement(b=>{b.basement=copy.basement;});this.applyNow();
+    } finally {
+      // Rejected/clamped edits must display the actual saved dimensions, not the attempted input.
+      input.value=String(this.basementSize()[axis]);
+    }
   }
   protected basementWall(side:'n'|'s'|'e'|'w',on:boolean):void {
     this.editBasement(b=>{if(b.basement)(b.basement.sides??={})[side]=on;}); this.applyNow();
@@ -2671,7 +2677,12 @@ export class BandoEditor {
     if (!changed) this.toast.show('Cannot reshape basement: check its outline, wall openings and floor items.');
     this.applyNow();
   }
-  protected resetBasementShape():void {if(this.b()?.basement?.wallEdges?.some(v=>!v)){this.toast.show('Enable all perimeter edges before changing the basement dimensions or footprint.');return;}this.editBasement(b=>{if(b.basement){delete b.basement.outline;delete b.basement.wallEdges;}});this.applyNow();}
+  protected resetBasementShape():void {
+    const b=this.b();if(!b?.basement)return;
+    const copy=structuredClone(b);
+    if(!restoreBasementFootprint(copy)){this.toast.show('Cannot reshape basement: check its outline, wall openings and floor items.');return;}
+    this.editBasement(b=>{b.basement=copy.basement;});this.applyNow();
+  }
   protected addBasementWall():void {
     this.editBasement(b=>{if(b.basement)(b.basement.partitions??=[]).push([{x:1,z:1},{x:Math.max(2,this.basementSize().length-1),z:1}]);});this.applyNow();
   }

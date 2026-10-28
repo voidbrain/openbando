@@ -480,7 +480,7 @@ test('basement Cut preserves open perimeter spans in plan and 3D', async ({page}
   const fixture={version:1,id:'open-wall-yard',name:'Open wall yard',createdAt:0,privacy:'hidden',
     origin:{lat:0,lon:0},bearingDeg:0,genScale:1,extent:40,seed:1,droneStart:{x:-12,z:0},
     calibCorners:{p1:{x:-20,z:-20},p2:{x:20,z:20}},trees:[],pads:[],
-    buildings:[{id:'b',name:'Shed',pos:{x:0,z:0},rotDeg:0,length:10,width:8,basement:{height:3,sides:{e:false}},
+    buildings:[{id:'b',name:'Shed',pos:{x:0,z:0},rotDeg:0,length:10,width:8,basement:{height:3,sides:{e:false},columns:[{x:1,z:1,size:.5}]},
       levels:[{baseY:0,height:4,sides:{n:true,s:true,e:true,w:true},doors:{},partitions:[],roof:'flat',roofRise:0}]}]};
   const studio=page.locator('app-studio-panel');
   await studio.locator('input[type=file]').first().setInputFiles({name:'open-wall.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture))});
@@ -489,6 +489,16 @@ test('basement Cut preserves open perimeter spans in plan and 3D', async ({page}
   const inspector=page.locator('[data-tour="inspector"]'),bar=page.locator('app-bando-editor > .bar');
   await inspector.getByRole('button',{name:'−1',exact:true}).click();
   await bar.getByRole('button',{name:'Indoors',exact:true}).click();
+  const length=inspector.getByLabel('length m',{exact:true}).last();
+  await length.fill('14');await length.press('Tab');
+  await expect(length).toHaveValue('14');
+  await expect(inspector.getByLabel('Perimeter edge 2',{exact:true})).not.toBeChecked();
+  await inspector.getByRole('button',{name:'Use building footprint',exact:true}).click();
+  await expect(length).toHaveValue('10');
+  await expect(inspector.getByLabel('Perimeter edge 2',{exact:true})).not.toBeChecked();
+  await length.fill('2');await length.press('Tab');
+  await expect(length).toHaveValue('10'); // rejected shrink displays the actual retained size
+  await expect(page.locator('[data-pk="col:0"]')).toHaveCount(1);
   await page.locator('app-bando-editor .palette button[title^="Cut ·"]').click();
   const points=await page.locator('app-bando-editor svg.ov').evaluate(el=>{
     const matrix=(el as SVGSVGElement).getScreenCTM()!;

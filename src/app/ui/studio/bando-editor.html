@@ -804,8 +804,8 @@
               @if (bd.basement && basementFocus()) {
                 <div class="sec">
                   <div class="st">Basement · −1</div>
-                  <label class="fld">length m <input type="number" min="2" max="300" [value]="basementSize().length" (change)="resizeBasement('length',num($event))" /></label>
-                  <label class="fld">width m <input type="number" min="2" max="300" [value]="basementSize().width" (change)="resizeBasement('width',num($event))" /></label>
+                  <label class="fld">length m <input type="number" min="2" max="300" [value]="basementSize().length" (change)="resizeBasement('length',$event)" /></label>
+                  <label class="fld">width m <input type="number" min="2" max="300" [value]="basementSize().width" (change)="resizeBasement('width',$event)" /></label>
                   <button class="btn span2" (click)="resetBasementShape()">Use building footprint</button>
                   @if (perimeterEdges(); as edges) {
                     @for (on of edges; track $index) {

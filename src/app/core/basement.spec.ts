@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { basementBuilding, insertBasementVertex, moveBasementVertex, removeBasementVertex, reshapeBasement, setBasementPerimeterWall } from './basement';
+import { basementBuilding, insertBasementVertex, moveBasementVertex, removeBasementVertex, reshapeBasement, resizeBasement, restoreBasementFootprint, setBasementPerimeterWall } from './basement';
 import { addOpening, listOpenings, moveOpening } from './openings';
 import { emptySpec, sanitizeSpec, type BuildingSpec } from './site-spec';
 import { siteGround } from './site-ground';
@@ -522,5 +522,79 @@ describe('Cut/Wing with open basement perimeter edges', () => {
       expect(reshapeBasement(b,rect,'cut')).toBe(false);
       expect(b).toEqual(before);
     }
+  });
+});
+
+
+describe('safe basement dimensions and footprint restoration', () => {
+  it.each([[false,0],[true,0],[false,37],[true,37]] as const)('resizes/restores open rectangles through save and undo (reversed=%s, rotation=%s)', async (reversed, rotation) => {
+    const {SiteEditor}=await import('./site-editor');
+    const b=building();b.rotDeg=rotation;
+    b.basement={height:3,sides:{e:false},doors:{n:[{kind:'door',c:5,w:1,h:2}]},columns:[{x:2,z:2,size:.5}]};
+    if(reversed)b.basement.outline=[{x:5,z:4},{x:5,z:-4},{x:-5,z:-4},{x:-5,z:4}];
+    const spec=emptySpec();spec.extent=30;spec.buildings=[b];spec.pads=[];
+    const editor=new SiteEditor();editor.load(spec);
+    editor.commitSite(s=>expect(resizeBasement(s.buildings[0]!,14,10)).toBe(true));
+    const saved=sanitizeSpec(JSON.parse(JSON.stringify(editor.draft())))!;
+    const changed=saved.buildings[0]!;
+    expect(changed.length).toBe(10);expect(changed.width).toBe(8);expect(changed.levels).toEqual(b.levels);
+    expect(changed.basement!.columns).toEqual([{x:4,z:3,size:.5}]);
+    const outline=changed.basement!.outline!;
+    expect(Math.max(...outline.map(p=>p.x))-Math.min(...outline.map(p=>p.x))).toBe(14);
+    expect(Math.max(...outline.map(p=>p.z))-Math.min(...outline.map(p=>p.z))).toBe(10);
+    const openings=listOpenings(basementBuilding(changed),0);
+    expect(openings).toHaveLength(1);expect(openings[0]!.w).toBe(1);
+    const angle=rotation*Math.PI/180;
+    const world=(x:number,z:number)=>new Vec3(x*Math.cos(angle)-z*Math.sin(angle),-1.5,x*Math.sin(angle)+z*Math.cos(angle));
+    const model=buildSiteFromSpec(saved);
+    expect(model.collider.hit(world(7,0))).toBe(false);
+    expect(model.collider.hit(world(2,-5))).toBe(true);
+    expect(model.collider.hit(world(-3,-2))).toBe(true); // column stays in building coordinates
+    editor.undo();expect(editor.draft().buildings[0]!.basement).toEqual(b.basement);
+    editor.redo();
+    editor.commitSite(s=>expect(restoreBasementFootprint(s.buildings[0]!)).toBe(true));
+    const restored=sanitizeSpec(JSON.parse(JSON.stringify(editor.draft())))!.buildings[0]!;
+    expect(restored.basement!.wallEdges).toEqual([true,false,true,true]);
+    expect(restored.basement!.outline).toEqual([{x:-5,z:-4},{x:5,z:-4},{x:5,z:4},{x:-5,z:4}]);
+    expect(restored.basement!.columns).toEqual([{x:2,z:2,size:.5}]);
+    expect(listOpenings(basementBuilding(restored),0)).toHaveLength(1);
+    editor.undo();expect(editor.draft().buildings[0]!.basement!.columns).toEqual([{x:4,z:3,size:.5}]);
+  });
+
+  it('scales a diagonal shape without erasing its vertices or moving its centre and refuses ambiguous open restoration', () => {
+    const b=building();b.basement={height:3,outline:[{x:-5,z:-4},{x:5,z:-4},{x:6,z:4},{x:-5,z:4}],wallEdges:[true,false,true,true]};
+    expect(resizeBasement(b,22,12)).toBe(true);
+    expect(b.basement.outline).toEqual([{x:-10.5,z:-6},{x:9.5,z:-6},{x:11.5,z:6},{x:-10.5,z:6}]);
+    expect(b.basement.wallEdges).toEqual([true,false,true,true]);
+    const before=structuredClone(b);
+    expect(restoreBasementFootprint(b)).toBe(false);
+    expect(b).toEqual(before);
+  });
+
+  it('rejects shrinkage losing objects or narrowing an opening, without changing data', () => {
+    for(const kind of ['column','partition','void','opening'] as const){
+      const b=building();b.basement={height:3,sides:{e:false}};
+      if(kind==='column')b.basement.columns=[{x:1,z:1,size:.5}];
+      if(kind==='partition')b.basement.partitions=[[{x:1,z:1},{x:3,z:1}]];
+      if(kind==='void')b.basement.voids=[{x0:1,z0:1,x1:3,z1:3}];
+      if(kind==='opening')b.basement.doors={n:[{kind:'door',c:5,w:7,h:2}]};
+      const before=structuredClone(b);
+      expect(resizeBasement(b,2,2)).toBe(false);expect(b).toEqual(before);
+    }
+    for(const length of [NaN,1,301]){const b=building(),before=structuredClone(b);expect(resizeBasement(b,length,8)).toBe(false);expect(b).toEqual(before);}
+  });
+
+  it('restores closed-wall topology only when openings and floor items survive', () => {
+    const b=building();b.basement={height:3,outline:[{x:-5,z:-4},{x:5,z:-4},{x:5,z:0},{x:0,z:0},{x:0,z:4},{x:-5,z:4}],columns:[{x:1,z:1,size:.5}],wallOpenings:[{kind:'door',x:-2,z:-4,w:1,h:2}]};
+    expect(restoreBasementFootprint(b)).toBe(true);
+    expect(b.basement.outline).toBeUndefined();
+    expect(b.basement.columns).toEqual([{x:1,z:1,size:.5}]);
+    expect(listOpenings(basementBuilding(b),0)).toHaveLength(1);
+    const legacy=structuredClone(b);legacy.basement!.outline=[{x:-5,z:-4},{x:5,z:-4},{x:5,z:0},{x:0,z:0},{x:0,z:4},{x:-5,z:4}];legacy.basement!.doors={n:[{kind:'door',c:3,w:1,h:2}]};
+    const legacyBefore=structuredClone(legacy);expect(restoreBasementFootprint(legacy)).toBe(false);expect(legacy).toEqual(legacyBefore);
+    const clipped=building();clipped.footprint=[{x:-5,z:-4},{x:5,z:-4},{x:5,z:0},{x:0,z:0},{x:0,z:4},{x:-5,z:4}];
+    clipped.basement={height:3,outline:[{x:-5,z:-4},{x:5,z:-4},{x:5,z:4},{x:-5,z:4}],columns:[{x:8,z:7,size:.5}]};
+    const before=structuredClone(clipped);
+    expect(restoreBasementFootprint(clipped)).toBe(false);expect(clipped).toEqual(before);
   });
 });

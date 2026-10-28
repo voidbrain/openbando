@@ -6,7 +6,6 @@
  */
 export const IT: Readonly<Record<string, string>> = {
   'Perimeter edge {0}': 'Lato perimetrale {0}',
-  'Enable all perimeter edges before changing the basement dimensions or footprint.': 'Attiva tutti i lati perimetrali prima di cambiare dimensioni o perimetro del seminterrato.',
   'Cannot reshape basement: check its outline, wall openings and floor items.': 'Impossibile modificare il seminterrato: controlla perimetro, aperture e oggetti del piano.',
   'Click through buildings to read ground coordinates in metres': 'Clicca attraverso gli edifici per leggere le coordinate del terreno in metri',
   'Debug coordinates': 'Coordinate di debug',
