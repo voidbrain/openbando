@@ -229,14 +229,14 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 **→ Human action required:** 💻 **No**<br />Confirm the new pointer case in CI, then close.
 
-**Next action / closure evidence:** Pointer check automated 2026-10-29 (user: proceed with the checks; `test/f003-3d-basement-vertices`): on a 37° building, indoor −1 in 3D, a vertex handle found by its hover cursor is dragged outwards; the plan shows the vertex moved, Undo restores it, Redo moves it again, and the export holds the grown outline with the rotation kept (passed 2/2 locally). Keyboard vertex controls are already covered by the basement editor regression. 3D indoor −1 now has draggable vertex handles and keyboard move/insert/remove controls using the 2D validation and undo paths. Verify pointer, keyboard, rotated buildings, persistence and accessibility in browser CI.
+**Next action / closure evidence:** Pointer check automated 2026-10-29 (user: proceed with the checks; [#188](https://github.com/voidbrain/openbando/pull/188)): on a 37° building, indoor −1 in 3D, a vertex handle found by its hover cursor is dragged outwards; the plan shows the vertex moved, Undo restores it, Redo moves it again, and the export holds the grown outline with the rotation kept (passed 2/2 locally). Keyboard vertex controls are already covered by the basement editor regression. 3D indoor −1 now has draggable vertex handles and keyboard move/insert/remove controls using the 2D validation and undo paths. Verify pointer, keyboard, rotated buildings, persistence and accessibility in browser CI.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | `test/f003-3d-basement-vertices` (3D pointer drag, undo, redo, save); [#101](https://github.com/voidbrain/openbando/pull/101) (2D); [#116](https://github.com/voidbrain/openbando/pull/116) (merged; [CI](https://github.com/voidbrain/openbando/actions/runs/40595652166) passed; pointer review pending); history: unit + browser passed in [#116 CI](https://github.com/voidbrain/openbando/actions/runs/40595652166), 2026-10-27 |
+| PR / evidence | [#188](https://github.com/voidbrain/openbando/pull/188) (3D pointer drag, undo, redo, save); [#101](https://github.com/voidbrain/openbando/pull/101) (2D); [#116](https://github.com/voidbrain/openbando/pull/116) (merged; [CI](https://github.com/voidbrain/openbando/actions/runs/40595652166) passed; pointer review pending); history: unit + browser passed in [#116 CI](https://github.com/voidbrain/openbando/actions/runs/40595652166), 2026-10-27 |
 | Opened | 2026-10-27 |
 | Verification | Browser/accessibility · 2026-10-29 · 3D vertex drag on a rotated building with undo/redo/save passed locally (2/2); earlier: [#116 CI](https://github.com/voidbrain/openbando/actions/runs/40595652166), PR #124 CI (keyboard and selected workflows); CI · Pending |
 | Reviewed | 2026-10-29 |
