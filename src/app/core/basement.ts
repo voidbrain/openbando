@@ -2,6 +2,7 @@ import type { BuildingSpec, LevelSpec, Vec2 } from './site-spec';
 import { listOpenings, outlineOf, reshapeBuilding } from './openings';
 import { polygonRect } from './polygon-rect';
 import { BASEMENT_COORD_LIMIT, bounds, contains, isRectilinear, rectPoly, validOutline, type Rect } from './footprint';
+import { ringsFit, ringsKept } from './basement-rings';
 
 /** Basement dimensions are independent of the floors above, in the same centred building frame. */
 export function basementOutline(b: BuildingSpec): Vec2[] {
@@ -89,6 +90,7 @@ export function saveBasementFloor(b: BuildingSpec, floor: BuildingSpec, saveOutl
   const valid = (p: Vec2): boolean => Number.isFinite(p.x) && Number.isFinite(p.z) && Math.abs(p.x) <= BASEMENT_COORD_LIMIT && Math.abs(p.z) <= BASEMENT_COORD_LIMIT;
   if ((next.outline && (!validOutline(next.outline) || !next.outline.every(valid))) || (next.wallOpenings ?? []).some(o => !valid(o)) || (next.columns ?? []).some(c => !valid(c)) || (next.partitions ?? []).some(w => w.some(p => !valid(p))) || (next.voids ?? []).some(v => !valid({ x: v.x0, z: v.z0 }) || !valid({ x: v.x1, z: v.z1 }))) return false;
   if (next.wallEdges && (next.wallEdges.length !== (next.outline ?? basementOutline(b)).length || !next.wallEdges.every(v => typeof v === 'boolean'))) return false;
+  if (!ringsKept(b, next)) return false; // a courtyard left outside the outline, or a floor item inside a courtyard
   b.basement = next;
   return true;
 }
@@ -173,6 +175,7 @@ export function reshapeBasement(b: BuildingSpec, rect: Rect, op: 'add' | 'cut'):
 /** Replace topology only after preserving openings and floor items in the new boundary. */
 function replaceBasementOutline(b: BuildingSpec, next: Vec2[], walls: boolean[]): boolean {
   const old = basementOutline(b), before = bounds(old);
+  if (b.basement && !ringsFit(b.basement, next)) return false;
   const copy = structuredClone(b);
   if (!moveBasementVertex(copy, 0, old[0]!)) return false;
   const after = bounds(next), dx = before.x0 - after.x0, dz = before.z0 - after.z0, basement = copy.basement!;
@@ -254,6 +257,7 @@ function moveBasementVertices(b: BuildingSpec, next: Vec2[]): boolean {
     return { kind: o.kind, x: a.x + fraction * (q.x - a.x), z: a.z + fraction * (q.z - a.z), w: o.w, h: o.h, sill: o.sill, closed: o.closed };
   });
   if (openings.some(o => !o || !validPoint(o))) return false;
+  if (!ringsFit(basement, next)) return false;
   basement.outline = next;
   delete basement.sides;
   if (wallEdges.some(v => !v)) basement.wallEdges = wallEdges;

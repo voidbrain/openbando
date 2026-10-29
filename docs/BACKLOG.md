@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `5e6f5d0` (merged #171), with every CI job of #162–#172 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `8aa4981` (merged #180), with every CI job of #162–#179 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -205,18 +205,18 @@ Each item has a compact summary, followed by **→ Human action required** first
 |:---:|---|---|---|---|
 | 🔴 | F-002 | 🔹 P3 | Open | Basement perimeter holes and disconnected islands |
 
-**→ Human action required:** 💻 **No**<br />Implement phase 3: courtyard editing, and keep courtyards inside when the outline is edited.
+**→ Human action required:** 💻 **No**<br />Phase 3 continued: a Courtyard tool on −1 (2D, then 3D), an inspector list with delete and per-edge walls.
 
-**Next action / closure evidence:** Phase 2 ([#180](https://github.com/voidbrain/openbando/pull/180)): courtyards are drawn and cut. `basementVolume` passes them as runtime `UndergroundSpec.holes`; `insideVolume` keeps the ground (no cut in `cutMask` or `three/underground-cut.ts`) and gives no basement floor there (`floorUnder`); `basementBuilding` passes them to the derived floor (`LevelSpec.courtyards`), so the scene, the indoor −1 view and previews draw a floor with holes and walls with colliders around each courtyard. Known gap until phase 3: outline edits (vertices, Cut/Wing, resize) do not yet keep courtyards inside; no UI creates them yet. Phase 1 ([#178](https://github.com/voidbrain/openbando/pull/178)): `core/basement-rings.ts` with `BasementSpec.courtyards` / `pieces`, shape cleaning and placement rules (courtyard strictly inside, ≥ 1 m, clear of other courtyards and floor items; piece apart from the perimeter and other pieces), applied per building by `sanitizeSpec`; invalid rings are dropped, never reshaped; old files unchanged. Nothing is drawn yet. Design 2026-10-29 ([plan](basement-holes-plan.md), [#176](https://github.com/voidbrain/openbando/pull/176)): `BasementSpec.courtyards` (holes through the basement, walls around, ground kept) and `BasementSpec.pieces` (further perimeters), optional with defaults so old files load; validation and caps; five phases: model and validation, courtyard geometry (slabs, walls, volume holes for terrain cut and floorUnder, colliders), courtyard editing (2D/3D, undo, Cut/Wing/resize guards), separate pieces, docs. Earlier: Design a representation and editing, saving, terrain cuts, floor/wall rendering and collision for courtyards and separate pieces; currently one simple perimeter only. Floor voids are separate and already exist.
+**Next action / closure evidence:** Phase 3, guards ([#181](https://github.com/voidbrain/openbando/pull/181)): every basement edit refuses a result that leaves a courtyard outside the outline or crossing it, grows into a separate piece, or puts a floor item in a courtyard (`ringsFit` in vertex moves, resize, restore and Cut/Wing; `ringsKept` in saved floor edits); nothing changes when refused. Phase 2 ([#180](https://github.com/voidbrain/openbando/pull/180)): courtyards are drawn and cut. `basementVolume` passes them as runtime `UndergroundSpec.holes`; `insideVolume` keeps the ground (no cut in `cutMask` or `three/underground-cut.ts`) and gives no basement floor there (`floorUnder`); `basementBuilding` passes them to the derived floor (`LevelSpec.courtyards`), so the scene, the indoor −1 view and previews draw a floor with holes and walls with colliders around each courtyard. No UI creates courtyards yet. Phase 1 ([#178](https://github.com/voidbrain/openbando/pull/178)): `core/basement-rings.ts` with `BasementSpec.courtyards` / `pieces`, shape cleaning and placement rules (courtyard strictly inside, ≥ 1 m, clear of other courtyards and floor items; piece apart from the perimeter and other pieces), applied per building by `sanitizeSpec`; invalid rings are dropped, never reshaped; old files unchanged. Nothing is drawn yet. Design 2026-10-29 ([plan](basement-holes-plan.md), [#176](https://github.com/voidbrain/openbando/pull/176)): `BasementSpec.courtyards` (holes through the basement, walls around, ground kept) and `BasementSpec.pieces` (further perimeters), optional with defaults so old files load; validation and caps; five phases: model and validation, courtyard geometry (slabs, walls, volume holes for terrain cut and floorUnder, colliders), courtyard editing (2D/3D, undo, Cut/Wing/resize guards), separate pieces, docs. Earlier: Design a representation and editing, saving, terrain cuts, floor/wall rendering and collision for courtyards and separate pieces; currently one simple perimeter only. Floor voids are separate and already exist.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#180](https://github.com/voidbrain/openbando/pull/180) (courtyard geometry); [#178](https://github.com/voidbrain/openbando/pull/178) (phase 1 model); [#176](https://github.com/voidbrain/openbando/pull/176) (design); [#101](https://github.com/voidbrain/openbando/pull/101) (context; limitation remains) |
+| PR / evidence | [#181](https://github.com/voidbrain/openbando/pull/181) (edit guards); [#180](https://github.com/voidbrain/openbando/pull/180) (courtyard geometry, merged; CI was still running at merge); [#178](https://github.com/voidbrain/openbando/pull/178) (phase 1 model); [#176](https://github.com/voidbrain/openbando/pull/176) (design); [#101](https://github.com/voidbrain/openbando/pull/101) (context; limitation remains) |
 | Opened | 2026-10-27 |
-| Verification | Unit/integration · 2026-10-29 · phase 1 in [#178](https://github.com/voidbrain/openbando/pull/178) CI; phase 2: volume holes in site coordinates on a 90° building, no floor under the drone, ground kept, no floor mesh and wall colliders around the courtyard (3 cases fail without the change), 552 tests; indoor −1 and plan screenshots reviewed; CI · Pending |
+| Verification | Unit/integration · 2026-10-29 · phase 1 in [#178](https://github.com/voidbrain/openbando/pull/178) CI; phase 2 geometry cases (fail without the change); guard cases (fail without the guards), 554 tests; #180 and guards CI · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
@@ -261,28 +261,6 @@ Each item has a compact summary, followed by **→ Human action required** first
 | PR / evidence | [#101](https://github.com/voidbrain/openbando/pull/101) (context); [#122](https://github.com/voidbrain/openbando/pull/122) (perimeter visibility); [#141](https://github.com/voidbrain/openbando/pull/141) (open-edge Cut/Wing); [#142](https://github.com/voidbrain/openbando/pull/142) (safe resize and footprint restoration); [#166](https://github.com/voidbrain/openbando/pull/166) (open-wall restoration) |
 | Opened | 2026-10-27 |
 | Verification | Unit/integration + Browser/accessibility · 2026-10-29 · new open-wall restoration case (survives whole / notch refused / partial refused) and all jobs passed in [#166 CI](https://github.com/voidbrain/openbando/actions/runs/40789909830); Browser/accessibility · 2026-10-28 · resize/restore passed in [#142 CI](https://github.com/voidbrain/openbando/actions/runs/40724736656), open-edge Cut in [#141 CI](https://github.com/voidbrain/openbando/actions/runs/40720066164) |
-| Reviewed | 2026-10-29 |
-
-</details>
-
-### F-006
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-006 | 🔹 P3 | Implemented | Studio controls and vegetation |
-
-**→ Human action required:** 💻 **No**<br />Confirm the studio layout case passes in #179 CI, then close.
-
-**Next action / closure evidence:** #174 merged while its layout test still failed on CI shard 4 (first a wrong width proxy, fixed in #174; then its own 120 s limit under software WebGL); [#179](https://github.com/voidbrain/openbando/pull/179) restores the suite budget. Agent review 2026-10-29 (`test/f006-vegetation-brush`): a new browser test drags a hedge square in 2D (dashed preview during the drag, shrubs planted, one undo/redo step) and a bramble circle in 3D, then checks the exported materials; its screenshots are kept for review. It found two defects, both fixed: (1) no 3D gesture preview was ever drawn: `effect(() => this.r?.setDrawLine(this.drawLine()))` never read the signal while the renderer was missing, so it never subscribed (fence, bridge, tunnel lines and live 3D measures too); the 3D line is now a polyline and the brush draws its area ring; `check:conventions` flags that effect pattern. (2) The brush hint said “trees” for hedges and brambles, and three of its hints had no Italian. Compass and expand/dock ([#174](https://github.com/voidbrain/openbando/pull/174)): Expand studio fills the window in 2D and 3D with the inspector docked and the 3D compass in its bottom-left corner, and Restore returns the panel to its size. The review found the editor opening wider than the window: widening the studio kept its left edge, so a panel opened right of centre ran 27 px off the right edge and cut the inspector; it now slides back inside. Nothing remains in this item's scope. Earlier scope: Review compass consistency, expand/dock controls, 3D construction previews, measures and hedge/bramble brush shapes in both views.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#179](https://github.com/voidbrain/openbando/pull/179) (test budget); [#174 CI](https://github.com/voidbrain/openbando/actions/runs/40798237127) (failed: layout test timeout); [#174](https://github.com/voidbrain/openbando/pull/174) (expand/dock and compass test, editor inside the window); `test/f006-vegetation-brush` (brush test, 3D preview fix, hints); [#84](https://github.com/voidbrain/openbando/pull/84), [#85](https://github.com/voidbrain/openbando/pull/85), [#90](https://github.com/voidbrain/openbando/pull/90) (partial coverage) |
-| Opened | 2026-10-27 |
-| Verification | Browser/accessibility · 2026-10-29 · vegetation brush and 3D previews passed in [#170 CI](https://github.com/voidbrain/openbando/actions/runs/40792623908); studio layout test passed locally, failed in [#174 CI](https://github.com/voidbrain/openbando/actions/runs/40798237127) on its 120 s limit; #179 CI · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
