@@ -310,7 +310,7 @@ function passage(bd: BuildingSpec, a: Vec2, b: Vec2, w: number, h: number): numb
     seen.add(k);
     return clear(t);
   });
-  finish(s, 'example-bardwell-house', 'Bardwell House (place hidden)', ROOT + '/library/bandos/bardwell-house-no-place.json', 'A farmhouse with a gambrel roof, its barn, a store and sheds at the edge of the woods, shared without its place: its real ground travels inside. Flights start on the take-off pad in the front lawn.');
+  finish(s, 'example-bardwell-house', 'Bardwell House', ROOT + '/library/bandos/bardwell-house-no-place.json', 'A farmhouse with a gambrel roof, its barn, a store and sheds at the edge of the woods, shared without its place: its real ground travels inside. Flights start on the take-off pad in the front lawn.');
 }
 
 
