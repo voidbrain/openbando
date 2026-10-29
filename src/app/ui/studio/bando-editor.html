@@ -439,7 +439,7 @@
     <div #pal class="palette" role="toolbar" aria-label="Tools" aria-orientation="vertical" [style.left.px]="dock.palXY().x" [style.top.px]="dock.palXY().y" [style.z-index]="dock.palZ()" (pointerdown)="$event.stopPropagation(); dock.raise('pal')">
       <div class="tgrip" title="Drag to move the tools · double-click to put them back" (pointerdown)="dock.down($event, 'pal')" (pointermove)="dock.move($event)" (pointerup)="dock.up($event)" (pointercancel)="dock.up($event)" (dblclick)="dock.reset('pal')" aria-hidden="true">⠿</div>
       @for (g of groups(); track g.id) {
-        @if (g.sep) {
+        @if (!$first) {
           <i class="psep"></i>
         }
         <div class="pg" role="group" [attr.aria-label]="g.items[0]!.name">

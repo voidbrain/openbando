@@ -52,9 +52,6 @@
   grid-template-columns: repeat(2, 32px);
   gap: 2px;
 }
-.pg + .pg {
-  margin-top: 4px; /* a little air between groups; .psep marks the outdoor / indoor / measuring sections */
-}
 .ctx {
   position: absolute;
   z-index: 9000;
