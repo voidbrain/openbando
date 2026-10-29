@@ -9,7 +9,7 @@ import * as L from 'leaflet';
 import { contains, edgesOf, isRectilinear, type Pt, type Rect } from '../../core/footprint';
 import { buildingsOverlap, stairsFor, columnGrid, columnRow, convertBuilding, duplicateColumn, duplicateColumns, fillModule, mergeBuildings, overlapsOthers, repeatOpening } from '../../core/building-ops';
 import { addOpening, insideBuilding, listOpenings, moveOpening, outlineOf, previewOpening, patchOpening, removeOpening, reshapeBuilding, resetToRect, resizeOpening, type OpenSeg } from '../../core/openings';
-import { cloneSpec, uid, type BuildingSpec, type LevelSpec, type LocationInfo, type SiteSpec, type StructureKind, type StructureSpec } from '../../core/site-spec';
+import { cloneSpec, uid, type BuildingSpec, type LevelSpec, type LocationInfo, type SiteSpec, type StructureKind, type StructureSpec, moveTakeoff } from '../../core/site-spec';
 import { autoAlign, magnetAngle } from '../../core/align';
 import { columnsInLine, pointsInside, treeZones } from '../../core/elements';
 import { FENCES, fenceDef, newFence, setFenceMaterial, type FenceMaterial } from '../../core/fences';
@@ -1472,6 +1472,21 @@ export class BandoEditor {
     this.drag.set({ t: 'tree', i, dx: tr.x - p.x, dz: tr.z - p.z });
   }
 
+  /** The take-off pad: Select picks and drags it (pad and drone start together); other tools draw over it. */
+  protected padDown(e: PointerEvent): void {
+    if (this.tool() !== 'select' || this.pinMode()) return this.bgDown(e);
+    e.stopPropagation();
+    this.capture(e);
+    const p = this.toWorld(e), st = this.ed.draft().droneStart;
+    this.pick.set({ t: 'pad' });
+    this.drag.set({ t: 'pad', dx: st.x - p.x, dz: st.z - p.z });
+  }
+
+  /** Move the take-off pad and the drone's start (one undo step). */
+  protected moveTakeoffTo(q: Pt): void {
+    this.ed.commitSite((s) => moveTakeoff(s, q));
+  }
+
   protected openDown(e: PointerEvent, id: string): void {
     e.stopPropagation();
     this.capture(e);
@@ -2056,6 +2071,9 @@ export class BandoEditor {
         this.gesture(s => { const i = s.buildings.findIndex(x => x.id === d.start.id); if (i >= 0) s.buildings[i] = next; });
         break;
       }
+      case 'pad':
+        this.gesture((s) => moveTakeoff(s, { x: snap(p.x + d.dx, 0.5), z: snap(p.z + d.dz, 0.5) }));
+        break;
       case 'tree':
         this.gesture((s) => {
           const t = s.trees[d.i];
@@ -2442,6 +2460,9 @@ export class BandoEditor {
       case 'fence':
         this.pick.set({ t: 'fence', i: n });
         return [head('Fence'), del];
+      case 'pad':
+        this.pick.set({ t: 'pad' });
+        return [head('Take-off pad'), ...this.byCoords('Move to coordinates…', (q) => this.moveTakeoffTo(q))];
       case 'road':
         this.pick.set({ t: 'road', i: n });
         return [head(roadDef(this.ed.draft().roads?.[n]?.kind).label), del];
@@ -2487,6 +2508,7 @@ export class BandoEditor {
         return [
           head('Ground'),
           { label: 'New building here', act: () => this.newBuildingAt(q) },
+          { label: 'Move the take-off pad here', act: () => this.moveTakeoffTo(q) },
           { label: 'Plant vegetation here', act: () => this.plantVegetation(p) },
           tool('Scatter trees…', 'scatter'),
           tool('Draw a fence', 'fence'),

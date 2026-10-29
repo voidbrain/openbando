@@ -409,6 +409,30 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ---
 
+### F-021
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | F-021 | 🔹 P3 | Implemented | Move the take-off pad in the editor |
+
+🧑 **→ Human action required: Yes**<br />On the live site after merge: in 2 · Model 2D, drag the take-off pad with Select, and right-click the ground: Move the take-off pad here.
+
+**Next action / closure evidence:** Requested 2026-10-29: the take-off pad (where flights start, `droneStart`, drawn as the last pad) could not be selected or moved in the editor; a never-called `SiteService.setTakeoffAt` moved the start without the drawn pad. Now `moveTakeoff` (core) moves the last pad and the drone start together, keeping their offset (older bandos' road pads stay). In 2D the pad has a red outline; Select picks it (the inspector shows x / z in metres) and drags it in one undo step; its right-click menu has "Move to coordinates…", and the ground's right-click menu has "Move the take-off pad here". `setTakeoffAt` removed. Covered by a `layers.spec.ts` case and `e2e/takeoff-pad.e2e.ts` (drag, ground menu: the pad lands under the click, export has pad and start together). Not done: moving it in the 3D editor view.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | This PR; request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Unit/browser · 2026-10-29 · `layers.spec.ts` and `takeoff-pad.e2e.ts` passed locally; live-site check · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
 ## Other changes
 
 `main` protection active 2026-10-29 (user request, set through the API): ruleset "protect main" requires `check`, `e2e (1)`–`e2e (4)` and `race-browser` and refuses force pushes and deletion. B-025 (the flaky Auto-sync check) was closed first so the required checks are reliable.
