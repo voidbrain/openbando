@@ -490,7 +490,6 @@ export const IT: Readonly<Record<string, string>> = {
   'Drag a building to move it, corners / edge squares to resize or reshape, the yellow knob to rotate. Drag the map to pan.': 'Trascina un edificio per spostarlo, gli angoli / quadratini dei lati per ridimensionarlo o cambiarne la forma, la manopola gialla per ruotarlo. Trascina la mappa per spostarti.',
   'Drag to move the tools · double-click to put them back': 'Trascina per spostare gli strumenti · doppio clic per rimetterli a posto',
   'Drag to move the options · double-click to put them back beside the tool': 'Trascina per spostare le opzioni · doppio clic per rimetterle accanto allo strumento',
-  'hold or click the corner for the other tools': 'tieni premuto o clicca l’angolo per gli altri strumenti',
 
   // ---- tools
   'Select': 'Seleziona',
@@ -1056,7 +1055,6 @@ export const IT: Readonly<Record<string, string>> = {
   '(a small model on a laptop GPU can take 10–40 s)': '(un modello piccolo sulla GPU di un portatile può metterci 10–40 s)',
   '{0} to review of {1}': '{0} da rivedere su {1}',
   'Remove this area': 'Rimuovi quest’area',
-  '· hold or click the corner for the other tools': '· tieni premuto o clicca l’angolo per gli altri strumenti',
   'options': 'opzioni',
   'How much to soften (percent)': 'Quanto ammorbidire (percentuale)',
   'Download the real ground heights for this bando (your strokes stay)': 'Scarica le quote reali del terreno per questo bando (i tuoi tratti restano)',
@@ -1199,7 +1197,7 @@ export const IT: Readonly<Record<string, string>> = {
   'The video turns to glass: the model behind it, in step.': 'Il video diventa trasparente: dietro, il modello al passo.',
   'speed': 'velocità',
   'How fast the ground grows while the button is held (metres a second)': 'Quanto cresce il terreno mentre tieni premuto (metri al secondo)',
-  'Terrain · sculpt (hold: left raises, right lowers)': 'Terreno · modella (tieni premuto: sinistro alza, destro abbassa)',
+  'Hold: the left button raises, the right lowers': 'Tieni premuto: il tasto sinistro alza, il destro abbassa',
   'Sculpt': 'Modella',
   'Hold the left button to raise the ground, the right one to lower it: the longer you hold, the higher and wider it grows. Move while holding to shape a ridge or a ditch.': 'Tieni premuto il tasto sinistro per alzare il terreno, il destro per abbassarlo: più tieni, più cresce in altezza e larghezza. Muoviti tenendo premuto per fare un crinale o un fosso.',
   'Start a bando: find the place': 'Inizia un bando: trova il luogo',

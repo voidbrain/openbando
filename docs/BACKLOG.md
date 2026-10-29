@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `6f63d75` (merged #203), with every CI job of #162–#203 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `21ef51b` (merged #204), with every CI job of #162–#204 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -237,6 +237,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
+### B-030
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-030 | 🔶 P2 | Implemented | The tool palette hid half its tools behind long press or right click |
+
+🧑 **→ Human action required: Yes**<br />On the live site after merge: open a bando in 2 · Model; every tool shows in the palette, two to a row.
+
+**Next action / closure evidence:** Reported 2026-10-29 (the user could not find Cut and Wing). The palette showed one button per group (paint-program style, from 66dfacb, 2026-10-22, with no record or decision); Merge, Cut, Wing, Tree brush, Surface, Water, Tunnel, Courtyard, Void… opened only by long press, right click or a 10 px corner triangle. Decided 2026-10-29 (user): every tool visible, two columns. Now each tool on offer has its own button (`aria-label`, `aria-pressed`), one 2-column block per group; the tree brush's shape and the terrain operation are picked in the options bar (their menus already existed; the sculpt hint moved there); a short editor scrolls the palette. The flyout code, its styles, the `z-flyout` token and the "hold or click the corner" texts are gone; `ToolPalette.md`, `tokens.json` and the editor area note updated. Covered by `e2e/tool-palette.e2e.ts` (16 outdoor tools visible, two to a row, one click arms, terrain operation from the options bar); the vegetation, courtyard and indoor-placement cases now click the tool's own button. Not checked: a short editor window on a device.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | This PR; report 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Browser · 2026-10-29 · `tool-palette`, vegetation, courtyard and indoor-placement e2e passed locally; screenshot of the 2D editor reviewed by the agent; live-site check · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
 ## Features and limitations
 
 ### F-001
@@ -345,6 +369,6 @@ Harness templates 1.5.0 and 1.6.0 (2026-10-29, [#199](https://github.com/voidbra
 
 Harness template 1.7.0 (2026-10-29, [#200](https://github.com/voidbrain/openbando/pull/200)): `check-backlog` and `check-freshness` copied (freshness lists commits without a PR to review); AGENTS and BACKLOG-RULES reconciled. CI green.
 
-Harness templates 1.8.0 and 1.9.0 (2026-10-29, this PR): BACKLOG-RULES gains "One repository, one backlog" (a record never waits for another repository); `check-harness` copied (comments only); the CI workflow clones the public template and runs `check:freshness` with `HARNESS_HOME`, so a PR on a project behind a release shows warnings (never blocking; a failed clone is a warning). `.harness.json` on 1.9.0. Pending: this PR's CI.
+Harness templates 1.8.0 and 1.9.0 (2026-10-29, [#204](https://github.com/voidbrain/openbando/pull/204)): BACKLOG-RULES gains "One repository, one backlog" (a record never waits for another repository); `check-harness` copied (comments only); the CI workflow clones the public template and runs `check:freshness` with `HARNESS_HOME`, so a PR on a project behind a release shows warnings (never blocking; a failed clone is a warning). `.harness.json` on 1.9.0. CI green; its freshness step read the cloned template ("on template v1.9.0").
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.

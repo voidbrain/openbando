@@ -39,6 +39,8 @@
   top: 8px;
   display: flex;
   flex-direction: column;
+  max-height: calc(100% - 16px); /* a short editor scrolls the tools rather than cutting them */
+  overflow-y: auto;
   gap: 2px;
   padding: 4px;
   background: var(--panel-solid);
@@ -46,54 +48,12 @@
   border-radius: 9px;
 }
 .pg {
-  position: relative;
-}
-/* the corner mark that says "more tools here" */
-.tri {
-  position: absolute;
-  right: 1px;
-  bottom: 1px;
-  width: 10px;
-  height: 10px;
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-  background: var(--dim);
-}
-.tri:hover {
-  background: var(--text);
-}
-.fly {
-  position: absolute;
-  left: calc(100% + 6px);
-  top: 0;
-  z-index: 1260;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 32px);
   gap: 2px;
-  min-width: 150px;
-  padding: 4px;
-  background: var(--panel-solid);
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
-.fbtn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 8px;
-  white-space: nowrap;
-  color: var(--text);
-  background: none;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.fbtn:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-.fbtn.on {
-  background: rgba(255, 255, 255, 0.13);
-  border-color: var(--tc);
+.pg + .pg {
+  margin-top: 4px; /* a little air between groups; .psep marks the outdoor / indoor / measuring sections */
 }
 .ctx {
   position: absolute;

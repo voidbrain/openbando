@@ -63,7 +63,7 @@ This guide governs application UI; [Backlog rules](../docs/BACKLOG-RULES.md) gov
 
 ### Layering
 
-`zIndex` tokens fix the stack over the map: overlay 700, palette 900, flyouts 950, map UI 1100, float boxes 1200, context menu 1300, toast and version badge on top.
+`zIndex` tokens fix the stack over the map: overlay 700, palette 900, map UI 1100, float boxes 1200, context menu 1300, toast and version badge on top.
 
 ## Iconography
 

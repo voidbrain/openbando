@@ -43,11 +43,8 @@ for (const floor of ['−1', 'G', 'L1']) {
     await expect(page.locator('app-site-view .fail')).toHaveCount(0);
     const tool = async (id: string, name: string): Promise<void> => {
       const group = page.locator(`app-bando-editor .palette .pbtn[data-tour~="tool-${id}"]`);
-      if ((await group.getAttribute('title'))?.startsWith(name + ' ·')) await group.click();
-      else {
-        await group.click({button: 'right'});
-        await page.locator('app-bando-editor .palette .fly').getByRole('button', {name, exact: true}).click();
-      }
+      await expect(group).toHaveAttribute('aria-label', name);
+      await group.click();
       await expect(group).toHaveClass(/on/);
     };
     const drag = async (a: [number, number], b: [number, number]): Promise<void> => {
@@ -163,11 +160,8 @@ async function openIndoor3d(page: import('@playwright/test').Page, floor: string
   await expect(canvas).toBeVisible();
   const tool = async (id: string, name: string): Promise<void> => {
     const group = page.locator(`app-bando-editor .palette .pbtn[data-tour~="tool-${id}"]`);
-    if ((await group.getAttribute('title'))?.startsWith(name + ' ·')) await group.click();
-    else {
-      await group.click({button: 'right'});
-      await page.locator('app-bando-editor .palette .fly').getByRole('button', {name, exact: true}).click();
-    }
+    await expect(group).toHaveAttribute('aria-label', name);
+    await group.click();
     await expect(group).toHaveClass(/on/);
   };
   const exported = async (): Promise<SiteSpec> => {

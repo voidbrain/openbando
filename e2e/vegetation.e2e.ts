@@ -20,14 +20,13 @@ async function openEmpty(page: Page) {
   const card = studio.locator('.card').filter({hasText: fixture.name});
   await card.getByRole('button', {name: 'Edit', exact: true}).click();
   const bar = page.locator('app-bando-editor > .bar');
-  const entry = async (name: string): Promise<void> => {
-    const group = page.locator('app-bando-editor .palette .pbtn[data-tour~="tool-scatter"]');
-    if ((await group.getAttribute('title'))?.startsWith(name)) await group.click();
-    else {
-      await group.click({button: 'right'});
-      await page.locator('app-bando-editor .palette .fly').getByRole('button', {name, exact: true}).click();
-    }
-    await expect(group).toHaveClass(/on/);
+  // the tree brush has its own palette button; its shape is picked in the options bar
+  const entry = async (shape: string): Promise<void> => {
+    const tool = page.locator('app-bando-editor .palette .pbtn[data-tour~="tool-scatter"]');
+    await tool.click();
+    await expect(tool).toHaveClass(/on/);
+    await page.getByRole('button', {name: /^Brush shape:/}).click();
+    await page.getByRole('option', {name: new RegExp(`^${shape}`)}).click();
   };
   const vegetation = async (kind: RegExp): Promise<void> => {
     await page.getByRole('button', {name: /^Vegetation:/}).click();
@@ -57,7 +56,7 @@ test('the vegetation brush plants hedges in 2D and brambles in 3D, one undo step
   };
 
   // 2D: a hedge square. The dashed preview follows the drag before anything is planted.
-  await entry('Tree area · square');
+  await entry('Square');
   await vegetation(/^Hedge/);
   const plan = page.locator('app-bando-editor svg.ov');
   const p = (await plan.boundingBox())!;
@@ -80,7 +79,7 @@ test('the vegetation brush plants hedges in 2D and brambles in 3D, one undo step
   await page.locator('[data-tour="view-3d"]').click();
   const canvas = page.locator('app-site-view canvas');
   await expect(canvas).toBeVisible();
-  await entry('Tree area · circle');
+  await entry('Circle');
   await vegetation(/^Bramble/);
   const c = (await canvas.boundingBox())!;
   await page.mouse.move(c.x + c.width * 0.65, c.y + c.height * 0.70);
