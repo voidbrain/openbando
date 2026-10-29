@@ -824,9 +824,15 @@
                   }
                   @for (p of bd.basement.pieces ?? []; track $index; let i = $index) {
                     <div class="span2 row"><span class="grow">Piece {{ i + 1 }} · {{ yardSize(p) }}</span><button class="btn danger" (click)="deletePiece(i)" [attr.aria-label]="'Delete piece ' + (i + 1)">Delete</button></div>
+                    @for (e of p.outline; track $index; let k = $index) {
+                      <label class="chk"><input type="checkbox" [checked]="p.wallEdges?.[k] !== false" (change)="ringWall('pieces', i, k, checked($event))" [attr.aria-label]="'Piece ' + (i + 1) + ' wall ' + (k + 1)" />Wall {{ k + 1 }}</label>
+                    }
                   }
                   @for (y of bd.basement.courtyards ?? []; track $index; let i = $index) {
                     <div class="span2 row"><span class="grow">Courtyard {{ i + 1 }} · {{ yardSize(y) }}</span><button class="btn danger" (click)="deleteCourtyard(i)" [attr.aria-label]="'Delete courtyard ' + (i + 1)">Delete</button></div>
+                    @for (e of y.outline; track $index; let k = $index) {
+                      <label class="chk"><input type="checkbox" [checked]="y.wallEdges?.[k] !== false" (change)="ringWall('courtyards', i, k, checked($event))" [attr.aria-label]="'Courtyard ' + (i + 1) + ' wall ' + (k + 1)" />Wall {{ k + 1 }}</label>
+                    }
                   }
                   <div class="dim small span2">Basement wall coordinates start at its north-west corner.</div>
                   @for (wall of bd.basement.partitions ?? []; track $index; let i = $index) {

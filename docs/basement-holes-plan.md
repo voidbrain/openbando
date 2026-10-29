@@ -1,6 +1,6 @@
 # Basement courtyards and separate pieces (F-002)
 
-Status: phases 1–4 done (model #178, courtyard geometry #180, edit guards #181, Courtyard tool #182, separate pieces). Not done: per-edge wall switches for courtyards and pieces, vertex editing of pieces, openings and floor items in pieces; phase 5 (docs and media).
+Status: phases 1–4 done (model #178, courtyard geometry #180, edit guards #181, Courtyard tool #182, separate pieces). Per-edge wall switches for courtyards and pieces done. Not done: vertex editing of pieces, openings and floor items in pieces; phase 5 (docs and media).
 the building's own outline when absent) plus rectangular floor voids. This plan adds **courtyards** (holes through the
 whole basement: the ground is kept inside, walls around them; the ground floor above still covers them) and **separate pieces** (more than one perimeter
 under the same building), without breaking saved bandos or the existing perimeter rules (`wallEdges`, Cut/Wing remaps,

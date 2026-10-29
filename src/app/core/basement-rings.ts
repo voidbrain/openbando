@@ -111,3 +111,16 @@ export function ringsKept(b: BuildingSpec, basement: NonNullable<BuildingSpec['b
   const kept = keepValidRings({ ...b, basement });
   return (kept?.courtyards?.length ?? 0) === (basement.courtyards?.length ?? 0) && (kept?.pieces?.length ?? 0) === (basement.pieces?.length ?? 0);
 }
+
+/** Turn one wall of a courtyard or a separate piece on or off (flags stored only while one edge is open). */
+export function setRingWall(b: BuildingSpec, kind: 'courtyards' | 'pieces', ring: number, edge: number, on: boolean): boolean {
+  const list = b.basement?.[kind];
+  const item = list?.[ring];
+  if (!list || !item || !Number.isInteger(edge) || edge < 0 || edge >= item.outline.length) return false;
+  const walls = item.wallEdges ? [...item.wallEdges] : item.outline.map(() => true);
+  walls[edge] = on;
+  const { wallEdges: _old, ...rest } = item;
+  const next = walls.some(v => !v) ? { ...rest, wallEdges: walls } : rest;
+  b.basement = { ...b.basement!, [kind]: list.map((x, i) => (i === ring ? next : x)) };
+  return true;
+}

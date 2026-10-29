@@ -17,6 +17,7 @@ import { areaCorners } from '../../core/areas';
 import { roadDef, surfaceDef } from '../../core/layers';
 import { blockCategory } from '../../core/catalog';
 import { siteGround } from '../../core/site-ground';
+import { setRingWall } from '../../core/basement-rings';
 import { addBasementPiece, addCourtyard, basementBuilding, basementOutline, editBasementFloor, removeBasementPiece, removeCourtyard, insertBasementVertex, moveBasementVertex, removeBasementVertex, setBasementPerimeterWall, reshapeBasement, resizeBasement as resizeBasementOutline, restoreBasementFootprint, saveBasementFloor } from '../../core/basement';
 import { PickMenu, type PickOption } from './pick-menu';
 import { BlocksBox } from './blocks-box';
@@ -2713,6 +2714,11 @@ export class BandoEditor {
     const outline = basementOutline(b);
     return b.basement.wallEdges ?? (outline.length !== 4 || !isRectilinear(outline) ? outline.map(() => true) : null);
   });
+  /** A courtyard's or piece's wall switch in the inspector. */
+  protected ringWall(kind: 'courtyards' | 'pieces', ring: number, edge: number, on: boolean): void {
+    this.editBasement(b => { setRingWall(b, kind, ring, edge, on); });
+    this.applyNow();
+  }
   protected basementEdgeWall(i:number,on:boolean):void {
     let changed = false;
     this.editBasement(b=>{changed=setBasementPerimeterWall(b,i,on);});
