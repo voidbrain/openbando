@@ -1,4 +1,4 @@
-import type { BuildingSpec, LevelSpec, Vec2 } from './site-spec';
+import type { BuildingSpec, LevelSpec, Vec2, WallOpening } from './site-spec';
 import { listOpenings, outlineOf, reshapeBuilding } from './openings';
 import { polygonRect } from './polygon-rect';
 import { BASEMENT_COORD_LIMIT, bounds, contains, isRectilinear, rectPoly, validOutline, type Rect } from './footprint';
@@ -237,8 +237,9 @@ function moveBasementVertices(b: BuildingSpec, next: Vec2[]): boolean {
     return corners.some((p, i) => !segmentInside(p, corners[(i + 1) % corners.length]!));
   })) return false;
   const mini = basementBuilding(b), offsetX = (before.x0 + before.x1) / 2, offsetZ = (before.z0 + before.z1) / 2;
-  // Compass-indexed doors on an already shaped floor have no unambiguous wall mapping.
-  if (mini.footprint && Object.values(mini.levels[0]!.doors).some(list => list?.length)) return false;
+  // Compass-indexed doors left on an already shaped floor are legacy data nothing shows (F-004: those that fit a wall
+  // were migrated on load): keep them as they are rather than refuse the edit.
+  const legacyDoors = mini.footprint ? basement.doors : undefined;
   const currentOpenings = listOpenings(mini, 0);
   const expectedCount = mini.footprint ? mini.levels[0]!.wallOpenings?.length ?? 0 : Object.values(mini.levels[0]!.doors).reduce((n, list) => n + (list?.length ?? 0), 0);
   if (currentOpenings.length !== expectedCount) return false;
@@ -263,7 +264,7 @@ function moveBasementVertices(b: BuildingSpec, next: Vec2[]): boolean {
   delete basement.sides;
   if (wallEdges.some(v => !v)) basement.wallEdges = wallEdges;
   else delete basement.wallEdges;
-  basement.doors = {};
+  basement.doors = legacyDoors ?? {};
   basement.wallOpenings = openings.filter(o => o !== null);
   if (basement.columns) basement.columns = basement.columns.map(c => ({ ...c, x: c.x + dx, z: c.z + dz }));
   if (basement.partitions) basement.partitions = basement.partitions.map(w => w.map(p => ({ x: p.x + dx, z: p.z + dz })) as [Vec2, Vec2]);
@@ -441,4 +442,33 @@ export function removeBasementPiece(b: BuildingSpec, index: number): boolean {
   const { pieces: _old, ...rest } = b.basement!;
   b.basement = { ...rest, ...(pieces.length ? { pieces } : {}) };
   return true;
+}
+
+/**
+ * Old saved basements kept their doors by compass side after the outline became a shape, and nothing showed them
+ * (F-004). Put each back where it was on the basement's rectangle (its outline's bounding box) when that spot lies on
+ * one of the outline's walls with room for the door; the others stay as they were (still not shown, kept in the file).
+ */
+export function migrateCompassDoors(b: BuildingSpec): BuildingSpec['basement'] {
+  const basement = b.basement;
+  if (!basement?.outline || !Object.values(basement.doors ?? {}).some(list => list?.length)) return basement;
+  const outline = basement.outline, box = bounds(outline), ox = (box.x0 + box.x1) / 2, oz = (box.z0 + box.z1) / 2;
+  // the rectangle the doors were placed on, in the centred frame
+  const rect = { ...basementBuilding(b), footprint: undefined };
+  const moved: WallOpening[] = [];
+  const kept: NonNullable<typeof basement.doors> = {};
+  for (const seg of listOpenings(rect, 0)) {
+    const [, side, i] = seg.id.split(':') as [string, 'n' | 's' | 'e' | 'w', string];
+    const door = basement.doors![side]![Number(i)]!;
+    const x = (seg.axis === 'x' ? seg.c : seg.at) + ox, z = (seg.axis === 'x' ? seg.at : seg.c) + oz;
+    const fits = outline.some((a, k) => {
+      const q = outline[(k + 1) % outline.length]!, ex = q.x - a.x, ez = q.z - a.z, len = Math.hypot(ex, ez);
+      const t = ((x - a.x) * ex + (z - a.z) * ez) / (len * len);
+      return Math.abs((x - a.x) * ez - (z - a.z) * ex) / len < 0.08 && t * len >= door.w / 2 && (1 - t) * len >= door.w / 2;
+    });
+    if (fits) moved.push({ kind: door.kind, x, z, w: door.w, h: door.h, ...(door.sill !== undefined ? { sill: door.sill } : {}), ...(door.closed ? { closed: true } : {}) });
+    else (kept[side] ??= []).push(door);
+  }
+  if (!moved.length) return basement;
+  return { ...basement, doors: kept, wallOpenings: [...(basement.wallOpenings ?? []), ...moved] };
 }
