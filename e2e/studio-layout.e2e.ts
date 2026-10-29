@@ -56,7 +56,8 @@ test('Expand studio fills the window in 2D and 3D, keeps the docked inspector an
     expect(v.y + v.height - (c.y + c.height)).toBeLessThan(30);
   };
   // the editing area grows (the 3D view fills it: corner() checks that)
-  await expect.poll(async () => (await work.boundingBox())!.width).toBeGreaterThan(workBefore + 100);
+  // software WebGL on CI blocks the page for seconds while the 3D scene builds: give layout time to settle
+  await expect.poll(async () => (await work.boundingBox())!.width, {timeout: 60_000, message: `editing area was ${workBefore} px before expanding`}).toBeGreaterThan(workBefore + 100);
   await corner();
   await docked();
   await page.screenshot({path: testInfo.outputPath('expanded-3d.png')});
@@ -64,8 +65,8 @@ test('Expand studio fills the window in 2D and 3D, keeps the docked inspector an
   // restore: the panel returns to its size, the 3D view and compass follow it
   await page.getByRole('button', {name: 'Restore studio size', exact: true}).click();
   await expect(page.getByRole('button', {name: 'Expand studio', exact: true})).toHaveAttribute('aria-pressed', 'false');
-  await expect.poll(async () => Math.abs((await panel.boundingBox())!.width - before.width)).toBeLessThan(2);
-  await expect.poll(async () => Math.abs((await panel.boundingBox())!.height - before.height)).toBeLessThan(2);
+  await expect.poll(async () => Math.abs((await panel.boundingBox())!.width - before.width), {timeout: 60_000}).toBeLessThan(2);
+  await expect.poll(async () => Math.abs((await panel.boundingBox())!.height - before.height), {timeout: 60_000}).toBeLessThan(2);
   await corner();
   await docked();
   await page.screenshot({path: testInfo.outputPath('restored-3d.png')});
