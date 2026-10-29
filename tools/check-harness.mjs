@@ -1,13 +1,15 @@
 // Is this project behind the harness template it was applied from? Compares .harness.json with the template's release
 // tags and says, per file, what to reconcile. Never fails: run by check-freshness at session start; --github prints
 // GitHub warnings. The template is a local clone (HARNESS_HOME, else template.path in .harness.json); without one the
-// check is skipped, as in CI.
-import { existsSync, readFileSync } from 'node:fs';
+// check is skipped, as in CI. --merge three-way merges every forked file the template changed since its base, writes
+// the result (with conflict markers if any) and moves the base of the clean ones forward.
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
-import { homedir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const github = process.argv.includes('--github');
+const merge = process.argv.includes('--merge');
 const root = new URL('..', import.meta.url).pathname;
 const notes = [];
 const warn = (text) => notes.push(text);
@@ -57,17 +59,51 @@ for (const [path, source] of Object.entries(stamp.copied ?? {})) {
   if (here === null) warn(`${path} is missing: copy ${source} from template v${latest}.`);
   else if (here === now) continue;
   else if (here === was) warn(`${path}: template v${latest} updated it; copy ${source} from the template (${diff(source)}).`);
-  else if (was === now) warn(`${path} differs from template v${base}: keep project settings in .harness.json; a generic improvement goes back into the template.`);
+  else if (was === now) warn(`${path} differs from template v${base}: keep project settings in .harness.json; a generic improvement goes back into the template; a change only this project needs is a fork (APPLY.md, "Project overrides").`);
   else warn(`${path}: CONFLICT, changed here and in the template since v${base}; merge by hand (${diff(source)}).`);
 }
+
+// Forked files are copied files the project changed on purpose. The template's file at the fork's base is the common
+// ancestor: a template change since then is merged three-way, so both sides' edits survive and only overlaps conflict.
+const threeWay = (here, was, now) => {
+  const dir = mkdtempSync(join(tmpdir(), 'harness-merge-'));
+  const files = ['here', 'was', 'now'].map((name, i) => (writeFileSync(join(dir, name), [here, was, now][i]), join(dir, name)));
+  try { return { text: execFileSync('git', ['merge-file', '-p', '-L', 'project', '-L', 'base', '-L', 'template', ...files], { encoding: 'utf8' }), conflicts: 0 }; }
+  catch (e) { return { text: String(e.stdout), conflicts: e.status }; }
+  finally { rmSync(dir, { recursive: true, force: true }); }
+};
+let rebased = false;
+for (const [path, fork] of Object.entries(stamp.forked ?? {})) {
+  const here = mine(path), was = tags.includes(fork.base) ? at(fork.base, fork.from) : null, now = at(latest, fork.from);
+  if (!fork.why) warn(`${path}: forked without a reason; add "why" to its entry in .harness.json.`);
+  if (here === null) { warn(`${path} is missing: it is forked from ${fork.from}; restore it or remove the fork.`); continue; }
+  if (was === null) { warn(`${path}: forked from ${fork.from} at v${fork.base}, but the template has no such tag or no such file in it; set "base" to the release the fork was made from.`); continue; }
+  if (now === null) { warn(`${path}: ${fork.from} was removed from the template in v${latest}; see its CHANGELOG and drop or keep the fork.`); continue; }
+  if (was === now) continue;
+  if (here === now) { warn(`${path}: now identical to template v${latest}; move it back from "forked" to "copied".`); continue; }
+  const result = threeWay(here, was, now);
+  const how = `git -C ${home} diff v${fork.base} v${latest} -- ${fork.from}`;
+  if (merge) {
+    writeFileSync(join(root, path), result.text);
+    if (result.conflicts) warn(`${path}: merged template v${latest} with ${result.conflicts} conflict(s); resolve the markers, then set its "base" to "${latest}".`);
+    else { fork.base = latest; rebased = true; console.log(`${path}: merged template v${latest} cleanly; its fork base is now ${latest}.`); }
+  } else if (result.conflicts) warn(`${path}: forked, and template v${latest} changed it: CONFLICT in ${result.conflicts} place(s); run node tools/check-harness.mjs --merge and resolve the markers (${how}).`);
+  else warn(`${path}: forked, and template v${latest} changed it; the merge is clean: run node tools/check-harness.mjs --merge (${how}).`);
+}
+if (rebased) writeFileSync(stampFile, `${JSON.stringify(stamp, null, 2)}\n`);
 
 // Adapted files were rewritten for the project: when their template source changes, reconcile the change by hand.
 if (behind) {
   for (const [path, sources] of Object.entries(stamp.adapted ?? {}))
     for (const source of list(sources))
       if (at(base, source) === null && at(latest, source) !== null) warn(`${path}: ${source} is new in the template since v${base}; adopt it if it fits (git -C ${home} show v${latest}:${source}).`);
-      else if (at(base, source) !== at(latest, source)) warn(`${path}: its template source ${source} changed since v${base}; reconcile by hand (${diff(source)}).`);
+      else if (at(base, source) !== at(latest, source)) {
+        // project overrides of a template rule are marked in the file; a reconcile keeps them
+        const overrides = (mine(path) ?? '').split('\n').filter((line) => /^> Project override\b/.test(line)).length;
+        warn(`${path}: its template source ${source} changed since v${base}; reconcile by hand${overrides ? `, keeping its ${overrides} project override(s)` : ''} (${diff(source)}).`);
+      }
   const log = git('log', '--format=  %s', `v${base}..v${latest}`)?.trim();
   warn(`Harness template v${latest} is out (this project is on v${base}). See CHANGELOG.md in the template${log ? `; changes:\n${log}` : ''}\nReconcile the files above (APPLY.md, "Reconciling"), then set "version" in .harness.json to "${latest}".`);
 }
-done(`Harness: on template v${latest}; copied files match it.`);
+const forks = Object.keys(stamp.forked ?? {}).length;
+done(`Harness: on template v${latest}; copied files match it${forks ? `, ${forks} fork(s) merged up to date` : ''}.`);
