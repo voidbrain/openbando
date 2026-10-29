@@ -1,6 +1,6 @@
 {
  "about": "A farmhouse with a gambrel roof, its barn, a store and sheds at the edge of the woods, shared without its place: its real ground travels inside. Flights start on the take-off pad in front of the house.",
- "release": 3,
+ "release": 4,
  "version": 1,
  "id": "example-bardwell-house-example-1",
  "name": "Bardwell House",
@@ -101,7 +101,7 @@
      "baseY": 0,
      "height": 3,
      "sides": {
-      "n": true,
+      "n": false,
       "s": true,
       "e": true,
       "w": true

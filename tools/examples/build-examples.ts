@@ -280,9 +280,10 @@ function passage(bd: BuildingSpec, a: Vec2, b: Vec2, w: number, h: number): numb
     id: 'house', name: 'House', pos: at(hc, hr, 0, -1.75), rotDeg: hr, length: house.length, width: 7.5, color: '#4b3d36',
     levels: [lv(0, 3, 'gambrel', { roofRise: 4.6, roofColor: '#6f8c86', doors: { w: [win(2), win(5.5)], e: [win(3.75)], n: [win(2.5), win(7.5)] } })],
   };
+  // (no wall on its north side: the main block's wall is there, and two walls in one place flicker, B-035)
   const wing: BuildingSpec = {
     id: 'house-wing', name: 'House wing', pos: at(hc, hr, 0, 3.75), rotDeg: hr, length: house.length, width: 3.5, color: '#d9d6cf',
-    levels: [lv(0, 3, 'flat', { roofRise: 0, roofColor: '#6f8c86', doors: { s: [door(3, 1, 2.2), win(7)], w: [win(1.75)] } })],
+    levels: [lv(0, 3, 'flat', { sides: { n: false, s: true, e: true, w: true }, roofRise: 0, roofColor: '#6f8c86', doors: { s: [door(3, 1, 2.2), win(7)], w: [win(1.75)] } })],
   };
   const barnB: BuildingSpec = {
     id: 'barn', name: 'Barn', pos: barn.pos, rotDeg: barn.rotDeg, length: barn.length, width: barn.width, color: '#878a85',
@@ -357,7 +358,7 @@ function passage(bd: BuildingSpec, a: Vec2, b: Vec2, w: number, h: number): numb
   s.roads = (s.roads ?? []).flatMap((r) => clipLine(r.pts, { x0: -half.e, x1: half.e, z0: -half.n, z1: half.n }).map((pts) => ({ ...r, pts })));
   s.trees = s.trees.filter(inArea);
   s.extent = Math.max(half.e, half.n) + 5;
-  finish(s, 'example-bardwell-house', 'Bardwell House', ROOT + '/library/bandos/bardwell-house-no-place.json', 'A farmhouse with a gambrel roof, its barn, a store and sheds at the edge of the woods, shared without its place: its real ground travels inside. Flights start on the take-off pad in front of the house.', 3);
+  finish(s, 'example-bardwell-house', 'Bardwell House', ROOT + '/library/bandos/bardwell-house-no-place.json', 'A farmhouse with a gambrel roof, its barn, a store and sheds at the edge of the woods, shared without its place: its real ground travels inside. Flights start on the take-off pad in front of the house.', 4);
 }
 
 

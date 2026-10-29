@@ -43,6 +43,11 @@ jobs:
         # guide clips and Welcome films are recorded in a browser: say which show files that changed since (F-031)
         run: node tools/check-media.mjs --github
 
+      - name: Guide pages match the tour
+        # tools/build-guide.mjs writes docs/guide from src/app/core/tour.ts; a tour change that is not regenerated shows up
+        # here (F-029). Clips are recorded in a browser and not checked here (F-031).
+        run: node tools/build-guide.mjs && git diff --exit-code -- docs/guide
+
       - name: Test
         run: npx ng test --watch=false
 
