@@ -594,6 +594,8 @@ export const IT: Readonly<Record<string, string>> = {
   'Brick wall': 'Muro in mattoni',
   'Rendered block wall': 'Muro in blocchi intonacati',
   'Wooden fence': 'Staccionata in legno',
+  'Post-and-rail fence': 'Staccionata a tre assi',
+  'Three planks on posts, open between them (a white farm fence)': 'Tre assi su pali, aperte tra loro (una staccionata bianca da fattoria)',
   'Metal fence': 'Recinzione metallica',
   'Chain-link fence': 'Rete metallica',
   'Road': 'Strada',

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { digWater, insertPoint, layerShape, nearestEdge, removePoint, levelRoad, levelRoads, orderedRoads, padsToRoads, pathLength, sanitizeLayers, simplifyPath, waterLevel } from './layers';
+import { digWater, insertPoint, stripFrames, layerShape, nearestEdge, removePoint, levelRoad, levelRoads, orderedRoads, padsToRoads, pathLength, sanitizeLayers, simplifyPath, waterLevel } from './layers';
 import { siteGround } from './site-ground';
 import { emptySpec, moveTakeoff, sanitizeSpec } from './site-spec';
 import { applyStroke, emptyGrid, heightAt } from './terrain';
@@ -152,5 +152,22 @@ describe('moving the take-off pad', () => {
     expect(s.droneStart).toEqual({ x: 6, z: -8 });
     expect(s.pads[1]).toMatchObject({ x: 6, z: -7, w: 12, d: 12 });
     expect(s.pads[0]).toMatchObject({ x: 30, z: 5 });
+  });
+});
+
+describe('road strips turn without gaps', () => {
+  it('a straight road has square frames; a bend shares one mitred frame between its two segments', () => {
+    const straight = stripFrames([{ x: 0, z: 0 }, { x: 10, z: 0 }], 2.5);
+    expect(straight).toHaveLength(5);
+    for (const f of straight) expect(f).toMatchObject({ nx: -0, nz: 1, s: 1 });
+    // a right-angle bend at (10, 0): one frame there, normal at 45°, half-width stretched by √2
+    const bend = stripFrames([{ x: 0, z: 0 }, { x: 10, z: 0 }, { x: 10, z: 10 }], 5);
+    const at = bend.filter((f) => f.x === 10 && f.z === 0);
+    expect(at).toHaveLength(1);
+    expect(Math.hypot(at[0]!.nx, at[0]!.nz)).toBeCloseTo(1, 6);
+    expect(at[0]!.s).toBeCloseTo(Math.SQRT2, 6);
+    expect(bend).toHaveLength(5); // 0, 5, 10 | 5, 10 along the second segment
+    // a hairpin is capped, and a repeated point is skipped
+    expect(Math.max(...stripFrames([{ x: 0, z: 0 }, { x: 10, z: 0 }, { x: 10, z: 0 }, { x: 0, z: 0.5 }], 5).map((f) => f.s))).toBeLessThanOrEqual(2);
   });
 });

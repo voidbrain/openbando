@@ -198,6 +198,36 @@ describe('site model on a terrain', () => {
     return s;
   };
 
+  it('a fence follows the slope: its top stays `height` above the ground all along, not level with the highest point', async () => {
+    const { siteGround } = await import('../core/site-ground');
+    const s = hilly();
+    const m = buildSiteFromSpec(s);
+    const ground = siteGround(s);
+    let rise = 0;
+    for (const x of [42, 50, 58, 66, 74]) {
+      const g = ground.at(x, -10);
+      rise = Math.max(rise, g - ground.at(42, -10));
+      expect(m.collider.hit(new Vec3(x, g + 1.8, -10)), `inside at x ${x}`).toBe(true);
+      expect(m.collider.hit(new Vec3(x, g + 2.6, -10)), `nothing over it at x ${x}`).toBe(false);
+    }
+    expect(rise).toBeGreaterThan(0.6); // the wall climbs more than the 0.6 m margin above: a level top would fail
+  });
+
+  it('a post-and-rail fence: posts and three planks along the ground, solid for the drone', async () => {
+    const { siteGround } = await import('../core/site-ground');
+    const s = hilly();
+    s.walls = [{ a: { x: 40, z: -10 }, b: { x: 52, z: -10 }, height: 1.25, thick: 0.12, material: 'rail' }];
+    const m = buildSiteFromSpec(s);
+    const meshes: THREE.Mesh[] = [];
+    m.group.traverse((o) => {
+      if (o instanceof THREE.Mesh && (o.userData['pick'] as { kind?: string } | undefined)?.kind === 'fence') meshes.push(o);
+    });
+    expect(meshes.filter((x) => x.geometry instanceof THREE.BoxGeometry)).toHaveLength(6); // posts every 2.4 m, ends included
+    expect(meshes.filter((x) => !(x.geometry instanceof THREE.BoxGeometry))).toHaveLength(3); // the planks
+    const g = siteGround(s).at(46, -10);
+    expect(m.collider.hit(new Vec3(46, g + 0.6, -10))).toBe(true);
+  });
+
   it('builds one terrain mesh and keeps the flat ground for sites without terrain', () => {
     const flatSite = buildSiteFromSpec(spec());
     expect(flatSite.ground.grid).toBeNull();
