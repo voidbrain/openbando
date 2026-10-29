@@ -202,7 +202,8 @@ export class StudioPanel {
     this.studio.open(id);
     this.view.setMainSource('3d');
     this.layout.setVisible('studio', false);
-    void this.placer.open(PANELS.filter(panel => panel.group === 'telemetry' && panel.id !== 'live').map(panel => panel.id));
+    // the replay workspace, with the Fly checklist beside it for what to do next (F-018)
+    void this.placer.open([...PANELS.filter(panel => panel.group === 'telemetry' && panel.id !== 'live').map(panel => panel.id), 'fly']);
   }
   private readonly toast = inject(ToastService);
   private readonly layout = inject(LayoutStore);
