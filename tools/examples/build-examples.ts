@@ -59,6 +59,27 @@ function finish(spec: SiteSpec, id: string, name: string, file: string, about: s
   console.log(name, ok.buildings.length, 'buildings', ok.structures?.length, 'structures', ok.trees.length, 'trees');
   return ok;
 }
+/** A polyline cut to a rectangle: the pieces inside it (Liang-Barsky on each segment, joined where they touch). */
+function clipLine(pts: Vec2[], r: { x0: number; x1: number; z0: number; z1: number }): Vec2[][] {
+  const out: Vec2[][] = [];
+  let cur: Vec2[] = [];
+  for (let i = 0; i + 1 < pts.length; i++) {
+    const a = pts[i]!, b = pts[i + 1]!, dx = b.x - a.x, dz = b.z - a.z;
+    let t0 = 0, t1 = 1;
+    for (const [p, q] of [[-dx, a.x - r.x0], [dx, r.x1 - a.x], [-dz, a.z - r.z0], [dz, r.z1 - a.z]] as const) {
+      if (p === 0) { if (q < 0) t0 = 2; continue; }
+      const t = q / p;
+      if (p < 0) t0 = Math.max(t0, t); else t1 = Math.min(t1, t);
+    }
+    if (t0 > t1) { if (cur.length > 1) out.push(cur); cur = []; continue; }
+    const s = { x: a.x + dx * t0, z: a.z + dz * t0 }, e = { x: a.x + dx * t1, z: a.z + dz * t1 };
+    if (!cur.length) cur.push(s);
+    cur.push(e);
+    if (t1 < 1) { out.push(cur); cur = []; }
+  }
+  if (cur.length > 1) out.push(cur);
+  return out;
+}
 /** Sutherland-Hodgman: a polygon cut to a rectangle. */
 function clipRect(poly: Vec2[], r: { x0: number; x1: number; z0: number; z1: number }): Vec2[] {
   const edges: [(p: Vec2) => boolean, (a: Vec2, b: Vec2) => Vec2][] = [
@@ -249,7 +270,9 @@ function passage(bd: BuildingSpec, a: Vec2, b: Vec2, w: number, h: number): numb
     return { x: c.x + u * Math.cos(a) - v * Math.sin(a), z: c.z + u * Math.sin(a) + v * Math.cos(a) };
   };
   const [house, barn] = s.buildings as [BuildingSpec, BuildingSpec];
-  const hr = house.rotDeg, hc = house.pos;
+  // the generator's footprint, turned a quarter: the gambrel ends face east and west, the flat-roofed wing (with the
+  // dormers above it) faces south (pilot's photos, 2026-10-29)
+  const hr = (house.rotDeg + 90) % 360, hc = house.pos;
   const win = (c: number) => ({ kind: 'window' as const, c, w: 1, h: 1.3, sill: 1 });
   // the house: the generator's footprint split into the gambrel block (north-west, its gable ends facing south-west and
   // north-east, windows in them) and a lower flat-roofed wing along the south-east side
@@ -292,12 +315,28 @@ function passage(bd: BuildingSpec, a: Vec2, b: Vec2, w: number, h: number): numb
     if (nx * (store.pos.x - a.x) + nz * (store.pos.z - a.z) < 0) [nx, nz] = [-nx, -nz]; // towards the field
     s.walls.push({ a: { x: a.x + nx * 3, z: a.z + nz * 3 }, b: { x: b.x + nx * 3, z: b.z + nz * 3 }, height: 1.2, thick: 0.12, material: 'wood' });
   }
+  // the hedge along the south side of the house and the south end of its east side (house frame: +v south, +u east)
+  s.walls.push(
+    { a: at(hc, hr, -5.6, 6.6), b: at(hc, hr, 5.6, 6.6), height: 1.8, thick: 1.1, material: 'hedge' },
+    { a: at(hc, hr, 6.2, 6.6), b: at(hc, hr, 6.2, 1), height: 1.8, thick: 1.1, material: 'hedge' },
+  );
+  // the second drive: from the first one by the lane, straight up to the front of the house, under three big trees
+  s.roads!.push({ kind: 'road', width: 3.5, pts: [{ x: -12, z: 32.2 }, { x: -7, z: 20 }, { x: -3, z: 8 }, { x: -1, z: -4 }, { x: 0, z: -11 }] });
+  // the take-off pad on the lawn in front of the house, beside the end of that drive
+  Object.assign(s.pads.at(-1)!, { x: -6, z: -9 });
+  s.droneStart = { x: -6, z: -9 };
   // a camper by the barn and a car at the end of the drive
   s.structures = [
     { id: 'camper', kind: 'container', name: 'Camper', x: 22.6, z: -19.8, rotDeg: 10, height: 2.8, size: 2.4, length: 6.5, color: '#eeeeea' },
     { id: 'car', kind: 'car', name: 'Car', x: 31.4, z: -9.6, rotDeg: 60, height: 1.5, size: 1.8, length: 4.6, color: '#c9ccd1' },
   ];
-  // trees: one per spot, none inside a building, the patio or on the wall
+  // trees: one per spot, none inside a building, the patio, on the wall or on a road; three big ones over the second drive
+  const nearRoad = (t: TreeSpec): boolean => (s.roads ?? []).some((r) => r.pts.some((a, i) => {
+    const b = r.pts[i + 1];
+    if (!b) return false;
+    const dx = b.x - a.x, dz = b.z - a.z, k = Math.max(0, Math.min(1, ((t.x - a.x) * dx + (t.z - a.z) * dz) / (dx * dx + dz * dz)));
+    return Math.hypot(t.x - a.x - dx * k, t.z - a.z - dz * k) < r.width / 2 + 1;
+  }));
   const seen = new Set<string>();
   const clear = (t: TreeSpec): boolean => s.buildings.every((b) => {
     const a = (-b.rotDeg * Math.PI) / 180, dx = t.x - b.pos.x, dz = t.z - b.pos.z;
@@ -308,9 +347,17 @@ function passage(bd: BuildingSpec, a: Vec2, b: Vec2, w: number, h: number): numb
     const k = `${t.x},${t.z}`;
     if (seen.has(k)) return false;
     seen.add(k);
-    return clear(t);
+    return clear(t) && !nearRoad(t);
   });
-  finish(s, 'example-bardwell-house', 'Bardwell House', ROOT + '/library/bandos/bardwell-house-no-place.json', 'A farmhouse with a gambrel roof, its barn, a store and sheds at the edge of the woods, shared without its place: its real ground travels inside. Flights start on the take-off pad in the front lawn.');
+  s.trees.push({ x: -9.5, z: 4, h: 17, r: 7, kind: 'd' }, { x: 4.5, z: 6, h: 18, r: 7.5, kind: 'd' }, { x: -5, z: 17, h: 15, r: 6, kind: 'd' });
+  // only the ground the model covers: roads and trees are cut to the area of the real heights, and the grass around ends
+  // a few metres past it (the map had roads running hundreds of metres out, over an empty green plane)
+  const half = s.terrain!.half;
+  const inArea = (p: Vec2): boolean => Math.abs(p.x) <= half.e && Math.abs(p.z) <= half.n;
+  s.roads = (s.roads ?? []).flatMap((r) => clipLine(r.pts, { x0: -half.e, x1: half.e, z0: -half.n, z1: half.n }).map((pts) => ({ ...r, pts })));
+  s.trees = s.trees.filter(inArea);
+  s.extent = Math.max(half.e, half.n) + 5;
+  finish(s, 'example-bardwell-house', 'Bardwell House', ROOT + '/library/bandos/bardwell-house-no-place.json', 'A farmhouse with a gambrel roof, its barn, a store and sheds at the edge of the woods, shared without its place: its real ground travels inside. Flights start on the take-off pad in front of the house.', 2);
 }
 
 
