@@ -16,8 +16,12 @@ const sha = header?.match(/against main `([0-9a-f]{7,40})`/)?.[1];
 if (!sha) warn('The backlog header names no main commit ("against main `<sha>`"): reconcile it against main.');
 else if (git('cat-file', '-e', `${sha}^{commit}`) === null) warn(`The backlog's commit ${sha} is not in this checkout (shallow clone or rewritten history): fetch main or reconcile by hand.`);
 else {
-  const merged = git('log', '--merges', '--first-parent', '--format=%s', `${sha}..HEAD`)?.split('\n').filter(Boolean) ?? [];
-  const prs = merged.map((s) => s.match(/#(\d+)/)?.[1]).filter(Boolean);
+  // a PR that only records evidence (backlog, archive, audits) needs no reconciling of its own: otherwise every
+  // reconciliation would leave the backlog one PR behind forever
+  const recordsOnly = (merge) => (git('diff', '--name-only', `${merge}^1`, merge)?.split('\n').filter(Boolean) ?? ['?'])
+    .every((f) => /^docs\/(BACKLOG\.md|archive\/|audits\/)/.test(f));
+  const merges = git('log', '--merges', '--first-parent', '--format=%H %s', `${sha}..HEAD`)?.split('\n').filter(Boolean) ?? [];
+  const prs = merges.filter((l) => !recordsOnly(l.split(' ')[0])).map((l) => l.match(/#(\d+)/)?.[1]).filter(Boolean);
   if (prs.length) warn(`The backlog is ${prs.length} merged PR(s) behind main (#${prs.join(', #')}): read their CI (npm run ci:status -- ${prs.join(' ')}), update or close the records, archive closed ones, move the header to the current main.`);
 }
 
