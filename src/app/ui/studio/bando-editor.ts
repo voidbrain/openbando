@@ -66,6 +66,7 @@ const PLACE: readonly Tool[] = ['door', 'window', 'wall', 'void', 'column', 'sta
 const MIN_HALF = 20;
 /** Room kept between the area frame and the map's edges (px): the handles, the turn knob and the search bar stay clear. */
 const FRAME_MARGIN = 36;
+const MAX_MAP_ZOOM = 25;
 const M_LAT = 111132;
 const snap = (v: number, step: number): number => Math.round(v / step) * step;
 
@@ -556,7 +557,7 @@ export class BandoEditor {
   protected readonly fb = computed(() => {
     const { w, h } = this.size();
     const k = this.ppm();
-    const fw = this.half().e * 2 * k, fh = this.half().n * 2 * k; // fitFrame keeps it inside the view
+    const fw = this.half().e * 2 * k, fh = this.half().n * 2 * k; // keepFrame keeps it inside the view
     const r = (this.rot() * Math.PI) / 180, o = this.off();
     const cx = w / 2 + (o.u * Math.cos(r) - o.v * Math.sin(r)) * k, cy = h / 2 + (o.u * Math.sin(r) + o.v * Math.cos(r)) * k;
     return { l: cx - fw / 2, t: cy - fh / 2, w: fw, h: fh };
@@ -940,6 +941,20 @@ export class BandoEditor {
       this.ed.selectedId(); // another building: back to the whole building
       untracked(() => { this.floorFocus.set(false); if(this.ed.selectedId()!==this.basementFocusId())this.basementFocus.set(false); });
     });
+    // the frame stays inside the map: whatever changes its size, place or turn, the view or the mode
+    effect(() => {
+      this.mode();
+      this.half();
+      this.off();
+      this.rot();
+      this.size();
+      if (this.mapOn()) untracked(() => this.keepFrame());
+    });
+    // in 1 · Area the wheel and pinch zoom about the view's centre, as the frame does: they stay aligned
+    effect(() => {
+      const centred = this.mode() === 'area' ? 'center' : true;
+      if (this.mapOn() && this.map) Object.assign(this.map.options, { scrollWheelZoom: centred, touchZoom: centred });
+    });
     effect(() => this.applyBase(this.placeHidden() ? 'off' : this.studio.basemap(), this.studio.mapOpacity()));
     effect(() => {
       // a tool that is no longer offered (nothing selected, left the floor ...) falls back to Select
@@ -999,7 +1014,7 @@ export class BandoEditor {
 
   private init(): void {
     const st = this.studio.start();
-    const map = L.map(this.mapEl().nativeElement, { zoomControl: false, minZoom: 15, maxZoom: 25, zoomSnap: 0.25, zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false, attributionControl: true, doubleClickZoom: false, boxZoom: false }).setView([st.lat, st.lon], st.zoom);
+    const map = L.map(this.mapEl().nativeElement, { zoomControl: false, minZoom: 15, maxZoom: MAX_MAP_ZOOM, zoomSnap: 0.25, zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false, attributionControl: true, doubleClickZoom: false, boxZoom: false }).setView([st.lat, st.lon], st.zoom);
     this.map = map;
     // the outlines get their own renderer, created now: one created lazily by the first outline clipped it away
     map.addLayer(this.areaRenderer);
@@ -1029,9 +1044,6 @@ export class BandoEditor {
       if (s.x > 20 && s.y > 20) this.size.set({ w: s.x, h: s.y });
     };
     map.on('move zoom resize', sync);
-    map.on('zoomend resize', () => {
-      if (this.mode() === 'area') this.fitFrame();
-    });
     map.on('dragstart', () => {
       this.studio.placeChosen.set(true);
       this.hits.set([]);
@@ -1047,7 +1059,6 @@ export class BandoEditor {
       this.fullWidth.set(this.wrapEl().nativeElement.clientWidth);
       map.invalidateSize();
       sync();
-      if (this.mode() === 'area') this.fitFrame();
     });
     ro.observe(this.wrapEl().nativeElement);
     ro.observe(this.workEl().nativeElement);
@@ -1058,7 +1069,6 @@ export class BandoEditor {
     this.rot.set(sh?.rot ?? 0);
     this.half.set(sh ? { e: clampHalf(sh.e), n: clampHalf(sh.n) } : { e: clampHalf(this.size().w * 0.35 * mpp), n: clampHalf(this.size().h * 0.35 * mpp) });
     this.mode.set((this.studio.initialMode() === 'model' || this.placeHidden()) && this.hasModel() ? 'model' : 'area');
-    if (this.mode() === 'area') this.fitFrame();
     this.destroyRef.onDestroy(() => {
       ro.disconnect();
       if (this.indoor()) this.view.setRoofHidden(this.roofBefore);
@@ -1112,29 +1122,34 @@ export class BandoEditor {
   }
 
   /**
-   * The frame never reaches past the map minus FRAME_MARGIN (zoom, resize, turn): the area itself shrinks to fit, so
-   * the frame is never cut and always shows what Generate builds (it was drawn clipped while the area stayed larger).
+   * The area frame is a place on the map: it zooms with the map (about the view's centre, like the wheel in 1 · Area)
+   * and never changes size by itself. Zooming in stops where the frame would reach FRAME_MARGIN from the map's edge;
+   * a smaller panel, a turn or a reopened area zooms the map out instead. Only when even the farthest zoom is too close
+   * does the area shrink.
    */
-  private fitFrame(): void {
-    const { w, h } = this.size();
-    if (w < FRAME_MARGIN * 4 || h < FRAME_MARGIN * 4) return; // not laid out yet (or folded away): nothing to fit
-    const k = this.ppm();
-    const r = (this.rot() * Math.PI) / 180, cos = Math.abs(Math.cos(r)), sin = Math.abs(Math.sin(r));
-    let o = this.off();
-    const centre = (): { x: number; y: number } => ({
-      x: w / 2 + (o.u * Math.cos(r) - o.v * Math.sin(r)) * k,
-      y: h / 2 + (o.u * Math.sin(r) + o.v * Math.cos(r)) * k,
-    });
-    let c = centre();
-    const m = FRAME_MARGIN;
-    if (c.x < m || c.x > w - m || c.y < m || c.y > h - m) {
-      o = { u: 0, v: 0 }; // the frame left the view: bring it back to the middle
-      this.off.set(o);
-      c = centre();
+  private keepFrame(): void {
+    const map = this.map;
+    if (!map) return;
+    if (this.mode() !== 'area') {
+      map.setMaxZoom(MAX_MAP_ZOOM);
+      return;
     }
-    const he = this.half().e, hn = this.half().n;
-    const room = Math.min((Math.min(c.x, w - c.x) - m) / ((he * cos + hn * sin) * k), (Math.min(c.y, h - c.y) - m) / ((he * sin + hn * cos) * k));
-    if (room < 1) this.half.set({ e: clampHalf(he * room), n: clampHalf(hn * room) });
+    const { w, h } = this.size();
+    if (w < FRAME_MARGIN * 4 || h < FRAME_MARGIN * 4) return; // not laid out yet (or folded away)
+    const r = (this.rot() * Math.PI) / 180, cos = Math.abs(Math.cos(r)), sin = Math.abs(Math.sin(r));
+    const { e: he, n: hn } = this.half(), o = this.off();
+    // metres from the view's centre to the frame's farthest side, across and down
+    const across = Math.abs(o.u * Math.cos(r) - o.v * Math.sin(r)) + he * cos + hn * sin;
+    const down = Math.abs(o.u * Math.sin(r) + o.v * Math.cos(r)) + he * sin + hn * cos;
+    const ppm = Math.min((w / 2 - FRAME_MARGIN) / across, (h / 2 - FRAME_MARGIN) / down);
+    const fit = Math.log2(ppm * 156543.03392 * Math.cos((this.center().lat * Math.PI) / 180)) - 1e-6;
+    if (fit < map.getMinZoom()) {
+      const k = ppm / this.ppm() / Math.pow(2, map.getMinZoom() - this.zoom()); // the scale that fits at the farthest zoom
+      this.half.set({ e: clampHalf(he * k), n: clampHalf(hn * k) });
+      this.off.set({ u: o.u * k, v: o.v * k });
+      return; // runs again with the smaller area
+    }
+    map.setMaxZoom(Math.min(MAX_MAP_ZOOM, fit)); // also zooms out when the map is closer than that
   }
 
   protected setMode(m: 'area' | 'model'): void {
@@ -1144,10 +1159,7 @@ export class BandoEditor {
     if (m === 'model') {
       const z = this.ed.draft().zone;
       if (z && this.map) this.map.setView([z.lat, z.lon], this.map.getZoom());
-    } else {
-      if (this.indoor()) this.exitIndoor();
-      this.fitFrame();
-    }
+    } else if (this.indoor()) this.exitIndoor();
   }
 
   protected async generate(): Promise<void> {
@@ -2010,7 +2022,6 @@ export class BandoEditor {
         const ov = d.h.includes('s') ? N + hn : d.h.includes('n') ? S - hn : o0.v;
         this.half.set({ e: he, n: hn });
         this.off.set({ u: ou, v: ov });
-        if (r) this.fitFrame(); // a turned frame's corners can still reach past the edge
         break;
       }
       case 'frameRot': {
@@ -2019,7 +2030,6 @@ export class BandoEditor {
         const cx = host.left + f.l + f.w / 2, cy = host.top + f.t + f.h / 2;
         const ang = (Math.atan2(e.clientY - cy, e.clientX - cx) * 180) / Math.PI + 90;
         this.rot.set((((snap(ang, e.shiftKey ? 15 : 1) % 360) + 540) % 360) - 180);
-        this.fitFrame();
         break;
       }
       case 'move': {
