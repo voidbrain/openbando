@@ -427,14 +427,14 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 **→ Human action required:** 💻 **No**<br />Confirm the checklist browser cases in CI, then add guide snippets per route.
 
-**Next action / closure evidence:** Implemented 2026-10-29 (`feat/f018-fly-guide`): the Fly checklist panel (`FlyChecklist`, Tools group) with Replay / Simulator / Live routes from the plan. Steps are pure (`core/fly-guide.ts`, unit-tested) and ticked from app state, so the list resumes by itself; route and skipped steps persist; Back reopens the last skip, Cancel closes it and keeps files and edits; missing recordings make sync/alignment explain why they are unavailable; the simulator route opens panels and never arms (the arm step has no button). Saved-bando Fly opens it beside the replay workspace. Browser tests cover a replay with a missing video, Back, a real log ticking its step, the simulator route without arming, a reload resuming route and skips, and axe on the panel. Remaining from the plan: guide snippets per route and their clips; the racing/relay branch points to Flights rather than its own steps. Earlier: [Workflow proposal](fly-workflow-plan.md) separates bando selection, recording availability, simulator setup and live/multi-pilot branches. Planning only; interactive wizard and guide/media updates are not implemented.
+**Next action / closure evidence:** Implemented 2026-10-29 ([#173](https://github.com/voidbrain/openbando/pull/173)): the Fly checklist panel (`FlyChecklist`, Tools group) with Replay / Simulator / Live routes from the plan. Steps are pure (`core/fly-guide.ts`, unit-tested) and ticked from app state, so the list resumes by itself; route and skipped steps persist; Back reopens the last skip, Cancel closes it and keeps files and edits; missing recordings make sync/alignment explain why they are unavailable; the simulator route opens panels and never arms (the arm step has no button). Saved-bando Fly opens it beside the replay workspace. Browser tests cover a replay with a missing video, Back, a real log ticking its step, the simulator route without arming, a reload resuming route and skips, and axe on the panel. Remaining from the plan: guide snippets per route and their clips; the racing/relay branch points to Flights rather than its own steps. Earlier: [Workflow proposal](fly-workflow-plan.md) separates bando selection, recording availability, simulator setup and live/multi-pilot branches. Planning only; interactive wizard and guide/media updates are not implemented.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | `feat/f018-fly-guide` (checklist); [#154](https://github.com/voidbrain/openbando/pull/154) |
+| PR / evidence | [#173](https://github.com/voidbrain/openbando/pull/173) (checklist); [#154](https://github.com/voidbrain/openbando/pull/154) |
 | Opened | 2026-10-28 |
 | Verification | Unit/integration · 2026-10-29 · 5 fly-guide cases; Browser/accessibility · 2026-10-29 · 2 checklist cases and axe passed locally; CI · Pending |
 | Reviewed | 2026-10-29 |
