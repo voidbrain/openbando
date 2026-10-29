@@ -607,9 +607,9 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 |:---:|---|---|---|---|
 | 🟡 | F-027 | 🔹 P3 | Implemented | Post-and-rail fence (white, three planks) |
 
-🧑 **→ Human action required: Yes**<br />On the live site after merge: draw a fence and pick Post-and-rail in its material menu; Bardwell House's drive fence uses it once its release 2 (#214) is in.
+🧑 **→ Human action required: Yes**<br />On the live site after merge: draw a fence and pick Post-and-rail in its material menu; Bardwell House's drive fence uses it.
 
-**Next action / closure evidence:** Requested 2026-10-29 for the library (Bardwell House has one). New fence material `rail`: posts every 2.4 m, three planks (`RAIL_PLANKS`) nailed to their face with open gaps between them, white by default, each plank following the ground; solid for the drone like the other fences. Material menu entry with its own icon and Italian. Covered by `site-model.spec.ts` (6 posts and 3 planks on a 12 m fence, solid). Next: Bardwell House's drive fence becomes `rail` (after #214 merges).
+**Next action / closure evidence:** Requested 2026-10-29 for the library (Bardwell House has one). New fence material `rail`: posts every 2.4 m, three planks (`RAIL_PLANKS`) nailed to their face with open gaps between them, white by default, each plank following the ground; solid for the drone like the other fences. Material menu entry with its own icon and Italian. Covered by `site-model.spec.ts` (6 posts and 3 planks on a 12 m fence, solid). Bardwell House's drive fence is `rail` (release 3 of the example, this PR's follow-up).
 
 <details>
 <summary>PR history, dates and verification</summary>

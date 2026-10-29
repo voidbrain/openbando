@@ -307,13 +307,13 @@ function passage(bd: BuildingSpec, a: Vec2, b: Vec2, w: number, h: number): numb
     { kind: 'concrete', pts: [{ x: 5.7, z: -39.2 }, { x: 16.6, z: -34.9 }, { x: 12.2, z: -25.1 }, { x: 1.9, z: -30 }] },
     { kind: 'concrete', pts: [{ x: -27, z: -30.5 }, { x: -12.8, z: -33.8 }, { x: -3, z: -31.6 }, { x: -6.3, z: -26.7 }, { x: -20.5, z: -25.1 }] },
   ];
-  // the post-and-rail fence on the field side of the drive, 3 m off its centre line
+  // the white post-and-rail fence on the field side of the drive, 3 m off its centre line (pilot's photos)
   const drive = s.roads![1]!.pts;
   for (let i = 0; i + 1 < drive.length; i++) {
     const a = drive[i]!, b = drive[i + 1]!, len = Math.hypot(b.x - a.x, b.z - a.z);
     let nx = -(b.z - a.z) / len, nz = (b.x - a.x) / len;
     if (nx * (store.pos.x - a.x) + nz * (store.pos.z - a.z) < 0) [nx, nz] = [-nx, -nz]; // towards the field
-    s.walls.push({ a: { x: a.x + nx * 3, z: a.z + nz * 3 }, b: { x: b.x + nx * 3, z: b.z + nz * 3 }, height: 1.2, thick: 0.12, material: 'wood' });
+    s.walls.push({ a: { x: a.x + nx * 3, z: a.z + nz * 3 }, b: { x: b.x + nx * 3, z: b.z + nz * 3 }, height: 1.25, thick: 0.12, material: 'rail' });
   }
   // the hedge along the south side of the house and the south end of its east side (house frame: +v south, +u east)
   s.walls.push(
@@ -357,7 +357,7 @@ function passage(bd: BuildingSpec, a: Vec2, b: Vec2, w: number, h: number): numb
   s.roads = (s.roads ?? []).flatMap((r) => clipLine(r.pts, { x0: -half.e, x1: half.e, z0: -half.n, z1: half.n }).map((pts) => ({ ...r, pts })));
   s.trees = s.trees.filter(inArea);
   s.extent = Math.max(half.e, half.n) + 5;
-  finish(s, 'example-bardwell-house', 'Bardwell House', ROOT + '/library/bandos/bardwell-house-no-place.json', 'A farmhouse with a gambrel roof, its barn, a store and sheds at the edge of the woods, shared without its place: its real ground travels inside. Flights start on the take-off pad in front of the house.', 2);
+  finish(s, 'example-bardwell-house', 'Bardwell House', ROOT + '/library/bandos/bardwell-house-no-place.json', 'A farmhouse with a gambrel roof, its barn, a store and sheds at the edge of the woods, shared without its place: its real ground travels inside. Flights start on the take-off pad in front of the house.', 3);
 }
 
 
