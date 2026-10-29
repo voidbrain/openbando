@@ -315,18 +315,18 @@ Each item has a compact summary, followed by **→ Human action required** first
 |:---:|---|---|---|---|
 | 🟡 | F-006 | 🔹 P3 | Implemented | Studio controls and vegetation |
 
-**→ Human action required:** 💻 **No**<br />Agent can check Studio controls and vegetation previews in both views.
+**→ Human action required:** 💻 **No**<br />Confirm the vegetation and 3D-preview fixes in CI, then review compass and expand/dock controls in both views.
 
-**Next action / closure evidence:** Review compass consistency, expand/dock controls, 3D construction previews, measures and hedge/bramble brush shapes in both views.
+**Next action / closure evidence:** Agent review 2026-10-29 (`test/f006-vegetation-brush`): a new browser test drags a hedge square in 2D (dashed preview during the drag, shrubs planted, one undo/redo step) and a bramble circle in 3D, then checks the exported materials; its screenshots are kept for review. It found two defects, both fixed: (1) no 3D gesture preview was ever drawn: `effect(() => this.r?.setDrawLine(this.drawLine()))` never read the signal while the renderer was missing, so it never subscribed (fence, bridge, tunnel lines and live 3D measures too); the 3D line is now a polyline and the brush draws its area ring; `check:conventions` flags that effect pattern. (2) The brush hint said “trees” for hedges and brambles, and three of its hints had no Italian. Remaining: compass consistency and expand/dock controls in both views. Earlier scope: Review compass consistency, expand/dock controls, 3D construction previews, measures and hedge/bramble brush shapes in both views.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#84](https://github.com/voidbrain/openbando/pull/84), [#85](https://github.com/voidbrain/openbando/pull/85), [#90](https://github.com/voidbrain/openbando/pull/90) (partial coverage) |
+| PR / evidence | `test/f006-vegetation-brush` (brush test, 3D preview fix, hints); [#84](https://github.com/voidbrain/openbando/pull/84), [#85](https://github.com/voidbrain/openbando/pull/85), [#90](https://github.com/voidbrain/openbando/pull/90) (partial coverage) |
 | Opened | 2026-10-27 |
-| Verification | Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit); Studio controls and vegetation review in both views · Pending |
+| Verification | Browser/accessibility · 2026-10-29 · new vegetation brush test passed locally; 3D brush ring visible in its mid-drag screenshot (was absent before the fix); CI · Pending; compass and expand/dock review · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>

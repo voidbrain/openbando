@@ -4,7 +4,7 @@ import { CalibrationStore } from '../../state/calibration.store';
 import { basementOutline } from '../../core/basement';
 import type { Flight } from '../../core/models';
 import type { SiteSpec } from '../../core/site-spec';
-import { SiteViewRenderer, type SitePick } from '../../three/site-view';
+import { SiteViewRenderer, type DrawLine, type SitePick } from '../../three/site-view';
 import type { GroundStyle } from '../../three/site-model';
 import type { MeasureViewItem } from '../../three/measure-view';
 import type { BuildingHandle } from '../../three/building-handles';
@@ -110,7 +110,7 @@ export class SiteView {
   readonly groundStyle = input<GroundStyle>('natural');
   /** A brush ring on the ground (terrain tools), or none. */
   readonly cursor = input<{ x: number; z: number; r: number; color: string } | null>(null);
-  readonly drawLine = input<{ a: { x: number; z: number }; b: { x: number; z: number }; color: string; height?: number } | null>(null);
+  readonly drawLine = input<DrawLine | null>(null);
   readonly measures = input<readonly MeasureViewItem[]>([]);
   readonly measurePicked = output<{ index: number; label: boolean }>();
   protected readonly failed = signal(false);
@@ -162,8 +162,16 @@ export class SiteView {
       const c = this.cursor();
       this.r?.setCursor(c);
     });
-    effect(() => this.r?.setDrawLine(this.drawLine()));
-    effect(() => this.r?.setMeasures(this.measures()));
+    // read the signal before the renderer guard: `this.r?.f(sig())` never reads sig() while r is missing, so the effect
+    // never subscribed and the 3D gesture line (fence, bridge, tunnel, brush area) and live measures were never drawn
+    effect(() => {
+      const line = this.drawLine();
+      this.r?.setDrawLine(line);
+    });
+    effect(() => {
+      const items = this.measures();
+      this.r?.setMeasures(items);
+    });
     effect(() => {
       const sel = this.selection();
       this.spec(); // a rebuild invalidates the box: redraw it after
