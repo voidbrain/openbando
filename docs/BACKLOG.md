@@ -409,6 +409,30 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ---
 
+### F-023
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | F-023 | 🔹 P3 | Implemented | Bardwell House example, place hidden |
+
+🧑 **→ Human action required: Yes**<br />On the live site after merge: Bandos → Examples → Bardwell House → Open a copy; compare the model with your photos and say what to correct.
+
+**Next action / closure evidence:** Requested 2026-10-29 with the generated bando (private coordinates, never committed), two top views and two oblique photos. Decided with the user: a gambrel roof kind (F-022), the map's "concrete" over the west fields dropped, the real ground baked in. The input is the app's own place-hidden export (`tools/examples/data/bardwell-house.hidden.json`: embedded relative heights, origin 0, 0, no coordinates, terrain key or map names, checked before commit); `npm run examples` builds `library/bandos/bardwell-house-no-place.json` with the refinements measured on the photos (≈ 8 cm a pixel, scaled on the generated house and barn; the store's place agrees within ~2 m between the two top views): gambrel house and flat-roofed wing, gambrel barn, store, three sheds, patio and stepped brick wall, the drive's wooden fence, a camper and a car; duplicate trees removed. The FPV simulators' models of the place are game assets and were not used. Covered by `examples.spec.ts` (listed, hidden, origin 0, 0, no coordinates or names, embedded ground, gambrel roofs, store and sheds, no map surface over the fields). AGENTS' privacy rule names the place as private. Not checked: shapes and heights against the real place beyond the photos (porch, dormers, the wing's exact depth are estimates).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | This PR (after [#206](https://github.com/voidbrain/openbando/pull/206), the gambrel roof); request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Unit/visual · 2026-10-29 · `examples.spec.ts` passed locally; 2D plan compared with the top views and a 3D view reviewed by the agent; pilot's comparison · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
 ## Other changes
 
 `main` protection active 2026-10-29 (user request, set through the API): ruleset "protect main" requires `check`, `e2e (1)`–`e2e (4)` and `race-browser` and refuses force pushes and deletion. B-025 (the flaky Auto-sync check) was closed first so the required checks are reliable.

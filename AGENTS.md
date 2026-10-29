@@ -121,7 +121,7 @@ npm run check:conventions                 # Angular conventions above, core/ imp
 ### Testing the joins
 
 - Two bugs reached the live site although every unit had tests: flights on generated bandos were turned 90° (the map's projection and the flight's were each right, but the default alignment between them was not), and a timeline click was undone while the video played (seek and video clock each worked alone). A change that touches how two parts meet gets a test across both: `calibration-default.spec.ts` (a GPS fix lands where the map puts the same point), the seek-with-a-playing-video case in `services.spec.ts`.
-- Test coordinates are neutral (Milan centre, 45.4642, 9.1900, or open sea at 1°N 1°E for flights). Never use a real bando's place, and never the private one's (see Sharing bandos). The map starts at Milan centre (`DEFAULT_START`) until the pilot searches.
+- Test coordinates are neutral (Milan centre, 45.4642, 9.1900, or open sea at 1°N 1°E for flights). Never use a real bando's place, and never the private ones' (see Privacy). The map starts at Milan centre (`DEFAULT_START`) until the pilot searches.
 - Typed coordinates are parsed locally (`parseLatLon`) and never sent to the geocoder: a bando's coordinates are the pilot's secret.
 
 ### Known pitfalls
@@ -146,7 +146,7 @@ Before changing an area, read its section in [docs/agents/areas.md](docs/agents/
 |---|---|
 | Editor | shell and tool controllers, palette, selection, measures, Elements, modules, blocks and the library, coordinates, water/roads/surfaces, inspector docking |
 | Terrain, roads and underground | `siteGround`, terrain styles, road priority and draping, underground cuts, basements and their perimeter walls |
-| Buildings and example bandos | ruins, generated examples (`npm run examples`), the Villetta measured example |
+| Buildings and example bandos | ruins, generated examples (`npm run examples`), the Villetta measured example, Bardwell House |
 | Sharing and privacy | hidden/exact export, backup, import, pins and calibration of hidden bandos |
 | Flights, replay and racing | log parsing, video sync and Auto-sync, replay smoothing, cameras, paths, racing, Fly entry |
 | Welcome, guide and mascot | first visit, the showcase, the guided tour and its timing, the pixel mascot |
@@ -157,7 +157,7 @@ Before changing an area, read its section in [docs/agents/areas.md](docs/agents/
 
 ## Privacy
 
-- Villetta's place is private: its coordinates, map data and survey points are not in the repository. Never add them (tests, tour, tools, docs). Hidden bandos never reveal geographic coordinates (see "Sharing and privacy").
+- Villetta's and Bardwell House's places are private: their coordinates, addresses, map data and survey points are not in the repository. Never add them (tests, tour, tools, docs, commit messages). Hidden bandos never reveal geographic coordinates (see "Sharing and privacy").
 
 ## Work tracking
 

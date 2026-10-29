@@ -6,7 +6,8 @@
  * refinements below come from the pilot's photos and survey points (lat / lon of corners, a ladder, passages); each is
  * commented with what it is. Blocks come from the published catalogue (`public/library/catalog.json`).
  *
- * Output: `chiari-e-forti.json` and `playground.json` (a made-up place, see below). Generated ids are renumbered the
+ * Output: `chiari-e-forti.json`, `bardwell-house-no-place.json` (a private place, see its section) and `playground.json`
+ * (a made-up place, see below). Generated ids are renumbered the
  * same way on every run, so rebuilding does not churn the files. Then run `node tools/build-catalog.mjs` (the npm script
  * does) to publish them.
  *
@@ -228,6 +229,88 @@ function passage(bd: BuildingSpec, a: Vec2, b: Vec2, w: number, h: number): numb
     { x: pc.x - 1, z: pc.z + 4, h: 10, r: 3.5, kind: 'd' },
   ];
   finish(s, 'example-chiari-e-forti', 'Chiari e Forti', ROOT + '/library/bandos/chiari-e-forti.json', 'The old Chiari e Forti oil factory on the Sile river: brick and ochre blocks with broken roofs, the roofless mill with its battlemented tower by the river, the water tower and the Olio Cuore sign tower.');
+}
+
+
+// ---------- Bardwell House (a private place, hidden) ----------
+// The input is the app's own export of the generated bando with its place hidden (`bardwell-house.hidden.json`): no
+// coordinates, no map names, the real ground embedded as relative heights. Never add the place's coordinates, its
+// address or map data here. The refinements below come from the pilot's top views and oblique photos, scaled on the
+// house and the barn the generator placed (one photo pixel ≈ 8 cm): the gambrel house with its flat-roofed wing, the
+// gambrel barn, the store, the sheds, the patio and its brick wall, the drive's wooden fence, a camper and a car.
+// The map's "concrete" area over the west fields was a tagging error (the photos show grass): dropped.
+{
+  const s = JSON.parse(readFileSync(DATA + '/bardwell-house.hidden.json', 'utf8')) as SiteSpec;
+  s.privacy = 'hidden';
+  s.surfaces = [];
+  // building-local axes for a rotation (same convention as the model: x' = x cos - z sin, z' = x sin + z cos)
+  const at = (c: Vec2, deg: number, u: number, v: number): Vec2 => {
+    const a = (deg * Math.PI) / 180;
+    return { x: c.x + u * Math.cos(a) - v * Math.sin(a), z: c.z + u * Math.sin(a) + v * Math.cos(a) };
+  };
+  const [house, barn] = s.buildings as [BuildingSpec, BuildingSpec];
+  const hr = house.rotDeg, hc = house.pos;
+  const win = (c: number) => ({ kind: 'window' as const, c, w: 1, h: 1.3, sill: 1 });
+  // the house: the generator's footprint split into the gambrel block (north-west, its gable ends facing south-west and
+  // north-east, windows in them) and a lower flat-roofed wing along the south-east side
+  const main: BuildingSpec = {
+    id: 'house', name: 'House', pos: at(hc, hr, 0, -1.75), rotDeg: hr, length: house.length, width: 7.5, color: '#4b3d36',
+    levels: [lv(0, 3, 'gambrel', { roofRise: 4.6, roofColor: '#6f8c86', doors: { w: [win(2), win(5.5)], e: [win(3.75)], n: [win(2.5), win(7.5)] } })],
+  };
+  const wing: BuildingSpec = {
+    id: 'house-wing', name: 'House wing', pos: at(hc, hr, 0, 3.75), rotDeg: hr, length: house.length, width: 3.5, color: '#d9d6cf',
+    levels: [lv(0, 3, 'flat', { roofRise: 0, roofColor: '#6f8c86', doors: { s: [door(3, 1, 2.2), win(7)], w: [win(1.75)] } })],
+  };
+  const barnB: BuildingSpec = {
+    id: 'barn', name: 'Barn', pos: barn.pos, rotDeg: barn.rotDeg, length: barn.length, width: barn.width, color: '#878a85',
+    levels: [lv(0, 3.4, 'gambrel', { roofRise: 3.6, roofColor: '#9c4535', doors: { e: [door(3.5, 3, 2.9)], s: [door(9, 1.2, 2.2)] } })],
+  };
+  // the store at the field's edge (white walls, rust-red roof), and three garden sheds
+  const shed = (id: string, x: number, z: number, deg: number, l: number, w: number): BuildingSpec => ({
+    id, name: 'Shed', pos: { x, z }, rotDeg: deg, length: l, width: w, color: '#9fa3a0',
+    levels: [lv(0, 2.1, 'gable', { roofRise: 0.5, roofColor: '#7d8584', doors: { w: [door(w / 2, 0.9, 1.9)] } })],
+  });
+  const store: BuildingSpec = {
+    id: 'store', name: 'Store', pos: { x: 53.8, z: 4.2 }, rotDeg: 334, length: 16, width: 5.5, color: '#e6e1d6',
+    levels: [lv(0, 3, 'gable', { roofRise: 1.2, roofColor: '#8e3b2c', doors: { s: [door(4, 3, 2.6), door(11, 3, 2.6)] } })],
+  };
+  s.buildings = [main, wing, barnB, store, shed('shed-1', 42.6, -34.6, 37, 2.4, 2.4), shed('shed-2', 47, -29.4, 37, 2.6, 2), shed('shed-3', 51.2, -12, 30, 2.6, 2.6)];
+  // the brick wall along the back of the patio, the patio's paving and the concrete drive west of the house
+  // (in three lengths, so it steps down the slope instead of keeping one level top)
+  s.walls = [0, 1, 2].map((i) => ({
+    a: { x: 2.2 + 6 * i, z: -43 + 4 * i }, b: { x: 2.2 + 6 * (i + 1), z: -43 + 4 * (i + 1) }, height: 1.9, thick: 0.35, material: 'brick' as const,
+  }));
+  s.surfaces = [
+    { kind: 'concrete', pts: [{ x: 5.7, z: -39.2 }, { x: 16.6, z: -34.9 }, { x: 12.2, z: -25.1 }, { x: 1.9, z: -30 }] },
+    { kind: 'concrete', pts: [{ x: -27, z: -30.5 }, { x: -12.8, z: -33.8 }, { x: -3, z: -31.6 }, { x: -6.3, z: -26.7 }, { x: -20.5, z: -25.1 }] },
+  ];
+  // the post-and-rail fence on the field side of the drive, 3 m off its centre line
+  const drive = s.roads![1]!.pts;
+  for (let i = 0; i + 1 < drive.length; i++) {
+    const a = drive[i]!, b = drive[i + 1]!, len = Math.hypot(b.x - a.x, b.z - a.z);
+    let nx = -(b.z - a.z) / len, nz = (b.x - a.x) / len;
+    if (nx * (store.pos.x - a.x) + nz * (store.pos.z - a.z) < 0) [nx, nz] = [-nx, -nz]; // towards the field
+    s.walls.push({ a: { x: a.x + nx * 3, z: a.z + nz * 3 }, b: { x: b.x + nx * 3, z: b.z + nz * 3 }, height: 1.2, thick: 0.12, material: 'wood' });
+  }
+  // a camper by the barn and a car at the end of the drive
+  s.structures = [
+    { id: 'camper', kind: 'container', name: 'Camper', x: 22.6, z: -19.8, rotDeg: 10, height: 2.8, size: 2.4, length: 6.5, color: '#eeeeea' },
+    { id: 'car', kind: 'car', name: 'Car', x: 31.4, z: -9.6, rotDeg: 60, height: 1.5, size: 1.8, length: 4.6, color: '#c9ccd1' },
+  ];
+  // trees: one per spot, none inside a building, the patio or on the wall
+  const seen = new Set<string>();
+  const clear = (t: TreeSpec): boolean => s.buildings.every((b) => {
+    const a = (-b.rotDeg * Math.PI) / 180, dx = t.x - b.pos.x, dz = t.z - b.pos.z;
+    const u = dx * Math.cos(a) - dz * Math.sin(a), v = dx * Math.sin(a) + dz * Math.cos(a);
+    return Math.abs(u) > b.length / 2 + t.r * 0.5 || Math.abs(v) > b.width / 2 + t.r * 0.5;
+  }) && !(t.x > 0 && t.x < 18 && t.z > -41 && t.z < -24);
+  s.trees = s.trees.filter((t) => {
+    const k = `${t.x},${t.z}`;
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return clear(t);
+  });
+  finish(s, 'example-bardwell-house', 'Bardwell House (place hidden)', ROOT + '/library/bandos/bardwell-house-no-place.json', 'A farmhouse with a gambrel roof, its barn, a store and sheds at the edge of the woods, shared without its place: its real ground travels inside. Flights start on the take-off pad in the front lawn.');
 }
 
 
