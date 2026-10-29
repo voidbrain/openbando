@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against #159 CI (every job passed, no retries) on top of main `23be8c7`. #154–#158 merged with failing browser shards: the Reset UI case and the countdown pause check were fixed by #159; the Auto-sync offset check is intermittent (B-025, fix in review). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `460857c` (merged #169), with every CI job of #162–#169 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -190,7 +190,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#162](https://github.com/voidbrain/openbando/pull/162) (recovery: #161 merged into the #160 branch, not main); [#161](https://github.com/voidbrain/openbando/pull/161) (NgOptimizedImage, size attributes); [audit](audits/2026-10-28.md) (found 2026-10-28) |
+| PR / evidence | [#162](https://github.com/voidbrain/openbando/pull/162) (NgOptimizedImage, size attributes; recovered #161); [audit](audits/2026-10-28.md) (found 2026-10-28) |
 | Opened | 2026-10-29 |
 | Verification | Pending |
 | Reviewed | 2026-10-29 |
@@ -282,7 +282,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 |---|---|
 | PR / evidence | [#101](https://github.com/voidbrain/openbando/pull/101) (context); [#122](https://github.com/voidbrain/openbando/pull/122) (perimeter visibility); [#141](https://github.com/voidbrain/openbando/pull/141) (open-edge Cut/Wing); [#142](https://github.com/voidbrain/openbando/pull/142) (safe resize and footprint restoration); [#166](https://github.com/voidbrain/openbando/pull/166) (open-wall restoration) |
 | Opened | 2026-10-27 |
-| Verification | Unit/integration · 2026-10-29 · 537 tests passed, including the new open-wall restoration case (survives whole / notch refused / partial refused); Browser/accessibility · 2026-10-28 · resize/restore passed in [#142 CI](https://github.com/voidbrain/openbando/actions/runs/40724736656), open-edge Cut in [#141 CI](https://github.com/voidbrain/openbando/actions/runs/40720066164) |
+| Verification | Unit/integration + Browser/accessibility · 2026-10-29 · new open-wall restoration case (survives whole / notch refused / partial refused) and all jobs passed in [#166 CI](https://github.com/voidbrain/openbando/actions/runs/40789909830); Browser/accessibility · 2026-10-28 · resize/restore passed in [#142 CI](https://github.com/voidbrain/openbando/actions/runs/40724736656), open-edge Cut in [#141 CI](https://github.com/voidbrain/openbando/actions/runs/40720066164) |
 | Reviewed | 2026-10-29 |
 
 </details>
@@ -375,28 +375,6 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
-### F-011
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-011 | 🔹 P3 | Implemented | Guide and historical documentation drift |
-
-**→ Human action required:** 💻 **No**<br />Confirm the media PR's CI, then close.
-
-**Next action / closure evidence:** Re-recorded 2026-10-29: all 13 guide clips (`npm run clips`, GPU) and the three Welcome films (`npm run films`). Reviewed frames at 40 % and 95 % of every clip and 10/50/90 % of every film against the current UI (indigo chrome, caption countdown ring, current Views): the old clips still showed the pre-indigo Views panel. The first fly film filmed the tour caption: the recorder added its hiding style after the page loaded, too late in a parallel run; it now injects it before load (re-recorded, no caption). The place clip types Chiari e Forti's published coordinates (a public example), as before. Clips still end on about a second after the step's panels close, as the old ones did. Guide Markdown unchanged. History: README and AGENTS corrected for diagonal Cut/Wing, 3D vertices, release 11 and showcase exit. Regenerated guide pages and corrected generator entry instructions. Clips and Welcome films last changed 24 October; re-record and visually review them against current UI.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#167](https://github.com/voidbrain/openbando/pull/167) (re-recorded clips and films, recorder fix); [#102](https://github.com/voidbrain/openbando/pull/102) (audit) |
-| Opened | 2026-10-27 |
-| Verification | Documentation · 2026-10-28 · source/history audit and guide regeneration; Media review · 2026-10-29 · agent frame review of every re-recorded clip and film (contact sheets); CI · Pending |
-| Reviewed | 2026-10-29 |
-
-</details>
-
 ### F-012
 
 | Signal | ID | Priority | Status | Item |
@@ -444,13 +422,5 @@ Each item has a compact summary, followed by **→ Human action required** first
 User-accepted fixes are preserved in the dated archives rather than repeated here. New findings reuse an existing ID when they concern the same behavior.
 
 ## Other changes
-
-In review (`fix/untrack-node-modules-link`): #166 committed a `node_modules` symlink to an absolute local path (made for a scratch worktree; `.gitignore` had `node_modules/`, which matches only directories). Untracked it and ignore `/node_modules` in either form. A checkout of main over a real `node_modules` let git delete its ignored contents to place the link; `npm ci` restores them.
-
-Merged ([#163](https://github.com/voidbrain/openbando/pull/163), CI being reconciled): splits AGENTS.md (414 → about 165 lines: conventions, architecture, checks, joins, pitfalls, privacy, work tracking) from [docs/agents/areas.md](agents/areas.md) (area rules and lessons moved verbatim, regrouped by area; the scattered Welcome/Views bullets now sit together). Backlog-procedure paragraphs that BACKLOG-RULES already owns were replaced by a pointer.
-
-In review: [#164](https://github.com/voidbrain/openbando/pull/164) adds `npm run ci:status` (per-PR CI jobs, failed and retried tests, PRs not based on main) and makes Verification cells current-state (one entry per method; earlier results move to PR / evidence as labelled history). Applied to B-011, B-024, F-003, F-004, F-005, F-006, F-008 and F-012.
-
-In review ([#162](https://github.com/voidbrain/openbando/pull/162), recovery: #161 merged into a stacked branch, not main) — [#161](https://github.com/voidbrain/openbando/pull/161) adds `check:conventions` (AGENTS Angular conventions, `core/` imports, unused exports; in CI) and a 90 s Playwright action timeout, so a missing locator fails in 90 s instead of the whole 6-minute test budget. Moves to the maintenance history once merged with green CI.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
