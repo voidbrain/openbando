@@ -337,6 +337,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 User-accepted fixes are preserved in the dated archives rather than repeated here. New findings reuse an existing ID when they concern the same behavior.
 
+### F-022
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | F-022 | 🔹 P3 | Implemented | Gambrel (barn) roof |
+
+🧑 **→ Human action required: Yes**<br />On the live site after merge: give a building a gambrel roof in the inspector (Roof → shape) and look at it in 3D.
+
+**Next action / closure evidence:** Requested 2026-10-29 for Bardwell House (house and barn both have gambrel roofs; decided with the user: a real roof kind rather than an approximation). `LevelSpec.roof` gains `'gambrel'`: the gable's builder takes a cross-section, so a gambrel shares the ridge direction, repeat count, turn, ruin holes and the roof-high collider; its steep lower slope covers 36 % of each half-span and climbs 65 % of `roofRise` (`GAMBREL_KNEE`). Editor Roof → shape lists it; the assistant's `set_roof` accepts it (schema, prompt, normalisation). Older builds read an unknown roof as a vault. Covered by `site-model.spec.ts` (knee point, steeper lower slope, collider to the ridge, starts at the wall top) and `ai-commands.spec.ts` (set_roof gambrel; unknown shapes refused). A 3D screenshot of a gambrel house and barn was reviewed by the agent.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | This PR; request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Unit · 2026-10-29 · roof geometry, collider and AI cases passed locally; 3D screenshot reviewed; live-site check · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
 ## Other changes
 
 `main` protection active 2026-10-29 (user request, set through the API): ruleset "protect main" requires `check`, `e2e (1)`–`e2e (4)` and `race-browser` and refuses force pushes and deletion. B-025 (the flaky Auto-sync check) was closed first so the required checks are reliable.

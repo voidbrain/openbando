@@ -15,6 +15,15 @@ const site = (rot = 0): SiteSpec => {
 };
 
 describe('ai commands', () => {
+  it('set_roof gives a building a gambrel (barn) roof; an unknown shape is refused', () => {
+    const s = site();
+    const r = runCommands(s, normalizeCommands([{ op: 'set_roof', roof: 'gambrel' }]).cmds, '');
+    expect(s.buildings[0]!.levels[0]!.roof).toBe('gambrel');
+    expect(r.errors).toEqual([]);
+    const bad = runCommands(s, normalizeCommands([{ op: 'set_roof', roof: 'mansard' }]).cmds, '');
+    expect(bad.errors[0]).toContain('gambrel');
+    expect(s.buildings[0]!.levels[0]!.roof).toBe('gambrel');
+  });
   it('set_ruin ruins a building in percent (clamped), 0 restores it', () => {
     const s = site();
     const r = runCommands(s, normalizeCommands([{ op: 'set_ruin', ruin: 140 }]).cmds, '');

@@ -145,11 +145,20 @@ function vaultEnd(r: number, k: number, mat: THREE.Material): THREE.Mesh {
  * A gable roof: a triangular prism whose ridge runs along local x (length `w`), spanning `d` across z. Its base is at
  * y = 0 (the top of the walls, 30 cm overhang each side) and its apex at y = `rise`, so place it at the wall top.
  */
-function gable(w: number, d: number, rise: number, mat: THREE.Material): THREE.Mesh {
+/** Share of a gambrel's half-span its steep lower slope covers, and share of the rise it climbs. */
+export const GAMBREL_KNEE = { inset: 0.36, rise: 0.65 } as const;
+
+/** A pitched roof `w` long over a span `d`: a gable, or a gambrel (barn roof: a steep lower and a shallow upper slope a side). */
+function gable(w: number, d: number, rise: number, mat: THREE.Material, gambrel = false): THREE.Mesh {
   const shape = new THREE.Shape();
   shape.moveTo(-d / 2 - 0.3, 0);
   shape.lineTo(d / 2 + 0.3, 0);
-  shape.lineTo(0, rise);
+  if (gambrel) {
+    const kx = d / 2 - (d / 2) * GAMBREL_KNEE.inset, ky = rise * GAMBREL_KNEE.rise;
+    shape.lineTo(kx, ky);
+    shape.lineTo(0, rise);
+    shape.lineTo(-kx, ky);
+  } else shape.lineTo(0, rise);
   shape.closePath();
   const g = new THREE.ExtrudeGeometry(shape, { depth: w + 0.8, bevelEnabled: false });
   g.translate(0, 0, -(w + 0.8) / 2); // centred along the ridge
@@ -330,11 +339,12 @@ function buildRoof(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object
     ctx.solids.push(rotBoxLocal(ctx.at[0], ctx.at[1], b.length, b.width, ctx.rot, top, top + 0.3, true));
     return;
   }
-  // gable / vault: `n` identical modules side by side. By default a gable ridge runs along the length (modules split
+  // gable / gambrel / vault: `n` identical modules side by side. By default a gable ridge runs along the length (modules split
   // the width) and barrels run along the width (modules split the length); `roofTurn` swaps the two.
   const n = Math.max(1, Math.round(l.roofCount ?? l.vaultCount ?? 1));
   const turn = !!l.roofTurn;
-  if (l.roof === 'gable') {
+  if (l.roof === 'gable' || l.roof === 'gambrel') {
+    const barn = l.roof === 'gambrel';
     const run = turn ? b.width : b.length; // ridge length
     const across = turn ? b.length : b.width; // split into n modules
     const span = across / n;
@@ -342,7 +352,7 @@ function buildRoof(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object
       const c = -across / 2 + span / 2 + i * span;
       if (ruin > 0.01) {
         for (const r of runs(run)) {
-          const m = gable(r.len, span, rise, rc), off = -run / 2 + r.from + r.len / 2;
+          const m = gable(r.len, span, rise, rc, barn), off = -run / 2 + r.from + r.len / 2;
           if (turn) {
             m.rotation.y = Math.PI / 2;
             ctx.addMesh(target, m, c, top, off);
@@ -354,7 +364,7 @@ function buildRoof(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object
         }
         continue;
       }
-      const m = gable(run, span, rise, rc);
+      const m = gable(run, span, rise, rc, barn);
       if (turn) {
         m.rotation.y = Math.PI / 2;
         ctx.addMesh(target, m, c, top, 0);

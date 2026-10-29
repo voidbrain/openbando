@@ -60,7 +60,7 @@ stay in the browser (IndexedDB); videos and logs are read from your disk and nev
 
 | Kind | Notes |
 |---|---|
-| Building | rectangle or shaped (L, T, U, H: rectilinear outline), several floors, gable / vault / flat roof (turnable, repeatable) |
+| Building | rectangle or shaped (L, T, U, H: rectilinear outline), several floors, gable / gambrel / vault / flat roof (turnable, repeatable) |
 | Greenhouse | the arched steel-skeleton tunnel (`frame: 'greenhouse'`); convert to / from a building (loses the interior) |
 | Tower | chimney, silo, storage tank, water tower (fly under the tank), lattice mast / pylon, tower crane |
 | Bridge | beam on piers or arch, you can fly under it |

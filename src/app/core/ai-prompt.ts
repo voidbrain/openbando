@@ -36,7 +36,7 @@ export const AI_SCHEMA = {
           roofless: { type: 'boolean' },
           crenels: { type: 'boolean' },
           name: { type: 'string' },
-          roof: { type: 'string', enum: ['gable', 'flat', 'vault'] },
+          roof: { type: 'string', enum: ['gable', 'gambrel', 'flat', 'vault'] },
           turn: { type: 'boolean' },
           structure: { type: 'string', enum: [...STRUCTURE_KINDS] },
           state: { type: 'string', enum: ['open', 'closed'] },
@@ -68,7 +68,7 @@ Commands (all fields optional except op; distances in metres; "position" and x0.
 - split_rooms: count (rooms), axis ("length" or "width": which dimension is divided), doors (true = leave a door gap in each wall), level.
 - add_partition: x0,z0,x1,z1 (fractions of the building's length / width, x to the east, z to the south), doors, level.
 - clear_partitions: level.
-- add_floor (copies the floor below; the roof moves up). set_wall_height: value, level (omit = all floors). set_roof: roof (gable|flat|vault), turn (true = ridge across the building), count (repeat the module: 3 = three gables side by side).
+- add_floor (copies the floor below; the roof moves up). set_wall_height: value, level (omit = all floors). set_roof: roof (gable|gambrel = barn roof|flat|vault), turn (true = ridge across the building), count (repeat the module: 3 = three gables side by side).
 - cut_notch: side or corner (north, northeast, east ...), size (along the side), depth (into the building), position. Makes L, U, T, H shapes.
 - add_wing: side (north|south|east|west), size, depth, position.
 - rename: name. rotate: degrees. move: east, north. resize: length, depth.
