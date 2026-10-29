@@ -97,6 +97,8 @@ The app is **OpenBando** (tagline "Build, Fly, Share."). The repository is `void
 
 ### Checks before you finish
 
+`main` is protected: a PR merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` pass (ruleset "protect main"). Open every PR against `main`, and do not push to a PR once its CI is green (open a new one).
+
 ```bash
 npx ng test --watch=false
 npx ng build
