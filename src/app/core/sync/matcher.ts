@@ -34,6 +34,8 @@ interface Candidate {
   r2: number;
   score: number;
   flip?: FlipEvent;
+  /** Number of confident motion matches averaged into `off` (absent = this pair alone). */
+  averaged?: number;
 }
 
 /** Pairs of (video feature, log feature) that should move together. */
@@ -71,16 +73,23 @@ export function matchVideoToLog(samples: readonly VideoSample[], flight: Flight)
     const L0 = Math.max(0, (lift ?? 0) - 2);
     const L1 = Math.min(flight.dur, L0 + 60); // first minute of flight
     let bestMotion: Candidate | null = null;
+    const sure: Candidate[] = [];
     for (const [vf, lf] of PAIRS) {
       const x = crossCorrelate(F[lf], V[vf], t0, L0, L1, t0 - 5, t1);
       const c: Candidate = { videoFeature: vf, logFeature: lf, off: x.off, r1: x.r1, r2: x.r2, score: x.r1 + Math.max(0, x.r1 - x.r2) };
       if (!best || c.score > best.score) best = c;
       if (MOTION.includes(vf) && (!bestMotion || c.score > bestMotion.score)) bestMotion = c;
+      if (MOTION.includes(vf) && confidenceOf(c) === 'high') sure.push(c);
     }
-    // Sky/ground brightness lags the attitude (the camera's exposure follows it): trust it only when no motion match is sure.
-    if (bestMotion && confidenceOf(bestMotion) === 'high') best = bestMotion;
+    // Sky/ground brightness lags the attitude (the camera's exposure follows it): trust it only when no motion match is
+    // sure. Confident motion matches are averaged (weighted by r) over the whole flight: which frames a scan happens to
+    // decode moves each pair, and the 10 s flip window, by a few hundredths; their mean barely moves (B-025).
+    if (bestMotion && confidenceOf(bestMotion) === 'high') {
+      const weight = sure.reduce((sum, c) => sum + c.r1, 0);
+      best = { ...bestMotion, off: sure.reduce((sum, c) => sum + c.off * c.r1, 0) / weight, averaged: sure.length };
+    }
     const flip = findFlips(flight)[0];
-    if (flip && best && best.r1 > 0.3) {
+    if (flip && best && !best.averaged && best.r1 > 0.3) {
       const x2 = crossCorrelate(F[best.logFeature], V[best.videoFeature], t0, Math.max(0, flip.t - 4), Math.min(flight.dur, flip.t + 6), best.off - 1.5, best.off + 1.5);
       if (x2.r1 >= 0.5 && Math.abs(x2.off - best.off) < 1.5) {
         best.off = x2.off;
@@ -93,10 +102,11 @@ export function matchVideoToLog(samples: readonly VideoSample[], flight: Flight)
   if (best && confidenceOf(best) !== 'low') {
     const conf = confidenceOf(best);
     const refined = best.flip ? ` · refined on the ${best.flip.kind} at ${best.flip.t.toFixed(1)} s` : '';
+    const more = (best.averaged ?? 1) > 1 ? ` + ${best.averaged! - 1} more` : '';
     return {
       offset: best.off,
       confidence: conf,
-      description: `whole-flight match (${best.logFeature} vs ${best.videoFeature}), r=${best.r1.toFixed(2)}, ${conf} confidence${refined}`,
+      description: `whole-flight match (${best.logFeature} vs ${best.videoFeature}${more}), r=${best.r1.toFixed(2)}, ${conf} confidence${refined}`,
       anchor,
       features,
     };
