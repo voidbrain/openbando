@@ -1,11 +1,17 @@
 // The AGENTS.md conventions a script can check, and exports nothing uses. A rule nobody checks drifts.
-import {readFileSync, readdirSync, statSync} from 'node:fs';
+import {existsSync, readFileSync, readdirSync, statSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import {join, relative} from 'node:path';
 
 const root = new URL('..', import.meta.url).pathname;
+// Framework-free folders (relative to the repo root) and the @angular/core names each may import, from .harness.json
+// (conventions.pureDirs), e.g. [["src/app/core/", ["signal", "computed", "untracked"]]]. Signal primitives run without
+// the framework, so a folder may allow them and stay unit-testable. None: no framework-free layer.
+const stamp = join(root, '.harness.json');
+const PURE_DIRS = (existsSync(stamp) ? JSON.parse(readFileSync(stamp, 'utf8')).conventions?.pureDirs : undefined) ?? [];
 const ts = createRequire(join(root, 'package.json'))('typescript');
 const walk = (dir, out = []) => {
+  if (!existsSync(dir)) return out;
   for (const name of readdirSync(dir)) {
     const path = join(dir, name);
     if (statSync(path).isDirectory()) walk(path, out);
@@ -39,11 +45,11 @@ const RULES = [
 for (const file of app) {
   for (const [pattern, message] of RULES)
     for (const m of text[file].matchAll(pattern)) report(file, m.index, message);
-  if (file.includes('/src/app/core/'))
-    // signal primitives are plain state, testable without Angular; nothing else from the framework
-    for (const m of text[file].matchAll(/import\s+([^;]*?)\s+from '@angular\/([^']+)'/g))
-      if (m[2] !== 'core' || !/^\{[^}]*\}$/.test(m[1]) || m[1].slice(1, -1).split(',').some(n => !['signal', 'computed', 'untracked'].includes(n.trim())))
-        report(file, m.index, 'core/ stays plain TypeScript (only signal / computed / untracked from @angular/core)');
+  for (const [dir, allowed] of PURE_DIRS)
+    if (file.includes(`/${dir}`))
+      for (const m of text[file].matchAll(/import\s+([^;]*?)\s+from '@angular\/([^']+)'/g))
+        if (m[2] !== 'core' || !/^\{[^}]*\}$/.test(m[1]) || m[1].slice(1, -1).split(',').some(n => !allowed.includes(n.trim())))
+          report(file, m.index, `${dir} stays plain TypeScript${allowed.length ? ` (only ${allowed.join(' / ')} from @angular/core)` : ' (no Angular imports)'}`);
   // injectable classes use inject(); plain classes (tool controllers, renderers) may take constructor parameters
   if (/@(Component|Directive|Injectable|Service|Pipe)\(/.test(text[file]))
     for (const m of text[file].matchAll(/constructor\((private|public|protected|readonly)\s/g)) report(file, m.index, 'use inject() instead of constructor injection');
