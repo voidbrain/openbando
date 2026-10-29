@@ -1,6 +1,7 @@
 /**
  * Translation check: every piece of English the templates show (static text, title / aria-label / placeholder), every
- * toast and every `tr()` text must have its Italian in `src/app/i18n/it.ts`, through the same `translate()` the app uses.
+ * toast, every `tr()` text and every `label` / `hint` in TypeScript data (menus, tool lists, material lists: F-030)
+ * must have its Italian in `src/app/i18n/it.ts`, through the same `translate()` the app uses.
  * Text with bindings is checked with the bound parts as holes, so a `{0}` pattern covers it. Words that are not
  * translated on purpose (names, units, product names) are listed in `tools/i18n/keep-english.txt`.
  *
@@ -82,6 +83,11 @@ for (const path of files(`${ROOT}/src/app`)) {
   }
   // toasts and native dialogs with plain text
   for (const m of src.matchAll(/(?:toast\.show|tr)\(\s*'((?:[^'\\]|\\.)+)'/g)) see(m[1]!.replace(/\\'/g, "'"), rel);
+  // labels and hints in TypeScript data: picture menus, tool and material lists, context menus (comments left out)
+  if (path.endsWith('.ts')) {
+    const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+    for (const m of code.matchAll(/\b(?:label|hint)\s*:\s*'((?:[^'\\]|\\.)+)'/g)) see(m[1]!.replace(/\\'/g, "'"), rel);
+  }
 }
 
 const missing = [...found].filter(([s]) => translate(s, dict) === null);

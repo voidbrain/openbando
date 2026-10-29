@@ -677,20 +677,20 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-029 | 🔹 P3 | Open | CI fails when the guide pages differ from their source |
+| 🟡 | F-029 | 🔹 P3 | Implemented | CI fails when the guide pages differ from their source |
 
-💻 **→ Human action required: No**<br />Make CI run `node tools/build-guide.mjs` and fail when the committed guide pages differ, as it does for the example bandos.
+💻 **→ Human action required: No**<br />Close when this PR merges on a green CI: the check then runs on every PR.
 
-**Next action / closure evidence:** Requested 2026-10-29 (part of F-028): the guide pages are generated from the tour source, and nothing checks they were regenerated.
+**Next action / closure evidence:** Requested 2026-10-29 (part of F-028): the guide pages are generated from the tour source, and nothing checks they were regenerated. Done 2026-10-29: CI step "Guide pages match the tour" runs `node tools/build-guide.mjs` and fails on any difference in `docs/guide` (the committed pages were current); the impact row now names it.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Request 2026-10-29 |
+| PR / evidence | This PR; request 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Not implemented |
+| Verification | CI · 2026-10-29 · the step passes on current main; it fails on a tour change that is not regenerated (diff) |
 | Reviewed | 2026-10-29 |
 
 </details>
@@ -701,20 +701,20 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-030 | 🔹 P3 | Open | `check:i18n` also reads texts in TypeScript data |
+| 🟡 | F-030 | 🔹 P3 | Implemented | `check:i18n` also reads texts in TypeScript data |
 
-💻 **→ Human action required: No**<br />Extend `check:i18n` to labels and hints in TypeScript data (fence, structure, surface, road lists, tool hints, menus) and add the missing Italian.
+💻 **→ Human action required: No**<br />Close when this PR merges on a green CI: the check then runs on every PR.
 
-**Next action / closure evidence:** Requested 2026-10-29 (part of F-028). Found the same day: fence hints such as "Boards on posts" have no Italian, and the check passed because it reads only templates.
+**Next action / closure evidence:** Requested 2026-10-29 (part of F-028). Found the same day: fence hints such as "Boards on posts" have no Italian, and the check passed because it reads only templates. Done 2026-10-29: `check:i18n` also reads `label` and `hint` in TypeScript data (comments left out); it found 43 texts without Italian (fence hints, tree and brush hints, context-menu labels, AI model descriptions, Railway, Greenhouse…), all translated now; model names stay English (`keep-english.txt`). The impact row now names it.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Request 2026-10-29 |
+| PR / evidence | This PR; request 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Not implemented |
+| Verification | Script · 2026-10-29 · `check:i18n` 841 texts, 0 missing (43 missing before the translations) |
 | Reviewed | 2026-10-29 |
 
 </details>
