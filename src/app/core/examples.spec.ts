@@ -25,8 +25,8 @@ describe('example bandos', () => {
 
   it('every published example is listed and loads as a bando', () => {
     const rows = sanitizeExamples(index);
-    expect(rows.map((r) => r.name)).toEqual(['Bardwell House', 'Chiari e Forti', 'Playground', 'Villetta (place hidden)']);
-    expect(rows.find((r) => r.name === 'Villetta (place hidden)')?.privacy).toBe('hidden');
+    expect(rows.map((r) => r.name)).toEqual(['Bardwell House', 'Chiari e Forti', 'Playground', 'Bando Villetta']);
+    expect(rows.find((r) => r.name === 'Bando Villetta')?.privacy).toBe('hidden');
     expect(rows.find((r) => r.name === 'Bardwell House')?.privacy).toBe('hidden');
     for (const raw of [hidden, chiari, bardwell]) {
       const spec = sanitizeSpec(raw);
