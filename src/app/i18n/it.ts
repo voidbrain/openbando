@@ -1323,4 +1323,8 @@ export const IT: Readonly<Record<string, string>> = {
   'Drag a separate piece of basement, apart from the main one': "Trascina una parte di interrato separata, staccata da quella principale",
   'Drag a rectangle apart from the basement: a separate piece with its own walls.': 'Trascina un rettangolo staccato dal piano interrato: una parte separata con i suoi muri.',
   'A separate piece must be at least 2 m across and apart from the basement and the other pieces.': 'Una parte separata deve essere larga almeno 2 m e staccata dal piano interrato e dalle altre parti.',
+  'Courtyard {0} wall {1}': 'Cortile {0} muro {1}',
+  'Piece {0} wall {1}': 'Parte {0} muro {1}',
+  'wall': 'muro',
+  'Piece': 'Parte',
 };

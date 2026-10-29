@@ -54,6 +54,16 @@ describe('basement courtyards (geometry)', () => {
     expect(model.collider.hit(new Vec3(0, floorY + 1, 4))).toBe(true);
     expect(model.collider.hit(new Vec3(0, floorY + 1, -3))).toBe(false); // the open room
   });
+
+  it('leaves out a courtyard wall that is switched off', () => {
+    const s = site();
+    s.buildings[0]!.basement!.courtyards![0]!.wallEdges = [true, true, false, true]; // edge 2: local x 4 → 2 at z = 1
+    const model = buildSiteFromSpec(s);
+    const floorY = siteGround(s).vols.find(item => item.id === 'basement-b')!.floor;
+    // local z = 1 is site x = −1; the edge runs along site z 2…4
+    expect(model.collider.hit(new Vec3(-1, floorY + 1, 3))).toBe(false);
+    expect(model.collider.hit(new Vec3(1, floorY + 1, 3))).toBe(true); // the opposite wall (local z = −1) stays
+  });
 });
 
 describe('basement pieces (geometry and editing)', () => {

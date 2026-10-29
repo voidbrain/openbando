@@ -1,4 +1,4 @@
-import { MAX_COURTYARDS, cleanRings, keepValidRings } from './basement-rings';
+import { MAX_COURTYARDS, cleanRings, keepValidRings, setRingWall } from './basement-rings';
 import { addCourtyard, editBasementFloor, moveBasementVertex, removeCourtyard, reshapeBasement, resizeBasement } from './basement';
 import { emptySpec, sanitizeSpec, type BuildingSpec, type Vec2 } from './site-spec';
 
@@ -108,4 +108,17 @@ describe('basement courtyards and pieces (model)', () => {
     expect(removeCourtyard(b, 0)).toBe(true);
     expect(b.basement!.courtyards).toBeUndefined();
   });
+
+  it('turns one wall of a courtyard or piece off and back on, storing flags only while one is open', () => {
+    const b = building({ height: 3, courtyards: [{ outline: square(-1, -1, 2) }], pieces: [{ outline: square(8, -2, 4) }] });
+    expect(setRingWall(b, 'courtyards', 0, 1, false)).toBe(true);
+    expect(b.basement!.courtyards![0]!.wallEdges).toEqual([true, false, true, true]);
+    expect(setRingWall(b, 'courtyards', 0, 1, true)).toBe(true);
+    expect(b.basement!.courtyards![0]!.wallEdges).toBeUndefined();
+    expect(setRingWall(b, 'pieces', 0, 3, false)).toBe(true);
+    expect(b.basement!.pieces![0]!.wallEdges).toEqual([true, true, true, false]);
+    expect(setRingWall(b, 'pieces', 1, 0, false)).toBe(false);
+    expect(setRingWall(b, 'courtyards', 0, 9, false)).toBe(false);
+  });
 });
+

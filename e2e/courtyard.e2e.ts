@@ -53,6 +53,9 @@ test('the Courtyard tool adds a courtyard on −1 only, with undo, delete and ex
   await bar.getByTitle('Redo', {exact: true}).click();
   await expect(rows).toHaveCount(1);
 
+  // one of its walls switched off in the inspector
+  await inspector.getByRole('checkbox', {name: 'Courtyard 1 wall 1', exact: true}).uncheck();
+
   // the export carries it; Delete removes it
   await bar.getByRole('button', {name: 'Save', exact: true}).click();
   await bar.getByRole('button', {name: '← Bandos', exact: true}).click();
@@ -61,6 +64,7 @@ test('the Courtyard tool adds a courtyard on −1 only, with undo, delete and ex
   const saved = JSON.parse((await readFile((await (await downloading).path())!)).toString()) as SiteSpec;
   const yards = saved.buildings[0]!.basement!.courtyards!;
   expect(yards).toHaveLength(1);
+  expect(yards[0]!.wallEdges).toEqual([false, true, true, true]);
   const xs = yards[0]!.outline.map(p => p.x), zs = yards[0]!.outline.map(p => p.z);
   expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThanOrEqual(1);
   expect(Math.min(...xs)).toBeGreaterThan(-12); expect(Math.max(...xs)).toBeLessThan(12);
