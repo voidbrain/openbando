@@ -324,6 +324,35 @@ export function mergeWaters(waters: readonly WaterSpec[], i: number): { waters: 
   return { waters: out, index: out.indexOf(merged) };
 }
 
+/**
+ * The frames a road strip is built on: points along the centre line at most `step` apart, each with the unit normal to
+ * its left and how far to stretch the half-width there. At a bend the two segments share one frame whose normal bisects
+ * theirs, stretched by 1 / cos(half the turn) (a mitre, capped at 2×), so the strip turns without gaps or overlaps.
+ */
+export function stripFrames(pts: readonly Vec2[], step: number): { x: number; z: number; nx: number; nz: number; s: number }[] {
+  const segs = pts.slice(1).map((b, i) => {
+    const a = pts[i]!, dx = b.x - a.x, dz = b.z - a.z, len = Math.hypot(dx, dz);
+    return { a, dx, dz, len, nx: len ? -dz / len : 0, nz: len ? dx / len : 0 };
+  }).filter((g) => g.len > 0.01);
+  const out: { x: number; z: number; nx: number; nz: number; s: number }[] = [];
+  segs.forEach((g, i) => {
+    const n = Math.max(1, Math.ceil(g.len / step)), next = segs[i + 1];
+    for (let k = i ? 1 : 0; k <= n; k++) {
+      let nx = g.nx, nz = g.nz, s = 1;
+      if (k === n && next) {
+        const mx = g.nx + next.nx, mz = g.nz + next.nz, ml = Math.hypot(mx, mz);
+        if (ml > 1e-6) {
+          nx = mx / ml;
+          nz = mz / ml;
+          s = Math.min(2, 1 / Math.max(0.5, nx * g.nx + nz * g.nz));
+        }
+      }
+      out.push({ x: g.a.x + (g.dx * k) / n, z: g.a.z + (g.dz * k) / n, nx, nz, s });
+    }
+  });
+  return out;
+}
+
 /** Length of a line (metres). */
 export function pathLength(pts: readonly Vec2[]): number {
   return pts.slice(1).reduce((a, q, i) => a + Math.hypot(q.x - pts[i]!.x, q.z - pts[i]!.z), 0);

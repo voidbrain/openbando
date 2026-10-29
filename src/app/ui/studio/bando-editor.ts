@@ -78,7 +78,7 @@ const STRUCT_ICON: Record<StructureKind, string> = {
   chimney: 'chimney', silo: 'silo', tank: 'tank', water_tower: 'waterTower', lattice_tower: 'lattice', tower_crane: 'crane',
   bridge: 'bridge', stairs: 'stairs', ramp: 'ramp', container: 'container', car: 'car', truck: 'truck', excavator: 'excavator', shapes: 'blocks',
 };
-const FENCE_ICON: Record<FenceMaterial, string> = { masonry: 'wall', concrete: 'concrete', brick: 'brick', wood: 'fence', metal: 'metalSheet', chainlink: 'chainlink', hedge: 'hedge', bramble: 'bramble', wires: 'wires' };
+const FENCE_ICON: Record<FenceMaterial, string> = { masonry: 'wall', concrete: 'concrete', brick: 'brick', wood: 'fence', rail: 'railFence', metal: 'metalSheet', chainlink: 'chainlink', hedge: 'hedge', bramble: 'bramble', wires: 'wires' };
 
 /**
  * The bando editor. One map (street / satellite / hidden, with adjustable opacity) carries everything:

@@ -3,8 +3,8 @@ import { cutUnderground } from './underground-cut';
 import { drapeRoad } from './road-drape';
 import { cutRect, edgesOf, isRectilinear, slabs } from '../core/footprint';
 import { buildStructure } from './structures';
-import { fenceDef, hedgeLumps, postsAlong, wireSag, type FenceDef } from '../core/fences';
-import { WATER_COLOR, insidePolygon, orderedRoads, roadDef, surfaceDef } from '../core/layers';
+import { RAIL_PLANKS, RAIL_PLANK_H, fenceDef, hedgeLumps, postsAlong, wireSag, type FenceDef } from '../core/fences';
+import { WATER_COLOR, insidePolygon, orderedRoads, roadDef, stripFrames, surfaceDef } from '../core/layers';
 import { tunnelAxis, tunnelOpeningBottom, tunnelSection, volumeSolids } from '../core/underground';
 import { NO_SLABS, ROOFLESS, roofCells, roofRuns, ruinRandom, wallPieces, wallTop } from '../core/ruin';
 import * as THREE from 'three';
@@ -710,28 +710,24 @@ function flatShape(pts: readonly { x: number; z: number }[], mat: THREE.Material
   return m;
 }
 
-/** A road draped across its full width, 6 cm above ground; ordered decals never write depth over one another. */
+/**
+ * A road draped across its full width, 6 cm above ground; ordered decals never write depth over one another. One strip
+ * along the whole line, mitred at each bend (`stripFrames`): separate strips per segment left wedge gaps at the bends.
+ */
 function roadMesh(ground: SiteGround, r: RoadSpec, order: number): THREE.Mesh {
   const pos: number[] = [], idx: number[] = [];
   const half = r.width / 2;
   const step = Math.min(1, ground.grid?.cell ?? 1);
   const across = Math.max(1, Math.ceil(r.width / step));
-  for (let i = 1; i < r.pts.length; i++) {
-    const a = r.pts[i - 1]!, b = r.pts[i]!;
-    const dx = b.x - a.x, dz = b.z - a.z, len = Math.hypot(dx, dz);
-    if (len < 0.01) continue;
-    const nx = -dz / len, nz = dx / len;
-    const n = Math.max(1, Math.ceil(len / step));
-    const base = pos.length / 3;
-    for (let k = 0; k <= n; k++) for (let j = 0; j <= across; j++) {
-      const side = -half + r.width * j / across;
-      const x = a.x + dx * k / n + nx * side, z = a.z + dz * k / n + nz * side;
-      pos.push(x, meshHeightAt(ground.grid, x, z) + 0.06, z);
-    }
-    for (let k = 0; k < n; k++) for (let j = 0; j < across; j++) {
-      const v = base + k * (across + 1) + j, w = v + across + 1;
-      idx.push(v, w, v + 1, v + 1, w, w + 1);
-    }
+  const frames = stripFrames(r.pts, step);
+  for (const f of frames) for (let j = 0; j <= across; j++) {
+    const side = (-half + (r.width * j) / across) * f.s;
+    const x = f.x + f.nx * side, z = f.z + f.nz * side;
+    pos.push(x, meshHeightAt(ground.grid, x, z) + 0.06, z);
+  }
+  for (let k = 0; k + 1 < frames.length; k++) for (let j = 0; j < across; j++) {
+    const v = k * (across + 1) + j, w = v + across + 1;
+    idx.push(v, w, v + 1, v + 1, w, w + 1);
   }
   const geo = drapeRoad(pos, idx, ground.grid, 0.06);
   const color = r.surface ? surfaceDef(r.surface).color : roadDef(r.kind).color;
@@ -1120,19 +1116,27 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
   for (const w of spec.walls ?? []) {
     const dx = w.b.x - w.a.x, dz = w.b.z - w.a.z, len = Math.hypot(dx, dz);
     if (len < 0.3) continue;
-    // on a slope the wall starts at the lowest ground along it and keeps its height above the highest
-    const ys = [0, 0.25, 0.5, 0.75, 1].map((t) => ground.at(w.a.x + dx * t, w.a.z + dz * t));
-    const y0 = Math.min(...ys), wh = w.height + Math.max(...ys) - y0;
     const def = fenceDef(w.material);
     const pick = { kind: 'fence', i: spec.walls?.indexOf(w) ?? 0 };
+    // collision: a staircase of 1 m boxes along the wall, each from the ground up to its height there (the collider only
+    // knows axis-aligned boxes)
+    const steps = Math.max(1, Math.ceil(len / 1.0));
+    const seg = len / steps, ca = Math.abs(dx / len), sa = Math.abs(dz / len);
+    const hw = (seg * ca + w.thick * sa) / 2, hd = (seg * sa + w.thick * ca) / 2;
+    if (def.look !== 'hedge' && def.look !== 'wires') {
+      for (let i = 0; i < steps; i++) {
+        const t0 = i / steps, t1 = (i + 1) / steps, cx = w.a.x + dx * (t0 + t1) / 2, cz = w.a.z + dz * (t0 + t1) / 2;
+        const g0 = ground.at(w.a.x + dx * t0, w.a.z + dz * t0), g1 = ground.at(w.a.x + dx * t1, w.a.z + dz * t1);
+        solids.push([cx - hw, cx + hw, Math.min(g0, g1), Math.max(g0, g1) + w.height, cz - hd, cz + hd, false]);
+      }
+    }
     if (def.look) {
       units.push(buildLine(group, solids, w, def, { len, dx, dz, pick, ground })); // merged like a building
       continue;
     }
+    // the panel follows the ground: its foot 30 cm into it, its top `height` above it all along (B-034)
     const panel = def.mesh ? new THREE.MeshStandardMaterial({ color: w.color ?? def.color, transparent: true, opacity: 0.35, roughness: 0.6, metalness: 0.4, depthWrite: false }) : material(w.color ?? def.color);
-    const m = new THREE.Mesh(new THREE.BoxGeometry(len, wh, w.thick), panel);
-    m.position.set((w.a.x + w.b.x) / 2, y0 + wh / 2, (w.a.z + w.b.z) / 2);
-    m.rotation.y = -Math.atan2(dz, dx);
+    const m = new THREE.Mesh(groundRibbon(w, len, ground, { off: 0, thick: w.thick, y0: -0.3, y1: w.height }), panel);
     m.castShadow = !def.mesh;
     m.receiveShadow = true;
     m.userData['pick'] = pick;
@@ -1140,23 +1144,14 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     // posts (concrete, wood, metal, chain-link): a little thicker than the panel, in a darker shade of it
     const postMat = material(def.mesh ? '#6f787a' : (w.color ?? def.color));
     for (const t of postsAlong(len, w.material)) {
-      // each post stands on the ground under it and reaches the top of the panel
-      const py = ground.at(w.a.x + dx * t, w.a.z + dz * t), ph = y0 + wh + 0.1 - py;
+      // each post stands on the ground under it and reaches just over the top of the panel there
+      const py = ground.at(w.a.x + dx * t, w.a.z + dz * t), ph = w.height + 0.1;
       const post = new THREE.Mesh(new THREE.BoxGeometry(0.12, ph, Math.max(0.12, w.thick + 0.06)), postMat);
       post.position.set(w.a.x + dx * t, py + ph / 2, w.a.z + dz * t);
-      post.rotation.y = m.rotation.y;
+      post.rotation.y = -Math.atan2(dz, dx);
       post.castShadow = true;
       post.userData['pick'] = pick;
       group.add(post);
-    }
-    // collision: a staircase of small boxes along the wall (the collider only knows axis-aligned boxes)
-    const n = Math.max(1, Math.ceil(len / 1.0));
-    const seg = len / n, ca = Math.abs(dx / len), sa = Math.abs(dz / len);
-    const hw = (seg * ca + w.thick * sa) / 2, hd = (seg * sa + w.thick * ca) / 2;
-    for (let i = 0; i < n; i++) {
-      const t = (i + 0.5) / n;
-      const cx = w.a.x + dx * t, cz = w.a.z + dz * t;
-      solids.push([cx - hw, cx + hw, y0, y0 + wh, cz - hd, cz + hd, false]);
     }
   }
 
@@ -1267,6 +1262,36 @@ function mergeUnits(units: readonly THREE.Object3D[], occluders: THREE.Mesh[]): 
 }
 
 /**
+ * A fence panel or plank that follows the ground along wall `w`: a box `thick` wide whose bottom and top stay `y0` and
+ * `y1` metres above the ground under every metre of it, moved `off` metres sideways (planks nailed to one face of the
+ * posts). Flat-shaded, one mesh for the whole length.
+ */
+function groundRibbon(w: WallSpec, len: number, ground: SiteGround, o: { off: number; thick: number; y0: number; y1: number }): THREE.BufferGeometry {
+  const dx = w.b.x - w.a.x, dz = w.b.z - w.a.z, nx = -dz / len, nz = dx / len;
+  const n = Math.max(1, Math.ceil(len)), v: THREE.Vector3[][] = [];
+  for (let k = 0; k <= n; k++) {
+    const x = w.a.x + (dx * k) / n + nx * o.off, z = w.a.z + (dz * k) / n + nz * o.off, g = ground.at(x, z);
+    const l = [x + (nx * o.thick) / 2, z + (nz * o.thick) / 2], r = [x - (nx * o.thick) / 2, z - (nz * o.thick) / 2];
+    v.push([new THREE.Vector3(l[0], g + o.y0, l[1]), new THREE.Vector3(l[0], g + o.y1, l[1]), new THREE.Vector3(r[0], g + o.y0, r[1]), new THREE.Vector3(r[0], g + o.y1, r[1])]);
+  }
+  const tri: THREE.Vector3[] = [];
+  const quad = (a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3, d: THREE.Vector3): void => void tri.push(a, b, c, a, c, d);
+  for (let k = 0; k < n; k++) {
+    const [lb, lt, rb, rt] = v[k]!, [lb2, lt2, rb2, rt2] = v[k + 1]!;
+    quad(lb, lb2, lt2, lt); // one face
+    quad(rb, rt, rt2, rb2); // the other
+    quad(lt, lt2, rt2, rt); // top
+    quad(lb, rb, rb2, lb2); // bottom
+  }
+  const [a0, a1, a2, a3] = v[0]!, [b0, b1, b2, b3] = v[n]!;
+  quad(a0, a1, a3, a2); // ends
+  quad(b0, b2, b3, b1);
+  const geo = new THREE.BufferGeometry().setFromPoints(tri);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+/**
  * A fence that is not a wall: a hedge or a bramble thicket (lumps of foliage every metre, solid for the drone), or a
  * phone / power line (poles, a cross-arm, three wires sagging between poles; the wires collide too).
  */
@@ -1287,6 +1312,28 @@ function buildLine(
     const ca = Math.abs(ux), sa = Math.abs(uz), hw = (bw * ca + bd * sa) / 2, hd = (bw * sa + bd * ca) / 2;
     solids.push([cx - hw, cx + hw, z0, z1, cz - hd, cz + hd, false]);
   };
+  if (def.look === 'rail') {
+    // posts on the ground, three planks nailed to their face, each following the ground at its own height (F-027)
+    const wood = material(w.color ?? def.color, { roughness: 0.85 });
+    for (const t of postsAlong(len, w.material)) {
+      const [px, pz] = at(t), gy = ground.at(px, pz), ph = w.height + 0.05;
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.12, ph, 0.12), wood);
+      post.position.set(px, gy + ph / 2, pz);
+      post.rotation.y = rot;
+      post.castShadow = true;
+      post.userData['pick'] = pick;
+      own.add(post);
+    }
+    for (const share of RAIL_PLANKS) {
+      const mid = w.height * share;
+      const plank = new THREE.Mesh(groundRibbon(w, len, ground, { off: 0.08, thick: 0.04, y0: mid - RAIL_PLANK_H / 2, y1: mid + RAIL_PLANK_H / 2 }), wood);
+      plank.castShadow = true;
+      plank.receiveShadow = true;
+      plank.userData['pick'] = pick;
+      own.add(plank);
+    }
+    return own;
+  }
   if (def.look === 'hedge') {
     const wild = def.id === 'bramble';
     const leaf = material(w.color ?? def.color, { roughness: 1 });

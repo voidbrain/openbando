@@ -25,6 +25,7 @@ export const TOOL_ICONS: Readonly<Record<string, readonly Stroke[]>> = {
   areaRect: [{ p: 'M4 5 H20 V19 H4 Z', d: true }, dot(9, 10), dot(15, 9), dot(12, 15), dot(7, 15.5), dot(16.5, 15.5)],
   areaCircle: [{ p: 'M3 12 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0', d: true }, dot(9, 10), dot(15, 9.5), dot(12, 15), dot(8, 14.5)],
   lasso: [{ p: 'M5 10 C4 5 12 3 17 5 C22 7 20 13 15 14 C12 14.5 12 18 9 19 C6 19.5 4 16 5 10 Z', d: true }, dot(9, 9.5), dot(15, 9), dot(12, 13)],
+  railFence: [{ p: 'M5 6 V21 M12 6 V21 M19 6 V21' }, { p: 'M3 9 H21 M3 13 H21 M3 17 H21' }],
   fence: [{ p: 'M4 21 V9 l2 -2.5 l2 2.5 V21 M10 21 V9 l2 -2.5 l2 2.5 V21 M16 21 V9 l2 -2.5 l2 2.5 V21' }, { p: 'M3 12.5 H21 M3 17.5 H21' }],
   wall: [{ p: 'M3 6 H21 V11 H3 Z M3 11 H21 V16 H3 Z M3 16 H21 V20 H3 Z' }, { p: 'M9 6 V11 M15 11 V16 M9 16 V20' }],
   door: [{ p: 'M6 21 V4 H18 V21 M3 21 H21' }, dot(15, 13, 1.1)],

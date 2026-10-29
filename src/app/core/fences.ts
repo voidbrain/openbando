@@ -1,7 +1,7 @@
 import type { WallSpec } from './site-spec';
 
 /** What a free-standing wall or fence is made of: drives its look, default size and whether you can see through it. */
-export type FenceMaterial = 'masonry' | 'concrete' | 'brick' | 'wood' | 'metal' | 'chainlink' | 'hedge' | 'bramble' | 'wires';
+export type FenceMaterial = 'masonry' | 'concrete' | 'brick' | 'wood' | 'rail' | 'metal' | 'chainlink' | 'hedge' | 'bramble' | 'wires';
 
 export interface FenceDef {
   id: FenceMaterial;
@@ -14,8 +14,11 @@ export interface FenceDef {
   mesh?: boolean;
   /** Distance between posts, metres (0 = a continuous wall). */
   post: number;
-  /** How it is drawn: a wall or fence (default), a lumpy living hedge, or poles with wires hanging between them. */
-  look?: 'hedge' | 'wires';
+  /**
+   * How it is drawn: a wall or fence (default), a lumpy living hedge, poles with wires hanging between them, or posts
+   * with three planks and open gaps between them (`RAIL_PLANKS`).
+   */
+  look?: 'hedge' | 'wires' | 'rail';
 }
 
 export const FENCES: readonly FenceDef[] = [
@@ -23,12 +26,17 @@ export const FENCES: readonly FenceDef[] = [
   { id: 'concrete', label: 'Concrete panels', hint: 'Precast panels between posts', color: '#a9aaa0', height: 2.5, thick: 0.2, post: 2.5 },
   { id: 'brick', label: 'Brick wall', hint: 'Old red brick', color: '#a65a3f', height: 2, thick: 0.35, post: 0 },
   { id: 'wood', label: 'Wooden fence', hint: 'Boards on posts', color: '#8a6440', height: 1.8, thick: 0.08, post: 2 },
+  { id: 'rail', label: 'Post-and-rail fence', hint: 'Three planks on posts, open between them (a white farm fence)', color: '#f1eee6', height: 1.25, thick: 0.12, post: 2.4, look: 'rail' },
   { id: 'metal', label: 'Metal sheets', hint: 'Corrugated steel hoarding', color: '#8d979a', height: 2.2, thick: 0.05, post: 2.5 },
   { id: 'chainlink', label: 'Chain-link fence', hint: 'Wire mesh on steel posts, see-through', color: '#9aa4a6', height: 2, thick: 0.04, post: 3, mesh: true },
   { id: 'hedge', label: 'Hedge', hint: 'A trimmed hedge, dense and solid', color: '#3f6b35', height: 1.8, thick: 1, post: 0, look: 'hedge' },
   { id: 'bramble', label: 'Bramble thicket', hint: 'Wild brambles, wide, uneven and impassable', color: '#4b5f2b', height: 1.6, thick: 2, post: 0, look: 'hedge' },
   { id: 'wires', label: 'Phone / power line', hint: 'Poles with wires hanging between them, drawn from pole to pole', color: '#6b5440', height: 8, thick: 0.3, post: 35, look: 'wires' },
 ];
+
+/** The planks of a post-and-rail fence: centre height as a share of the fence's height, and plank height in metres. */
+export const RAIL_PLANKS: readonly number[] = [0.3, 0.6, 0.9];
+export const RAIL_PLANK_H = 0.15;
 
 export const fenceDef = (m: FenceMaterial | undefined): FenceDef => FENCES.find((f) => f.id === m) ?? FENCES[0]!;
 

@@ -285,6 +285,54 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
+### B-033
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-033 | 🔶 P2 | Implemented | Road bends left wedge-shaped gaps |
+
+🧑 **→ Human action required: Yes**<br />On the live site after merge: look at a bending road in 3D.
+
+**Next action / closure evidence:** Reported 2026-10-29 with a screenshot. Each segment of a road was its own strip with square ends, so every bend opened a wedge on its outer side. Now a road is one strip along its whole line, mitred at each bend (`stripFrames` in `core/layers.ts`: the shared frame's normal bisects the two segments, half-width stretched by 1 / cos of half the turn, capped at 2×). Covered by `layers.spec.ts` (straight, right-angle, hairpin, repeated point) and a 3D screenshot reviewed by the agent. The centre line itself is unchanged (the ground is levelled along it); rounding sharp corners is not done.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | This PR; report 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Unit · 2026-10-29 · `stripFrames` cases passed; 3D screenshot reviewed; live-site look · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### B-034
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-034 | 🔶 P2 | Implemented | Fences did not follow the terrain |
+
+🧑 **→ Human action required: Yes**<br />On the live site after merge: a fence across a slope keeps its height above the ground all along.
+
+**Next action / closure evidence:** Requested 2026-10-29. A fence was one level-topped box from the lowest ground under it up to its height above the highest, so on a slope it was too tall at the low end and its pieces stepped at the joints. Now the panel follows the ground (`groundRibbon`: sampled every metre, its foot 30 cm into the ground, its top `height` above it), posts stand on the ground under them at the fence's height, and the collider is a 1 m staircase of boxes each from the ground to its height there. Covered by `site-model.spec.ts` (a fence over a hill: solid at height − 0.2 m and clear at height + 0.6 m all along; fails on the old code).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | This PR; request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Unit · 2026-10-29 · slope case passed (fails on the previous build); 3D screenshot reviewed; live-site look · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
 ## Features and limitations
 
 ### F-001
@@ -451,6 +499,126 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 | PR / evidence | [#210](https://github.com/voidbrain/openbando/pull/210) (replaces [#207](https://github.com/voidbrain/openbando/pull/207): green CI, then a backlog conflict with #206); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Unit/browser · 2026-10-29 · `layers.spec.ts` and `takeoff-pad.e2e.ts` passed locally; live-site check · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-027
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | F-027 | 🔹 P3 | Implemented | Post-and-rail fence (white, three planks) |
+
+🧑 **→ Human action required: Yes**<br />On the live site after merge: draw a fence and pick Post-and-rail in its material menu; Bardwell House's drive fence uses it once its release 2 (#214) is in.
+
+**Next action / closure evidence:** Requested 2026-10-29 for the library (Bardwell House has one). New fence material `rail`: posts every 2.4 m, three planks (`RAIL_PLANKS`) nailed to their face with open gaps between them, white by default, each plank following the ground; solid for the drone like the other fences. Material menu entry with its own icon and Italian. Covered by `site-model.spec.ts` (6 posts and 3 planks on a 12 m fence, solid). Next: Bardwell House's drive fence becomes `rail` (after #214 merges).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | This PR; request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Unit · 2026-10-29 · rail case passed; 3D screenshot reviewed; live-site look · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-028
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-028 | 🔶 P2 | Open | Impact map: what must follow when something changes, reminded on every PR |
+
+💻 **→ Human action required: No**<br />Release it in the harness template (decided 2026-10-29), then reconcile here and fill the rows.
+
+**Next action / closure evidence:** Requested 2026-10-29: the BACKLOG-RULES consistency rule ("for every modification, check README, AGENTS…") names no derived things, so updates depend on memory (today `check:i18n` missed fence labels written in TypeScript). Plan (decided with the user): a harness template feature, an impact-map file where each row says which files trigger it, what must follow, the command and what checks it; `check-freshness` reads it and lists, on every PR, "this branch changes X: update Y" (a warning, never blocking); AGENTS and BACKLOG-RULES point to it. Rows here: tour → guide pages; UI shown by a clip or film → the clip or film; user-facing text → Italian; controls → their tips; keys → Help panel; spec fields and AI commands → AI schema and prompt; example builder → examples and catalogue; tokens and components → design-system guides; features → README and area notes. The automatic checks are F-029, F-030, F-031 and F-026.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-029
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-029 | 🔹 P3 | Open | CI fails when the guide pages differ from their source |
+
+💻 **→ Human action required: No**<br />Make CI run `node tools/build-guide.mjs` and fail when the committed guide pages differ, as it does for the example bandos.
+
+**Next action / closure evidence:** Requested 2026-10-29 (part of F-028): the guide pages are generated from the tour source, and nothing checks they were regenerated.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-030
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-030 | 🔹 P3 | Open | `check:i18n` also reads texts in TypeScript data |
+
+💻 **→ Human action required: No**<br />Extend `check:i18n` to labels and hints in TypeScript data (fence, structure, surface, road lists, tool hints, menus) and add the missing Italian.
+
+**Next action / closure evidence:** Requested 2026-10-29 (part of F-028). Found the same day: fence hints such as "Boards on posts" have no Italian, and the check passed because it reads only templates.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-031
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-031 | 🔹 P3 | Open | Clips and films say when their sources changed since recording |
+
+💻 **→ Human action required: No**<br />Record, for each clip and film, the source files it shows and their hashes at recording time; CI warns when they changed since (it cannot re-record).
+
+**Next action / closure evidence:** Requested 2026-10-29 (part of F-028): clips and films are recorded in a browser (`npm run clips`, `npm run films`), so CI cannot regenerate them, and nothing says one is out of date.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Not implemented |
 | Reviewed | 2026-10-29 |
 
 </details>
