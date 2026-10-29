@@ -559,7 +559,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 |:---:|---|---|---|---|
 | 🔴 | F-024 | 🔹 P3 | Open | Take-off pad indoors, on an upper floor or on a flat roof |
 
-💻 **→ Human action required: No**<br />Implement after F-021: a take-off height for the pad (ground, a floor of the building under it, or its flat roof), with the drone starting there.
+💻 **→ Human action required: No**<br />Ready (F-021 is merged): a take-off height for the pad (ground, a floor of the building under it, or its flat roof), with the drone starting there.
 
 **Next action / closure evidence:** Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof.
 
@@ -751,7 +751,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 |:---:|---|---|---|---|
 | 🔴 | F-033 | 🔶 P2 | Open | Full impact map: chains, content, couplings, outside the repository, as a readable page |
 
-💻 **→ Human action required: No**<br />Next steps, in order: (1) harness 1.14.0 (template): the map page gains "Content dependencies", "Value couplings" and "Outside the repository" sections from `.harness.json` (`inputs` on rows, `couplings`, `outside`), and `check:freshness` warns when a branch changes one side of a coupling; (2) reconcile here to 1.12.0, 1.13.0 and 1.14.0: every row with an `id` and its `after` chains (blocks → catalogue → examples; tour → guide pages; UI → clips → guide pages; UI → Welcome films; `.harness.json` → map page), the theme-colour row chained to every visual output and the art, a `package-lock.json` row (renderer upgrades → recordings), each recording's inputs read from its script (Chiari e Forti → Welcome film 1 and the tour's clips; Bando Villetta and the demo flight → the flight clips); (3) list the value couplings (mascot timing ↔ the three Welcome films, `DEMO_OFFSET` ↔ the demo video, tour waits ↔ animation lengths, others found) and give each one source or a relation test, one record each; (4) the outside list: library upgrades, CI browser and GPU, OSM / Overpass, terrain tiles, Nominatim, AI models, each with what it affects and how it is noticed.
+💻 **→ Human action required: No**<br />Next steps, in order: (1) done: harness 1.14.0 (template [#20](https://github.com/voidbrain/project-harness/pull/20): content dependencies, value couplings, outside the repository; coupling warnings) and 1.15.0 (template [#22](https://github.com/voidbrain/project-harness/pull/22): `pages`, the impact map links the project's own maps); (2) reconcile here to 1.12.0 – 1.15.0, after #221 (the element map) merges: `docs/agents/impact-map.md` from the harness tool is the one readable impact page and lists the element map in `pages` (the element map lists controls only and links back), and: every row with an `id` and its `after` chains (blocks → catalogue → examples; tour → guide pages; UI → clips → guide pages; UI → Welcome films; `.harness.json` → map page), the theme-colour row chained to every visual output and the art, a `package-lock.json` row (renderer upgrades → recordings), each recording's inputs read from its script (Chiari e Forti → Welcome film 1 and the tour's clips; Bando Villetta and the demo flight → the flight clips); (3) list the value couplings (mascot timing ↔ the three Welcome films, `DEMO_OFFSET` ↔ the demo video, tour waits ↔ animation lengths, others found) and give each one source or a relation test, one record each; (4) the outside list: library upgrades, CI browser and GPU, OSM / Overpass, terrain tiles, Nominatim, AI models, each with what it affects and how it is noticed.
 
 **Next action / closure evidence:** Requested 2026-10-29: the user asked which dependencies a file trigger misses (a mascot animation synced with the Welcome films, a film that records an example bando, a theme colour that changes everything visual) and asked for a readable list of content dependencies and value couplings, plus what lies outside the repository if useful to people. Template rules already released: 1.12.0 (chains, the map page, plans become records) and 1.13.0 (inputs, wide-reach settings, couplings, audits look outside). Recorded here at once because a plan given in the conversation is otherwise forgotten (BACKLOG-RULES).
 
@@ -764,6 +764,30 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 | Opened | 2026-10-29 |
 | Verification | Not implemented |
 | Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-034
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-034 | 🔹 P3 | Open | Merge only when every check passes, CodeQL included |
+
+🧑 **→ Human action required: Yes**<br />Decide whether "no merge while any check fails, CodeQL included" becomes a written rule, and where (the harness template for every project, or this project only).
+
+**Next action / closure evidence:** Found 2026-10-30: the required checks (ruleset "protect main") do not include CodeQL, and the agent's merge watcher waited only for the required ones, so a PR could merge with an open code-scanning alert (#221 had four: incomplete sanitization in two build tools, fixed in that PR). The watcher, a session script, now stops on any failing check; the rule itself is written nowhere. Options: a line in AGENTS (merging) in the template for every project, or here only; or add CodeQL to the required checks of "protect main" (a GitHub setting).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Found 2026-10-30 on [#221](https://github.com/voidbrain/openbando/pull/221) |
+| Opened | 2026-10-30 |
+| Verification | Not decided |
+| Reviewed | 2026-10-30 |
 
 </details>
 
