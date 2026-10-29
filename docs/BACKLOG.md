@@ -381,6 +381,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
+### B-036
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | B-036 | 🔶 P2 | Open | Road curves are angular: a sharp corner at every map point |
+
+💻 **→ Human action required: No**<br />Smooth the road's centre line into curves (rounded corners with a turn radius that suits the road's width), drawn and levelled the same way, with a unit test and a screenshot.
+
+**Next action / closure evidence:** Reported 2026-10-29 ("roads curves are not very good", with a screenshot). B-033 fixed the wedge-shaped gaps at the bends; the road still turns in straight pieces with a corner at each point of the map's line. The rounding has to be applied where the ground under the road is levelled too (`levelRoad`), or the road and the levelled strip part at the corners. Split from B-033 on 2026-10-30 at the user's request.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Report 2026-10-29; B-033 ([#215](https://github.com/voidbrain/openbando/pull/215)) fixed the gaps only |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
 ## Features and limitations
 
 ### F-001
@@ -773,20 +797,44 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-034 | 🔹 P3 | Open | Merge only when every check passes, CodeQL included |
+| 🟡 | F-034 | 🔹 P3 | Implemented | Merge only when every check passes, CodeQL included |
 
-🧑 **→ Human action required: Yes**<br />Decide whether "no merge while any check fails, CodeQL included" becomes a written rule, and where (the harness template for every project, or this project only).
+💻 **→ Human action required: No**<br />Verify on the next PR that GitHub lists CodeQL as required and blocks the merge while it fails.
 
-**Next action / closure evidence:** Found 2026-10-30: the required checks (ruleset "protect main") do not include CodeQL, and the agent's merge watcher waited only for the required ones, so a PR could merge with an open code-scanning alert (#221 had four: incomplete sanitization in two build tools, fixed in that PR). The watcher, a session script, now stops on any failing check; the rule itself is written nowhere. Options: a line in AGENTS (merging) in the template for every project, or here only; or add CodeQL to the required checks of "protect main" (a GitHub setting).
+**Next action / closure evidence:** Found 2026-10-30: the required checks (ruleset "protect main") did not include CodeQL, and the agent's merge watcher waited only for the required ones, so a PR could merge with an open code-scanning alert (#221 had four: incomplete sanitization in two build tools, fixed in that PR). Decided 2026-10-30 (user): option (c), CodeQL made a required check of "protect main" through the API (required now: check, e2e (1)–(4), race-browser, CodeQL), so GitHub blocks the merge whoever merges; AGENTS names it (a project line). The watcher, a session script, stops on any failing check too.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Found 2026-10-30 on [#221](https://github.com/voidbrain/openbando/pull/221) |
+| PR / evidence | Ruleset 25780506 updated 2026-10-30; this PR (AGENTS); found on [#221](https://github.com/voidbrain/openbando/pull/221) |
 | Opened | 2026-10-30 |
-| Verification | Not decided |
+| Verification | Settings · 2026-10-30 · the ruleset lists CodeQL among the required checks (API); on a PR · Pending |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
+### F-035
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-035 | 🔹 P3 | Open | Drag the take-off pad in the editor's 3D view |
+
+💻 **→ Human action required: No**<br />Make the take-off pad pickable and draggable in the 3D view as it is in the 2D plan (with `moveTakeoff`), with a browser test; do it with F-024 (the pad on floors and roofs), which needs 3D placement anyway.
+
+**Next action / closure evidence:** Split from F-021 on 2026-10-30 at the user's request: F-021 moves the pad in the 2D plan (select, drag, right-click menus) but not in the 3D view.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | F-021 ([#210](https://github.com/voidbrain/openbando/pull/210)) did the 2D plan only |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
 | Reviewed | 2026-10-30 |
 
 </details>
