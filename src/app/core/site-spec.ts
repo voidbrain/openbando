@@ -12,6 +12,7 @@ import { sanitizeLayers } from './layers';
 import { sanitizeShapes, type ShapeSpec } from './shapes';
 import type { BlockRef } from './blocks';
 import { BASEMENT_COORD_LIMIT, validOutline } from './footprint';
+import { MAX_COURTYARDS, MAX_PIECES, cleanRings, keepValidRings, type BasementRing } from './basement-rings';
 
 export interface Vec2 {
   x: number;
@@ -185,7 +186,9 @@ export interface BuildingSpec {
    */
   fixtures?: StructureSpec[];
   /** A basement under the ground floor, `height` metres deep inside (see core/underground.ts basementVolume). */
-  basement?: { height: number; outline?: Vec2[]; wallEdges?: boolean[]; sides?: Partial<Record<'n'|'s'|'e'|'w', boolean>>; partitions?: [Vec2,Vec2][]; doors?: LevelSpec['doors']; wallOpenings?: WallOpening[]; columns?: ColumnSpec[]; voids?: VoidSpec[] };
+  basement?: { height: number; outline?: Vec2[]; wallEdges?: boolean[]; sides?: Partial<Record<'n'|'s'|'e'|'w', boolean>>; partitions?: [Vec2,Vec2][]; doors?: LevelSpec['doors']; wallOpenings?: WallOpening[]; columns?: ColumnSpec[]; voids?: VoidSpec[];
+    /** Holes through the basement and further perimeters (F-002, core/basement-rings.ts); described, not drawn yet. */
+    courtyards?: BasementRing[]; pieces?: BasementRing[] };
   /** Placed from a library block. */
   block?: BlockRef;
   /** Its name came from the map data (a shop, a hospital): a copy shared without its place drops it. */
@@ -438,7 +441,8 @@ function cleanBasement(raw: BuildingSpec['basement']): BuildingSpec['basement'] 
   const wallOpenings = Array.isArray(raw.wallOpenings) ? raw.wallOpenings.filter(o => !!o && point(o) && (o.kind === 'door' || o.kind === 'window') && Number.isFinite(o.w) && o.w > 0 && Number.isFinite(o.h) && o.h > 0 && (o.sill === undefined || Number.isFinite(o.sill))).slice(0, 100).map(o => ({ ...o })) : undefined;
   const columns = Array.isArray(raw.columns) ? raw.columns.filter(c => !!c && point(c) && Number.isFinite(c.size) && c.size > 0 && c.size <= 50).slice(0, 500).map(c => ({ ...c })) : undefined;
   const voids = Array.isArray(raw.voids) ? raw.voids.filter(v => !!v && [v.x0, v.z0, v.x1, v.z1].every(n => Number.isFinite(n) && Math.abs(n) <= BASEMENT_COORD_LIMIT) && v.x1 > v.x0 && v.z1 > v.z0).slice(0, 100).map(v => ({ ...v, water: false })) : undefined;
-  return {height:Math.min(12,Math.max(2,raw.height)),...(outline?{outline}:{}),...(wallEdges?{wallEdges}:{}),...(sides?{sides}:{}),...(partitions?{partitions}:{}),...(Object.keys(doors).length?{doors}:{}),...(wallOpenings?{wallOpenings}:{}),...(columns?{columns}:{}),...(voids?{voids}:{})};
+  const courtyards = cleanRings(raw.courtyards, MAX_COURTYARDS), pieces = cleanRings(raw.pieces, MAX_PIECES);
+  return {height:Math.min(12,Math.max(2,raw.height)),...(outline?{outline}:{}),...(wallEdges?{wallEdges}:{}),...(sides?{sides}:{}),...(partitions?{partitions}:{}),...(Object.keys(doors).length?{doors}:{}),...(wallOpenings?{wallOpenings}:{}),...(columns?{columns}:{}),...(voids?{voids}:{}),...(courtyards?{courtyards}:{}),...(pieces?{pieces}:{})};
 }
 
 export function sanitizeSpec(raw: unknown): SiteSpec | null {
@@ -472,7 +476,7 @@ export function sanitizeSpec(raw: unknown): SiteSpec | null {
     bearingDeg: typeof s.bearingDeg === 'number' ? s.bearingDeg : 0,
     genScale: typeof s.genScale === 'number' ? s.genScale : 1,
     groundColor: typeof s.groundColor === 'string' ? s.groundColor : '#789b52',
-    buildings: (s.buildings.filter((b) => b && typeof b.length === 'number') as BuildingSpec[]).map((b) => {const {basement,...rest}=b;const clean=cleanBasement(basement);return {...rest,...(clean?{basement:clean}:{}),...(Array.isArray(b.fixtures)?{fixtures:cleanStructures(b.fixtures)}:{})};}),
+    buildings: (s.buildings.filter((b) => b && typeof b.length === 'number') as BuildingSpec[]).map((b) => {const {basement,...rest}=b;const clean=cleanBasement(basement);const kept=clean&&keepValidRings({...rest,basement:clean} as BuildingSpec);return {...rest,...(kept?{basement:kept}:{}),...(Array.isArray(b.fixtures)?{fixtures:cleanStructures(b.fixtures)}:{})};}),
     pads: Array.isArray(s.pads) ? (s.pads as PadSpec[]) : [],
     walls: Array.isArray(s.walls) ? (s.walls as WallSpec[]) : [],
     // a 'shapes' structure carries primitives from files or AI output: they are checked and capped like the rest
