@@ -243,28 +243,6 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
-### F-004
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-004 | 🔹 P3 | Implemented | More flexible basement vertex edits |
-
-**→ Human action required:** 💻 **No**<br />Confirm the migration in CI, then close.
-
-**Next action / closure evidence:** Decision 2026-10-29 (user): option A, migrate. [#185](https://github.com/voidbrain/openbando/pull/185): `migrateCompassDoors` (run by `sanitizeSpec` on every load) puts each legacy compass door of a shaped basement back where it was on the outline\'s bounding box when that spot is on an outline wall with room for it, as a positioned door that is drawn and collides; the others stay in `doors`, unseen. Edits no longer refuse a shaped basement with leftover compass doors: they keep them untouched. A still-rectangular basement keeps its compass doors as they are. Investigation 2026-10-29. (1) Open-wall topology: footprint restoration with a different topology now reuses the Cut/Wing remap (`reshapePerimeter`): a new edge keeps an old edge's state only where it lies exactly on it, collinear same-state edges are joined, and the restore is allowed only when every open span survives whole; otherwise it is refused unchanged as before (no case that was protected can now lose data). (2) Legacy compass doors on a shaped floor: `listOpenings`, the renderer and colliders ignore `level.doors` once a floor has a footprint, so such doors are invisible data; normal reshaping converts them to `wallOpenings` first, so they come only from old saved files. A safe migration exists (place each on the bounding-box side it was authored on, accept only if that point lies on an outline edge), but it would make doors appear in pilots' saved bandos: a product decision. Until then the guard stays. History: Cut/Wing passed #141 CI. Length/width now scale the existing outline, preserving edge identity and item world positions; footprint restoration supports matching normalized boundaries with either winding, and validates closed-wall topology replacement. Rejects ambiguous open-wall topology/legacy shaped compass-door data and destructive edits. Resize/restore browser checks passed in #142 CI. Ambiguous open-wall topology changes and legacy shaped compass-door migration remain guarded; investigate safe correspondence before relaxing those guards.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#185](https://github.com/voidbrain/openbando/pull/185) (option A); [#101](https://github.com/voidbrain/openbando/pull/101) (context); [#122](https://github.com/voidbrain/openbando/pull/122) (perimeter visibility); [#141](https://github.com/voidbrain/openbando/pull/141) (open-edge Cut/Wing); [#142](https://github.com/voidbrain/openbando/pull/142) (safe resize and footprint restoration); [#166](https://github.com/voidbrain/openbando/pull/166) (open-wall restoration) |
-| Opened | 2026-10-27 |
-| Verification | Unit/integration · 2026-10-29 · migration case (fails without it) and the restore case now keeping the legacy door, 559 tests; open-wall restoration in [#166](https://github.com/voidbrain/openbando/pull/166) CI; CI · Pending |
-| Reviewed | 2026-10-29 |
-
-</details>
-
 ### F-008
 
 | Signal | ID | Priority | Status | Item |
