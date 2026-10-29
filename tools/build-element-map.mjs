@@ -34,11 +34,24 @@ const templates = (p, src) => (p.endsWith('.html') ? [src] : [...src.matchAll(/t
 const attr = (tag, name) => tag.match(new RegExp(`(?:^|\\s)${name}="([^"]*)"`))?.[1];
 const bound = (tag, name) => tag.match(new RegExp(`\\[${name}\\]="([^"]*)"`))?.[1];
 const lit = (e) => e?.match(/'([^']+)'/)?.[1];
-/** Template comments out, repeated until none is left (one pass can leave `<!--` behind), an unclosed one to the end. */
-const noComments = (s) => {
-  for (let prev = ''; prev !== s; ) [prev, s] = [s, s.replace(/<!--[\s\S]*?-->/g, '')];
-  return s.replace(/<!--[\s\S]*$/, '');
+/**
+ * Cut every stretch from an opening marker to its closing text (an unclosed one to the end), scanning by index: a
+ * one-pass regex replace could leave a marker behind (nested or broken), which CodeQL rightly flags.
+ */
+const cut = (s, open, close) => {
+  let out = '', i = 0;
+  for (;;) {
+    const m = open.exec(s.slice(i));
+    if (!m) return out + s.slice(i);
+    const a = i + m.index;
+    out += s.slice(i, a);
+    const end = typeof close === 'function' ? close(m) : close;
+    const b = s.indexOf(end, a + m[0].length);
+    if (b < 0) return out;
+    i = b + end.length;
+  }
 };
+const noComments = (s) => cut(s, /<!--/, '-->');
 
 const rows = [];
 for (const p of files(join(root, 'src/app'))) {
@@ -71,7 +84,7 @@ if (process.argv.includes('--json')) {
 }
 const n = rows.length, withTip = rows.filter((r) => r.tips.length).length, withTitle = rows.filter((r) => r.title).length;
 const noName = rows.filter((r) => !r.label).length, inClips = rows.filter((r) => r.clips.length).length;
-const cell = (s) => String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ');
+const cell = (s) => String(s).replace(/\\/g, '\\\\').replace(/\|/g, '\\|').replace(/\n/g, ' ');
 let md = `<!-- Written by tools/build-element-map.mjs from the templates and src/app/core/tour.ts: change those, then run the script. -->\n\n`;
 md += `# Element map\n\nThe element-level part of the impact map ([impact-map.md](impact-map.md), from the harness, lists what must follow a change). `;
 md += `Every control the templates show, with its label, its \`data-tour\` mark, the guide steps that show it as a tip on hover and the guide steps whose clips use it (F-032). Generated; CI fails when this page differs from the code.\n\n`;
