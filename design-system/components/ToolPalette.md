@@ -5,7 +5,7 @@ ToolPalette is the editor's vertical tool strip: one 32px icon button per tool, 
 ## Use
 
 - Each tool has its own colour (`tool-*`), shown as a 6px dot in the button's corner and as the active border. Never reuse a tool colour for another tool or for the area frame.
-- Every tool on offer has its own button; nothing hides behind another button, a long press or a right click (B-030: the old one-button-per-group flyouts hid Cut, Wing, Water…). Groups are 2-column grid blocks with 4px between them; a variant of a tool (the tree brush's shape, the terrain operation) is picked in the options bar. A short editor scrolls the palette.
+- Every tool on offer has its own button; nothing hides behind another button, a long press or a right click (B-030: the old one-button-per-group flyouts hid Cut, Wing, Water…). Groups are 2-column grid blocks with 4px between them; a variant of a tool (the tree brush's shape, the terrain operation) is picked in the options bar. A short editor scrolls the palette. It sits top left of the plan and of the 3D view: other boxes in the view (vertex and measure keyboard access) go top right.
 - Active: `wash-on` fill and a border in the tool colour. Hover: `wash-hover`.
 - `.psep` hairlines separate outdoor, indoor and measuring groups.
 - Icons are 20px outlines (the `size` input, used at 18px only in Views Options) on a 24 grid, stroke 1.7, round caps, in `currentColor` (see the Icons assets).
