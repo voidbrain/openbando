@@ -9,8 +9,8 @@ for (const line of text.split('\n')) {
   width ??= cells(line).length;
   assert.equal(cells(line).length, width, `Table width: ${line}`);
 }
+// docs/BACKLOG-RULES.md is the procedure this enforces; an empty ledger is valid.
 const headings = [...text.matchAll(/^### ([BF]-\d+)$/gm)];
-assert(headings.length > 0, 'No active backlog records found');
 const ids = new Set();
 const cues = {Open: '🔴', Investigate: '🟠', Implemented: '🟡', Verified: '🟢', Blocked: '🟣', Closed: '🔵'};
 for (let i = 0; i < headings.length; i++) {

@@ -1,0 +1,53 @@
+{
+  "template": {
+    "path": "~/Projects/project-harness",
+    "repo": "https://github.com/voidbrain/project-harness"
+  },
+  "version": "1.1.1",
+  "stacks": [
+    "core",
+    "angular"
+  ],
+  "copied": {
+    "tools/check-backlog.mjs": "core/tools/check-backlog.mjs",
+    "tools/check-freshness.mjs": "core/tools/check-freshness.mjs",
+    "tools/check-harness.mjs": "core/tools/check-harness.mjs",
+    "tools/ci-status.mjs": "core/tools/ci-status.mjs",
+    "tools/check-conventions.mjs": "angular/tools/check-conventions.mjs"
+  },
+  "adapted": {
+    "AGENTS.md": [
+      "core/AGENTS.md",
+      "angular/AGENTS.angular.md"
+    ],
+    "CLAUDE.md": "core/CLAUDE.md",
+    "README.md": "core/README.md",
+    "docs/BACKLOG.md": "core/docs/BACKLOG.md",
+    "docs/BACKLOG-RULES.md": "core/docs/BACKLOG-RULES.md",
+    "docs/agents/areas.md": "core/docs/agents/areas.md",
+    "eslint.config.mjs": "angular/eslint.config.mjs",
+    ".github/workflows/ci.yml": "angular/.github/workflows/ci.yml",
+    "package.json": "angular/package-scripts.json",
+    "design-system/README.md": "core/docs/STYLE-GUIDE.md"
+  },
+  "ciStatus": {
+    "workflow": "CI",
+    "browserJobs": "e2e|browser",
+    "logNotes": [
+      "^auto-sync found"
+    ]
+  },
+  "conventions": {
+    "pureDirs": [
+      [
+        "src/app/core/",
+        [
+          "signal",
+          "computed",
+          "untracked"
+        ]
+      ]
+    ]
+  },
+  "note": "OpenBando is the reference implementation the template was extracted from (1.0.0); stamped at 1.1.1 on 2026-10-29."
+}

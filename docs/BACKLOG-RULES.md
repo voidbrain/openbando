@@ -8,7 +8,7 @@ This is the authoritative update and review procedure for [OpenBando backlog](BA
 - At PR creation, add its actual link and distinguish implementation, investigation, partial fix and verification. Replace temporary PR placeholders once the PR exists.
 - After a PR merges, when CI/verification finishes, when the user supplies acceptance or a new failure, and at the start of work on a related item, reconcile the affected records using the procedure below.
 - When asked for backlog status or an audit, review every active record. During ordinary work, review related items and any contradictions encountered; a row's age alone is never evidence that it is fixed, abandoned or invalid.
-- These are event-driven agent instructions, not a scheduled background process. Do not claim continuous monitoring or automatic CI updates without an actual automation. The trigger is the session start: `npm run check:freshness` (AGENTS, Work tracking) lists PRs merged since the backlog's commit, merged branches still on GitHub and an audit older than 7 days; CI prints the same as warnings on every PR without blocking it.
+- These are event-driven agent instructions, not a scheduled background process. Do not claim continuous monitoring or automatic CI updates without an actual automation. The trigger is the session start: `npm run check:freshness` (AGENTS, Work tracking) lists PRs merged since the backlog's commit, merged branches still on GitHub, an audit older than 7 days and a newer harness template release; CI prints the same as warnings on every PR without blocking it.
 
 ## Review procedure
 
