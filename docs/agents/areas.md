@@ -80,6 +80,7 @@ Detailed rules and lessons for each part of the app, moved from AGENTS.md so tha
 - Inspector preview: ⤢ makes it as big as the inspector allows; a building with fixtures gets a "zoom to" list (`PreviewRenderer.zoomTo`; fixture objects carry `userData.fixture`).
 - Satellite ground: `GroundStyle 'satellite'` lays the Esri World Imagery tiles on the terrain (`core/satellite.ts` picks the tiles, `three/satellite-ground.ts` draws them on a canvas, cached per place and grid; the terrain has uv for it). Editor: ground → "satellite (3D)"; flight view: the satellite icon in Views. Not for hidden places or bandos without real ground.
 - `npm run clips` (local, needs ffmpeg): records each guide step with the GPU, cuts the set-up (`TourState.preparing`), compresses to VP9 / 960 px into `docs/guide/clips/`.
+- `docs/guide/media.json` says, for the guide clips and the Welcome films, the commit each set was recorded at and the source files it shows; `npm run check:media` (a CI warning, never blocking) lists what changed since, and `npm run clips` / `films` stamp the set after recording (F-031). Add a watched file there when a recording starts to show a new part of the app.
 - `docs/article/medium-draft.md`: the Medium article draft.
 
 ### Water and ground layers

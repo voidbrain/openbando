@@ -1,0 +1,35 @@
+{
+  "about": "Recordings made in a browser (CI cannot redo them): the commit each set was recorded at and the source files it shows. tools/check-media.mjs lists what changed since; npm run clips / films stamp the set again (F-031).",
+  "sets": [
+    {
+      "name": "Guide clips",
+      "files": "docs/guide/clips/*.webm",
+      "recordedAt": "d35f0d3",
+      "run": "npm run clips",
+      "watch": [
+        "src/app/core/tour.ts",
+        "src/app/services/tour.service.ts",
+        "src/app/ui/**/*.html",
+        "src/app/ui/**/*.scss",
+        "src/app/ui/**/*.ts",
+        "src/styles.scss",
+        "e2e/clips.record.ts"
+      ]
+    },
+    {
+      "name": "Welcome films",
+      "files": "public/welcome/*.webm",
+      "recordedAt": "73aee6e",
+      "run": "npm run films",
+      "watch": [
+        "src/app/ui/panels/welcome-panel.ts",
+        "src/app/ui/studio/**",
+        "src/app/ui/panels/fly-panel.ts",
+        "src/app/ui/panels/video-panel.ts",
+        "src/app/three/**",
+        "src/styles.scss",
+        "e2e/welcome-films.record.ts"
+      ]
+    }
+  ]
+}
