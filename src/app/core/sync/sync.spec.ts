@@ -110,6 +110,13 @@ describe('video <-> log matcher', () => {
     expect(Math.abs(r.offset! - 7.3)).toBeLessThan(0.15);
   });
 
+  it('averages the confident motion matches instead of refining on one flip', () => {
+    const r = matchVideoToLog(fakeVideo(7.3, 0, 60), flight);
+    expect(r.description).toMatch(/whole-flight match \([a-z]+ vs (pan|diff) \+ \d more\)/);
+    expect(r.description).not.toContain('refined');
+    expect(Math.abs(r.offset! - 7.3)).toBeLessThan(0.15);
+  });
+
   it('also finds a video that started after the log (negative offset)', () => {
     const r = matchVideoToLog(fakeVideo(-2.1, 0, 58), flight);
     expect(r.offset).toBeTruthy();
