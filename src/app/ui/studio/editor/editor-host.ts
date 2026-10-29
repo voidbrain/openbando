@@ -8,7 +8,7 @@ import type { ToastService } from '../../../services/toast.service';
 
 /** The editor's tools, the selection and the drag in progress: shared by the editor and its tool controllers. */
 export type Tool = 'select' | 'building' | 'structure' | 'stairs' | 'merge' | 'cut' | 'wing' | 'courtyard' | 'piece' | 'tree' | 'scatter' | 'fence' | 'door' | 'window' | 'wall' | 'void' | 'column' | 'measure' | 'terrain' | 'road' | 'surface' | 'water' | 'tunnel' | 'gate';
-export type Pick = { t: 'building' } | { t: 'tree'; i: number } | { t: 'opening'; id: string } | { t: 'wall'; i: number } | { t: 'fence'; i: number } | { t: 'void'; i: number } | { t: 'column'; i: number } | { t: 'structure'; i: number } | { t: 'road'; i: number } | { t: 'surface'; i: number } | { t: 'water'; i: number } | { t: 'under'; i: number } | null;
+export type Pick = { t: 'building' } | { t: 'pad' } | { t: 'tree'; i: number } | { t: 'opening'; id: string } | { t: 'wall'; i: number } | { t: 'fence'; i: number } | { t: 'void'; i: number } | { t: 'column'; i: number } | { t: 'structure'; i: number } | { t: 'road'; i: number } | { t: 'surface'; i: number } | { t: 'water'; i: number } | { t: 'under'; i: number } | null;
 export type Handle = 'n' | 's' | 'e' | 'w' | 'nw' | 'ne' | 'sw' | 'se';
 export type Drag =
   | { t: 'move'; ox: number; oz: number; px: number; pz: number }
@@ -17,6 +17,7 @@ export type Drag =
   | { t: 'edge'; start: BuildingSpec; axis: 'x' | 'z'; at: number; from: number; to: number; n: 1 | -1 }
   | { t: 'basementVertex'; start: BuildingSpec; index: number }
   | { t: 'tree'; i: number; dx: number; dz: number }
+  | { t: 'pad'; dx: number; dz: number }
   | { t: 'open'; id: string }
   | { t: 'openEnd'; id: string; end: 0 | 1 }
   | { t: 'draw'; x0: number; z0: number; x1: number; z1: number }
