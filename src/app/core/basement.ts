@@ -2,7 +2,7 @@ import type { BuildingSpec, LevelSpec, Vec2 } from './site-spec';
 import { listOpenings, outlineOf, reshapeBuilding } from './openings';
 import { polygonRect } from './polygon-rect';
 import { BASEMENT_COORD_LIMIT, bounds, contains, isRectilinear, rectPoly, validOutline, type Rect } from './footprint';
-import { ringsFit, ringsKept } from './basement-rings';
+import { MAX_COURTYARDS, ringsFit, ringsKept } from './basement-rings';
 
 /** Basement dimensions are independent of the floors above, in the same centred building frame. */
 export function basementOutline(b: BuildingSpec): Vec2[] {
@@ -377,5 +377,31 @@ export function removeBasementVertex(b: BuildingSpec, index: number): boolean {
   if (basement.voids) basement.voids = basement.voids.map(v => ({ ...v, x0: v.x0 + dx, x1: v.x1 + dx, z0: v.z0 + dz, z1: v.z1 + dz }));
   if (!moveBasementVertex(copy, 0, outline[0]!)) return false;
   b.basement = copy.basement;
+  return true;
+}
+
+/**
+ * Add a rectangular courtyard drawn on the −1 floor (`rect` in the centred basement view, as Cut / Wing): accepted
+ * only where it is a valid courtyard (inside the outline, clear of the others and of floor items, at least 1 m).
+ */
+export function addCourtyard(b: BuildingSpec, rect: Rect): boolean {
+  if (!b.basement) return false;
+  const box = bounds(basementOutline(b)), ox = (box.x0 + box.x1) / 2, oz = (box.z0 + box.z1) / 2;
+  const x0 = Math.min(rect.x0, rect.x1) + ox, x1 = Math.max(rect.x0, rect.x1) + ox, z0 = Math.min(rect.z0, rect.z1) + oz, z1 = Math.max(rect.z0, rect.z1) + oz;
+  const courtyards = [...(b.basement.courtyards ?? []), { outline: [{ x: x0, z: z0 }, { x: x1, z: z0 }, { x: x1, z: z1 }, { x: x0, z: z1 }] }];
+  if (courtyards.length > MAX_COURTYARDS) return false;
+  const next = { ...b.basement, courtyards };
+  if (!ringsKept(b, next)) return false;
+  b.basement = next;
+  return true;
+}
+
+/** Remove one courtyard: its area becomes basement floor again. */
+export function removeCourtyard(b: BuildingSpec, index: number): boolean {
+  const list = b.basement?.courtyards;
+  if (!list || !Number.isInteger(index) || index < 0 || index >= list.length) return false;
+  const courtyards = list.filter((_, i) => i !== index);
+  const { courtyards: _old, ...rest } = b.basement!;
+  b.basement = { ...rest, ...(courtyards.length ? { courtyards } : {}) };
   return true;
 }

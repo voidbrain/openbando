@@ -17,6 +17,7 @@ export const TOOL_ICONS: Readonly<Record<string, readonly Stroke[]>> = {
   merge: [{ p: 'M4 4 H14 V10 H20 V20 H10 V14 H4 Z' }, { p: 'M10 10 v4 M10 10 h4', d: true }],
   cut: [{ p: 'M4 4 H20 V20 H4 Z' }, { p: 'M12 4 V12 H20', d: true }, { p: 'M15 15 l4 4 M19 15 l-4 4' }],
   wing: [{ p: 'M3 7 H15 V20 H3 Z' }, { p: 'M15 12 H21 V20 H15', d: true }, { p: 'M9 11 v5 M6.5 13.5 h5' }],
+  courtyard: [{ p: 'M3 4 H21 V20 H3 Z' }, { p: 'M9 9 H15 V15 H9 Z', d: true }],
   structure: [{ p: 'M9 21 V9 L12 3 L15 9 V21' }, { p: 'M7 21 H17 M9 13 H15 M9 17 H15' }],
   tree: [{ p: 'M6 10 a6 6 0 1 1 12 0 a6 6 0 0 1 -12 0' }, { p: 'M12 16 V21 M9 21 H15' }],
   brush: [{ p: 'M3 19 C8 19 6 9 12 9 S16 17 21 13', d: true }, dot(5, 18, 1.8), dot(12, 9, 1.8), dot(19, 14, 1.8)],

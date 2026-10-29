@@ -1,5 +1,5 @@
 import { MAX_COURTYARDS, cleanRings, keepValidRings } from './basement-rings';
-import { editBasementFloor, moveBasementVertex, reshapeBasement, resizeBasement } from './basement';
+import { addCourtyard, editBasementFloor, moveBasementVertex, removeCourtyard, reshapeBasement, resizeBasement } from './basement';
 import { emptySpec, sanitizeSpec, type BuildingSpec, type Vec2 } from './site-spec';
 
 /** A 10 × 8 building (centred frame: x −5…5, z −4…4) with a basement under it. */
@@ -94,5 +94,18 @@ describe('basement courtyards and pieces (model)', () => {
     expect(b).toEqual(before);
     expect(resizeBasement(b, 12, 8)).toBe(true);
   });
-});
 
+  it('adds a drawn courtyard in the outline frame, refuses an invalid one, and removes it', () => {
+    // a basement shifted east (outline x 0…10): the drawn rectangle is in the centred −1 view
+    const b = building({ height: 3, outline: [{ x: 0, z: -4 }, { x: 10, z: -4 }, { x: 10, z: 4 }, { x: 0, z: 4 }] });
+    expect(addCourtyard(b, { x0: -1, z0: -1, x1: 1, z1: 1 })).toBe(true);
+    expect(b.basement!.courtyards).toEqual([{ outline: square(4, -1, 2) }]);
+    const before = structuredClone(b);
+    expect(addCourtyard(b, { x0: 0, z0: 0, x1: 2, z1: 2 })).toBe(false); // overlaps the first
+    expect(addCourtyard(b, { x0: 3, z0: -1, x1: 6, z1: 1 })).toBe(false); // reaches the east wall
+    expect(b).toEqual(before);
+    expect(removeCourtyard(b, 1)).toBe(false);
+    expect(removeCourtyard(b, 0)).toBe(true);
+    expect(b.basement!.courtyards).toBeUndefined();
+  });
+});

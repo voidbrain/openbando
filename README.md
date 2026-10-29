@@ -234,6 +234,8 @@ The simulator quad geometry spans approximately 0.39 m on each horizontal axis b
 
 Basement vertex edits preserve each perimeter wall’s visibility, including diagonal walls. Polygonal basements expose **Perimeter edge** switches in the Inspector. Splitting an edge copies its wall state; removing a corner between an open and closed edge is rejected. Existing doors/windows remain stored while their wall is hidden. Cut/Wing preserves surviving open/closed spans, retaining collinear state boundaries and creating solid new edges. Dimension edits retain perimeter flags. Footprint restoration maps open walls when the normalized boundary has an unambiguous correspondence, including reversed vertex order. Ambiguous open-wall topology changes and legacy diagonal compass-door data are rejected; closed-wall replacements still require all openings and floor items to survive.
 
+On the −1 floor the **Courtyard** tool drags a courtyard into the basement: the ground stays there, walls go around it, and the drone cannot land on a basement floor inside it. The inspector lists courtyards with Delete; edits to the outline or the floor that would break a courtyard are refused.
+
 The [28 October follow-up audit](docs/audits/2026-10-28.md) records current CI evidence, remaining implementation limits and documentation/clip freshness. Guide clips and Welcome films were re-recorded on 29 October against the current UI (F-011).
 
 Backlog maintenance follows [Backlog rules](docs/BACKLOG-RULES.md): evidence-based status updates, PR/CI reconciliation, stale-item review and closure/archiving. Current work remains in [the backlog](docs/BACKLOG.md).
