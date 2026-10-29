@@ -152,7 +152,7 @@ No further configuration is required — the workflow uses the built-in
 
 ### How it works
 
-- Runs the reusable CI checks (catalogue, generated examples, unit tests, race relay, Italian translations, backlog layout, shared contrast, AGENTS conventions and unused exports, strict types and production build) before publishing. Browser e2e runs on pull requests; deployment calls the fast checks without browser e2e. `main` is protected (ruleset "protect main"): a pull request merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` pass; force pushes and deleting `main` are refused. The guide timeout correction passed all PR #124 browser shards; the backlog records current verification and remaining checks. The production build uses
+- Runs the reusable CI checks (catalogue, generated examples, unit tests, race relay, Italian translations, backlog layout, shared contrast, AGENTS conventions and unused exports, strict types and production build) before publishing; on pull requests it also warns, without blocking, when the backlog is behind `main`, merged branches are left over or the last audit is more than 7 days old (`npm run check:freshness`). Browser e2e runs on pull requests; deployment calls the fast checks without browser e2e. `main` is protected (ruleset "protect main"): a pull request merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` pass; force pushes and deleting `main` are refused. The guide timeout correction passed all PR #124 browser shards; the backlog records current verification and remaining checks. The production build uses
   `"baseHref": "/openbando/"` set in `angular.json` so asset URLs
   resolve correctly under the project-page subpath.
 - Adds a `.nojekyll` file so GitHub Pages does **not** process the bundle
@@ -186,7 +186,7 @@ of GitHub Actions.
 
 ## Project maintenance
 
-- [Backlog](docs/BACKLOG.md): current bugs, features and verification status. [Archived working plan](docs/working-plan/working-plan-2026-10-27.md): history and Villetta measurements.
+- [Backlog](docs/BACKLOG.md): current bugs, features and verification status. [Archived working plan](docs/archive/working-plan/working-plan-2026-10-27.md): history and Villetta measurements.
 - [Agent instructions](AGENTS.md): architecture, conventions and required checks; [area notes](docs/agents/areas.md): rules and lessons per part of the app.
 - [User guide](docs/guide/README.md): generated feature walkthroughs.
 
@@ -198,7 +198,7 @@ For more information on using the Angular CLI, including detailed command refere
 
 ### Villetta survey model
 
-The place-hidden Villetta example now includes the measured façade widths and panel heights, 8 m store roof crowns, a 9.30 m parabolic greenhouse with 4.61 m rib spacing, and the tall annex with a first-floor walkway around its central void. The blue ladder uses the reusable open-cage library block. Open a fresh example copy for release 11 (including the estimated 0.35 m raised greenhouse floor); edited copies remain yours. Measurements and photo interpretations are recorded in the [archived working plan](docs/working-plan/working-plan-2026-10-27.md); open checks are in the [backlog](docs/BACKLOG.md).
+The place-hidden Villetta example now includes the measured façade widths and panel heights, 8 m store roof crowns, a 9.30 m parabolic greenhouse with 4.61 m rib spacing, and the tall annex with a first-floor walkway around its central void. The blue ladder uses the reusable open-cage library block. Open a fresh example copy for release 11 (including the estimated 0.35 m raised greenhouse floor); edited copies remain yours. Measurements and photo interpretations are recorded in the [archived working plan](docs/archive/working-plan/working-plan-2026-10-27.md); open checks are in the [backlog](docs/BACKLOG.md).
 
 ### Pixel mascot
 
@@ -250,7 +250,7 @@ Backlog human-action cues use 🧑 Yes for human input and 💻 No for agent-own
 
 After a completed Welcome showcase, Open the bandos becomes the primary Welcome action. Fly on a saved bando opens the model and telemetry workspace (excluding Live link) and the Fly checklist; it does not arm the simulator. Loading a log or video exposes its matching panel. Views can close and reopen from the bottom menu; Flights opens below Video. Video decoding shows loading/error feedback instead of an unexplained black frame.
 
-The **Fly checklist** walks the pilot through one of three routes: replay a recording (log, DVR video, sync, alignment, more flights), the simulator (controller, opening it, arming by hand) or live telemetry (connect, watch the link, flying with others). Each step ticks itself from what the app shows, so it resumes where you left it; it never arms the simulator or connects a link for you. The guide step "Follow the Fly checklist" shows it ([plan](docs/fly-workflow-plan.md)).
+The **Fly checklist** walks the pilot through one of three routes: replay a recording (log, DVR video, sync, alignment, more flights), the simulator (controller, opening it, arming by hand) or live telemetry (connect, watch the link, flying with others). Each step ticks itself from what the app shows, so it resumes where you left it; it never arms the simulator or connects a link for you. The guide step "Follow the Fly checklist" shows it ([plan](docs/archive/plans/fly-workflow-plan.md)).
 
 The tour caption shows a circular remaining-time indicator. Welcome uses one rendered mascot loop with card films fitted across its thirds; it holds the final pose instead of beginning another search/run/sit before closing. Other guides show estimated timing, held while paused.
 

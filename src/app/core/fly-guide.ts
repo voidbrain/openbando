@@ -1,5 +1,5 @@
 /**
- * The guided Fly checklist (F-018, docs/fly-workflow-plan.md): a route (replay a recording, fly the simulator, follow
+ * The guided Fly checklist (F-018, docs/archive/plans/fly-workflow-plan.md): a route (replay a recording, fly the simulator, follow
  * live telemetry) and its steps, each done from what the app already shows, so the list resumes by itself.
  */
 export type FlyRoute = 'replay' | 'sim' | 'live';

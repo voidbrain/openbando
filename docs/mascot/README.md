@@ -1,6 +1,6 @@
 # OpenBando pixel mascot — character bible v2
 
-The two original sheets in [the working plan](../working-plan/mascotte-img/) are the starting references. The final generation uses the **coarse 16-bit pixel direction**, not the discarded smooth chibi passes. The latest brief explicitly requires an ergonomic mostly black radio, orange rather than red, a full circumferential goggle strap and a black cap emblem.
+The two original sheets in [the working plan](../archive/working-plan/mascotte-img/) are the starting references. The final generation uses the **coarse 16-bit pixel direction**, not the discarded smooth chibi passes. The latest brief explicitly requires an ergonomic mostly black radio, orange rather than red, a full circumferential goggle strap and a black cap emblem.
 
 ![Turnaround and equipment reference](turnaround.png)
 

@@ -28,7 +28,7 @@ for (let i = 0; i < headings.length; i++) {
   const marker = ['Closed', 'Blocked'].includes(status) ? '◻️' : {1: '🔺', 2: '🔶', 3: '🔹'}[level];
   assert.equal(priority, `${marker} P${level}`, `${id}: priority cue mismatch`);
   assert.equal((block.match(/^\*\*Next action \/ closure evidence:\*\* .+/gm) ?? []).length, 1, `${id}: next action must be visible exactly once`);
-  const human = [...block.matchAll(/^\*\*→ Human action required:\*\* (🧑|💻) \*\*(Yes|No)\*\*<br \/>.+/gm)];
+  const human = [...block.matchAll(/^(🧑|💻) \*\*→ Human action required: (Yes|No)\*\*<br \/>.+/gm)];
   assert.equal(human.length, 1, `${id}: missing visible human action/cue`);
   assert.equal(human[0][1], human[0][2] === 'Yes' ? '🧑' : '💻', `${id}: human-action cue mismatch`);
   const detail = block.match(/<details>\s*<summary>[^<]+<\/summary>([\s\S]*?)<\/details>/);
@@ -36,6 +36,7 @@ for (let i = 0; i < headings.length; i++) {
   assert(block.indexOf('**Next action') < block.indexOf('<details>'), `${id}: next action hidden in details`);
   assert(block.indexOf('**→ Human action') < block.indexOf('<details>'), `${id}: human action hidden in details`);
   assert(block.indexOf('**→ Human action') < block.indexOf('**Next action'), `${id}: human action must precede next action`);
+  assert(/<\/details>\n\n---\n/.test(block), `${id}: end the record with a --- line after its details`);
   for (const field of ['PR / evidence', 'Opened', 'Verification', 'Reviewed']) {
     const value = detail[1].split('\n').filter(line => line.startsWith('|')).map(cells).find(row => row[0] === field)?.[1];
     assert(value, `${id}: missing ${field}`);

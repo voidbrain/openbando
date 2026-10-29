@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `a1179b7` (merged #188), with every CI job of #162–#188 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `b9d605d` (merged #191), with every CI job of #162–#191 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -17,7 +17,7 @@ Current work ledger, reviewed 29 October 2026 against main `a1179b7` (merged #18
 
 Follow [Backlog rules](BACKLOG-RULES.md) for updating records, reconciling PR/CI evidence, stale-state review, closure/archiving, human dependencies and table validation. The lifecycle table above is the quick reference. Preserve stable IDs and existing user edits.
 
-Each item has a compact summary, followed by **→ Human action required** first, then the full-width **Next action / closure evidence**. Expand its details for PR history, opened/reviewed dates and verification evidence. Human-action cues: 🧑 **Yes** = a human is needed; 💻 **No** = agent-owned next action, not completion.
+Each item has a compact summary, followed by its human-action line (icon first: 🧑 **→ Human action required: Yes** = a human is needed, including a decision; 💻 **→ Human action required: No** = agent-owned next action, not completion), then the full-width **Next action / closure evidence**. Expand its details for PR history, opened/reviewed dates and verification evidence. A `---` line ends every item.
 
 ## Bugs and reliability
 
@@ -27,7 +27,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 |:---:|---|---|---|---|
 | 🟡 | B-009 | 🔶 P2 | Implemented | Simulator and selected-flight/video regression |
 
-**→ Human action required:** 🧑 **Yes**<br />Manually check simulator entry, collisions and selected-flight/video replay.
+🧑 **→ Human action required: Yes**<br />Manually check simulator entry, collisions and selected-flight/video replay.
 
 **Next action / closure evidence:** Manually exercise simulator entry/exit, collision and selected-flight/video replay and synchronization after editor/racing changes.
 
@@ -43,15 +43,17 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+---
+
 ### B-011
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🟡 | B-011 | 🔺 P1 | Implemented | Welcome tour presentation and exit |
 
-**→ Human action required:** 🧑 **Yes**<br />Review Welcome timing, presentation and the final Welcome-only screen.
+🧑 **→ Human action required: Yes**<br />Review Welcome timing, presentation and the final Welcome-only screen.
 
-**Next action / closure evidence:** [#155](https://github.com/voidbrain/openbando/pull/155) fits card films into the mascot thirds and holds its final frame during the showcase, preventing the accidental second search/run/sit; Pause holds mascot and film. Ring countdown (F-019) is closed; see the archive. [#154](https://github.com/voidbrain/openbando/pull/154) also suppresses saved-sync restoration notices during the showcase (normal loads retain them). Video first-frame feedback (B-022) is closed; see the [archive](archive-2026-10-28.md). User reports truncated Fly, a trailing mascot wait and leaked path after return. Replaced fixed waits with complete card films and three mascot checkpoints; replay now waits for the full flight. Entry restores 3D overview/Follow off and render boundary suppresses paths. All #149 showcase browser checks passed; final human presentation review remains. The #148 eight-second card completion/distributed mascot, reduced-motion and Stop checks passed; full replay reached completion but its continuation assumed a nonexistent saved demo card. The #149 saved fixture continuation passed.
+**Next action / closure evidence:** [#155](https://github.com/voidbrain/openbando/pull/155) fits card films into the mascot thirds and holds its final frame during the showcase, preventing the accidental second search/run/sit; Pause holds mascot and film. Ring countdown (F-019) is closed; see the archive. [#154](https://github.com/voidbrain/openbando/pull/154) also suppresses saved-sync restoration notices during the showcase (normal loads retain them). Video first-frame feedback (B-022) is closed; see the [archive](archive/backlog-2026-10-28.md). User reports truncated Fly, a trailing mascot wait and leaked path after return. Replaced fixed waits with complete card films and three mascot checkpoints; replay now waits for the full flight. Entry restores 3D overview/Follow off and render boundary suppresses paths. All #149 showcase browser checks passed; final human presentation review remains. The #148 eight-second card completion/distributed mascot, reduced-motion and Stop checks passed; full replay reached completion but its continuation assumed a nonexistent saved demo card. The #149 saved fixture continuation passed.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -65,13 +67,15 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+---
+
 ### B-017
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🟠 | B-017 | 🔶 P2 | Investigate | Villetta replay misalignment with video |
 
-**→ Human action required:** 🧑 **Yes**<br />Provide the affected saved alignment/session and confirm the changed arch control.
+🧑 **→ Human action required: Yes**<br />Provide the affected saved alignment/session and confirm the changed arch control.
 
 **Next action / closure evidence:** User confirms video and log timing is synchronized and that the greenhouse is approximately 30–40 cm above the surrounding ground; release 11 models an estimated 35 cm raised floor and frame. Investigate spatial displacement around the main store and greenhouse west exit. The [demo investigation](audits/2026-10-27-villetta-replay.md) matches the screenshots and identifies a separate hidden-origin projection defect (B-018), but does not establish its effect in the saved session. The greenhouse arch control uses a dimensionless crown-height-to-half-width ratio; the inspector now labels it and displays the resulting height in metres. Confirm which control was changed.
 
@@ -87,13 +91,15 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+---
+
 ### B-018
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🟡 | B-018 | 🔺 P1 | Implemented | Hidden-origin GPS projection distorts flight paths |
 
-**→ Human action required:** 🧑 **Yes**<br />Compare the corrected path with the real flight and test real GPS devices.
+🧑 **→ Human action required: Yes**<br />Compare the corrected path with the real flight and test real GPS devices.
 
 **Next action / closure evidence:** A fixed local reference corrects the false sideways component and is kept with private local calibration; hidden sharing removes it. Tests cover start alignment, pin shifts, rotation, saved/imported calibration, multiple flights and the common live projection. A follow-up avoids saving a live reference before the first recorded-flight alignment; verify the pilot’s flight and real live devices. See [investigation](audits/2026-10-27-villetta-replay.md).
 
@@ -109,13 +115,15 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+---
+
 ### B-019
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🟡 | B-019 | 🔶 P2 | Implemented | Indoor measures |
 
-**→ Human action required:** 🧑 **Yes**<br />Check measurement placement on basement and upper floors in 3D indoor mode.
+🧑 **→ Human action required: Yes**<br />Check measurement placement on basement and upper floors in 3D indoor mode.
 
 **Next action / closure evidence:** Focused editor workflow passed indoor 2D measurements, debug coordinates, basement keyboard editing, 3D view and measure selection. Review indoor 3D measurement placement specifically; this is not every floor/tool combination.
 
@@ -131,13 +139,15 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+---
+
 ### B-024
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🟡 | B-024 | 🔺 P1 | Implemented | Shown panels stay transparent or invisible (Safari) |
 
-**→ Human action required:** 🧑 **Yes**<br />Decide whether the WebKit evidence is enough to close, or open Views in real Safari once.
+🧑 **→ Human action required: Yes**<br />Decide whether the WebKit evidence is enough to close, or open Views in real Safari once.
 
 **Next action / closure evidence:** WebKit check 2026-10-29 (Playwright WebKit 27.2, the engine behind Safari): the opacity regression, Fly entry (Open the bandos, close Views, reopen from the menu button), Views and Welcome cases pass; sampling every frame for 400 ms after Open the bandos and after the menu button, Views is at opacity 1 from the first frame. Real Safari not run. User report (Safari): Welcome's Open the bandos hid the menu button but Views did not appear; the menu button left the Views area semi-transparent, loading slowly or never. Cause: every panel's 0.7 s entrance animated opacity from 0 with fill both; when frames stall (WebKit entrance on a backdrop-filter element leaving display none, or a busy 3D main thread) the panel stayed near opacity 0 while the app counted it as shown. The entrance is now a 0.35 s transform-only slide. New browser regression freezes entrance animations at their start and requires opacity 1 for Views and Bandos after Open the bandos and after the menu button; it fails on the old fade in Chromium and WebKit and passes with the fix.
 
@@ -153,13 +163,15 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+---
+
 ### B-026
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🟡 | B-026 | 🔶 P2 | Implemented | Welcome wordmark downloads 902 kB on every first visit |
 
-**→ Human action required:** 🧑 **Yes**<br />Glance at the new wordmark in Welcome and confirm it looks the same.
+🧑 **→ Human action required: Yes**<br />Glance at the new wordmark in Welcome and confirm it looks the same.
 
 **Next action / closure evidence:** Approved 2026-10-29 (user: smaller export, sharp pixel edges). [#184](https://github.com/voidbrain/openbando/pull/184): the master has 170,025 colours (a smooth generated image, so no lossless palette); Welcome draws it at most 720 CSS px. Exported at 1440 × 367 px (Lanczos), then 256 colours without dithering: 135 kB instead of 902 kB, NG0913 gone; compared at display size and 2× zoom with the original and a full-colour 1440 px export (499 kB), no visible difference. The master is kept at `docs/mascot/openbando-wordmark-master.png`; the wordmark guide says how to re-export. Earlier: `public/mascot/openbando-wordmark.png` is 2172 × 554 px and 902 kB, drawn at a fraction of that width in Welcome; Angular warns NG0913 (oversized image) on every first visit. The image now uses `NgOptimizedImage` with its intrinsic size and `priority` (`check:conventions` requires it), which does not shrink the file. The generated master is not an exact pixel grid, so a smaller export can change letter edges: prepare candidates (nearest-neighbour at the rendered width × 2, and an optimised PNG at the current size) for the wordmark guide's visual review before replacing the approved file.
 
@@ -175,27 +187,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
-### B-027
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-027 | 🔺 P1 | Implemented | A survey photo published the private Villetta location |
-
-**→ Human action required:** 🧑 **Yes**<br />Decide whether to purge the photo from git history (a force push with "protect main" relaxed briefly).
-
-**Next action / closure evidence:** Found 2026-10-29 while preparing to move the working plan: `docs/working-plan/bando-img/IMG_4352.DNG`, committed 26 October in `6d2f161` to this public repository, carried GPS metadata with the private Villetta position (AGENTS: never in the repository). A scan of every tracked image and video found no other file with GPS metadata. [#191](https://github.com/voidbrain/openbando/pull/191) removes it from the tree; it remains in history, in existing clones and possibly in GitHub's caches. Purging needs a history rewrite of every commit since 26 October and a force push (blocked by "protect main" until relaxed), then GitHub support for cached views. Do not repeat the coordinates anywhere.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#191](https://github.com/voidbrain/openbando/pull/191) (removed from the tree) |
-| Opened | 2026-10-29 |
-| Verification | Documentation · 2026-10-29 · metadata scan of all tracked media: no other GPS; history purge · Pending |
-| Reviewed | 2026-10-29 |
-
-</details>
+---
 
 ## Features and limitations
 
@@ -205,7 +197,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 |:---:|---|---|---|---|
 | 🟡 | F-001 | 🔶 P2 | Implemented | Cut/Wing for diagonal basement outlines |
 
-**→ Human action required:** 🧑 **Yes**<br />Review diagonal Cut/Wing editing and saved/imported outlines.
+🧑 **→ Human action required: Yes**<br />Review diagonal Cut/Wing editing and saved/imported outlines.
 
 **Next action / closure evidence:** Recovered #117 onto current main: its merge into the former feature branch did not reach main. Diagonal Cut/Wing and 3D floor-height previews are implemented; verify browser editing and persistence. Open perimeter edges remain guarded for Cut/Wing (F-004).
 
@@ -221,13 +213,15 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+---
+
 ### F-008
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🟡 | F-008 | 🔹 P3 | Implemented | Welcome mascot and Features |
 
-**→ Human action required:** 🧑 **Yes**<br />Review the remaining Welcome timing/presentation points tracked by B-011.
+🧑 **→ Human action required: Yes**<br />Review the remaining Welcome timing/presentation points tracked by B-011.
 
 **Next action / closure evidence:** User accepted the animation apart from the Welcome tour timing in B-011; retain responsive and reduced-motion checks.
 
@@ -243,13 +237,15 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+---
+
 ### F-009
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🟡 | F-009 | 🔶 P2 | Implemented | Racing on real devices |
 
-**→ Human action required:** 🧑 **Yes**<br />Run the two-device race/GPS field checklist with real telemetry feeds.
+🧑 **→ Human action required: Yes**<br />Run the two-device race/GPS field checklist with real telemetry feeds.
 
 **Next action / closure evidence:** Follow the [field checklist](racing/README.md): align two devices, compare timing, connect two real GPS streams, verify stale hiding, GPS loss, relay disconnect/rejoin and crowded paths in every camera. No field-readiness claim until completed.
 
@@ -265,13 +261,15 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+---
+
 ### F-012
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🟡 | F-012 | 🔶 P2 | Implemented | Compass visibility and controls |
 
-**→ Human action required:** 🧑 **Yes**<br />Confirm compass hiding and clearance during the Welcome tour, as in B-011.
+🧑 **→ Human action required: Yes**<br />Confirm compass hiding and clearance during the Welcome tour, as in B-011.
 
 **Next action / closure evidence:** User accepted compass controls. Hide on every Welcome screen and blank scene, and show with a nonblank model; regression checks passed for initial/final Welcome and model load in [#143 CI](https://github.com/voidbrain/openbando/actions/runs/40729835588) ([#143](https://github.com/voidbrain/openbando/pull/143)). Keep the widget above the version badge.
 
@@ -287,27 +285,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
-### F-018
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-018 | 🔶 P2 | Implemented | Guided Fly procedure |
-
-**→ Human action required:** 💻 **No**<br />Confirm the guide step and the live-route case in CI, then close.
-
-**Next action / closure evidence:** Implemented 2026-10-29 ([#173](https://github.com/voidbrain/openbando/pull/173)): the Fly checklist panel (`FlyChecklist`, Tools group) with Replay / Simulator / Live routes from the plan. Steps are pure (`core/fly-guide.ts`, unit-tested) and ticked from app state, so the list resumes by itself; route and skipped steps persist; Back reopens the last skip, Cancel closes it and keeps files and edits; missing recordings make sync/alignment explain why they are unavailable; the simulator route opens panels and never arms (the arm step has no button). Saved-bando Fly opens it beside the replay workspace. Browser tests cover a replay with a missing video, Back, a real log ticking its step, the simulator route without arming, a reload resuming route and skips, and axe on the panel. #173 CI passed. Follow-up ([#177](https://github.com/voidbrain/openbando/pull/177)): guide step "Follow the Fly checklist" (Flight section, Full and Fly tours, Italian captions, clip recorded and reviewed, guide pages regenerated) and a live-route browser case (opens Live link, connects nothing). Recorded limits: one guide step for the checklist rather than one per route; the racing/relay branch points to Flights. Earlier: [Workflow proposal](fly-workflow-plan.md) separates bando selection, recording availability, simulator setup and live/multi-pilot branches. Planning only; interactive wizard and guide/media updates are not implemented.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#177](https://github.com/voidbrain/openbando/pull/177) (guide step, live case); [#173](https://github.com/voidbrain/openbando/pull/173) (checklist); [#154](https://github.com/voidbrain/openbando/pull/154) |
-| Opened | 2026-10-28 |
-| Verification | Unit/integration · 2026-10-29 · 5 fly-guide cases and the tour checks; Browser/accessibility · 2026-10-29 · checklist cases and axe passed in [#173 CI](https://github.com/voidbrain/openbando/actions/runs/40794614309); guide step played alone and live-route case passed locally; CI · Pending |
-| Reviewed | 2026-10-29 |
-
-</details>
+---
 
 User-accepted fixes are preserved in the dated archives rather than repeated here. New findings reuse an existing ID when they concern the same behavior.
 
@@ -315,4 +293,4 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 `main` protection active 2026-10-29 (user request, set through the API): ruleset "protect main" requires `check`, `e2e (1)`–`e2e (4)` and `race-browser` and refuses force pushes and deletion. B-025 (the flaky Auto-sync check) was closed first so the required checks are reliable.
 
-Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
+Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.

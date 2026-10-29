@@ -5,7 +5,7 @@ import type { BuildingSpec, Vec2 } from './site-spec';
  * Basement courtyards (holes through the basement: the ground is kept inside, walls around them; the ground floor above still covers them) and separate
  * pieces (further perimeters under the same building), F-002. Both are rings in the basement outline's frame (the
  * building's centred frame). This module describes and validates them; courtyards are drawn and cut (phase 2), pieces are not yet
- * (docs/basement-holes-plan.md).
+ * (docs/archive/plans/basement-holes-plan.md).
  */
 export interface BasementRing {
   outline: Vec2[];
