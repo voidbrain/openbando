@@ -252,9 +252,33 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR; report 2026-10-29 |
+| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205); report 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Browser · 2026-10-29 · `tool-palette`, vegetation, courtyard and indoor-placement e2e passed locally; screenshot of the 2D editor reviewed by the agent; live-site check · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### B-031
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-031 | 🔶 P2 | Implemented | A picture menu near the bottom of the page pushed the page up, leaving a black band |
+
+🧑 **→ Human action required: Yes**<br />On the live site after merge: move a panel with a picture menu (Trees options, for example) to the bottom of the page and open the menu.
+
+**Next action / closure evidence:** Reported 2026-10-29. `PickMenu` always opened its list below the button, up to 320 px, and moved the focus into it with a plain `focus()` (and `scrollIntoView` for the active choice): with the button near the bottom of the window the browser scrolled the page (and the panel body) to show the list, leaving a black band. Now the list opens above when there is more room there, is as tall as the room in the window allows (it scrolls inside), keeps inside the window's right edge, and takes the focus with `preventScroll`; the active choice is scrolled into view inside the list only. Covered by `e2e/pick-menu.e2e.ts` (window ending just below the Trees options: the list opens upwards inside the window, no element of the page scrolls on opening or on End; fails on the old menu at the opening). `PickMenu.md` updated. Not checked: a phone-sized window.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205); report 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Browser · 2026-10-29 · `pick-menu.e2e.ts` passed locally; live-site check · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
