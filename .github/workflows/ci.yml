@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # check:freshness compares the backlog's commit with main and lists merged branches
 
       - uses: actions/setup-node@v4
         with:
@@ -48,6 +50,9 @@ jobs:
 
       - name: Backlog records and layout
         run: npm run check:backlog
+
+      - name: Backlog freshness (warnings only, never blocks)
+        run: npm run check:freshness -- --github
 
       - name: Shared surface text contrast
         run: npm run check:contrast

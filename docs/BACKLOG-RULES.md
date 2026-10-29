@@ -8,7 +8,7 @@ This is the authoritative update and review procedure for [OpenBando backlog](BA
 - At PR creation, add its actual link and distinguish implementation, investigation, partial fix and verification. Replace temporary PR placeholders once the PR exists.
 - After a PR merges, when CI/verification finishes, when the user supplies acceptance or a new failure, and at the start of work on a related item, reconcile the affected records using the procedure below.
 - When asked for backlog status or an audit, review every active record. During ordinary work, review related items and any contradictions encountered; a row's age alone is never evidence that it is fixed, abandoned or invalid.
-- These are event-driven agent instructions, not a scheduled background process. Do not claim continuous monitoring or automatic CI updates without an actual automation.
+- These are event-driven agent instructions, not a scheduled background process. Do not claim continuous monitoring or automatic CI updates without an actual automation. The trigger is the session start: `npm run check:freshness` (AGENTS, Work tracking) lists PRs merged since the backlog's commit, merged branches still on GitHub and an audit older than 7 days; CI prints the same as warnings on every PR without blocking it.
 
 ## Review procedure
 
@@ -29,7 +29,7 @@ Staleness prompts review, not a status change by itself. During a full review, f
 - PR / evidence identifies actual changes or checks with links and labels. Use `—` if no PR is known. Link latest relevant evidence without discarding important historical context.
 - Verification records date, method, result and evidence separately from Reviewed. Methods: Human, Unit/integration, Browser/accessibility, Real-device and Documentation. Use Pending where applicable; different checks may have different dates. Verification states the current result: one entry per method, the latest check of it. Earlier results (a failure since fixed, a superseded pass) belong in PR / evidence, labelled with their PR or run, so the cell never reads “Pending; … passed” for the same check. A unit test does not prove visual/field behavior, and an overall CI result does not replace checking which jobs ran.
 - Reviewed is when status/evidence were actually reconciled, not an inferred merge date. Preserve existing dated history; do not invent dates.
-- **→ Human action required** is a visible paragraph immediately before Next action in every active bug/feature record: `🧑 **Yes**<br />One short sentence naming the human action.` or `💻 **No**<br />One short sentence naming the agent's next action.` Reassess whenever the next step changes. One manual review can cover related IDs; reference the shared item instead of implying separate approvals.
+- The human-action line is a visible paragraph immediately before Next action in every active bug/feature record, icon first: `🧑 **→ Human action required: Yes**<br />One short sentence naming the human action or decision.` or `💻 **→ Human action required: No**<br />One short sentence naming the agent's next action.` Reassess whenever the next step changes. One manual review can cover related IDs; reference the shared item instead of implying separate approvals. A `---` line follows every record's details.
 
 ## Visual cues and table integrity
 
@@ -66,4 +66,4 @@ Run `npm run check:backlog` after every ledger edit. CI validates active summary
 
 Human-action cues identify the next actor: 🧑 Yes requires a human; 💻 No is agent-owned and does not mean complete. Keep the written Yes/No and recap; do not infer status or priority from this cue. Validate cue/value agreement. Historical archives retain their original cues.
 
-The arrow belongs before the field label: `**→ Human action required:** 🧑 **Yes**<br />Recap` (or 💻 No). Keep this field above Next action; the validator enforces the prefix and order. Historical archive layouts remain unchanged.
+The icon comes first, then the arrow and the field label with its value in bold: `🧑 **→ Human action required: Yes**<br />Recap` or `💻 **→ Human action required: No**<br />Recap`. Keep this line above Next action and end every record with a `---` line; the validator enforces the format, the order and the separator. Historical archive layouts remain unchanged.

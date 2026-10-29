@@ -1,6 +1,6 @@
 # Working plan
 
-Current bug status is tracked here; implementation rules live in [AGENTS.md](../../AGENTS.md), usage in [README.md](../../README.md).
+Current bug status is tracked here; implementation rules live in [AGENTS.md](../../../AGENTS.md), usage in [README.md](../../../README.md).
 
 ## Verification — 26 October 2026
 
@@ -60,7 +60,7 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 8). Ori
 | 8 | Upload support | Existing multi-file log upload reused; closed-loop lap/best-lap estimates, local-coordinate race package export/import. | Medium | Implemented — field verification pending |
 | 9 | Multiuser racing mode | Server-free race-file exchange plus optional self-hosted HTTP/SSE room relay; same exported bando/model scale required. | Medium | Implemented — relay deployment and device verification pending |
 | 10 | Multiuser live racing mode | Multiple independent WS/SSE GPS sources, stale detection and retained recordings; opt-in room broadcast at ~1 Hz. SquirrelCast video URLs alone are not telemetry. | Medium | Implemented — real stream/device verification pending |
-| 11 | Mascotte | Pixel pilot and drone, 19 poses, 19.7-second GIF, grounded pokes with a retraction frame, and approved concrete-and-brick pixel wordmark. [Character rules](../mascot/README.md) and [wordmark guide](../mascot/wordmark-style-guide.md). | Future | Implemented — browser visual review pending |
+| 11 | Mascotte | Pixel pilot and drone, 19 poses, 19.7-second GIF, grounded pokes with a retraction frame, and approved concrete-and-brick pixel wordmark. [Character rules](../../mascot/README.md) and [wordmark guide](../../mascot/wordmark-style-guide.md). | Future | Implemented — browser visual review pending |
 
 ## Visual references
 
@@ -69,7 +69,7 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 8). Ori
 
 ## Racing verification and remaining field work
 
-See [racing setup and server decision](../racing/README.md). No server is needed for local multipath comparison, exported race-file exchange, or several directly reachable GPS streams. Different devices exchanging tracks over the network use the optional in-memory relay; no service has been deployed automatically.
+See [racing setup and server decision](../../racing/README.md). No server is needed for local multipath comparison, exported race-file exchange, or several directly reachable GPS streams. Different devices exchanging tracks over the network use the optional in-memory relay; no service has been deployed automatically.
 
 Before declaring field-ready: open the same exported hidden bando on two devices, align separate pilots, compare offsets/lap estimates with a known clock, connect two real GPS/SquirrelCast-associated telemetry bridges, stop one feed and verify stale hiding, test relay disconnect/rejoin and GPS loss, and inspect crowded ghost paths in every camera. Shared sessions are for trusted token holders, not public ranked races. The selected-flight/video and simulator flows still require a manual regression check. Local Chromium installation failed with a truncated download; GitHub CI run `40362635101` passed the focused race-browser tests (two-log export/import and two independent mocked telemetry URLs, including axe), all 434 unit/service/render tests, three relay integration tests, types, translations, example consistency and production build. The old full-guide job remains skipped by its existing guard.
 

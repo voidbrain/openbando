@@ -17,6 +17,7 @@
     "check:contrast": "node tools/check-contrast.mjs",
     "check:backlog": "node tools/check-backlog.mjs",
     "ci:status": "node tools/ci-status.mjs",
+    "check:freshness": "node tools/check-freshness.mjs",
     "check:conventions": "node tools/check-conventions.mjs"
   },
   "private": true,

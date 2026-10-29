@@ -100,6 +100,7 @@ The app is **OpenBando** (tagline "Build, Fly, Share."). The repository is `void
 `main` is protected: a PR merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` pass (ruleset "protect main"). Open every PR against `main`, and do not push to a PR once its CI is green (open a new one).
 
 ```bash
+npm run check:freshness                   # first, at session start: backlog behind main, merged branches, audit age
 npx ng test --watch=false
 npx ng build
 npx tsc -p tsconfig.app.json --noEmit --noUnusedLocals --noUnusedParameters
@@ -160,6 +161,13 @@ Before changing an area, read its section in [docs/agents/areas.md](docs/agents/
 
 ## Work tracking
 
+**At the start of every session, before other work, run `npm run check:freshness`** and do what it lists, in the session's first PR:
+- the backlog is behind `main`: read the CI of the PRs merged since (`npm run ci:status -- <numbers>`), update or close their records, archive closed ones, move the header to the current `main`;
+- merged branches are still on GitHub: delete them (and their local branches and worktrees);
+- the newest audit in `docs/audits/` is more than 7 days old: audit what changed since (docs, tests, guides and clips, design system, accessibility, privacy such as GPS metadata in images) and write `docs/audits/<date>.md`.
+
+CI prints the same as warnings on every PR (it never blocks), so a person reviewing a PR sees it too. `ci:status` needs a logged-in `gh`; if it is not, say so instead of skipping the step.
+
 - [docs/BACKLOG.md](docs/BACKLOG.md) is the source of truth for status; [docs/BACKLOG-RULES.md](docs/BACKLOG-RULES.md) is the procedure (statuses, human-action cues, record layout, CI reconciliation, closure and archives, documentation ownership and the consistency check every PR records). Update the affected records in the same PR as the change, and run `npm run check:backlog`.
-- Keep a confirmed bug, a candidate fix awaiting review, an unimplemented feature and a completed check distinct. A merge is not verification, and a passing unit test is not a verified visual, pointer or device fix. A green CI run establishes the checks it named, not the absence of bugs; keep real-device, pointer/visual and untested tool combinations explicit. Historical working plans (`docs/working-plan/`) and audits (`docs/audits/`) are dated evidence, not current status; the current audit is `docs/audits/2026-10-28.md`.
+- Keep a confirmed bug, a candidate fix awaiting review, an unimplemented feature and a completed check distinct. A merge is not verification, and a passing unit test is not a verified visual, pointer or device fix. A green CI run establishes the checks it named, not the absence of bugs; keep real-device, pointer/visual and untested tool combinations explicit. Archives (`docs/archive/`: closed backlog records, the old working plan, finished plans) and audits (`docs/audits/`) are dated evidence, not current status; the current audit is the newest file in `docs/audits/`.
 - Generated guide text changes in `tools/build-guide.mjs` or the tour source, then `node tools/build-guide.mjs`. That is not re-recording: `npm run clips` and `npm run films` are separate browser/media workflows (F-011).
