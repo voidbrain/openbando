@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `473ffc2` (merged #206), with every CI job of #162–#206 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `14b9c1a` (merged #209), with every CI job of #162–#209 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -252,7 +252,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205) (CI green on its last run; the first run caught the covered 3D vertex box); report 2026-10-29 |
+| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205); report 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Browser · 2026-10-29 · `tool-palette`, vegetation, courtyard and indoor-placement e2e passed locally; screenshot of the 2D editor reviewed by the agent; live-site check · Pending |
 | Reviewed | 2026-10-29 |
@@ -276,7 +276,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205) (CI green); report 2026-10-29 |
+| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205); report 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Browser · 2026-10-29 · `pick-menu.e2e.ts` passed locally; live-site check · Pending |
 | Reviewed | 2026-10-29 |
@@ -400,9 +400,33 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR; request 2026-10-29 |
+| PR / evidence | [#206](https://github.com/voidbrain/openbando/pull/206) (all CI jobs green); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Unit · 2026-10-29 · roof geometry, collider and AI cases passed locally; 3D screenshot reviewed; live-site check · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-023
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | F-023 | 🔹 P3 | Implemented | Bardwell House example, place hidden |
+
+🧑 **→ Human action required: Yes**<br />On the live site after merge: Bandos → Examples → Bardwell House → Open a copy; compare the model with your photos and say what to correct.
+
+**Next action / closure evidence:** Requested 2026-10-29 with the generated bando (private coordinates, never committed), two top views and two oblique photos. Decided with the user: a gambrel roof kind (F-022), the map's "concrete" over the west fields dropped, the real ground baked in. The input is the app's own place-hidden export (`tools/examples/data/bardwell-house.hidden.json`: embedded relative heights, origin 0, 0, no coordinates, terrain key or map names, checked before commit); `npm run examples` builds `library/bandos/bardwell-house-no-place.json` with the refinements measured on the photos (≈ 8 cm a pixel, scaled on the generated house and barn; the store's place agrees within ~2 m between the two top views): gambrel house and flat-roofed wing, gambrel barn, store, three sheds, patio and stepped brick wall, the drive's wooden fence, a camper and a car; duplicate trees removed. The FPV simulators' models of the place are game assets and were not used. Covered by `examples.spec.ts` (listed, hidden, origin 0, 0, no coordinates or names, embedded ground, gambrel roofs, store and sheds, no map surface over the fields). AGENTS' privacy rule names the place as private. Not checked: shapes and heights against the real place beyond the photos (porch, dormers, the wing's exact depth are estimates).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#209](https://github.com/voidbrain/openbando/pull/209) (all CI jobs green), after [#206](https://github.com/voidbrain/openbando/pull/206) (the gambrel roof); request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Unit/visual · 2026-10-29 · `examples.spec.ts` passed locally; 2D plan compared with the top views and a 3D view reviewed by the agent; pilot's comparison · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
@@ -424,7 +448,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR (replaces [#207](https://github.com/voidbrain/openbando/pull/207): green CI, then a backlog conflict with #206); request 2026-10-29 |
+| PR / evidence | [#210](https://github.com/voidbrain/openbando/pull/210) (replaces [#207](https://github.com/voidbrain/openbando/pull/207): green CI, then a backlog conflict with #206); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Unit/browser · 2026-10-29 · `layers.spec.ts` and `takeoff-pad.e2e.ts` passed locally; live-site check · Pending |
 | Reviewed | 2026-10-29 |
@@ -443,6 +467,6 @@ Harness template 1.7.0 (2026-10-29, [#200](https://github.com/voidbrain/openband
 
 Harness templates 1.8.0 and 1.9.0 (2026-10-29, [#204](https://github.com/voidbrain/openbando/pull/204)): BACKLOG-RULES gains "One repository, one backlog" (a record never waits for another repository); `check-harness` copied (comments only); the CI workflow clones the public template and runs `check:freshness` with `HARNESS_HOME`, so a PR on a project behind a release shows warnings (never blocking; a failed clone is a warning). `.harness.json` on 1.9.0. CI green; its freshness step read the cloned template ("on template v1.9.0").
 
-The Villetta example is renamed "Bando Villetta" (2026-10-29, user request; this PR): its file, the guide's flight bando and the examples test. Same release: copies keep their own name.
+The Villetta example is renamed "Bando Villetta" (2026-10-29, user request; [#210](https://github.com/voidbrain/openbando/pull/210)): its file, the guide's flight bando and the examples test. Same release: copies keep their own name.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
