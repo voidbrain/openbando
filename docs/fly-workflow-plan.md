@@ -1,6 +1,6 @@
 # Guided Fly workflow proposal
 
-Status: planned, not implemented (F-018). The new Fly button opens a replay workspace; it does not arm the simulator or start a live session.
+Status: the checklist is implemented (F-018): `FlyChecklist` panel, opened beside the replay workspace by a saved bando's Fly button; it does not arm the simulator or start a live session. Not done yet: guide snippets for each route and their clips (see Guide and verification work).
 
 ## Entry and routes
 

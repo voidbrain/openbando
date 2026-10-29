@@ -1,7 +1,7 @@
 /** Every floating panel in the app: identity, title and where it first appears. */
 export type PanelId =
   | 'views' | 'flights' | 'simulator' | 'radio' | 'timeline' | 'speed' | 'attitude' | 'compass'
-  | 'features' | 'path' | 'studio' | 'blackbox' | 'video' | 'live' | 'render' | 'help' | 'guide' | 'welcome' | 'vpOrbit' | 'vpChase' | 'vpFpv' | 'vpTop';
+  | 'features' | 'path' | 'studio' | 'blackbox' | 'video' | 'live' | 'render' | 'help' | 'guide' | 'fly' | 'welcome' | 'vpOrbit' | 'vpChase' | 'vpFpv' | 'vpTop';
 
 export interface PanelDef {
   id: PanelId;
@@ -39,6 +39,7 @@ export const PANELS: readonly PanelDef[] = [
   { id: 'video', title: 'Video', group: 'telemetry', sub: 'controls', visible: false, anchor: { right: 12, top: 12 }, width: 380, resizable: true },
   { id: 'live', title: 'Live link', group: 'telemetry', sub: 'controls', visible: false, anchor: { left: 280, top: 12 }, width: 300 },
   { id: 'render', title: 'Render', group: 'tools', visible: false, anchor: { left: 280, top: 12 }, width: 300 },
+  { id: 'fly', title: 'Fly checklist', group: 'tools', visible: false, anchor: { left: 280, top: 60 }, width: 300 },
   { id: 'guide', title: 'Guide me', group: 'tools', visible: false, anchor: { left: 280, top: 12 }, width: 300, resizable: true, height: 420 },
   { id: 'help', title: 'Controls', group: 'simulator', visible: false, anchor: { left: 280, top: 12 }, width: 300 },
   { id: 'vpOrbit', title: 'Orbit view', group: 'views', visible: false, anchor: { right: 360, top: 12 }, width: 380, resizable: true, height: 270 },
