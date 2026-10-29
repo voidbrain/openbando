@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `6366b34` (merged #201), with every CI job of #162–#201 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `a710353` (merged #202), with every CI job of #162–#202 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -217,20 +217,20 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟡 | B-029 | 🔶 P2 | Implemented | Zooming in on 1 · Area leaves the frame outside the map, and larger than drawn |
+| 🟡 | B-029 | 🔶 P2 | Implemented | The 1 · Area frame drifts from the map on wheel zoom and can be cut by the map edge |
 
-🧑 **→ Human action required: Yes**<br />On the live site after merge: frame an area, drag an edge, zoom in; the frame stays in the map and its size readout shrinks.
+🧑 **→ Human action required: Yes**<br />On the live site after merge: frame an area, drag an edge past the map, wheel-zoom in and out, turn the frame, resize the panel; the frame stays whole, on the same streets, and keeps its size.
 
-**Next action / closure evidence:** Reported 2026-10-29. The frame was drawn clipped to the view (`fb`, width up to the view minus 8 px) while the area kept its size in metres: zoomed in, the readout said 1000 × 1000 m while the frame showed only the visible streets, and Generate built the larger area. An off-centre frame (an edge dragged) was clipped about its own centre and slid out of the map. Now, after a zoom or a resize in 1 · Area, `fitFrame` shrinks the area to fit the view (about its centre, rotation included; a frame whose centre left the view comes back to the middle), and the frame is drawn at its true size. Zooming back out keeps the smaller area. Covered by `e2e/new-bando.e2e.ts` ("the area frame stays inside the map", fails on the old code). Not checked: pinch zoom on a touch device.
+**Next action / closure evidence:** Reported 2026-10-29 (several reports the same day). Causes: the frame is held in metres about the view's centre, while Leaflet's wheel zooms about the cursor, so each wheel step moved the map under the frame; nothing limited zooming in, so the frame grew past the map, was drawn clipped (`fb` capped it at the view) and its handles were out of reach (the pilot had to reload). [#202](https://github.com/voidbrain/openbando/pull/202) shrank the area to fit after each zoom: wrong, the user never asked for the area to change by itself (replaced here). Now (`keepFrame`): the area never changes size by itself; in 1 · Area the wheel and pinch zoom about the view's centre, as the frame does; zooming in stops where the frame would come within `FRAME_MARGIN` (36 px: handles, turn knob, search bar) of the map's edge (`setMaxZoom`, the + button turns off); a turn, a smaller panel or a reopened area zooms the map out instead; an edge drag stops at the margin. Only if even zoom 15 is too close does the area shrink. Covered by `e2e/new-bando.e2e.ts` ("never cut by the map edge and keeps its size": edge past the map, zoom to the limit, off-centre wheel keeps the map's centre, 45° turn, smaller window, size readout unchanged; fails on #202's code). Not checked: pinch zoom on a touch device.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR; report 2026-10-29 |
+| PR / evidence | [#203](https://github.com/voidbrain/openbando/pull/203) (zoom limit, centred wheel, margin; replaces #202's shrinking); [#202](https://github.com/voidbrain/openbando/pull/202) (all CI jobs green, no retries); report 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Browser · 2026-10-29 · `new-bando.e2e.ts` passed locally; live-site check · Pending |
+| Verification | Browser · 2026-10-29 · `new-bando.e2e.ts`, guide, studio layout, a11y and editor regressions passed locally (one editor-regressions case timed out under parallel load and passed alone); live-site check · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
