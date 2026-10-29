@@ -4,6 +4,7 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { couplingsTouched, describe, plan } from './impact-map.mjs';
 
 const github = process.argv.includes('--github');
 const git = (...args) => { try { return execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { return null; } };
@@ -69,15 +70,12 @@ const kind = (f) => (stamp.copied?.[f] ? 'copied' : stamp.forked?.[f] ? 'forked'
 const touched = isTemplate ? [] : changed.filter((f) => kind(f));
 if (touched.length) warn(`This branch changes harness files: ${touched.map((f) => `${f} (${kind(f)})`).join(', ')}. Decide for each change: this project only (its content, a setting, a line marked <!-- project -->, an override) or every project (the template first). If unsure, ask before going on (AGENTS, "Changing a harness file").`);
 
-// 3b. the impact map (.harness.json "impact"): what must follow when a file it names changes (a generated page, a
-// translation, a recording). A row: { when: [globs], then: "what to do", run?: "command", checked?: "what verifies it" }.
-// `*` matches within a path segment, `**` across segments.
-const glob = (g) => new RegExp(`^${g.split('**').map((p) => p.split('*').map((q) => q.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('[^/]*')).join('.*')}$`);
-for (const row of Array.isArray(stamp.impact) ? stamp.impact : []) {
-  const res = (Array.isArray(row?.when) ? row.when : []).map(glob);
-  const hit = changed.filter((f) => res.some((re) => re.test(f)));
-  if (hit.length && row.then) warn(`This branch changes ${hit.slice(0, 3).join(', ')}${hit.length > 3 ? ` (+${hit.length - 3})` : ''}: ${row.then}${row.run ? ` (${row.run})` : ''}${row.checked ? `; checked by ${row.checked}` : '; nothing checks it'}.`);
-}
+// 3b. the impact map (tools/impact-map.mjs): the rows this branch sets off, directly or because a row they follow runs
+// again, in the order to run them
+const steps = plan(stamp.impact, changed);
+steps.forEach((s, i) => warn(`Impact ${i + 1}/${steps.length} (${s.id}): ${describe(s)}.`));
+for (const { coupling: c, files } of couplingsTouched(stamp.couplings, changed))
+  warn(`Coupled value "${c.value}": ${files.join(', ')} changed; it also lives in ${(c.places ?? []).map((p) => `${p.file}${p.what ? ` (${p.what})` : ''}`).join(', ')}: keep them equal${c.kept ? ` (kept by ${c.kept})` : ' (nothing keeps them equal)'}.`);
 
 // 4. the newest dated audit
 const auditDir = new URL('../docs/audits/', import.meta.url);

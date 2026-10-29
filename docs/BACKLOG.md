@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `f0c9fd3` (merged #217), with every CI job of #162–#217 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `80205b9` (merged #221), with every CI job of #162–#222 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -749,20 +749,20 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-033 | 🔶 P2 | Open | Full impact map: chains, content, couplings, outside the repository, as a readable page |
+| 🟡 | F-033 | 🔶 P2 | Implemented | Full impact map: chains, content, couplings, outside the repository, as a readable page |
 
-💻 **→ Human action required: No**<br />Next steps, in order: (1) harness 1.14.0 (template): the map page gains "Content dependencies", "Value couplings" and "Outside the repository" sections from `.harness.json` (`inputs` on rows, `couplings`, `outside`), and `check:freshness` warns when a branch changes one side of a coupling; (2) reconcile here to 1.12.0, 1.13.0 and 1.14.0: every row with an `id` and its `after` chains (blocks → catalogue → examples; tour → guide pages; UI → clips → guide pages; UI → Welcome films; `.harness.json` → map page), the theme-colour row chained to every visual output and the art, a `package-lock.json` row (renderer upgrades → recordings), each recording's inputs read from its script (Chiari e Forti → Welcome film 1 and the tour's clips; Bando Villetta and the demo flight → the flight clips); (3) list the value couplings (mascot timing ↔ the three Welcome films, `DEMO_OFFSET` ↔ the demo video, tour waits ↔ animation lengths, others found) and give each one source or a relation test, one record each; (4) the outside list: library upgrades, CI browser and GPU, OSM / Overpass, terrain tiles, Nominatim, AI models, each with what it affects and how it is noticed.
+🧑 **→ Human action required: Yes**<br />Read `docs/agents/impact-map.md` and say what is missing or wrong: it is meant to list everything that follows a change.
 
-**Next action / closure evidence:** Requested 2026-10-29: the user asked which dependencies a file trigger misses (a mascot animation synced with the Welcome films, a film that records an example bando, a theme colour that changes everything visual) and asked for a readable list of content dependencies and value couplings, plus what lies outside the repository if useful to people. Template rules already released: 1.12.0 (chains, the map page, plans become records) and 1.13.0 (inputs, wide-reach settings, couplings, audits look outside). Recorded here at once because a plan given in the conversation is otherwise forgotten (BACKLOG-RULES).
+**Next action / closure evidence:** Requested 2026-10-29: the user asked which dependencies a file trigger misses (a mascot animation synced with the Welcome films, a film that records an example bando, a theme colour that changes everything visual) and asked for a readable list of content dependencies and value couplings, plus what lies outside the repository if useful to people. Template rules already released: 1.12.0 (chains, the map page, plans become records) and 1.13.0 (inputs, wide-reach settings, couplings, audits look outside). Recorded here at once because a plan given in the conversation is otherwise forgotten (BACKLOG-RULES). Done 2026-10-30 (this PR, harness 1.15.0): 17 rows with ids, inputs and chains (block → catalogue → examples; Chiari e Forti, Bando Villetta and the demo flight → clips → guide pages, films; theme → art, design system, clips, films; library upgrades → clips, films), 6 value couplings (film length, `DEMO_OFFSET`, theme tokens, fence materials, roof kinds, structure kinds), 8 outside sources, links to the element map, the guide and the design system. A dry run gives the user's examples: a block → catalogue, examples; Chiari e Forti → clips, guide, films; `styles.scss` → theme, art, design system, clips, guide, films and the token coupling; the tour service → the film-length and demo-offset couplings. The two couplings nothing keeps equal have their own records (F-036, F-037).
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Request 2026-10-29; template [#16](https://github.com/voidbrain/project-harness/pull/16) (1.12.0), [#18](https://github.com/voidbrain/project-harness/pull/18) (1.13.0) |
+| PR / evidence | This PR (steps 2–4); template [#16](https://github.com/voidbrain/project-harness/pull/16), [#18](https://github.com/voidbrain/project-harness/pull/18), [#20](https://github.com/voidbrain/project-harness/pull/20), [#22](https://github.com/voidbrain/project-harness/pull/22); request 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Not implemented |
+| Verification | Script · 2026-10-30 · page generated (17 rows, 6 couplings, 8 outside); chains and couplings dry-run on four changes; user's reading · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
@@ -793,6 +793,54 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ---
 
+### F-036
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-036 | 🔹 P3 | Open | Fence materials: one list, not three |
+
+💻 **→ Human action required: No**<br />Make `FENCES` (core/fences.ts) the one source: `FenceMaterial` and `WallSpec.material` derive from it, `FENCE_ICON` stays typed by it; add a test.
+
+**Next action / closure evidence:** Found 2026-10-30 while listing the value couplings (F-033): the same list is written by hand in `core/fences.ts` (`FenceMaterial`), `core/site-spec.ts` (`WallSpec.material`) and the editor's icon map, and nothing keeps them equal. Closes when one source feeds the others (or a test fails when they differ) and the coupling in `.harness.json` says so.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Found in this PR (F-033) |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
+### F-037
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-037 | 🔹 P3 | Open | Roof kinds: one list, not four |
+
+💻 **→ Human action required: No**<br />One list of roof kinds that `LevelSpec.roof`, the AI command type, `AI_SCHEMA` and the editor's Roof → shape menu all read; add a test.
+
+**Next action / closure evidence:** Found 2026-10-30 while listing the value couplings (F-033): the same list is written by hand in `core/site-spec.ts`, `core/ai-commands.ts`, `core/ai-prompt.ts` and the editor template, and nothing keeps them equal. Closes when one source feeds the others (or a test fails when they differ) and the coupling in `.harness.json` says so.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Found in this PR (F-033) |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
 ## Other changes
 
 `main` protection active 2026-10-29 (user request, set through the API): ruleset "protect main" requires `check`, `e2e (1)`–`e2e (4)` and `race-browser` and refuses force pushes and deletion. B-025 (the flaky Auto-sync check) was closed first so the required checks are reliable.
@@ -810,5 +858,7 @@ AGENTS: a green PR that conflicts with `main` may get a push that only resolves 
 Harness template 1.10.0 (2026-10-29, this PR; template [#12](https://github.com/voidbrain/project-harness/pull/12)): found here, after a rule for every project (conflict-only pushes to green PRs) was first written into this project's AGENTS without asking whether it belonged to the template. AGENTS gains "Changing a harness file" (the edit is the trigger; unsure: ask before editing) and the template's PR rules (no stacked PRs, no new work on a green PR, conflict-only pushes allowed); project lines inside template sections are marked `<!-- project -->` (12 in AGENTS); the Work tracking bullet points to the new section; BACKLOG-RULES: parallel PRs' backlog conflicts are resolved in the conflicting PR; `check-freshness` copied (it lists the harness files a branch changes); `.harness.json` on 1.10.0. CI green.
 
 Harness template 1.11.0 (2026-10-29, [#216](https://github.com/voidbrain/openbando/pull/216), CI green; template [#14](https://github.com/voidbrain/project-harness/pull/14)): the impact map (F-028); AGENTS gains "What follows a change", BACKLOG-RULES points to the map; `check-freshness` copied; `.harness.json` on 1.11.0 with nine rows. Harness 1.10.0 ([#212](https://github.com/voidbrain/openbando/pull/212)): CI green.
+
+Harness templates 1.12.0 – 1.15.0 (2026-10-30, this PR): `tools/impact-map.mjs` copied and `check-freshness` updated; AGENTS ("What follows a change", the plans-become-records bullet, audits look outside) and BACKLOG-RULES reconciled; the CI step and `npm run impact-map`; `.harness.json` on 1.15.0 with the full map (F-033).
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
