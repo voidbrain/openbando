@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `80205b9` (merged #221), with every CI job of #162–#222 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `0798ee4` (merged #223), with every CI job of #162–#223 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -381,6 +381,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
+### B-036
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | B-036 | 🔶 P2 | Open | Road curves are angular: a sharp corner at every map point |
+
+💻 **→ Human action required: No**<br />Smooth the road's centre line into curves (rounded corners with a turn radius that suits the road's width), drawn and levelled the same way, with a unit test and a screenshot.
+
+**Next action / closure evidence:** Reported 2026-10-29 ("roads curves are not very good", with a screenshot). B-033 fixed the wedge-shaped gaps at the bends; the road still turns in straight pieces with a corner at each point of the map's line. The rounding has to be applied where the ground under the road is levelled too (`levelRoad`), or the road and the levelled strip part at the corners. Split from B-033 on 2026-10-30 at the user's request.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Report 2026-10-29; B-033 ([#215](https://github.com/voidbrain/openbando/pull/215)) fixed the gaps only |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
 ## Features and limitations
 
 ### F-001
@@ -749,20 +773,20 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟡 | F-033 | 🔶 P2 | Implemented | Full impact map: chains, content, couplings, outside the repository, as a readable page |
+| 🔴 | F-033 | 🔶 P2 | Open | Full impact map: chains, content, couplings, outside the repository, as a readable page |
 
-🧑 **→ Human action required: Yes**<br />Read `docs/agents/impact-map.md` and say what is missing or wrong: it is meant to list everything that follows a change.
+💻 **→ Human action required: No**<br />Next steps, in order: (1) harness 1.14.0 (template): the map page gains "Content dependencies", "Value couplings" and "Outside the repository" sections from `.harness.json` (`inputs` on rows, `couplings`, `outside`), and `check:freshness` warns when a branch changes one side of a coupling; (2) reconcile here to 1.12.0, 1.13.0 and 1.14.0: every row with an `id` and its `after` chains (blocks → catalogue → examples; tour → guide pages; UI → clips → guide pages; UI → Welcome films; `.harness.json` → map page), the theme-colour row chained to every visual output and the art, a `package-lock.json` row (renderer upgrades → recordings), each recording's inputs read from its script (Chiari e Forti → Welcome film 1 and the tour's clips; Bando Villetta and the demo flight → the flight clips); (3) list the value couplings (mascot timing ↔ the three Welcome films, `DEMO_OFFSET` ↔ the demo video, tour waits ↔ animation lengths, others found) and give each one source or a relation test, one record each; (4) the outside list: library upgrades, CI browser and GPU, OSM / Overpass, terrain tiles, Nominatim, AI models, each with what it affects and how it is noticed.
 
-**Next action / closure evidence:** Requested 2026-10-29: the user asked which dependencies a file trigger misses (a mascot animation synced with the Welcome films, a film that records an example bando, a theme colour that changes everything visual) and asked for a readable list of content dependencies and value couplings, plus what lies outside the repository if useful to people. Template rules already released: 1.12.0 (chains, the map page, plans become records) and 1.13.0 (inputs, wide-reach settings, couplings, audits look outside). Recorded here at once because a plan given in the conversation is otherwise forgotten (BACKLOG-RULES). Done 2026-10-30 (this PR, harness 1.15.0): 17 rows with ids, inputs and chains (block → catalogue → examples; Chiari e Forti, Bando Villetta and the demo flight → clips → guide pages, films; theme → art, design system, clips, films; library upgrades → clips, films), 6 value couplings (film length, `DEMO_OFFSET`, theme tokens, fence materials, roof kinds, structure kinds), 8 outside sources, links to the element map, the guide and the design system. A dry run gives the user's examples: a block → catalogue, examples; Chiari e Forti → clips, guide, films; `styles.scss` → theme, art, design system, clips, guide, films and the token coupling; the tour service → the film-length and demo-offset couplings. The two couplings nothing keeps equal have their own records (F-036, F-037).
+**Next action / closure evidence:** Requested 2026-10-29: the user asked which dependencies a file trigger misses (a mascot animation synced with the Welcome films, a film that records an example bando, a theme colour that changes everything visual) and asked for a readable list of content dependencies and value couplings, plus what lies outside the repository if useful to people. Template rules already released: 1.12.0 (chains, the map page, plans become records) and 1.13.0 (inputs, wide-reach settings, couplings, audits look outside). Recorded here at once because a plan given in the conversation is otherwise forgotten (BACKLOG-RULES).
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR (steps 2–4); template [#16](https://github.com/voidbrain/project-harness/pull/16), [#18](https://github.com/voidbrain/project-harness/pull/18), [#20](https://github.com/voidbrain/project-harness/pull/20), [#22](https://github.com/voidbrain/project-harness/pull/22); request 2026-10-29 |
+| PR / evidence | Request 2026-10-29; template [#16](https://github.com/voidbrain/project-harness/pull/16) (1.12.0), [#18](https://github.com/voidbrain/project-harness/pull/18) (1.13.0) |
 | Opened | 2026-10-29 |
-| Verification | Script · 2026-10-30 · page generated (17 rows, 6 couplings, 8 outside); chains and couplings dry-run on four changes; user's reading · Pending |
+| Verification | Not implemented |
 | Reviewed | 2026-10-29 |
 
 </details>
@@ -788,6 +812,54 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 | Opened | 2026-10-29 |
 | Verification | Script · 2026-10-29 · page generated: 406 controls, 9 with a tip, 116 with a title, 18 in clips, 32 names in bound expressions; CI step added |
 | Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-034
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | F-034 | 🔹 P3 | Implemented | Merge only when every check passes, CodeQL included |
+
+💻 **→ Human action required: No**<br />Verify on the next PR that GitHub lists CodeQL as required and blocks the merge while it fails.
+
+**Next action / closure evidence:** Found 2026-10-30: the required checks (ruleset "protect main") did not include CodeQL, and the agent's merge watcher waited only for the required ones, so a PR could merge with an open code-scanning alert (#221 had four: incomplete sanitization in two build tools, fixed in that PR). Decided 2026-10-30 (user): option (c), CodeQL made a required check of "protect main" through the API (required now: check, e2e (1)–(4), race-browser, CodeQL), so GitHub blocks the merge whoever merges; AGENTS names it (a project line). The watcher, a session script, stops on any failing check too.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Ruleset 25780506 updated 2026-10-30; this PR (AGENTS); found on [#221](https://github.com/voidbrain/openbando/pull/221) |
+| Opened | 2026-10-30 |
+| Verification | Settings · 2026-10-30 · the ruleset lists CodeQL among the required checks (API); on a PR · Pending |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
+### F-035
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-035 | 🔹 P3 | Open | Drag the take-off pad in the editor's 3D view |
+
+💻 **→ Human action required: No**<br />Make the take-off pad pickable and draggable in the 3D view as it is in the 2D plan (with `moveTakeoff`), with a browser test; do it with F-024 (the pad on floors and roofs), which needs 3D placement anyway.
+
+**Next action / closure evidence:** Split from F-021 on 2026-10-30 at the user's request: F-021 moves the pad in the 2D plan (select, drag, right-click menus) but not in the 3D view.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | F-021 ([#210](https://github.com/voidbrain/openbando/pull/210)) did the 2D plan only |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
 
 </details>
 

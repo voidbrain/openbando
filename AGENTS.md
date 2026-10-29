@@ -97,7 +97,7 @@ The app is **OpenBando** (tagline "Build, Fly, Share."). The repository is `void
 
 ### Checks before you finish
 
-`main` is protected: a PR merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` pass (ruleset "protect main"). <!-- project -->
+`main` is protected: a PR merges only when `check`, `e2e (1)`–`e2e (4)`, `race-browser` and `CodeQL` pass (ruleset "protect main"; a CodeQL alert is fixed, not waited out). <!-- project -->
 Open every PR against `main`, never on another PR's branch (merging it would not reach `main`). Once a PR's CI is green the owner may merge it at any moment: push no new work to it, open a new PR. Exception: a green PR that conflicts with `main` cannot merge, so it may get a push that only resolves the conflict; its checks run again before it can merge.
 
 ```bash
