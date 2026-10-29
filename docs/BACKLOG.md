@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `01698f0` (merged #186), with every CI job of #162–#186 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `a1179b7` (merged #188), with every CI job of #162–#188 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -196,28 +196,6 @@ Each item has a compact summary, followed by **→ Human action required** first
 | Opened | 2026-10-27 |
 | Verification | Unit/integration · 2026-10-28 · 504 tests passed locally; Browser/accessibility + Human · Pending |
 | Reviewed | 2026-10-28 |
-
-</details>
-
-### F-003
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-003 | 🔶 P2 | Implemented | 3D basement vertex handles |
-
-**→ Human action required:** 💻 **No**<br />Confirm the new pointer case in CI, then close.
-
-**Next action / closure evidence:** Pointer check automated 2026-10-29 (user: proceed with the checks; [#188](https://github.com/voidbrain/openbando/pull/188)): on a 37° building, indoor −1 in 3D, a vertex handle found by its hover cursor is dragged outwards; the plan shows the vertex moved, Undo restores it, Redo moves it again, and the export holds the grown outline with the rotation kept (passed 2/2 locally). Keyboard vertex controls are already covered by the basement editor regression. 3D indoor −1 now has draggable vertex handles and keyboard move/insert/remove controls using the 2D validation and undo paths. Verify pointer, keyboard, rotated buildings, persistence and accessibility in browser CI.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#188](https://github.com/voidbrain/openbando/pull/188) (3D pointer drag, undo, redo, save); [#101](https://github.com/voidbrain/openbando/pull/101) (2D); [#116](https://github.com/voidbrain/openbando/pull/116) (merged; [CI](https://github.com/voidbrain/openbando/actions/runs/40595652166) passed; pointer review pending); history: unit + browser passed in [#116 CI](https://github.com/voidbrain/openbando/actions/runs/40595652166), 2026-10-27 |
-| Opened | 2026-10-27 |
-| Verification | Browser/accessibility · 2026-10-29 · 3D vertex drag on a rotated building with undo/redo/save passed locally (2/2); earlier: [#116 CI](https://github.com/voidbrain/openbando/actions/runs/40595652166), PR #124 CI (keyboard and selected workflows); CI · Pending |
-| Reviewed | 2026-10-29 |
 
 </details>
 
