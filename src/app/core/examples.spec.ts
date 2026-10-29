@@ -65,6 +65,15 @@ describe('example bandos', () => {
     // the generator's "concrete" over the west fields is gone; only the patio and the drive are paved
     for (const sf of b.surfaces ?? []) expect(Math.max(...sf.pts.map((p) => Math.abs(p.x)))).toBeLessThan(40);
     expect(b.droneStart).toEqual({ x: b.pads.at(-1)!.x, z: b.pads.at(-1)!.z });
+    // only the model's ground: every road point and tree inside the area of its heights, the grass just around it
+    const half = b.terrain!.half;
+    for (const r of b.roads ?? []) for (const p of r.pts) expect(Math.abs(p.x) <= half.e + 1e-6 && Math.abs(p.z) <= half.n + 1e-6).toBe(true);
+    for (const t of b.trees) expect(Math.abs(t.x) <= half.e && Math.abs(t.z) <= half.n).toBe(true);
+    expect(b.extent).toBeLessThanOrEqual(Math.max(half.e, half.n) + 5);
+    // the hedge on the south side of the house, the second drive and the pad in front of the house
+    expect(b.walls?.filter((w) => w.material === 'hedge')).toHaveLength(2);
+    expect(b.roads?.length).toBeGreaterThanOrEqual(5);
+    expect(named('House')!.rotDeg).toBeLessThan(360);
   });
 });
 
