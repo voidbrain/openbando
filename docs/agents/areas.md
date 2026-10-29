@@ -208,7 +208,7 @@ Detailed rules and lessons for each part of the app, moved from AGENTS.md so tha
 ### Fly entry
 
 - Saved-bando Fly opens telemetry except Live link and selects 3D without arming. Keep Flights below Video and preserve timeline’s bottom anchor. Views has a close button; its bottom menu remains reachable. Video loading feedback lasts until decoded data/canplay and becomes an error on decode failure.
-- Fly checklist (F-018, `ui/panels/fly-panel.ts`, steps in `core/fly-guide.ts`): Replay / Simulator / Live routes, each step ticked from app state (logs, video, sync, controller, simulator panel, armed, live status), route and skipped steps in `abando-fly-guide`. It opens panels only: it never arms the simulator or connects the live link. Saved-bando Fly opens it beside the replay workspace. Not yet done: guide snippets per route and their media (see `docs/fly-workflow-plan.md`).
+- Fly checklist (F-018, `ui/panels/fly-panel.ts`, steps in `core/fly-guide.ts`): Replay / Simulator / Live routes, each step ticked from app state (logs, video, sync, controller, simulator panel, armed, live status), route and skipped steps in `abando-fly-guide`. It opens panels only: it never arms the simulator or connects the live link. Saved-bando Fly opens it beside the replay workspace. The guide step `fly-checklist` shows it (marks `fly-routes`, `fly-route-<id>`, `fly-steps`); there is no separate step per route.
 
 ## Welcome, guide and mascot
 

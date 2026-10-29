@@ -1305,4 +1305,8 @@ export const IT: Readonly<Record<string, string>> = {
   'Reopen the last skipped step': "Riapri l'ultimo passo saltato",
   'Close the checklist; loaded files and edits stay': 'Chiudi la checklist; file caricati e modifiche restano',
   'This route is complete. Choose another, or reopen a skipped step.': 'Questo percorso è completo. Scegline un altro, o riapri un passo saltato.',
+  'Follow the Fly checklist': 'Segui la checklist di volo',
+  'Fly opens this checklist beside the replay. Choose what you are doing: replay a recording, the simulator or live telemetry.': 'Vola apre questa checklist accanto al replay. Scegli cosa stai facendo: riguardare una registrazione, il simulatore o la telemetria live.',
+  'Each step ticks itself from what is loaded, so the list picks up where you left it. Skip what you do not have.': 'Ogni passo si spunta da solo in base a ciò che è caricato, così la lista riprende da dove eri rimasto. Salta quello che non hai.',
+  'The simulator route opens the simulator and leaves arming to you.': "Il percorso simulatore apre il simulatore e lascia a te l'armamento.",
 };

@@ -215,6 +215,18 @@ export const SNIPPETS: readonly Snippet[] = [
     hover: ['play'],
     beats: [{ say: 'Play: the drone flies its real path through the model, with the video in step.', actions: [hook('panel', 'timeline'), click('play'), wait(6000), hook('pause')] }],
   },
+  {
+    id: 'fly-checklist',
+    needs: ['site'],
+    section: 'flight',
+    title: 'Follow the Fly checklist',
+    hover: ['fly-routes'],
+    beats: [
+      { say: 'Fly opens this checklist beside the replay. Choose what you are doing: replay a recording, the simulator or live telemetry.', actions: [hook('panel', 'fly'), p('fly-routes'), wait(1800)] },
+      { say: 'Each step ticks itself from what is loaded, so the list picks up where you left it. Skip what you do not have.', actions: [p('fly-steps', [0.5, 0.3]), wait(2200)] },
+      { say: 'The simulator route opens the simulator and leaves arming to you.', actions: [click('fly-route-sim'), wait(1600), p('fly-steps', [0.5, 0.5]), wait(1800), click('fly-route-replay'), wait(900)] },
+    ],
+  },
 
   // ---- the welcome tour (showcase) (Welcome → a bando → a synced replay → every camera): plays by itself
   {
@@ -261,9 +273,9 @@ export const SHOWCASE: Tour = { id: 'showcase', title: 'Welcome', about: 'What O
 
 export const TOURS: readonly Tour[] = [
   SHOWCASE,
-  { id: 'full', title: 'Full tour', about: 'From a new bando to a synced replay.', snippets: ['place', 'generate', 'look-3d', 'select', 'adjust', 'add-building', 'trees', 'library', 'ai', 'log', 'video', 'sync', 'replay'] },
+  { id: 'full', title: 'Full tour', about: 'From a new bando to a synced replay.', snippets: ['place', 'generate', 'look-3d', 'select', 'adjust', 'add-building', 'trees', 'library', 'ai', 'log', 'video', 'sync', 'replay', 'fly-checklist'] },
   { id: 'build', title: 'Build a bando', about: 'Find the place, generate the model, edit it.', snippets: ['place', 'generate', 'look-3d', 'select', 'adjust', 'add-building', 'trees', 'library'] },
-  { id: 'fly', title: 'Fly and sync', about: 'Load a flight and its video, sync them, replay.', snippets: ['log', 'video', 'sync', 'replay'] },
+  { id: 'fly', title: 'Fly and sync', about: 'Load a flight and its video, sync them, replay.', snippets: ['log', 'video', 'sync', 'replay', 'fly-checklist'] },
 ];
 
 export const SNIPPET_BY_ID: ReadonlyMap<string, Snippet> = new Map(SNIPPETS.map((s) => [s.id, s]));

@@ -1,6 +1,6 @@
 # Guided Fly workflow proposal
 
-Status: the checklist is implemented (F-018): `FlyChecklist` panel, opened beside the replay workspace by a saved bando's Fly button; it does not arm the simulator or start a live session. Not done yet: guide snippets for each route and their clips (see Guide and verification work).
+Status: the checklist is implemented (F-018): `FlyChecklist` panel, opened beside the replay workspace by a saved bando's Fly button; it does not arm the simulator or start a live session. The guide step "Follow the Fly checklist" (Flight section, Full and Fly tours) shows it, with its clip. Not done: a dedicated step per route; the racing/relay branch points to Flights instead of its own steps.
 
 ## Entry and routes
 
