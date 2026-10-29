@@ -21,6 +21,7 @@ Test: if a record's next action or closure condition can only happen in another 
 - After a PR merges, when CI/verification finishes, when the user supplies acceptance or a new failure, and at the start of work on a related item, reconcile the affected records using the procedure below.
 - When asked for backlog status or an audit, review every active record. During ordinary work, review related items and any contradictions encountered; a row's age alone is never evidence that it is fixed, abandoned or invalid.
 - These are event-driven agent instructions, not a scheduled background process. Do not claim continuous monitoring or automatic CI updates without an actual automation. The trigger is the session start: `npm run check:freshness` (AGENTS, Work tracking) lists every change merged since the backlog's commit (by PR number, or by hash when no PR is found), merged branches still on GitHub, an audit older than 7 days and a newer harness template release; when it cannot fetch the remote it says so rather than reporting the backlog fresh. CI prints the same as warnings on every PR without blocking it.
+- Parallel PRs all edit the backlog, so when one merges the others often conflict there. Resolve in the conflicting PR (AGENTS allows a conflict-only push to a green PR): keep every record from both sides, keep the newer header and move it to the current `main` with the CI of the PRs merged since. Never resolve by taking one side whole.
 
 ## Review procedure
 

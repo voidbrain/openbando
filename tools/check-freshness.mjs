@@ -1,5 +1,5 @@
-// Is the backlog behind the default branch, are merged branches left over, is the last audit too old, and is the harness
-// template newer? Prints what to do first (AGENTS: session start). Never fails: with --github it prints GitHub
+// Is the backlog behind the default branch, are merged branches left over, does this branch change harness files, is the
+// last audit too old, and is the harness template newer? Prints what to do first (AGENTS: session start). Never fails: with --github it prints GitHub
 // warnings, so a PR shows them without being blocked.
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -55,7 +55,17 @@ else {
 const merged = git('branch', '-r', '--merged', tip)?.split('\n').map((b) => b.trim()).filter((b) => b && b !== `origin/${branch}` && !/^origin\/HEAD\b/.test(b)) ?? [];
 if (merged.length) warn(`Merged branches are still on the remote (${merged.join(', ')}): delete them (git push origin --delete <branch>) and their local branches and worktrees.`);
 
-// 3. the newest dated audit
+// 3. harness files this branch changes: each change is either this project's (its content, a setting, a line marked
+// <!-- project -->, an override) or every project's (the template first). Asking is the rule when that is unclear
+// (AGENTS, "Changing a harness file"). Files that hold project content by design are not listed (README, backlog
+// records, area notes); nor is anything in the template repository itself, whose tools/ are release copies of core/.
+const PROJECT_CONTENT = new Set(['README.md', 'docs/BACKLOG.md', 'docs/agents/areas.md']);
+const kind = (f) => (stamp.copied?.[f] ? 'copied' : stamp.forked?.[f] ? 'forked' : f === '.harness.json' ? 'settings' : stamp.adapted?.[f] && !PROJECT_CONTENT.has(f) ? 'adapted' : null);
+const base = existsSync(new URL('../core/tools/', import.meta.url)) ? null : git('merge-base', tip, 'HEAD');
+const touched = (base ? [git('diff', '--name-only', base), git('ls-files', '--others', '--exclude-standard')].join('\n').split('\n') : []).filter((f) => f && kind(f));
+if (touched.length) warn(`This branch changes harness files: ${touched.map((f) => `${f} (${kind(f)})`).join(', ')}. Decide for each change: this project only (its content, a setting, a line marked <!-- project -->, an override) or every project (the template first). If unsure, ask before going on (AGENTS, "Changing a harness file").`);
+
+// 4. the newest dated audit
 const auditDir = new URL('../docs/audits/', import.meta.url);
 const audits = (existsSync(auditDir) ? readdirSync(auditDir) : []).map((f) => f.match(/^(\d{4}-\d{2}-\d{2})/)?.[1]).filter(Boolean).sort();
 const last = audits.at(-1);
@@ -66,6 +76,6 @@ if (days > MAX_AUDIT_DAYS) warn(`The last audit (docs/audits/${last ?? 'none'}) 
 if (!notes.length) console.log(`Fresh: backlog reconciled against current ${branch}; last audit ${last} (${days} day(s) ago).`);
 for (const n of notes) console.log(github ? `::warning title=Backlog freshness::${n}` : `! ${n}`);
 
-// 4. the harness template this project was applied from (tools/check-harness.mjs; skipped without a local template)
+// 5. the harness template this project was applied from (tools/check-harness.mjs; skipped without a local template)
 const harness = fileURLToPath(new URL('./check-harness.mjs', import.meta.url));
 if (existsSync(harness)) execFileSync(process.execPath, [harness, ...(github ? ['--github'] : [])], { stdio: 'inherit' });
