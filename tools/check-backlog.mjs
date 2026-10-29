@@ -1,4 +1,6 @@
-import {readFileSync} from 'node:fs';
+import {existsSync, readFileSync} from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 
 const text = readFileSync(new URL('../docs/BACKLOG.md', import.meta.url), 'utf8');
@@ -45,4 +47,20 @@ for (let i = 0; i < headings.length; i++) {
 }
 assert.equal((text.match(/<details>/g) ?? []).length, headings.length, 'Metadata details count');
 assert.equal((text.match(/<\/details>/g) ?? []).length, headings.length, 'Unbalanced metadata details');
-console.log(`${ids.size} backlog records passed: summary, visible actions, metadata, dates, cues and table widths.`);
+// Archives only grow: every record and closed row an archive has on the published default branch is still there, so a
+// rewrite that drops history fails here instead of on review. Skipped without git or a published branch.
+const root = fileURLToPath(new URL('..', import.meta.url));
+const git = (...args) => { try { return execFileSync('git', ['-C', root, ...args], {encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore']}); } catch { return null; } };
+let stamp = {};
+try { stamp = JSON.parse(readFileSync(new URL('../.harness.json', import.meta.url), 'utf8')); } catch { /* no stamp: defaults */ }
+const branch = stamp.defaultBranch ?? git('symbolic-ref', '--short', 'refs/remotes/origin/HEAD')?.trim().replace(/^origin\//, '') ?? 'main';
+const published = git('ls-tree', '--name-only', `origin/${branch}`, 'docs/archive/')?.split('\n').filter(f => f.endsWith('.md')) ?? [];
+const archived = (t) => ({ids: [...t.matchAll(/^### ([BF]-\d+)$/gm)].map(m => m[1]), rows: (t.match(/^\| 🔵 \|/gm) ?? []).length});
+for (const file of published) {
+  const local = new URL(`../${file}`, import.meta.url);
+  assert(existsSync(local), `${file} is on ${branch} but missing here: archives are kept`);
+  const was = archived(git('show', `origin/${branch}:${file}`) ?? ''), now = archived(readFileSync(local, 'utf8'));
+  for (const id of was.ids) assert(now.ids.includes(id), `${file}: ${id} is archived on ${branch} but missing here: archives only grow`);
+  assert(now.rows >= was.rows, `${file}: ${was.rows - now.rows} closed row(s) on ${branch} are missing here: archives only grow`);
+}
+console.log(`${ids.size} backlog records passed: summary, visible actions, metadata, dates, cues and table widths${published.length ? `; ${published.length} archive file(s) keep everything on ${branch}` : ''}.`);
