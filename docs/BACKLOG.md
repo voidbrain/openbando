@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `7b21d9b` (merged #195), with every CI job of #162–#195 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `be3e910` (merged #196), with every CI job of #162–#195 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -293,6 +293,6 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 `main` protection active 2026-10-29 (user request, set through the API): ruleset "protect main" requires `check`, `e2e (1)`–`e2e (4)` and `race-browser` and refuses force pushes and deletion. B-025 (the flaky Auto-sync check) was closed first so the required checks are reliable.
 
-Harness template 1.2.0 (2026-10-29, [#196](https://github.com/voidbrain/openbando/pull/196)): `tools/check-harness.mjs` copied from project-harness v1.2.0 (it now warns when the template clone is missing, behind, ahead, dirty or unreachable), the AGENTS Work-tracking bullet reconciled (pull the template first), `.harness.json` on 1.2.0. Pending: this PR's CI.
+Harness template 1.3.0 (2026-10-29, this PR): the AGENTS Work-tracking bullet on harness changes asked from a project reconciled from the template (a copied tool or a rule for every project changes in the template first; settings and project content stay here), `.harness.json` on 1.3.0; no copied file changed. Pending: this PR's CI.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
