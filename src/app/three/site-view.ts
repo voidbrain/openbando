@@ -79,15 +79,20 @@ export class SiteViewRenderer {
       canvas.addEventListener(t, f as EventListener, o);
       this.off.push(() => canvas.removeEventListener(t, f as EventListener));
     };
+    /** The handle under the pointer (and the ray is left aimed through it). */
+    const handleAt = (e: PointerEvent): BuildingHandle | undefined => {
+      if (this.mode !== 'select' || !this.handles) return undefined;
+      const rect = canvas.getBoundingClientRect();
+      this.ray.setFromCamera(new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1), this.camera);
+      return this.ray.intersectObjects(this.handles.children)[0]?.object.userData['handle'] as BuildingHandle | undefined;
+    };
     on('pointerdown', (e) => {
-      if (this.mode === 'select' && e.button === 0 && !e.shiftKey && this.handles) {
-        const rect = canvas.getBoundingClientRect();
-        this.ray.setFromCamera(new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1), this.camera);
-        const hit = this.ray.intersectObjects(this.handles.children)[0];
-        const handle = hit?.object.userData['handle'] as BuildingHandle | undefined;
+      if (e.button === 0 && !e.shiftKey) {
+        const handle = handleAt(e);
         const point = handle ? floorPoint(this.ray.ray, handle.y) : null;
         if (handle && point) {
           this.transform = handle;
+          canvas.style.cursor = 'grabbing';
           canvas.setPointerCapture(e.pointerId);
           this.onTransform('down', handle, point.x, point.z);
           return;
@@ -106,6 +111,11 @@ export class SiteViewRenderer {
         const point = this.pointAtHeight(e, this.transform.y);
         if (point) this.onTransform('move', this.transform, point.x, point.z);
         return;
+      }
+      // hover feedback: a handle under the pointer can be dragged (move, or grab a corner, edge or vertex)
+      if (!this.press && !this.drag) {
+        const handle = handleAt(e);
+        canvas.style.cursor = handle ? (handle.kind === 'move' ? 'move' : 'grab') : '';
       }
       if (this.press && Math.hypot(e.clientX - this.press.x, e.clientY - this.press.y) > 4) this.press.moved = true;
       if (this.press?.ground) {
@@ -136,6 +146,7 @@ export class SiteViewRenderer {
       if (this.transform) {
         const handle = this.transform;
         this.transform = null;
+        canvas.style.cursor = '';
         const point = this.pointAtHeight(e, handle.y);
         this.onTransform('up', handle, point?.x ?? handle.x, point?.z ?? handle.z);
         return;
