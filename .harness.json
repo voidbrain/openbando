@@ -59,7 +59,7 @@
       ],
       "then": "regenerate the guide pages in docs/guide/",
       "run": "node tools/build-guide.mjs",
-      "checked": "nothing yet (F-029)"
+      "checked": "CI (guide pages match the tour)"
     },
     {
       "when": [
@@ -91,7 +91,8 @@
         "src/app/ui/**/*.ts"
       ],
       "then": "labels and hints written in TypeScript data (fence, surface, road, structure lists, tool hints, menus) have their Italian in src/app/i18n/it.ts",
-      "checked": "nothing yet (F-030)"
+      "checked": "check:i18n (labels and hints in TypeScript data)",
+      "run": "npm run check:i18n"
     },
     {
       "when": [

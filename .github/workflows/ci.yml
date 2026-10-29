@@ -39,6 +39,11 @@ jobs:
         # the generator, a block or the script that is not rebuilt shows up here
         run: npm run examples && git diff --exit-code -- library/bandos public/library
 
+      - name: Guide pages match the tour
+        # tools/build-guide.mjs writes docs/guide from src/app/core/tour.ts; a tour change that is not regenerated shows up
+        # here (F-029). Clips are recorded in a browser and not checked here (F-031).
+        run: node tools/build-guide.mjs && git diff --exit-code -- docs/guide
+
       - name: Test
         run: npx ng test --watch=false
 
