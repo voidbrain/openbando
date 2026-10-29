@@ -1,6 +1,6 @@
 {
  "about": "A farmhouse with a gambrel roof, its barn, a store and sheds at the edge of the woods, shared without its place: its real ground travels inside. Flights start on the take-off pad in front of the house.",
- "release": 2,
+ "release": 3,
  "version": 1,
  "id": "example-bardwell-house-example-1",
  "name": "Bardwell House",
@@ -402,9 +402,9 @@
     "x": -17.503,
     "z": 31.535
    },
-   "height": 1.2,
+   "height": 1.25,
    "thick": 0.12,
-   "material": "wood"
+   "material": "rail"
   },
   {
    "a": {
@@ -415,9 +415,9 @@
     "x": 19.089,
     "z": 20.217
    },
-   "height": 1.2,
+   "height": 1.25,
    "thick": 0.12,
-   "material": "wood"
+   "material": "rail"
   },
   {
    "a": {
@@ -428,9 +428,9 @@
     "x": 27.599,
     "z": 13.15
    },
-   "height": 1.2,
+   "height": 1.25,
    "thick": 0.12,
-   "material": "wood"
+   "material": "rail"
   },
   {
    "a": {
@@ -441,9 +441,9 @@
     "x": 32.402,
     "z": 5.802
    },
-   "height": 1.2,
+   "height": 1.25,
    "thick": 0.12,
-   "material": "wood"
+   "material": "rail"
   },
   {
    "a": {
@@ -454,9 +454,9 @@
     "x": 35.213,
     "z": -3.33
    },
-   "height": 1.2,
+   "height": 1.25,
    "thick": 0.12,
-   "material": "wood"
+   "material": "rail"
   },
   {
    "a": {
@@ -467,9 +467,9 @@
     "x": 34.037,
     "z": -10.715
    },
-   "height": 1.2,
+   "height": 1.25,
    "thick": 0.12,
-   "material": "wood"
+   "material": "rail"
   },
   {
    "a": {

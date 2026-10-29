@@ -72,6 +72,8 @@ describe('example bandos', () => {
     expect(b.extent).toBeLessThanOrEqual(Math.max(half.e, half.n) + 5);
     // the hedge on the south side of the house, the second drive and the pad in front of the house
     expect(b.walls?.filter((w) => w.material === 'hedge')).toHaveLength(2);
+    expect(b.walls?.filter((w) => w.material === 'rail').length).toBeGreaterThan(3); // the drive's white post-and-rail fence
+    expect(b.walls?.some((w) => w.material === 'wood')).toBe(false);
     expect(b.roads?.length).toBeGreaterThanOrEqual(5);
     expect(named('House')!.rotDeg).toBeLessThan(360);
   });
