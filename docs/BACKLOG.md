@@ -207,16 +207,16 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 **→ Human action required:** 💻 **No**<br />Implement phase 2: courtyard geometry (slabs, walls, terrain kept, colliders).
 
-**Next action / closure evidence:** Phase 1 (`feat/f002-phase1-rings`): `core/basement-rings.ts` with `BasementSpec.courtyards` / `pieces`, shape cleaning and placement rules (courtyard strictly inside, ≥ 1 m, clear of other courtyards and floor items; piece apart from the perimeter and other pieces), applied per building by `sanitizeSpec`; invalid rings are dropped, never reshaped; old files unchanged. Nothing is drawn yet. Design 2026-10-29 ([plan](basement-holes-plan.md), [#176](https://github.com/voidbrain/openbando/pull/176)): `BasementSpec.courtyards` (holes through the basement, walls around, ground kept) and `BasementSpec.pieces` (further perimeters), optional with defaults so old files load; validation and caps; five phases: model and validation, courtyard geometry (slabs, walls, volume holes for terrain cut and floorUnder, colliders), courtyard editing (2D/3D, undo, Cut/Wing/resize guards), separate pieces, docs. Earlier: Design a representation and editing, saving, terrain cuts, floor/wall rendering and collision for courtyards and separate pieces; currently one simple perimeter only. Floor voids are separate and already exist.
+**Next action / closure evidence:** Phase 1 ([#178](https://github.com/voidbrain/openbando/pull/178)): `core/basement-rings.ts` with `BasementSpec.courtyards` / `pieces`, shape cleaning and placement rules (courtyard strictly inside, ≥ 1 m, clear of other courtyards and floor items; piece apart from the perimeter and other pieces), applied per building by `sanitizeSpec`; invalid rings are dropped, never reshaped; old files unchanged. Nothing is drawn yet. Design 2026-10-29 ([plan](basement-holes-plan.md), [#176](https://github.com/voidbrain/openbando/pull/176)): `BasementSpec.courtyards` (holes through the basement, walls around, ground kept) and `BasementSpec.pieces` (further perimeters), optional with defaults so old files load; validation and caps; five phases: model and validation, courtyard geometry (slabs, walls, volume holes for terrain cut and floorUnder, colliders), courtyard editing (2D/3D, undo, Cut/Wing/resize guards), separate pieces, docs. Earlier: Design a representation and editing, saving, terrain cuts, floor/wall rendering and collision for courtyards and separate pieces; currently one simple perimeter only. Floor voids are separate and already exist.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | `feat/f002-phase1-rings` (phase 1 model); [#176](https://github.com/voidbrain/openbando/pull/176) (design); [#101](https://github.com/voidbrain/openbando/pull/101) (context; limitation remains) |
+| PR / evidence | [#178](https://github.com/voidbrain/openbando/pull/178) (phase 1 model); [#176](https://github.com/voidbrain/openbando/pull/176) (design); [#101](https://github.com/voidbrain/openbando/pull/101) (context; limitation remains) |
 | Opened | 2026-10-27 |
-| Verification | Documentation · 2026-10-29 · design ([#176](https://github.com/voidbrain/openbando/pull/176), CI passed); Unit/integration · 2026-10-29 · 6 ring cases, 544 tests; phases 2–5 · Pending |
+| Verification | Documentation · 2026-10-29 · design ([#176](https://github.com/voidbrain/openbando/pull/176), CI passed); Unit/integration · 2026-10-29 · 6 ring cases, 549 tests; phases 2–5 · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
