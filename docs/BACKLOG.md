@@ -229,14 +229,14 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 **→ Human action required:** 💻 **No**<br />Implement phase 1 of the plan: courtyard and piece model, validation and sanitizer.
 
-**Next action / closure evidence:** Design 2026-10-29 ([plan](basement-holes-plan.md), `docs/f002-basement-holes-plan`): `BasementSpec.courtyards` (holes through the basement, walls around, ground kept) and `BasementSpec.pieces` (further perimeters), optional with defaults so old files load; validation and caps; five phases: model and validation, courtyard geometry (slabs, walls, volume holes for terrain cut and floorUnder, colliders), courtyard editing (2D/3D, undo, Cut/Wing/resize guards), separate pieces, docs. Earlier: Design a representation and editing, saving, terrain cuts, floor/wall rendering and collision for courtyards and separate pieces; currently one simple perimeter only. Floor voids are separate and already exist.
+**Next action / closure evidence:** Design 2026-10-29 ([plan](basement-holes-plan.md), [#176](https://github.com/voidbrain/openbando/pull/176)): `BasementSpec.courtyards` (holes through the basement, walls around, ground kept) and `BasementSpec.pieces` (further perimeters), optional with defaults so old files load; validation and caps; five phases: model and validation, courtyard geometry (slabs, walls, volume holes for terrain cut and floorUnder, colliders), courtyard editing (2D/3D, undo, Cut/Wing/resize guards), separate pieces, docs. Earlier: Design a representation and editing, saving, terrain cuts, floor/wall rendering and collision for courtyards and separate pieces; currently one simple perimeter only. Floor voids are separate and already exist.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | `docs/f002-basement-holes-plan` (design); [#101](https://github.com/voidbrain/openbando/pull/101) (context; limitation remains) |
+| PR / evidence | [#176](https://github.com/voidbrain/openbando/pull/176) (design); [#101](https://github.com/voidbrain/openbando/pull/101) (context; limitation remains) |
 | Opened | 2026-10-27 |
 | Verification | Documentation · 2026-10-29 · design written against the current code paths; implementation · Pending |
 | Reviewed | 2026-10-29 |
