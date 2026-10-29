@@ -1,7 +1,6 @@
 import {expect, test} from '@playwright/test';
 
 test('Expand studio fills the window in 2D and 3D, keeps the docked inspector and the compass in place, and restores', async ({page}, testInfo) => {
-  test.setTimeout(120_000);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({reducedMotion: 'reduce'});
