@@ -26,6 +26,7 @@ test('Expand studio fills the window in 2D and 3D, keeps the docked inspector an
   const work = page.locator('app-bando-editor .work');
   await expect(inspector).toHaveClass(/docked/);
   const before = (await panel.boundingBox())!;
+  const workBefore = (await work.boundingBox())!.width;
   const viewport = page.viewportSize()!;
   // opening the editor widens the studio: it must stay inside the window (it used to run 27 px off the right edge)
   expect(before.x).toBeGreaterThanOrEqual(0);
@@ -54,7 +55,8 @@ test('Expand studio fills the window in 2D and 3D, keeps the docked inspector an
     expect(c.x - v.x).toBeLessThan(30);
     expect(v.y + v.height - (c.y + c.height)).toBeLessThan(30);
   };
-  await expect.poll(async () => (await view.boundingBox())!.width).toBeGreaterThan(before.width);
+  // the editing area grows (the 3D view fills it: corner() checks that)
+  await expect.poll(async () => (await work.boundingBox())!.width).toBeGreaterThan(workBefore + 100);
   await corner();
   await docked();
   await page.screenshot({path: testInfo.outputPath('expanded-3d.png')});
