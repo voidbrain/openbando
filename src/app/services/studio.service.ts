@@ -67,6 +67,8 @@ export class StudioService {
   readonly mapOpacity = signal(1);
   /** Which editor tab a freshly opened bando starts on, and the half extents of its stored area (metres). */
   readonly initialMode = signal<'area' | 'model'>('area');
+  /** A new bando's place: picked from a search or found by dragging the map. Generate waits for it. */
+  readonly placeChosen = signal(false);
   readonly startHalf = signal<{ e: number; n: number; rot?: number } | null>(null);
   readonly busy = this.site.generating;
 
@@ -81,6 +83,7 @@ export class StudioService {
     const last = this.site.active();
     const hasLoc = last.origin.lat !== 0 || last.origin.lon !== 0;
     this.editingId.set(null);
+    this.placeChosen.set(false);
     this.name.set('New bando');
     this.start.set(hasLoc ? { lat: last.origin.lat, lon: last.origin.lon, zoom: 17 } : DEFAULT_START);
     this.startHalf.set(null);

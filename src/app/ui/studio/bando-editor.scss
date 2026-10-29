@@ -377,6 +377,22 @@ input.mini {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.hits > span {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px 2px;
+}
+.hits .x {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}
+.hits button.on {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+}
 .hits button:hover {
   background: var(--control-hover);
 }
