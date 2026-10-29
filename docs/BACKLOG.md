@@ -293,6 +293,6 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 `main` protection active 2026-10-29 (user request, set through the API): ruleset "protect main" requires `check`, `e2e (1)`–`e2e (4)` and `race-browser` and refuses force pushes and deletion. B-025 (the flaky Auto-sync check) was closed first so the required checks are reliable.
 
-Harness template 1.3.0 (2026-10-29, this PR): the AGENTS Work-tracking bullet on harness changes asked from a project reconciled from the template (a copied tool or a rule for every project changes in the template first; settings and project content stay here), `.harness.json` on 1.3.0; no copied file changed. Pending: this PR's CI.
+Harness template 1.3.0 (2026-10-29, [#197](https://github.com/voidbrain/openbando/pull/197)): the AGENTS Work-tracking bullet on harness changes asked from a project reconciled from the template (a copied tool or a rule for every project changes in the template first; settings and project content stay here), `.harness.json` on 1.3.0; no copied file changed. Pending: this PR's CI.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
