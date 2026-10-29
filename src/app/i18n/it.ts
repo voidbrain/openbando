@@ -1000,6 +1000,7 @@ export const IT: Readonly<Record<string, string>> = {
   'Show roof': 'Mostra tetto',
   'shape': 'forma',
   'gable': 'a capanna',
+  'gambrel': 'a mansarda',
   'vault': 'a volta',
   'flat': 'piano',
   'repeat ×': 'ripeti ×',

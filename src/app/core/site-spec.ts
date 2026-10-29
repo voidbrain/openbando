@@ -130,8 +130,11 @@ export interface LevelSpec {
   pieces?: Vec2[][];
   /** Interior partition walls (solid, no openings): segment endpoints in building-local metres. */
   partitions: [Vec2, Vec2][];
-  /** 'gable' = pitched roof over the long axis, 'vault' = barrel vault(s), 'flat' = parapet slab. */
-  roof: 'gable' | 'vault' | 'flat' | 'none';
+  /**
+   * 'gable' = pitched roof over the long axis, 'gambrel' = a barn roof (two slopes a side, the lower one steep),
+   * 'vault' = barrel vault(s), 'flat' = parapet slab.
+   */
+  roof: 'gable' | 'gambrel' | 'vault' | 'flat' | 'none';
   /** Turn the roof a quarter: the ridge / barrels run across the building instead of along it. */
   roofTurn?: boolean;
   /** Repeat the roof module this many times (3 side-by-side gables, 4 barrels ...). Default 1. */

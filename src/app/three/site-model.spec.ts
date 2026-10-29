@@ -119,11 +119,37 @@ describe('outer walls', () => {
 });
 
 describe('roofs sit on top of the walls', () => {
+  it('a gambrel bends at its knee: steep below, shallow above, under a roof-high collider', async () => {
+    const THREE = await import('three');
+    const { buildSiteFromSpec, GAMBREL_KNEE } = await import('./site-model');
+    const { emptySpec } = await import('../core/site-spec');
+    const s = emptySpec({ lat: 0, lon: 0 }, 't');
+    s.buildings = [{ id: 'b', name: 'B', pos: { x: 0, z: 0 }, rotDeg: 0, length: 20, width: 10, levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, roof: 'gambrel', roofRise: 4, partitions: [], doors: {} }] }];
+    const model = buildSiteFromSpec(s, { bare: true });
+    // the roof's outline across the ridge (z), at the knee height
+    const pts: { y: number; z: number }[] = [];
+    model.roof.updateMatrixWorld(true);
+    model.roof.traverse((o) => {
+      if (!(o instanceof THREE.Mesh)) return;
+      const pos = o.geometry.getAttribute('position'), v = new THREE.Vector3();
+      for (let i = 0; i < pos.count; i++) {
+        v.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld);
+        pts.push({ y: v.y, z: v.z });
+      }
+    });
+    const kneeY = 4 + 4 * GAMBREL_KNEE.rise, kneeZ = 5 - 5 * GAMBREL_KNEE.inset;
+    expect(pts.some((p) => Math.abs(p.y - kneeY) < 0.01 && Math.abs(Math.abs(p.z) - kneeZ) < 0.01)).toBe(true);
+    // steeper below the knee than above it
+    const lower = (kneeY - 4) / (5.3 - kneeZ), upper = (8 - kneeY) / kneeZ;
+    expect(lower).toBeGreaterThan(upper * 2);
+    expect(model.collider.solids.some((b) => Math.abs(b[2] - 4) < 0.01 && Math.abs(b[3] - 8) < 0.01)).toBe(true);
+  });
+
   it('a gable starts at the wall top and its apex is `rise` above it; a vault and a flat roof too', async () => {
     const THREE = await import('three');
     const { buildSiteFromSpec } = await import('./site-model');
     const { emptySpec } = await import('../core/site-spec');
-    for (const [roof, up] of [['gable', 3], ['vault', 5.8], ['flat', 0.3]] as const) {
+    for (const [roof, up] of [['gable', 3], ['gambrel', 3], ['vault', 5.8], ['flat', 0.3]] as const) {
       const s = emptySpec({ lat: 0, lon: 0 }, 't');
       s.buildings = [{ id: 'b', name: 'B', pos: { x: 0, z: 0 }, rotDeg: 0, length: 20, width: 10, levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, roof, roofRise: 3, partitions: [], doors: {} }] }];
       const box = new THREE.Box3().setFromObject(buildSiteFromSpec(s, { bare: true }).roof);

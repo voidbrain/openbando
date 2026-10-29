@@ -57,7 +57,7 @@ export interface AiCommand {
   roofless?: boolean;
   crenels?: boolean;
   name?: string;
-  roof?: 'gable' | 'flat' | 'vault';
+  roof?: 'gable' | 'gambrel' | 'flat' | 'vault';
   /** set_roof: turn the roof a quarter, and repeat the module `count` times (3 gables ...). */
   turn?: boolean;
   degrees?: number;
@@ -118,7 +118,7 @@ export function normalizeCommands(raw: unknown): { cmds: AiCommand[]; errors: st
     if (typeof o['name'] === 'string' && o['name'].trim()) c.name = o['name'].trim().slice(0, 60);
     if (typeof o['side'] === 'string' && (COMPASS as readonly string[]).includes(o['side'].toLowerCase())) c.side = o['side'].toLowerCase() as Compass;
     if (o['axis'] === 'length' || o['axis'] === 'width') c.axis = o['axis'];
-    if (o['roof'] === 'gable' || o['roof'] === 'flat' || o['roof'] === 'vault') c.roof = o['roof'];
+    if (o['roof'] === 'gable' || o['roof'] === 'gambrel' || o['roof'] === 'flat' || o['roof'] === 'vault') c.roof = o['roof'];
     if (typeof o['doors'] === 'boolean') c.doors = o['doors'];
     if (typeof o['turn'] === 'boolean') c.turn = o['turn'];
     if (typeof o['roofless'] === 'boolean') c.roofless = o['roofless'];
@@ -377,7 +377,7 @@ export function runCommands(spec: SiteSpec, cmds: AiCommand[], selectedId: strin
         break;
       }
       case 'set_roof':
-        if (!c.roof) res.errors.push('set_roof: needs gable, flat or vault');
+        if (!c.roof) res.errors.push('set_roof: needs gable, gambrel, flat or vault');
         else if (b.footprint) res.errors.push(`set_roof: shaped building ${label} always has a flat roof`);
         else {
           const top = b.levels[b.levels.length - 1]!;
