@@ -5,6 +5,7 @@ import { expandShapes, shapeSolids } from './shapes';
 import index from '../../../public/library/bandos.json';
 import chiari from '../../../public/library/bandos/chiari-e-forti.json';
 import hidden from '../../../public/library/bandos/villetta-no-place.json';
+import bardwell from '../../../public/library/bandos/bardwell-house-no-place.json';
 import playground from '../../../public/library/bandos/playground.json';
 import catalog from '../../../public/library/catalog.json';
 
@@ -24,9 +25,10 @@ describe('example bandos', () => {
 
   it('every published example is listed and loads as a bando', () => {
     const rows = sanitizeExamples(index);
-    expect(rows.map((r) => r.name)).toEqual(['Chiari e Forti', 'Playground', 'Villetta (place hidden)']);
+    expect(rows.map((r) => r.name)).toEqual(['Bardwell House', 'Chiari e Forti', 'Playground', 'Villetta (place hidden)']);
     expect(rows.find((r) => r.name === 'Villetta (place hidden)')?.privacy).toBe('hidden');
-    for (const raw of [hidden, chiari]) {
+    expect(rows.find((r) => r.name === 'Bardwell House')?.privacy).toBe('hidden');
+    for (const raw of [hidden, chiari, bardwell]) {
       const spec = sanitizeSpec(raw);
       expect(spec).not.toBeNull();
       expect(spec!.buildings.length).toBeGreaterThan(5);
@@ -39,16 +41,30 @@ describe('example bandos', () => {
     expect(sanitizeSpec(hidden)!.buildings.find((b) => b.block?.id === 'abando/vault-shed')?.levels[0]?.roof).toBe('vault');
   });
 
-  it('the example without its place gives nothing away and carries its own ground', () => {
-    const h = sanitizeSpec(hidden)!;
+  it.each([['Villetta', hidden], ['Bardwell House', bardwell]] as const)('%s, without its place, gives nothing away and carries its own ground', (_, file) => {
+    const h = sanitizeSpec(file)!;
     expect(h.privacy).toBe('hidden');
     expect(h.origin).toEqual({ lat: 0, lon: 0 });
     expect(h.zone ?? h.areas ?? h.geoCorners ?? h.calibration).toBeUndefined();
     expect(h.terrain?.base?.source).toBe('embedded');
     expect((h.terrain?.base?.data ?? '').length).toBeGreaterThan(1000);
-    expect(JSON.stringify(hidden)).not.toMatch(/Via |nameFromMap/);
+    expect(JSON.stringify(file)).not.toMatch(/Via | Ln\b|nameFromMap|terrarium/);
     // nothing near the real place: no coordinates of any kind in the file
-    expect(JSON.stringify(hidden)).not.toMatch(/"(lat|lon)": *[1-9]/);
+    expect(JSON.stringify(file)).not.toMatch(/"(lat|lon)": *-?[1-9]/);
+  });
+
+  it('Bardwell House: the gambrel house and barn, the store, sheds and patio wall, and no map surface over the fields', () => {
+    const b = sanitizeSpec(bardwell)!;
+    const named = (n: string) => b.buildings.find((x) => x.name === n);
+    expect(named('House')?.levels.at(-1)?.roof).toBe('gambrel');
+    expect(named('Barn')?.levels.at(-1)?.roof).toBe('gambrel');
+    expect(named('House wing')?.levels.at(-1)?.roof).toBe('flat');
+    expect(named('Store')).toBeDefined();
+    expect(b.buildings.filter((x) => x.name === 'Shed')).toHaveLength(3);
+    expect(b.walls?.filter((w) => w.material === 'brick')).toHaveLength(3);
+    // the generator's "concrete" over the west fields is gone; only the patio and the drive are paved
+    for (const sf of b.surfaces ?? []) expect(Math.max(...sf.pts.map((p) => Math.abs(p.x)))).toBeLessThan(40);
+    expect(b.droneStart).toEqual({ x: b.pads.at(-1)!.x, z: b.pads.at(-1)!.z });
   });
 });
 
