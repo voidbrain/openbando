@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `460857c` (merged #169), with every CI job of #162–#169 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `5e6f5d0` (merged #171), with every CI job of #162–#172 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -153,28 +153,6 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
-### B-025
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-025 | 🔺 P1 | Implemented | Auto-sync demo offset drifts on CI runners |
-
-**→ Human action required:** 💻 **No**<br />Confirm Auto-sync over several CI runs with no retries, using the offsets the test logs; then close.
-
-**Next action / closure evidence:** Second fix ([#168](https://github.com/voidbrain/openbando/pull/168)): after #162 the check still failed once on CI (#163: −0.84 s, then −0.56 s on retry), from a motion match. Nine local scans (normal, 4× and 6× slowed CPU) were captured and replayed offline: the final refinement on the first flip (10 s window) was the scatter (sd 0.045 s, range 0.15 s), while each motion pair's whole-flight offset was steady (sd 0.010–0.032 s). The matcher now averages the confident motion matches (weighted by r) and skips the flip refinement when it has them (refinement stays the fallback): on the same scans sd 0.016 s, range −0.67 … −0.72 s. `DEMO_OFFSET` −0.69 s (that mean); tolerance unchanged at 0.15 s. Earlier: Cause found with a CPU-throttled probe (local Chromium, 8–9 scans per variant): the result depended on the machine. (1) Motion (pan, diff) is measured between two frames but was dated at the later one, so every sample landed half a frame gap late; a slow machine decodes fewer frames, so the gap and the shift grew with load. (2) With fewer frames the sky/ground brightness match (up vs tb) won and gave about −0.87 s, while motion matches gave −0.60 … −0.66 s; brightness lags because the camera's exposure follows the attitude. Fix: `gridFromSamples` dates motion at the interval midpoint and brightness at its frame; the matcher keeps a high-confidence motion match over brightness. After the fix every scan used a motion match: −0.54 … −0.71 s at normal and 4× slowed CPU (mean −0.64, previously −0.51 … −0.89). `DEMO_OFFSET` is now that mean (it came from one scan); the e2e tolerance stays 0.15 s and the test logs the offset and match it found. A playback-rate back-off when frames drop was tried and dropped (no clearer result, slower scans). Remaining: per-run scatter of about ±0.09 s is the method's precision. Close after the check passes in several CI runs without retries.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#168](https://github.com/voidbrain/openbando/pull/168) (averaged motion match); [#163 CI](https://github.com/voidbrain/openbando/actions/runs/40788783214) (failed −0.84 s, passed on retry −0.56 s); [#162 CI](https://github.com/voidbrain/openbando/actions/runs/40788710587) (passed, −0.61 s); [#162](https://github.com/voidbrain/openbando/pull/162) (recovery: #160 merged into the #159 branch after #159 had merged, without CI, and never reached main); [#160](https://github.com/voidbrain/openbando/pull/160) (midpoint dating, motion preference, measured `DEMO_OFFSET`); [#159 rerun](https://github.com/voidbrain/openbando/actions/runs/40785592494) (failed both attempts, 0.18 s); [#159 CI](https://github.com/voidbrain/openbando/actions/runs/40784413716) (passed); [#154 CI](https://github.com/voidbrain/openbando/actions/runs/40765189126) (fail, pass on retry); [#155](https://github.com/voidbrain/openbando/actions/runs/40765867282), [#156](https://github.com/voidbrain/openbando/actions/runs/40769519651), [#157](https://github.com/voidbrain/openbando/actions/runs/40773605465) (failed); [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) (passed) |
-| Opened | 2026-10-28 |
-| Verification | Unit/integration · 2026-10-29 · 538 tests incl. the averaging case; offline replay of 9 captured scans: sd 0.016 s (was 0.045 s); Browser/accessibility · CI · Pending |
-| Reviewed | 2026-10-29 |
-
-</details>
-
 ### B-026
 
 | Signal | ID | Priority | Status | Item |
@@ -283,28 +261,6 @@ Each item has a compact summary, followed by **→ Human action required** first
 | PR / evidence | [#101](https://github.com/voidbrain/openbando/pull/101) (context); [#122](https://github.com/voidbrain/openbando/pull/122) (perimeter visibility); [#141](https://github.com/voidbrain/openbando/pull/141) (open-edge Cut/Wing); [#142](https://github.com/voidbrain/openbando/pull/142) (safe resize and footprint restoration); [#166](https://github.com/voidbrain/openbando/pull/166) (open-wall restoration) |
 | Opened | 2026-10-27 |
 | Verification | Unit/integration + Browser/accessibility · 2026-10-29 · new open-wall restoration case (survives whole / notch refused / partial refused) and all jobs passed in [#166 CI](https://github.com/voidbrain/openbando/actions/runs/40789909830); Browser/accessibility · 2026-10-28 · resize/restore passed in [#142 CI](https://github.com/voidbrain/openbando/actions/runs/40724736656), open-edge Cut in [#141 CI](https://github.com/voidbrain/openbando/actions/runs/40720066164) |
-| Reviewed | 2026-10-29 |
-
-</details>
-
-### F-005
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-005 | 🔶 P2 | Implemented | 3D indoor tools and handles |
-
-**→ Human action required:** 💻 **No**<br />Confirm the 3D handle and opening/stairwell browser cases in CI; keyboard use is covered by inspector fields and the basement vertex keys.
-
-**Next action / closure evidence:** 2026-10-29: #165 added real-pointer door/window placement on −1/G/L1 and the automatic stairwell on −1/G (passed in [#165 CI](https://github.com/voidbrain/openbando/actions/runs/40789259441)). `feat/f005-3d-handle-cursor` gives 3D handles hover feedback (`move` / `grab` / `grabbing` cursor; none before) and a browser test that finds them by that cursor, moves the rotated building (undo/redo checked on the plan) and resizes it outwards. Keyboard: the inspector's fields move and size buildings, and −1 vertices have their arrow-key buttons (F-003); there is no keyboard path on the 3D handles themselves. Earlier: Browser-test wall, void, door, window, column and stair placement, rotated buildings, upper floors and −1; exercise move/resize handles and keyboard/accessibility. The #147 floor matrix exposed Wall selection resetting itself to Select on all floors; corrected the indoor-entry order. New real-pointer tests cover column/wall/void placement at −1/G/L1 on a rotated building, column undo/redo, exported floor isolation and axe ([#147](https://github.com/voidbrain/openbando/pull/147); failed historically; corrected in #148). Added 3D stairs placement on −1/G/L1 with undo/redo, exported floor elevation, rotation and floor-isolation assertions; the optional stairwell is disabled where an upper floor exists; the top-floor test asserts that control is absent. Basement/G passed #152 CI; its L1 test failed on an invalid checkbox expectation, corrected in [#153](https://github.com/voidbrain/openbando/pull/153); L1 passed [#153 CI](https://github.com/voidbrain/openbando/actions/runs/40760899876/job/123072222211). Doors, windows, automatic stairwell creation and full handle coverage remain open.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | `feat/f005-3d-handle-cursor` (handle cursor, handles test); [#165](https://github.com/voidbrain/openbando/pull/165) (openings, stairwell); [#153](https://github.com/voidbrain/openbando/pull/153) (top-floor test correction); [#152](https://github.com/voidbrain/openbando/pull/152) (stair-placement browser coverage); [#86](https://github.com/voidbrain/openbando/pull/86), [#88](https://github.com/voidbrain/openbando/pull/88), [#95](https://github.com/voidbrain/openbando/pull/95) (implementation and partial browser coverage); [#148](https://github.com/voidbrain/openbando/pull/148) (Wall selection fix); history: [#147 CI](https://github.com/voidbrain/openbando/actions/runs/40734777783) failed at Wall activation on every floor (corrected in #148); #152 L1 failed on a stairwell checkbox absent on the top floor (corrected in #153); [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed selected workflows |
-| Opened | 2026-10-27 |
-| Verification | Browser/accessibility · 2026-10-29 · door/window on −1/G/L1 and automatic stairwell on −1/G passed in [#165 CI](https://github.com/voidbrain/openbando/actions/runs/40789259441); 3D handle move/undo/redo/resize passed locally (2/2), CI · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
