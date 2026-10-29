@@ -1,4 +1,4 @@
-import { basementBuilding } from '../core/basement';
+import { basementBuilding, basementPieceBuilding } from '../core/basement';
 import { cutUnderground } from './underground-cut';
 import { drapeRoad } from './road-drape';
 import { cutRect, edgesOf, isRectilinear, slabs } from '../core/footprint';
@@ -799,7 +799,16 @@ export function buildUnderground(v: UndergroundSpec): THREE.Group {
  * Building-local (the group carries the position, turn and pad height); outlines may have diagonal edges.
  */
 function buildBasement(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, floorMat: THREE.Material): void {
-  const basement = basementBuilding(b);
+  buildBasementRoom(ctx, b, basementBuilding(b), target, floorMat);
+  // separate pieces (F-002): each its own derived floor and walls, picked as the same basement
+  for (let i = 0; i < (b.basement?.pieces?.length ?? 0); i++) {
+    const piece = basementPieceBuilding(b, i);
+    if (piece) buildBasementRoom(ctx, b, piece, target, floorMat);
+  }
+}
+
+/** One derived basement floor (`basement`, from basementBuilding) of building `b`, placed in `b`'s frame. */
+function buildBasementRoom(ctx: Ctx, b: BuildingSpec, basement: BuildingSpec, target: THREE.Object3D, floorMat: THREE.Material): void {
   const level = basement.levels[0]!;
   const room = new THREE.Group();
   room.userData['pick'] = {kind:'basement',id:b.id};

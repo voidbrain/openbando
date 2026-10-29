@@ -2,7 +2,7 @@ import type { BuildingSpec, LevelSpec, Vec2 } from './site-spec';
 import { listOpenings, outlineOf, reshapeBuilding } from './openings';
 import { polygonRect } from './polygon-rect';
 import { BASEMENT_COORD_LIMIT, bounds, contains, isRectilinear, rectPoly, validOutline, type Rect } from './footprint';
-import { MAX_COURTYARDS, ringsFit, ringsKept } from './basement-rings';
+import { MAX_COURTYARDS, MAX_PIECES, ringsFit, ringsKept } from './basement-rings';
 
 /** Basement dimensions are independent of the floors above, in the same centred building frame. */
 export function basementOutline(b: BuildingSpec): Vec2[] {
@@ -42,6 +42,7 @@ export function basementBuilding(b: BuildingSpec): BuildingSpec {
     roof: 'none',
     roofRise: 0,
     ...(b.basement?.courtyards?.length ? { courtyards: b.basement.courtyards.map(y => ({ ring: y.outline.map(p => ({ x: p.x - offset.x, z: p.z - offset.z })), ...(y.wallEdges ? { walls: [...y.wallEdges] } : {}) })) } : {}),
+    ...(b.basement?.pieces?.length ? { pieces: b.basement.pieces.map(p => p.outline.map(q => ({ x: q.x - offset.x, z: q.z - offset.z }))) } : {}),
   };
   const length = box.x1 - box.x0;
   const width = box.z1 - box.z0;
@@ -403,5 +404,41 @@ export function removeCourtyard(b: BuildingSpec, index: number): boolean {
   const courtyards = list.filter((_, i) => i !== index);
   const { courtyards: _old, ...rest } = b.basement!;
   b.basement = { ...rest, ...(courtyards.length ? { courtyards } : {}) };
+  return true;
+}
+
+/** A separate piece as the building its basement would be (F-002): its own outline and walls, nothing else yet. */
+export function basementPieceBuilding(b: BuildingSpec, index: number): BuildingSpec | null {
+  const piece = b.basement?.pieces?.[index];
+  if (!piece) return null;
+  return basementBuilding({ ...b, basement: { height: b.basement!.height, outline: piece.outline, ...(piece.wallEdges ? { wallEdges: piece.wallEdges } : {}) } });
+}
+
+/**
+ * Add a rectangular separate piece drawn on the −1 floor (`rect` in the centred basement view, as Cut / Wing):
+ * accepted only apart from the main outline and the other pieces.
+ */
+export function addBasementPiece(b: BuildingSpec, rect: Rect): boolean {
+  if (!b.basement) return false;
+  const box = bounds(basementOutline(b)), ox = (box.x0 + box.x1) / 2, oz = (box.z0 + box.z1) / 2;
+  const x0 = Math.min(rect.x0, rect.x1) + ox, x1 = Math.max(rect.x0, rect.x1) + ox, z0 = Math.min(rect.z0, rect.z1) + oz, z1 = Math.max(rect.z0, rect.z1) + oz;
+  if (x1 - x0 < 2 || z1 - z0 < 2) return false;
+  const outline = [{ x: x0, z: z0 }, { x: x1, z: z0 }, { x: x1, z: z1 }, { x: x0, z: z1 }];
+  if (outline.some(p => Math.abs(p.x) > BASEMENT_COORD_LIMIT || Math.abs(p.z) > BASEMENT_COORD_LIMIT)) return false;
+  const pieces = [...(b.basement.pieces ?? []), { outline }];
+  if (pieces.length > MAX_PIECES) return false;
+  const next = { ...b.basement, pieces };
+  if (!ringsKept(b, next)) return false;
+  b.basement = next;
+  return true;
+}
+
+/** Remove one separate piece. */
+export function removeBasementPiece(b: BuildingSpec, index: number): boolean {
+  const list = b.basement?.pieces;
+  if (!list || !Number.isInteger(index) || index < 0 || index >= list.length) return false;
+  const pieces = list.filter((_, i) => i !== index);
+  const { pieces: _old, ...rest } = b.basement!;
+  b.basement = { ...rest, ...(pieces.length ? { pieces } : {}) };
   return true;
 }

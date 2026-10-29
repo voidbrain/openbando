@@ -225,6 +225,9 @@
         <g [attr.transform]="tf(bd)">
           @if (indoor() && basementFocus()) {
             <polygon [attr.points]="outline(bd)" fill="#a9aaa0" fill-opacity="0.2" stroke="#ffd166" stroke-width="2" stroke-dasharray="6 3" vector-effect="non-scaling-stroke" pointer-events="stroke" (dblclick)="basementEdgeDoubleClick($event)" />
+            @for (ring of bd.levels[0]?.pieces ?? []; track $index) {
+              <polygon [attr.points]="polyPts(ring)" [attr.fill]="tc('piece')" fill-opacity="0.2" [attr.stroke]="tc('piece')" stroke-width="2" vector-effect="non-scaling-stroke" pointer-events="none" />
+            }
             @for (y of bd.levels[0]?.courtyards ?? []; track $index) {
               <polygon [attr.points]="polyPts(y.ring)" [attr.fill]="tc('courtyard')" fill-opacity="0.25" [attr.stroke]="tc('courtyard')" stroke-width="2" vector-effect="non-scaling-stroke" pointer-events="none" />
             }
@@ -317,7 +320,7 @@
             </g>
           }
           @if (drag()?.t === 'shape') {
-            <rect [attr.x]="sh().x" [attr.y]="sh().z" [attr.width]="sh().w" [attr.height]="sh().d" [attr.fill]="tc(sh().op === 'cut' ? 'cut' : sh().op === 'yard' ? 'courtyard' : 'wing')" fill-opacity="0.35" [attr.stroke]="tc(sh().op === 'cut' ? 'cut' : sh().op === 'yard' ? 'courtyard' : 'wing')" stroke-dasharray="6 4" vector-effect="non-scaling-stroke" pointer-events="none" />
+            <rect [attr.x]="sh().x" [attr.y]="sh().z" [attr.width]="sh().w" [attr.height]="sh().d" [attr.fill]="tc(shapeTool(sh().op))" fill-opacity="0.35" [attr.stroke]="tc(shapeTool(sh().op))" stroke-dasharray="6 4" vector-effect="non-scaling-stroke" pointer-events="none" />
           }
         </g>
       }
@@ -818,6 +821,9 @@
                     @for (sd of wallSides; track sd.k) {
                       <label class="chk"><input type="checkbox" [checked]="bd.basement.sides?.[sd.k] !== false" (change)="basementWall(sd.k,checked($event))" />{{ sd.label }} wall</label>
                     }
+                  }
+                  @for (p of bd.basement.pieces ?? []; track $index; let i = $index) {
+                    <div class="span2 row"><span class="grow">Piece {{ i + 1 }} · {{ yardSize(p) }}</span><button class="btn danger" (click)="deletePiece(i)" [attr.aria-label]="'Delete piece ' + (i + 1)">Delete</button></div>
                   }
                   @for (y of bd.basement.courtyards ?? []; track $index; let i = $index) {
                     <div class="span2 row"><span class="grow">Courtyard {{ i + 1 }} · {{ yardSize(y) }}</span><button class="btn danger" (click)="deleteCourtyard(i)" [attr.aria-label]="'Delete courtyard ' + (i + 1)">Delete</button></div>

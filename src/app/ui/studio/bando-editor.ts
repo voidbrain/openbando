@@ -17,7 +17,7 @@ import { areaCorners } from '../../core/areas';
 import { roadDef, surfaceDef } from '../../core/layers';
 import { blockCategory } from '../../core/catalog';
 import { siteGround } from '../../core/site-ground';
-import { addCourtyard, basementBuilding, basementOutline, editBasementFloor, removeCourtyard, insertBasementVertex, moveBasementVertex, removeBasementVertex, setBasementPerimeterWall, reshapeBasement, resizeBasement as resizeBasementOutline, restoreBasementFootprint, saveBasementFloor } from '../../core/basement';
+import { addBasementPiece, addCourtyard, basementBuilding, basementOutline, editBasementFloor, removeBasementPiece, removeCourtyard, insertBasementVertex, moveBasementVertex, removeBasementVertex, setBasementPerimeterWall, reshapeBasement, resizeBasement as resizeBasementOutline, restoreBasementFootprint, saveBasementFloor } from '../../core/basement';
 import { PickMenu, type PickOption } from './pick-menu';
 import { BlocksBox } from './blocks-box';
 import { paramValues, type BlockSpec, type ParamValue } from '../../core/blocks';
@@ -61,7 +61,7 @@ type CtxItem = { label: string; act?: () => void; danger?: boolean; disabled?: b
 type VegetationMix = 'd' | 'c' | 'mix' | ShrubKind;
 
 /** Tools that place something on the selected building: while one is active, a click puts the thing where the ghost is. */
-const PLACE: readonly Tool[] = ['door', 'window', 'wall', 'void', 'column', 'stairs', 'cut', 'wing', 'courtyard'];
+const PLACE: readonly Tool[] = ['door', 'window', 'wall', 'void', 'column', 'stairs', 'cut', 'wing', 'courtyard', 'piece'];
 const MIN_HALF = 20;
 const M_LAT = 111132;
 const snap = (v: number, step: number): number => Math.round(v / step) * step;
@@ -157,6 +157,7 @@ export class BandoEditor {
     { id: 'wall', icon: 'wall', group: 'room', name: 'Wall', color: '#e1b12c', hint: 'Draw an interior wall on this floor', where: 'in', sep: true },
     { id: 'void', icon: 'void', group: 'room', name: 'Void', color: '#0984e3', hint: 'Drag a hole in this floor (water on the ground floor)', where: 'in' },
     { id: 'courtyard', icon: 'courtyard', group: 'room', name: 'Courtyard', color: '#cf6a87', hint: 'Drag a courtyard into the basement: the ground stays, walls go around it', where: 'in' },
+    { id: 'piece', icon: 'piece', group: 'room', name: 'Basement piece', color: '#786fa6', hint: 'Drag a separate piece of basement, apart from the main one', where: 'in' },
     { id: 'stairs', icon: 'stairs', group: 'room', name: 'Stairs', color: '#badc58', hint: 'Click to place stairs (or a ramp) on this floor', where: 'in' },
     { id: 'door', icon: 'door', group: 'open', name: 'Door', color: '#55efc4', hint: 'Click a wall of this floor', where: 'in' },
     { id: 'window', icon: 'window', group: 'open', name: 'Window', color: '#e056fd', hint: 'Click a wall of this floor', where: 'in' },
@@ -239,11 +240,20 @@ export class BandoEditor {
   protected readonly toolName = computed(() => this.toolDef()?.name ?? '');
   protected readonly toolColor = computed(() => this.toolDef()?.color ?? '#fff');
   /** The colour of one tool, so what it draws while you drag matches its palette button. */
-  /** "4 × 3 m": a courtyard's extent for the inspector. */
+  /** The tool whose colour a Cut / Wing / Courtyard / Piece drag preview takes. */
+  protected shapeTool = (op: 'add' | 'cut' | 'yard' | 'piece'): Tool => (op === 'cut' ? 'cut' : op === 'yard' ? 'courtyard' : op === 'piece' ? 'piece' : 'wing');
+  /** "4 × 3 m": a courtyard's or piece's extent for the inspector. */
   protected yardSize = (y: { outline: Pt[] }): string => {
     const xs = y.outline.map(p => p.x), zs = y.outline.map(p => p.z);
     return `${(Math.max(...xs) - Math.min(...xs)).toFixed(1)} × ${(Math.max(...zs) - Math.min(...zs)).toFixed(1)} m`;
   };
+  /** Remove one of the basement's separate pieces (the inspector's list). */
+  protected deletePiece(i: number): void {
+    const bd = this.b();
+    if (!bd) return;
+    this.ed.commitSite(s => { const b = this.index(s, bd.id); if (b) removeBasementPiece(b, i); });
+    this.applyNow();
+  }
   /** Remove one of the basement's courtyards (the inspector's list). */
   protected deleteCourtyard(i: number): void {
     const bd = this.b();
@@ -501,7 +511,7 @@ export class BandoEditor {
     }
     const d = this.drag();
     const bd = this.floorBuilding(), height = this.indoorPlaneY();
-    if (bd && height !== null && d?.t === 'shape') return { pts: [this.fromLocal(bd, d.a), this.fromLocal(bd, d.b)], color: this.tc(d.op === 'cut' ? 'cut' : d.op === 'yard' ? 'courtyard' : 'wing'), height };
+    if (bd && height !== null && d?.t === 'shape') return { pts: [this.fromLocal(bd, d.a), this.fromLocal(bd, d.b)], color: this.tc(this.shapeTool(d.op)), height };
     if (bd && height !== null && (d?.t === 'wallDraw' || d?.t === 'voidDraw')) {
       const world = (p: Pt) => this.fromLocal(bd, { x: p.x - bd.length / 2, z: p.z - bd.width / 2 });
       return { pts: [world(d.a), world(d.b)], color: this.tc(d.t === 'wallDraw' ? 'wall' : 'void'), height };
@@ -660,10 +670,10 @@ export class BandoEditor {
     this.tools.filter(
       (t) =>
         (t.where === 'both' || (t.where === 'in') === this.indoor() || (this.indoor() && this.basementFocus() && (t.id === 'cut' || t.id === 'wing'))) &&
-        (t.id !== 'courtyard' || this.basementFocus()) && // courtyards exist on −1 only
+        ((t.id !== 'courtyard' && t.id !== 'piece') || this.basementFocus()) && // courtyards and pieces exist on −1 only
         // cut / wing / merge stay in the palette: without a selected building they ask for one (their hint says so)
 
-        (!this.view3d() || ['select', 'measure', 'building', 'structure', 'tree', 'scatter', 'fence', 'terrain', 'tunnel', 'road', 'surface', 'water', 'wall', 'void', 'door', 'window', 'column', 'stairs'].includes(t.id) || (this.indoor() && this.basementFocus() && (t.id === 'cut' || t.id === 'wing' || t.id === 'courtyard'))), // on the ground in 3D: what a click can place or paint
+        (!this.view3d() || ['select', 'measure', 'building', 'structure', 'tree', 'scatter', 'fence', 'terrain', 'tunnel', 'road', 'surface', 'water', 'wall', 'void', 'door', 'window', 'column', 'stairs'].includes(t.id) || (this.indoor() && this.basementFocus() && (t.id === 'cut' || t.id === 'wing' || t.id === 'courtyard' || t.id === 'piece'))), // on the ground in 3D: what a click can place or paint
     ),
   );
   protected readonly placing = computed(() => PLACE.includes(this.tool()));
@@ -777,6 +787,7 @@ export class BandoEditor {
     if (t === 'column') return 'Click inside the building to place a column on this floor; drag to move.';
     if (t === 'cut' || t === 'wing') return this.b() ? `Drag a rectangle over the selected building to ${t === 'cut' ? 'cut it out' : 'add it as a wing'}.` : 'Select a building first.';
     if (t === 'courtyard') return 'Drag a rectangle inside the basement: the ground stays there and walls go around it.';
+    if (t === 'piece') return 'Drag a rectangle apart from the basement: a separate piece with its own walls.';
     if (t === 'tree') return 'Click to plant trees; switch to ↖ to move or delete them.';
     if (t === 'tunnel') return (this.under.kind() === 'tunnel' ? 'Drag from one end of the tunnel to the other.' : 'Drag a rectangle: a room under the ground (a bunker, a basement).') + ' It opens where the ground is between its floor and ceiling: lower the ground at its ends with Terrain to make the mouths.';
     if (t === 'road') return 'Drag along the way. Select a road to change its kind, width or surface.';
@@ -1340,10 +1351,10 @@ export class BandoEditor {
       this.drag.set({ t: 'voidDraw', a, b: { ...a } });
     } else if (t === 'column') this.columnClick(bd, p);
     else if (t === 'stairs') this.placeStairsAt(bd);
-    else if (t === 'cut' || t === 'wing' || t === 'courtyard') {
+    else if (t === 'cut' || t === 'wing' || t === 'courtyard' || t === 'piece') {
       const l = this.toLocal(bd, p);
       const a = { x: snap(l.x, 0.5), z: snap(l.z, 0.5) };
-      this.drag.set({ t: 'shape', op: t === 'cut' ? 'cut' : t === 'wing' ? 'add' : 'yard', a, b: { ...a } });
+      this.drag.set({ t: 'shape', op: t === 'cut' ? 'cut' : t === 'wing' ? 'add' : t === 'piece' ? 'piece' : 'yard', a, b: { ...a } });
     }
   }
 
@@ -2313,7 +2324,11 @@ export class BandoEditor {
     } else if (d.t === 'shape' && bd) {
       const rect: Rect = { x0: d.a.x, z0: d.a.z, x1: d.b.x, z1: d.b.z };
       if (Math.abs(rect.x1 - rect.x0) >= 0.5 && Math.abs(rect.z1 - rect.z0) >= 0.5) {
-        if (d.op === 'yard') {
+        if (d.op === 'piece') {
+          const probe = structuredClone(this.b());
+          if (!probe || !addBasementPiece(probe, rect)) this.toast.show('A separate piece must be at least 2 m across and apart from the basement and the other pieces.');
+          else { this.ed.commitSite(s => { const b = this.index(s, bd.id); if (b) addBasementPiece(b, rect); }); this.applyNow(); }
+        } else if (d.op === 'yard') {
           const probe = structuredClone(this.b());
           if (!probe || !addCourtyard(probe, rect)) this.toast.show('A courtyard must lie inside the basement, at least 1 m across, clear of other courtyards and of columns, walls and voids.');
           else { this.ed.commitSite(s => { const b = this.index(s, bd.id); if (b) addCourtyard(b, rect); }); this.applyNow(); }
