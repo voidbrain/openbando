@@ -64,13 +64,14 @@ import type { BuildingHandle } from '../../three/building-handles';
       border-radius: 6px;
       pointer-events: none;
     }
-    .vertex-access { position: absolute; top: 8px; left: 8px; z-index: 21; max-width: 220px; max-height: 50%; overflow: auto; background: var(--panel-solid); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius-control); padding: 4px; }
+    /* top right: the tool palette sits top left */
+    .vertex-access { position: absolute; top: 8px; right: 8px; z-index: 21; max-width: 220px; max-height: 50%; overflow: auto; background: var(--panel-solid); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius-control); padding: 4px; }
     .vertex-access summary { cursor: pointer; }
     .vertex-row { display: inline-flex; gap: 2px; margin: 2px; }
     .vertex-access button { color: var(--text); background: var(--panel-solid); border: 1px solid var(--line); padding: 4px; }
     .vertex-access button:focus-visible, .vertex-access summary:focus-visible { outline: 2px solid var(--accent); }
     .measure-access { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-    .measure-access:focus-within { width: auto; height: auto; clip-path: none; overflow: auto; top: 8px; left: 8px; z-index: 20; background: var(--panel-solid); padding: 4px; }
+    .measure-access:focus-within { width: auto; height: auto; clip-path: none; overflow: auto; top: 8px; right: 8px; z-index: 20; background: var(--panel-solid); padding: 4px; }
     .measure-access button { color: var(--text); background: var(--panel-solid); border: 1px solid var(--line); padding: 4px; }
     .fail {
       position: absolute;

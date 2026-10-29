@@ -54,10 +54,9 @@ import { LayerTool } from './editor/layer-tool';
 import { MeasureTool } from './editor/measure-tool';
 import { BlockTool } from './editor/block-tool';
 import { ToolbarDock } from './editor/toolbar-dock';
-import { TerrainTool, TERRAIN_OPS, type Brush } from './editor/terrain-tool';
+import { TerrainTool } from './editor/terrain-tool';
 import { UndergroundTool } from './editor/underground-tool';
 
-type Entry = { key: string; tool: Tool; mode?: ScatterMode; op?: Brush; icon: string; name: string; color: string; hint: string; group: string; sep?: boolean };
 type CtxItem = { label: string; act?: () => void; danger?: boolean; disabled?: boolean; sep?: boolean; head?: boolean };
 type VegetationMix = 'd' | 'c' | 'mix' | ShrubKind;
 
@@ -167,78 +166,21 @@ export class BandoEditor {
     { id: 'window', icon: 'window', group: 'open', name: 'Window', color: '#e056fd', hint: 'Click a wall of this floor', where: 'in' },
     { id: 'column', icon: 'column', group: 'col', name: 'Column', color: '#fab1a0', hint: 'Click to place a column: it snaps to the other columns and shows the distances', where: 'in' },
   ];
-  /** The tree brush has four shapes; each is its own entry in the Trees group. */
-  private static readonly SCATTER: readonly { mode: ScatterMode; icon: string; name: string }[] = [
-    { mode: 'pen', icon: 'brush', name: 'Tree brush · pen' },
-    { mode: 'rect', icon: 'areaRect', name: 'Tree area · square' },
-    { mode: 'circle', icon: 'areaCircle', name: 'Tree area · circle' },
-    { mode: 'lasso', icon: 'lasso', name: 'Tree area · lasso' },
-  ];
-  /** Every tool on offer right now, with the brush expanded to its shapes. */
-  protected readonly entries = computed<Entry[]>(() =>
-    this.visibleTools().flatMap((t): Entry[] =>
-      t.id === 'scatter'
-        ? BandoEditor.SCATTER.map((m) => ({ key: `scatter:${m.mode}`, tool: t.id, mode: m.mode, icon: m.icon, name: m.name, color: t.color, hint: t.hint, group: t.group }))
-        : t.id === 'terrain'
-          ? TERRAIN_OPS.map((m) => ({ key: `terrain:${m.op}`, tool: t.id, op: m.op, icon: m.icon, name: m.name, color: t.color, hint: t.hint, group: t.group }))
-          : [{ key: t.id, tool: t.id, icon: t.icon, name: t.name, color: t.color, hint: t.hint, group: t.group, sep: t.sep }],
-    ),
-  );
-  private entryOn(e: Entry): boolean {
-    return this.tool() === e.tool && (!e.mode || this.scatterMode() === e.mode) && (!e.op || this.terrain.op() === e.op);
-  }
-  /** The palette: one button per group (like a paint program), showing the active tool of the group or the last one used. The rest sit in a flyout. */
+  /**
+   * The palette: every tool on offer has its own button, two to a row, a group per block. Nothing hides behind
+   * another button (the old paint-program flyouts hid Cut, Wing, Water… behind a long press). The tree brush's shape
+   * and the terrain operation are picked in the options bar.
+   */
   protected readonly groups = computed(() => {
-    const by = new Map<string, Entry[]>();
-    for (const e of this.entries()) by.set(e.group, [...(by.get(e.group) ?? []), e]);
-    return [...by.entries()].map(([id, items]) => {
-      const active = items.find((i) => this.entryOn(i));
-      const shown = active ?? items.find((i) => i.key === this.groupCur()[id]) ?? items[0]!;
-      return { id, items, shown, on: !!active, sep: !!items[0]!.sep };
-    });
+    const by = new Map<string, (typeof this.tools)[number][]>();
+    for (const t of this.visibleTools()) by.set(t.group, [...(by.get(t.group) ?? []), t]);
+    return [...by.entries()].map(([id, items]) => ({ id, items, sep: !!items[0]!.sep }));
   });
-  protected readonly groupCur = signal<Record<string, string>>({});
-  /** `data-tour` marks of a palette button: every tool of its group (the guided tour and the hover tips find them). */
-  protected toolMarks = (items: readonly Entry[]): string => [...new Set(items.map((i) => `tool-${i.tool}`))].join(' ');
 
-  /** The group whose flyout is open. */
-  protected readonly fly = signal<string | null>(null);
-  private pressT: ReturnType<typeof setTimeout> | undefined;
-  private longPressed = false;
-
-  protected pickEntry(e: Entry): void {
-    const def = this.tools.find((t) => t.id === e.tool);
-    if (def?.needsBuilding && (!this.b() || this.b()!.frame)) this.toast.show(this.b()?.frame ? `${e.name} does not work on a greenhouse.` : `${e.name}: select a building first, then use it.`);
-    this.groupCur.update((g) => ({ ...g, [e.group]: e.key }));
-    if (e.mode) this.scatterMode.set(e.mode);
-    if (e.op) this.terrain.op.set(e.op);
-    this.setTool(e.tool);
-    this.fly.set(null);
-  }
-  protected entryActive = (e: Entry): boolean => this.entryOn(e);
-  /** Holding a button (or its corner, or a right click) opens the flyout of its group. */
-  protected pbDown(id: string, n: number): void {
-    this.longPressed = false;
-    clearTimeout(this.pressT);
-    if (n > 1) this.pressT = setTimeout(() => {
-      this.longPressed = true;
-      this.fly.set(id);
-    }, 380);
-  }
-  protected pbUp(): void {
-    clearTimeout(this.pressT);
-  }
-  protected pbClick(e: Entry): void {
-    if (this.longPressed) {
-      this.longPressed = false;
-      return;
-    }
-    this.pickEntry(e);
-  }
-  protected toggleFly(id: string, ev: Event): void {
-    ev.stopPropagation();
-    ev.preventDefault();
-    this.fly.update((f) => (f === id ? null : id));
+  protected pickTool(id: Tool): void {
+    const def = this.tools.find((t) => t.id === id);
+    if (def?.needsBuilding && (!this.b() || this.b()!.frame)) this.toast.show(this.b()?.frame ? `${def.name} does not work on a greenhouse.` : `${def.name}: select a building first, then use it.`);
+    this.setTool(id);
   }
   protected readonly toolDef = computed(() => this.tools.find((t) => t.id === this.tool()));
   protected readonly toolName = computed(() => this.toolDef()?.name ?? '');
@@ -865,8 +807,8 @@ export class BandoEditor {
     const tour = inject(TourService);
     tour.editor = {
       tool: (id) => {
-        const e = this.entries().find((x) => x.tool === id);
-        if (e) this.pickEntry(e);
+        const t = this.visibleTools().find((x) => x.id === id);
+        if (t) this.pickTool(t.id);
       },
       select: (name) => {
         const b = this.ed.draft().buildings.find((x) => x.name === name);
@@ -2440,7 +2382,6 @@ export class BandoEditor {
   protected readonly ctx = signal<{ x: number; y: number; items: CtxItem[] } | null>(null);
   protected closeMenus(): void {
     this.ctx.set(null);
-    this.fly.set(null);
   }
   protected runCtx(it: CtxItem): void {
     this.ctx.set(null);
@@ -2453,7 +2394,6 @@ export class BandoEditor {
     if (this.tool() === 'terrain' && this.terrain.op() === 'sculpt') return; // the right button sculpts: no menu
     const t = e.target as Element;
     if (t.closest('.palette, .ctx, .opts, app-float-box')) return;
-    this.fly.set(null);
     if (this.tool() === 'measure' && this.measure.chain().a) {
       // a right click while measuring just ends the chain
       this.measure.endChain();

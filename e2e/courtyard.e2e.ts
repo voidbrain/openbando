@@ -29,11 +29,7 @@ test('the Courtyard tool adds a courtyard on −1 only, with undo, delete and ex
   await expect(tool).toHaveCount(0);
   await inspector.getByRole('button', {name: '−1', exact: true}).click();
   await expect(tool).toHaveCount(1);
-  if ((await tool.getAttribute('title'))?.startsWith('Courtyard')) await tool.click();
-  else {
-    await tool.click({button: 'right'});
-    await page.locator('app-bando-editor .palette .fly').getByRole('button', {name: 'Courtyard', exact: true}).click();
-  }
+  await tool.click();
   await expect(tool).toHaveClass(/on/);
 
   // drag a rectangle in the middle of the floor
@@ -100,11 +96,7 @@ test('the Basement piece tool adds a separate piece beside the basement, with ex
   await bar.getByRole('button', {name: 'Indoors', exact: true}).click();
   const group = page.locator('app-bando-editor .palette .pbtn[data-tour~="tool-piece"]');
   await expect(group).toHaveCount(1);
-  if ((await group.getAttribute('title'))?.startsWith('Basement piece')) await group.click();
-  else {
-    await group.click({button: 'right'});
-    await page.locator('app-bando-editor .palette .fly').getByRole('button', {name: 'Basement piece', exact: true}).click();
-  }
+  await group.click();
   // east of the basement: from a quarter of its width beyond the east wall, a third of its width long
   const box = (await page.locator('[data-pk="building:b"]').first().boundingBox())!;
   await page.mouse.move(box.x + box.width * 1.25, box.y + box.height * 0.3);

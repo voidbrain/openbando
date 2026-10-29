@@ -42,7 +42,7 @@ let nextId = 0;
       <span class="pm-caret" aria-hidden="true">▾</span>
     </button>
     @if (open()) {
-      <ul #list class="pm-list" role="listbox" tabindex="-1" [id]="listId" [attr.aria-label]="label()" [attr.aria-activedescendant]="listId + '-' + active()" (keydown)="listKey($event)">
+      <ul #list class="pm-list" role="listbox" tabindex="-1" [class.up]="place().up" [class.end]="place().end" [style.max-height.px]="place().max" [id]="listId" [attr.aria-label]="label()" [attr.aria-activedescendant]="listId + '-' + active()" (keydown)="listKey($event)">
         @for (o of options(); track o.id) {
           <li role="option" class="pm-opt" [id]="listId + '-' + $index" [class.on]="o.id === value()" [class.act]="$index === active()" [attr.aria-selected]="o.id === value()" (pointerenter)="active.set($index)" (click)="choose(o.id)">
             <app-tool-icon [name]="o.icon" />
@@ -84,8 +84,9 @@ let nextId = 0;
       padding: 4px;
       list-style: none;
       min-width: 220px;
-      max-height: 320px;
+      max-height: 320px; /* bound to the room in the window when it opens */
       overflow: auto;
+      overscroll-behavior: contain;
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -94,6 +95,14 @@ let nextId = 0;
       border-radius: 9px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
       outline: none;
+    }
+    .pm-list.up {
+      top: auto;
+      bottom: calc(100% + 4px);
+    }
+    .pm-list.end {
+      left: auto;
+      right: 0;
     }
     .pm-list:focus-visible {
       outline: 2px solid var(--accent);
@@ -137,6 +146,8 @@ export class PickMenu {
   protected readonly listId = `pm-${nextId++}`;
   protected readonly open = signal(false);
   protected readonly active = signal(0);
+  /** Where the list opens: below, or above when there is more room there; as tall as the room allows (it scrolls). */
+  protected readonly place = signal({ up: false, end: false, max: 320 });
   protected readonly current = computed(() => this.options().find((o) => o.id === this.value()) ?? this.options()[0]);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
@@ -150,10 +161,17 @@ export class PickMenu {
 
   private show(): void {
     this.active.set(Math.max(0, this.options().findIndex((o) => o.id === this.value())));
+    // a menu near the bottom of the window opens upwards; it never reaches past the window (the page must not scroll)
+    const r = this.btn().nativeElement.getBoundingClientRect();
+    const view = this.host.nativeElement.ownerDocument.documentElement;
+    const below = view.clientHeight - r.bottom - 12, above = r.top - 12;
+    const wanted = Math.min(320, this.options().length * 36 + 10);
+    const up = below < wanted && above > below;
+    this.place.set({ up, end: r.left + 220 > view.clientWidth - 8, max: Math.max(80, Math.min(320, up ? above : below)) });
     this.open.set(true);
-    // the list exists only after the next render: move the focus into it then
+    // the list exists only after the next render: move the focus into it then, without scrolling the page to it
     afterNextRender(() => {
-      this.list()?.nativeElement.focus();
+      this.list()?.nativeElement.focus({ preventScroll: true });
       this.scrollActive();
     }, { injector: this.injector });
   }
@@ -193,8 +211,15 @@ export class PickMenu {
     e.stopPropagation();
   }
 
+  /** Bring the active choice into view inside the list only (scrollIntoView would scroll the page as well). */
   private scrollActive(): void {
-    afterNextRender(() => this.list()?.nativeElement.querySelector('.act')?.scrollIntoView({ block: 'nearest' }), { injector: this.injector });
+    afterNextRender(() => {
+      const list = this.list()?.nativeElement;
+      const act = list?.querySelector<HTMLElement>('.act');
+      if (!list || !act) return;
+      if (act.offsetTop < list.scrollTop) list.scrollTop = act.offsetTop;
+      else if (act.offsetTop + act.offsetHeight > list.scrollTop + list.clientHeight) list.scrollTop = act.offsetTop + act.offsetHeight - list.clientHeight;
+    }, { injector: this.injector });
   }
 
   protected outside(e: PointerEvent): void {

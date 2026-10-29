@@ -10,16 +10,16 @@ import type { EditorHost } from './editor-host';
 export type Brush = TerrainOp | 'sculpt';
 
 /** The terrain brushes, each its own entry in the palette's Terrain group. */
-export const TERRAIN_OPS: readonly { op: Brush; icon: string; name: string }[] = [
-  { op: 'sculpt', icon: 'terrainSculpt', name: 'Terrain · sculpt (hold: left raises, right lowers)' },
-  { op: 'raise', icon: 'terrainRaise', name: 'Terrain · raise' },
-  { op: 'lower', icon: 'terrainLower', name: 'Terrain · lower' },
-  { op: 'smooth', icon: 'terrainSmooth', name: 'Terrain · smooth' },
-  { op: 'flatten', icon: 'terrainFlatten', name: 'Terrain · flatten' },
-  { op: 'hill', icon: 'terrainHill', name: 'Terrain · hill' },
-  { op: 'crater', icon: 'terrainCrater', name: 'Terrain · crater' },
-  { op: 'ramp', icon: 'ramp', name: 'Terrain · ramp' },
-];
+const TERRAIN_OPS: readonly { op: Brush; icon: string; hint?: string }[] = [
+  { op: 'sculpt', icon: 'terrainSculpt', hint: 'Hold: the left button raises, the right lowers' },
+  { op: 'raise', icon: 'terrainRaise' },
+  { op: 'lower', icon: 'terrainLower' },
+  { op: 'smooth', icon: 'terrainSmooth' },
+  { op: 'flatten', icon: 'terrainFlatten' },
+  { op: 'hill', icon: 'terrainHill' },
+  { op: 'crater', icon: 'terrainCrater' },
+  { op: 'ramp', icon: 'ramp' },
+]
 
 /** The Terrain tool: brush options, how the ground is drawn (contours, height map, 3D style) and the strokes. */
 export class TerrainTool {
@@ -35,7 +35,7 @@ export class TerrainTool {
   readonly radius = signal(8);
   readonly strength = signal(2);
   readonly falloff = signal<Falloff>('smooth');
-  readonly opOptions: readonly PickOption[] = TERRAIN_OPS.map((t) => ({ id: t.op, label: t.op[0]!.toUpperCase() + t.op.slice(1), icon: t.icon }));
+  readonly opOptions: readonly PickOption[] = TERRAIN_OPS.map((t) => ({ id: t.op, label: t.op[0]!.toUpperCase() + t.op.slice(1), icon: t.icon, hint: t.hint }));
   readonly falloffOptions: readonly PickOption[] = [
     { id: 'smooth', label: 'Soft edge', icon: 'terrainHill', hint: 'Rounded, natural' },
     { id: 'linear', label: 'Straight edge', icon: 'ramp', hint: 'A steady slope to the rim' },

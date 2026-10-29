@@ -417,7 +417,7 @@ export class TourService {
     const want = this.pointIn(el, at);
     const free = (x: number, y: number): boolean => {
       const h = this.hitAt(x, y);
-      return !!h && el.contains(h) && !h.closest('app-float-box, .palette, .opts, .fly');
+      return !!h && el.contains(h) && !h.closest('app-float-box, .palette, .opts');
     };
     if (free(want.x, want.y) || el.closest('button, a, label, input, select, textarea')) return want;
     const r = el.getBoundingClientRect();

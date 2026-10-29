@@ -28,9 +28,8 @@ describe('languages', () => {
       expect(holes(it), en).toBe(holes(en));
     }
     expect(translate('Imported “Bando Villetta”.', d)).toBe('Importato “Bando Villetta”.');
-    expect(translate('Building · Drag a rectangle on the map; it snaps flush to close neighbours unless auto-align is off · hold or click the corner for the other tools', d)).toBe(
-      'Edificio · Trascina un rettangolo sulla mappa; si accosta ai vicini se l’allineamento automatico è attivo · tieni premuto o clicca l’angolo per gli altri strumenti',
-    );
+    // a palette button's title: the tool's name · its hint
+    expect(translate('Cut · Cut a notch out of the selected building (U, H, L shapes)', d)).toBe('Taglia · Ritaglia una tacca dall’edificio selezionato (forme a U, H, L)');
   });
 
   it('every caption and title of the guided tour has its Italian', () => {

@@ -442,19 +442,11 @@
         @if (g.sep) {
           <i class="psep"></i>
         }
-        <div class="pg">
-          <button class="pbtn" [attr.data-tour]="toolMarks(g.items)" [class.on]="g.on" [style.--tc]="g.shown.color" (pointerdown)="pbDown(g.id, g.items.length)" (pointerup)="pbUp()" (pointerleave)="pbUp()" (click)="pbClick(g.shown)" (contextmenu)="g.items.length > 1 ? toggleFly(g.id, $event) : $event.preventDefault()" [title]="g.shown.name + ' · ' + g.shown.hint + (g.items.length > 1 ? ' · hold or click the corner for the other tools' : '')">
-            <app-tool-icon [name]="g.shown.icon" />
-            @if (g.items.length > 1) {
-              <span class="tri" (pointerdown)="$event.stopPropagation()" (click)="toggleFly(g.id, $event)"></span>
-            }
-          </button>
-          @if (fly() === g.id) {
-            <div class="fly" (pointerdown)="$event.stopPropagation()">
-              @for (it of g.items; track it.key) {
-                <button class="fbtn" [class.on]="entryActive(it)" [style.--tc]="it.color" (click)="pickEntry(it)" [title]="it.hint"><app-tool-icon [name]="it.icon" /> {{ it.name }}</button>
-              }
-            </div>
+        <div class="pg" role="group" [attr.aria-label]="g.items[0]!.name">
+          @for (t of g.items; track t.id) {
+            <button class="pbtn" [attr.data-tour]="'tool-' + t.id" [class.on]="tool() === t.id" [attr.aria-pressed]="tool() === t.id" [style.--tc]="t.color" (click)="pickTool(t.id)" [title]="t.name + ' · ' + t.hint" [attr.aria-label]="t.name">
+              <app-tool-icon [name]="t.icon" />
+            </button>
           }
         </div>
       }
