@@ -46,3 +46,30 @@ test('Go goes to the first match and lists the others', async ({page}) => {
   await matches.getByRole('button', {name: 'Close the matches'}).click();
   await expect(matches).toHaveCount(0);
 });
+
+/** Zooming in never leaves the frame larger than the map: the area shrinks with it, so the frame shows what is built. */
+test('the area frame stays inside the map when zooming in', async ({page}) => {
+  await page.addInitScript(() => localStorage.setItem('openbando-welcome', JSON.stringify({completed: true})));
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  await page.goto('/');
+  await page.locator('app-welcome-panel footer .primary').click();
+  const studio = page.locator('app-studio-panel');
+  await studio.locator('[data-tour=new-bando]').click();
+  const frame = studio.locator('.frame');
+  const map = studio.locator('[data-tour=map]');
+  const readout = studio.locator('.read');
+  await expect(frame).toBeVisible();
+  // drag the east edge away from the middle first: an off-centre frame left the view before
+  const east = (await studio.locator('.frame .h.e').boundingBox())!;
+  await page.mouse.move(east.x + east.width / 2, east.y + east.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(east.x + 120, east.y + east.height / 2, {steps: 5});
+  await page.mouse.up();
+  const before = await readout.textContent();
+  for (let i = 0; i < 3; i++) await studio.locator('.leaflet-control-zoom-in').click();
+  await expect.poll(async () => {
+    const f = (await frame.boundingBox())!, m = (await map.boundingBox())!;
+    return f.x >= m.x && f.y >= m.y && f.x + f.width <= m.x + m.width && f.y + f.height <= m.y + m.height;
+  }).toBe(true);
+  expect(await readout.textContent()).not.toBe(before);
+});

@@ -554,7 +554,7 @@ export class BandoEditor {
   protected readonly fb = computed(() => {
     const { w, h } = this.size();
     const k = this.ppm();
-    const fw = Math.min(this.half().e * 2 * k, w - 8), fh = Math.min(this.half().n * 2 * k, h - 8);
+    const fw = this.half().e * 2 * k, fh = this.half().n * 2 * k; // fitFrame keeps it inside the view
     const r = (this.rot() * Math.PI) / 180, o = this.off();
     const cx = w / 2 + (o.u * Math.cos(r) - o.v * Math.sin(r)) * k, cy = h / 2 + (o.u * Math.sin(r) + o.v * Math.cos(r)) * k;
     return { l: cx - fw / 2, t: cy - fh / 2, w: fw, h: fh };
@@ -1027,6 +1027,9 @@ export class BandoEditor {
       if (s.x > 20 && s.y > 20) this.size.set({ w: s.x, h: s.y });
     };
     map.on('move zoom resize', sync);
+    map.on('zoomend resize', () => {
+      if (this.mode() === 'area') this.fitFrame();
+    });
     map.on('dragstart', () => {
       this.studio.placeChosen.set(true);
       this.hits.set([]);
@@ -1102,6 +1105,30 @@ export class BandoEditor {
     this.studio.placeChosen.set(true);
     this.map?.setView([h.lat, h.lon], Math.max(this.map.getZoom(), 17));
     if (this.studio.isNew() && this.studio.name() === 'New bando') this.studio.name.set(h.label.split(',')[0]!.trim() || 'New bando');
+  }
+
+  /**
+   * Zooming in or shrinking the view never leaves the frame larger than the map: the area itself shrinks to fit, so
+   * the frame always shows what Generate builds (it was drawn clipped while the area stayed larger).
+   */
+  private fitFrame(): void {
+    const { w, h } = this.size();
+    const k = this.ppm();
+    const r = (this.rot() * Math.PI) / 180, cos = Math.abs(Math.cos(r)), sin = Math.abs(Math.sin(r));
+    let o = this.off();
+    const centre = (): { x: number; y: number } => ({
+      x: w / 2 + (o.u * Math.cos(r) - o.v * Math.sin(r)) * k,
+      y: h / 2 + (o.u * Math.sin(r) + o.v * Math.cos(r)) * k,
+    });
+    let c = centre();
+    if (c.x < 8 || c.x > w - 8 || c.y < 8 || c.y > h - 8) {
+      o = { u: 0, v: 0 }; // the frame left the view: bring it back to the middle
+      this.off.set(o);
+      c = centre();
+    }
+    const he = this.half().e, hn = this.half().n;
+    const room = Math.min((Math.min(c.x, w - c.x) - 4) / ((he * cos + hn * sin) * k), (Math.min(c.y, h - c.y) - 4) / ((he * sin + hn * cos) * k));
+    if (room < 1) this.half.set({ e: clampHalf(he * room), n: clampHalf(hn * room) });
   }
 
   protected setMode(m: 'area' | 'model'): void {

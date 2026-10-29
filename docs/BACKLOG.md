@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `af0370b` (merged #199), with every CI job of #162–#199 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `6366b34` (merged #201), with every CI job of #162–#201 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -204,9 +204,33 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
+| PR / evidence | [#201](https://github.com/voidbrain/openbando/pull/201) (all CI jobs green, no retries); report 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Unit/browser · 2026-10-29 · unit suite, `new-bando.e2e.ts` and the guide steps passed locally and in #201's CI; live-site check · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### B-029
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-029 | 🔶 P2 | Implemented | Zooming in on 1 · Area leaves the frame outside the map, and larger than drawn |
+
+🧑 **→ Human action required: Yes**<br />On the live site after merge: frame an area, drag an edge, zoom in; the frame stays in the map and its size readout shrinks.
+
+**Next action / closure evidence:** Reported 2026-10-29. The frame was drawn clipped to the view (`fb`, width up to the view minus 8 px) while the area kept its size in metres: zoomed in, the readout said 1000 × 1000 m while the frame showed only the visible streets, and Generate built the larger area. An off-centre frame (an edge dragged) was clipped about its own centre and slid out of the map. Now, after a zoom or a resize in 1 · Area, `fitFrame` shrinks the area to fit the view (about its centre, rotation included; a frame whose centre left the view comes back to the middle), and the frame is drawn at its true size. Zooming back out keeps the smaller area. Covered by `e2e/new-bando.e2e.ts` ("the area frame stays inside the map", fails on the old code). Not checked: pinch zoom on a touch device.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
 | PR / evidence | This PR; report 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Unit/browser · 2026-10-29 · unit suite and `new-bando.e2e.ts` plus the place / generate guide steps passed locally; live-site check · Pending |
+| Verification | Browser · 2026-10-29 · `new-bando.e2e.ts` passed locally; live-site check · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
