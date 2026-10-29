@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `21ef51b` (merged #204), with every CI job of #162–#204 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `436d017` (merged #205), with every CI job of #162–#205 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -252,7 +252,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205); report 2026-10-29 |
+| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205) (CI green on its last run; the first run caught the covered 3D vertex box); report 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Browser · 2026-10-29 · `tool-palette`, vegetation, courtyard and indoor-placement e2e passed locally; screenshot of the 2D editor reviewed by the agent; live-site check · Pending |
 | Reviewed | 2026-10-29 |
@@ -276,7 +276,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205); report 2026-10-29 |
+| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205) (CI green); report 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Browser · 2026-10-29 · `pick-menu.e2e.ts` passed locally; live-site check · Pending |
 | Reviewed | 2026-10-29 |
