@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `8aa4981` (merged #180), with every CI job of #162–#179 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `01698f0` (merged #186), with every CI job of #162–#186 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -137,9 +137,9 @@ Each item has a compact summary, followed by **→ Human action required** first
 |:---:|---|---|---|---|
 | 🟡 | B-024 | 🔺 P1 | Implemented | Shown panels stay transparent or invisible (Safari) |
 
-**→ Human action required:** 🧑 **Yes**<br />In Safari, open Views from Welcome's Open the bandos and from the menu button and confirm it appears at once.
+**→ Human action required:** 🧑 **Yes**<br />Decide whether the WebKit evidence is enough to close, or open Views in real Safari once.
 
-**Next action / closure evidence:** User report (Safari): Welcome's Open the bandos hid the menu button but Views did not appear; the menu button left the Views area semi-transparent, loading slowly or never. Cause: every panel's 0.7 s entrance animated opacity from 0 with fill both; when frames stall (WebKit entrance on a backdrop-filter element leaving display none, or a busy 3D main thread) the panel stayed near opacity 0 while the app counted it as shown. The entrance is now a 0.35 s transform-only slide. New browser regression freezes entrance animations at their start and requires opacity 1 for Views and Bandos after Open the bandos and after the menu button; it fails on the old fade in Chromium and WebKit and passes with the fix.
+**Next action / closure evidence:** WebKit check 2026-10-29 (Playwright WebKit 27.2, the engine behind Safari): the opacity regression, Fly entry (Open the bandos, close Views, reopen from the menu button), Views and Welcome cases pass; sampling every frame for 400 ms after Open the bandos and after the menu button, Views is at opacity 1 from the first frame. Real Safari not run. User report (Safari): Welcome's Open the bandos hid the menu button but Views did not appear; the menu button left the Views area semi-transparent, loading slowly or never. Cause: every panel's 0.7 s entrance animated opacity from 0 with fill both; when frames stall (WebKit entrance on a backdrop-filter element leaving display none, or a busy 3D main thread) the panel stayed near opacity 0 while the app counted it as shown. The entrance is now a 0.35 s transform-only slide. New browser regression freezes entrance animations at their start and requires opacity 1 for Views and Bandos after Open the bandos and after the menu button; it fails on the old fade in Chromium and WebKit and passes with the fix.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -148,7 +148,7 @@ Each item has a compact summary, followed by **→ Human action required** first
 |---|---|
 | PR / evidence | [#158](https://github.com/voidbrain/openbando/pull/158); history: local Chromium and WebKit (Desktop Safari) regression passed with the fix and failed (opacity 0) without it, 2026-10-28 |
 | Opened | 2026-10-28 |
-| Verification | Browser/accessibility · 2026-10-28 · opacity regression passed in [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) shard 1 (Chromium); Human Safari check · Pending |
+| Verification | Browser/accessibility · 2026-10-28 · opacity regression passed in [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) shard 1 (Chromium); Browser · 2026-10-29 · WebKit 27.2 locally: 4 cases passed, Views opaque from the first frame on both entry points; real Safari · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
@@ -199,28 +199,6 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
-### F-002
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🔴 | F-002 | 🔹 P3 | Open | Basement perimeter holes and disconnected islands |
-
-**→ Human action required:** 💻 **No**<br />Vertex editing of pieces, and doors and floor items in pieces; then phase 5 docs.
-
-**Next action / closure evidence:** Wall switches ([#186](https://github.com/voidbrain/openbando/pull/186)): each courtyard and piece has a switch per wall in the inspector (`setRingWall`); a switched-off courtyard wall is neither drawn nor solid. Phase 4 ([#183](https://github.com/voidbrain/openbando/pull/183)): separate pieces have their own derived floor (walls, floor, colliders), their own volume (terrain cut, floor under the drone), show in the indoor −1 view and on the plan, and are added by the Basement piece tool and deleted from the inspector. Not done: vertex editing of pieces, openings and floor items in pieces. Phase 3 tool ([#182](https://github.com/voidbrain/openbando/pull/182)): a Courtyard tool on −1 only (Room group, colour `tool-courtyard`, 2D and 3D drag) adds courtyards through `addCourtyard` (refused with a reason when invalid); the plan draws them; the inspector lists them with Delete; undo/redo; saved with the bando. Phase 3, guards ([#181](https://github.com/voidbrain/openbando/pull/181)): every basement edit refuses a result that leaves a courtyard outside the outline or crossing it, grows into a separate piece, or puts a floor item in a courtyard (`ringsFit` in vertex moves, resize, restore and Cut/Wing; `ringsKept` in saved floor edits); nothing changes when refused. Phase 2 ([#180](https://github.com/voidbrain/openbando/pull/180)): courtyards are drawn and cut. `basementVolume` passes them as runtime `UndergroundSpec.holes`; `insideVolume` keeps the ground (no cut in `cutMask` or `three/underground-cut.ts`) and gives no basement floor there (`floorUnder`); `basementBuilding` passes them to the derived floor (`LevelSpec.courtyards`), so the scene, the indoor −1 view and previews draw a floor with holes and walls with colliders around each courtyard. Phase 1 ([#178](https://github.com/voidbrain/openbando/pull/178)): `core/basement-rings.ts` with `BasementSpec.courtyards` / `pieces`, shape cleaning and placement rules (courtyard strictly inside, ≥ 1 m, clear of other courtyards and floor items; piece apart from the perimeter and other pieces), applied per building by `sanitizeSpec`; invalid rings are dropped, never reshaped; old files unchanged. Nothing is drawn yet. Design 2026-10-29 ([plan](basement-holes-plan.md), [#176](https://github.com/voidbrain/openbando/pull/176)): `BasementSpec.courtyards` (holes through the basement, walls around, ground kept) and `BasementSpec.pieces` (further perimeters), optional with defaults so old files load; validation and caps; five phases: model and validation, courtyard geometry (slabs, walls, volume holes for terrain cut and floorUnder, colliders), courtyard editing (2D/3D, undo, Cut/Wing/resize guards), separate pieces, docs. Earlier: Design a representation and editing, saving, terrain cuts, floor/wall rendering and collision for courtyards and separate pieces; currently one simple perimeter only. Floor voids are separate and already exist.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#186](https://github.com/voidbrain/openbando/pull/186) (wall switches); [#183](https://github.com/voidbrain/openbando/pull/183) (separate pieces); [#182](https://github.com/voidbrain/openbando/pull/182) (tool, inspector, plan); [#181](https://github.com/voidbrain/openbando/pull/181) (edit guards); [#180](https://github.com/voidbrain/openbando/pull/180) (courtyard geometry; [CI passed](https://github.com/voidbrain/openbando/actions/runs/40829931405) after merge); [#178](https://github.com/voidbrain/openbando/pull/178) (phase 1 model); [#176](https://github.com/voidbrain/openbando/pull/176) (design); [#101](https://github.com/voidbrain/openbando/pull/101) (context; limitation remains) |
-| Opened | 2026-10-27 |
-| Verification | Unit/integration · 2026-10-29 · phases 1–4 cases (geometry cases fail with the change disabled), 561 tests (incl. ring walls and a switched-off courtyard wall); #180 and [#181 CI](https://github.com/voidbrain/openbando/actions/runs/40830256872) passed; Browser/accessibility · 2026-10-29 · Courtyard and Basement piece tool cases passed locally, plan and indoor 3D screenshots reviewed; #182 and [#183 CI](https://github.com/voidbrain/openbando/actions/runs/40834631186) passed |
-| Reviewed | 2026-10-29 |
-
-</details>
-
 ### F-003
 
 | Signal | ID | Priority | Status | Item |
@@ -239,28 +217,6 @@ Each item has a compact summary, followed by **→ Human action required** first
 | PR / evidence | [#101](https://github.com/voidbrain/openbando/pull/101) (2D); [#116](https://github.com/voidbrain/openbando/pull/116) (merged; [CI](https://github.com/voidbrain/openbando/actions/runs/40595652166) passed; pointer review pending); history: unit + browser passed in [#116 CI](https://github.com/voidbrain/openbando/actions/runs/40595652166), 2026-10-27 |
 | Opened | 2026-10-27 |
 | Verification | Browser/accessibility · 2026-10-28 · [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) passed (selected workflows only; see follow-up audit); Human pointer review · Pending |
-| Reviewed | 2026-10-29 |
-
-</details>
-
-### F-004
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-004 | 🔹 P3 | Implemented | More flexible basement vertex edits |
-
-**→ Human action required:** 💻 **No**<br />Confirm the migration in CI, then close.
-
-**Next action / closure evidence:** Decision 2026-10-29 (user): option A, migrate. [#185](https://github.com/voidbrain/openbando/pull/185): `migrateCompassDoors` (run by `sanitizeSpec` on every load) puts each legacy compass door of a shaped basement back where it was on the outline\'s bounding box when that spot is on an outline wall with room for it, as a positioned door that is drawn and collides; the others stay in `doors`, unseen. Edits no longer refuse a shaped basement with leftover compass doors: they keep them untouched. A still-rectangular basement keeps its compass doors as they are. Investigation 2026-10-29. (1) Open-wall topology: footprint restoration with a different topology now reuses the Cut/Wing remap (`reshapePerimeter`): a new edge keeps an old edge's state only where it lies exactly on it, collinear same-state edges are joined, and the restore is allowed only when every open span survives whole; otherwise it is refused unchanged as before (no case that was protected can now lose data). (2) Legacy compass doors on a shaped floor: `listOpenings`, the renderer and colliders ignore `level.doors` once a floor has a footprint, so such doors are invisible data; normal reshaping converts them to `wallOpenings` first, so they come only from old saved files. A safe migration exists (place each on the bounding-box side it was authored on, accept only if that point lies on an outline edge), but it would make doors appear in pilots' saved bandos: a product decision. Until then the guard stays. History: Cut/Wing passed #141 CI. Length/width now scale the existing outline, preserving edge identity and item world positions; footprint restoration supports matching normalized boundaries with either winding, and validates closed-wall topology replacement. Rejects ambiguous open-wall topology/legacy shaped compass-door data and destructive edits. Resize/restore browser checks passed in #142 CI. Ambiguous open-wall topology changes and legacy shaped compass-door migration remain guarded; investigate safe correspondence before relaxing those guards.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#185](https://github.com/voidbrain/openbando/pull/185) (option A); [#101](https://github.com/voidbrain/openbando/pull/101) (context); [#122](https://github.com/voidbrain/openbando/pull/122) (perimeter visibility); [#141](https://github.com/voidbrain/openbando/pull/141) (open-edge Cut/Wing); [#142](https://github.com/voidbrain/openbando/pull/142) (safe resize and footprint restoration); [#166](https://github.com/voidbrain/openbando/pull/166) (open-wall restoration) |
-| Opened | 2026-10-27 |
-| Verification | Unit/integration · 2026-10-29 · migration case (fails without it) and the restore case now keeping the legacy door, 559 tests; open-wall restoration in [#166](https://github.com/voidbrain/openbando/pull/166) CI; CI · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
