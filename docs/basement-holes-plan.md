@@ -1,6 +1,6 @@
 # Basement courtyards and separate pieces (F-002)
 
-Status: phase 1 (model, #178) and phase 2 (courtyard geometry) done; phases 3–5 to come. Today a basement has one simple perimeter (`BasementSpec.outline`, building frame, or
+Status: phase 1 (model, #178), phase 2 (courtyard geometry, #180) and phase 3 (edit guards #181, Courtyard tool and inspector list) done, except per-edge wall switches for courtyards; phases 4–5 to come. Today a basement has one simple perimeter (`BasementSpec.outline`, building frame, or
 the building's own outline when absent) plus rectangular floor voids. This plan adds **courtyards** (holes through the
 whole basement: the ground is kept inside, walls around them; the ground floor above still covers them) and **separate pieces** (more than one perimeter
 under the same building), without breaking saved bandos or the existing perimeter rules (`wallEdges`, Cut/Wing remaps,

@@ -1309,4 +1309,11 @@ export const IT: Readonly<Record<string, string>> = {
   'Fly opens this checklist beside the replay. Choose what you are doing: replay a recording, the simulator or live telemetry.': 'Vola apre questa checklist accanto al replay. Scegli cosa stai facendo: riguardare una registrazione, il simulatore o la telemetria live.',
   'Each step ticks itself from what is loaded, so the list picks up where you left it. Skip what you do not have.': 'Ogni passo si spunta da solo in base a ciò che è caricato, così la lista riprende da dove eri rimasto. Salta quello che non hai.',
   'The simulator route opens the simulator and leaves arming to you.': "Il percorso simulatore apre il simulatore e lascia a te l'armamento.",
+  'Courtyard': 'Cortile',
+  'Courtyard {0}': 'Cortile {0}',
+  'Delete courtyard {0}': 'Elimina cortile {0}',
+  'Delete courtyard': 'Elimina cortile',
+  'Drag a courtyard into the basement: the ground stays, walls go around it': 'Trascina un cortile nel piano interrato: il terreno resta, i muri lo circondano',
+  'Drag a rectangle inside the basement: the ground stays there and walls go around it.': 'Trascina un rettangolo dentro il piano interrato: lì il terreno resta e i muri lo circondano.',
+  'A courtyard must lie inside the basement, at least 1 m across, clear of other courtyards and of columns, walls and voids.': 'Un cortile deve stare dentro il piano interrato, largo almeno 1 m, lontano da altri cortili e da colonne, muri e vuoti.',
 };
