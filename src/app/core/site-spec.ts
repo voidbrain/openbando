@@ -402,6 +402,19 @@ export function uid(prefix = 'site'): string {
 }
 
 /**
+ * Move the take-off pad (the last pad; older bandos keep their roads as the pads before it) and the drone's start to
+ * `to`, together: the pad keeps its offset from the start. One mutation for `SiteEditor.commitSite` or a gesture.
+ */
+export function moveTakeoff(s: SiteSpec, to: Vec2): void {
+  const pad = s.pads[s.pads.length - 1];
+  if (pad) {
+    pad.x += to.x - s.droneStart.x;
+    pad.z += to.z - s.droneStart.z;
+  }
+  s.droneStart = { x: to.x, z: to.z };
+}
+
+/**
  * A blank canvas at `origin`: no buildings, just a take-off pad on open ground. This is what the app starts with —
  * every model comes from generating a site from a real location (OSM data) or from the user's own edits.
  */
