@@ -157,20 +157,20 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | B-026 | 🔶 P2 | Open | Welcome wordmark downloads 902 kB on every first visit |
+| 🟡 | B-026 | 🔶 P2 | Implemented | Welcome wordmark downloads 902 kB on every first visit |
 
-**→ Human action required:** 🧑 **Yes**<br />Approve a smaller wordmark export that keeps sharp pixel edges, or keep the current file.
+**→ Human action required:** 🧑 **Yes**<br />Glance at the new wordmark in Welcome and confirm it looks the same.
 
-**Next action / closure evidence:** `public/mascot/openbando-wordmark.png` is 2172 × 554 px and 902 kB, drawn at a fraction of that width in Welcome; Angular warns NG0913 (oversized image) on every first visit. The image now uses `NgOptimizedImage` with its intrinsic size and `priority` (`check:conventions` requires it), which does not shrink the file. The generated master is not an exact pixel grid, so a smaller export can change letter edges: prepare candidates (nearest-neighbour at the rendered width × 2, and an optimised PNG at the current size) for the wordmark guide's visual review before replacing the approved file.
+**Next action / closure evidence:** Approved 2026-10-29 (user: smaller export, sharp pixel edges). `fix/b026-wordmark-size`: the master has 170,025 colours (a smooth generated image, so no lossless palette); Welcome draws it at most 720 CSS px. Exported at 1440 × 367 px (Lanczos), then 256 colours without dithering: 135 kB instead of 902 kB, NG0913 gone; compared at display size and 2× zoom with the original and a full-colour 1440 px export (499 kB), no visible difference. The master is kept at `docs/mascot/openbando-wordmark-master.png`; the wordmark guide says how to re-export. Earlier: `public/mascot/openbando-wordmark.png` is 2172 × 554 px and 902 kB, drawn at a fraction of that width in Welcome; Angular warns NG0913 (oversized image) on every first visit. The image now uses `NgOptimizedImage` with its intrinsic size and `priority` (`check:conventions` requires it), which does not shrink the file. The generated master is not an exact pixel grid, so a smaller export can change letter edges: prepare candidates (nearest-neighbour at the rendered width × 2, and an optimised PNG at the current size) for the wordmark guide's visual review before replacing the approved file.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#162](https://github.com/voidbrain/openbando/pull/162) (NgOptimizedImage, size attributes; recovered #161); [audit](audits/2026-10-28.md) (found 2026-10-28) |
+| PR / evidence | `fix/b026-wordmark-size` (1440 px, 256-colour export); [#162](https://github.com/voidbrain/openbando/pull/162) (NgOptimizedImage, size attributes; recovered #161); [audit](audits/2026-10-28.md) (found 2026-10-28) |
 | Opened | 2026-10-29 |
-| Verification | Pending |
+| Verification | Browser/accessibility · 2026-10-29 · Welcome wordmark and first-visit a11y cases passed locally; visual comparison reviewed by the agent; Human look · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
