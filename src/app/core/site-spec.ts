@@ -13,6 +13,7 @@ import { sanitizeShapes, type ShapeSpec } from './shapes';
 import type { BlockRef } from './blocks';
 import { BASEMENT_COORD_LIMIT, validOutline } from './footprint';
 import { MAX_COURTYARDS, MAX_PIECES, cleanRings, keepValidRings, type BasementRing } from './basement-rings';
+import { migrateCompassDoors } from './basement';
 
 export interface Vec2 {
   x: number;
@@ -482,7 +483,7 @@ export function sanitizeSpec(raw: unknown): SiteSpec | null {
     bearingDeg: typeof s.bearingDeg === 'number' ? s.bearingDeg : 0,
     genScale: typeof s.genScale === 'number' ? s.genScale : 1,
     groundColor: typeof s.groundColor === 'string' ? s.groundColor : '#789b52',
-    buildings: (s.buildings.filter((b) => b && typeof b.length === 'number') as BuildingSpec[]).map((b) => {const {basement,...rest}=b;const clean=cleanBasement(basement);const kept=clean&&keepValidRings({...rest,basement:clean} as BuildingSpec);return {...rest,...(kept?{basement:kept}:{}),...(Array.isArray(b.fixtures)?{fixtures:cleanStructures(b.fixtures)}:{})};}),
+    buildings: (s.buildings.filter((b) => b && typeof b.length === 'number') as BuildingSpec[]).map((b) => {const {basement,...rest}=b;const clean=cleanBasement(basement);const valid=clean&&keepValidRings({...rest,basement:clean} as BuildingSpec);const kept=valid&&migrateCompassDoors({...rest,basement:valid} as BuildingSpec);return {...rest,...(kept?{basement:kept}:{}),...(Array.isArray(b.fixtures)?{fixtures:cleanStructures(b.fixtures)}:{})};}),
     pads: Array.isArray(s.pads) ? (s.pads as PadSpec[]) : [],
     walls: Array.isArray(s.walls) ? (s.walls as WallSpec[]) : [],
     // a 'shapes' structure carries primitives from files or AI output: they are checked and capped like the rest

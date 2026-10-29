@@ -611,10 +611,31 @@ describe('safe basement dimensions and footprint restoration', () => {
     expect(b.basement.columns).toEqual([{x:1,z:1,size:.5}]);
     expect(listOpenings(basementBuilding(b),0)).toHaveLength(1);
     const legacy=structuredClone(b);legacy.basement!.outline=[{x:-5,z:-4},{x:5,z:-4},{x:5,z:0},{x:0,z:0},{x:0,z:4},{x:-5,z:4}];legacy.basement!.doors={n:[{kind:'door',c:3,w:1,h:2}]};
-    const legacyBefore=structuredClone(legacy);expect(restoreBasementFootprint(legacy)).toBe(false);expect(legacy).toEqual(legacyBefore);
+    // F-004: a legacy compass door on a shaped floor no longer blocks the edit; it is kept untouched (not lost)
+    expect(restoreBasementFootprint(legacy)).toBe(true);expect(legacy.basement!.doors).toEqual({n:[{kind:'door',c:3,w:1,h:2}]});
     const clipped=building();clipped.footprint=[{x:-5,z:-4},{x:5,z:-4},{x:5,z:0},{x:0,z:0},{x:0,z:4},{x:-5,z:4}];
     clipped.basement={height:3,outline:[{x:-5,z:-4},{x:5,z:-4},{x:5,z:4},{x:-5,z:4}],columns:[{x:8,z:7,size:.5}]};
     const before=structuredClone(clipped);
     expect(restoreBasementFootprint(clipped)).toBe(false);expect(clipped).toEqual(before);
   });
+
+  it('migrates legacy compass doors on a shaped basement to positioned doors where they still meet a wall', () => {
+    // an L-shaped outline whose north-east quarter was cut away; one door on the north wall, one where the east wall was
+    const b=building();b.basement={height:3,outline:[{x:-5,z:-4},{x:5,z:-4},{x:5,z:0},{x:0,z:0},{x:0,z:4},{x:-5,z:4}],doors:{n:[{kind:'door',c:3,w:1,h:2}],e:[{kind:'window',c:6,w:1,h:1,sill:1}]}};
+    const before=listOpenings(basementBuilding(b),0).length;
+    const s=emptySpec();s.buildings=[b];
+    const saved=sanitizeSpec(JSON.parse(JSON.stringify(s)))!.buildings[0]!;
+    const shown=listOpenings(basementBuilding(saved),0);
+    expect(before).toBe(0); // nothing showed them
+    expect(shown).toHaveLength(1); // the north door is back on its wall
+    expect(saved.basement!.wallOpenings).toHaveLength(1);
+    expect(saved.basement!.wallOpenings![0]).toMatchObject({kind:'door',w:1,h:2});
+    // the east window's spot was cut away: it stays a (hidden) compass door, kept in the file
+    expect(saved.basement!.doors).toEqual({e:[{kind:'window',c:6,w:1,h:1,sill:1}]});
+    // a basement that is still a rectangle keeps its compass doors as they are
+    const rect=building();rect.basement={height:3,doors:{n:[{kind:'door',c:3,w:1,h:2}]}};
+    const s2=emptySpec();s2.buildings=[rect];
+    expect(sanitizeSpec(JSON.parse(JSON.stringify(s2)))!.buildings[0]!.basement!.doors).toEqual({n:[{kind:'door',c:3,w:1,h:2}]});
+  });
 });
+
