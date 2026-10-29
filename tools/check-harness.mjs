@@ -22,17 +22,28 @@ if (!existsSync(stampFile)) done('No .harness.json: this project was not applied
 const stamp = JSON.parse(readFileSync(stampFile, 'utf8'));
 const home = (process.env.HARNESS_HOME ?? stamp.template?.path ?? '~/Projects/project-harness').replace(/^~(?=\/|$)/, homedir());
 if (!existsSync(join(home, 'VERSION'))) {
-  console.log(`Harness template not found at ${home}${stamp.template?.repo ? ` (clone ${stamp.template.repo})` : ''}: template check skipped.`);
-  process.exit(0);
+  // CI has no template clone: skipped quietly there; locally a missing clone is something to fix
+  const text = `Harness template not found at ${home}${stamp.template?.repo ? `: clone it (git clone ${stamp.template.repo} ${home})` : ''}; template check skipped.`;
+  if (process.env.CI) console.log(text); else warn(text);
+  done();
 }
 
 const git = (...args) => { try { return execFileSync('git', ['-C', home, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }); } catch { return null; } };
-git('fetch', '--tags', '--quiet'); // a template with a remote: its newest releases (ignored offline or without one)
+// Online first: compare against the template's published releases, never only a local clone's. A clone that cannot
+// reach its remote, is behind it or has local edits is reported, because applying or changing it would use stale files.
+if (git('remote', 'get-url', 'origin')) {
+  if (git('fetch', '--tags', '--prune', '--quiet', 'origin') === null)
+    warn(`Could not reach the template's remote from ${home}: releases below are the local ones and may be stale.`);
+  const [ahead, behindBy] = (git('rev-list', '--left-right', '--count', 'HEAD...@{upstream}') ?? '0 0').trim().split(/\s+/).map(Number);
+  if (behindBy) warn(`The template clone at ${home} is ${behindBy} commit(s) behind its remote: git -C ${home} pull --ff-only --tags before applying or changing it.`);
+  if (ahead) warn(`The template clone at ${home} has ${ahead} unpushed commit(s): push them (or open their PR) before applying them to a project.`);
+  if (git('status', '--porcelain')?.trim()) warn(`The template clone at ${home} has uncommitted changes: projects are checked against release tags only.`);
+} else warn(`The template clone at ${home} has no remote${stamp.template?.repo ? ` (expected ${stamp.template.repo})` : ''}: releases cannot be checked online.`);
 const tags = (git('tag', '--list', 'v*', '--sort=-v:refname') ?? '').split('\n').filter(Boolean).map((t) => t.slice(1));
 const latest = tags[0];
 const base = stamp.version;
-if (!latest) done(`The template at ${home} has no release tags (vX.Y.Z): tag a release before checking projects against it.`);
-if (!tags.includes(base)) done(`.harness.json names version ${base}, which the template at ${home} has no tag for: set it to the release this project was last reconciled with.`);
+if (!latest) { warn(`The template at ${home} has no release tags (vX.Y.Z): tag a release before checking projects against it.`); done(); }
+if (!tags.includes(base)) { warn(`.harness.json names version ${base}, which the template at ${home} has no tag for (latest v${latest}): set it to the release this project was last reconciled with, or tag the release if it is pending.`); done(); }
 
 const at = (version, path) => git('show', `v${version}:${path}`);
 const mine = (path) => (existsSync(join(root, path)) ? readFileSync(join(root, path), 'utf8') : null);
@@ -54,7 +65,8 @@ for (const [path, source] of Object.entries(stamp.copied ?? {})) {
 if (behind) {
   for (const [path, sources] of Object.entries(stamp.adapted ?? {}))
     for (const source of list(sources))
-      if (at(base, source) !== at(latest, source)) warn(`${path}: its template source ${source} changed since v${base}; reconcile by hand (${diff(source)}).`);
+      if (at(base, source) === null && at(latest, source) !== null) warn(`${path}: ${source} is new in the template since v${base}; adopt it if it fits (git -C ${home} show v${latest}:${source}).`);
+      else if (at(base, source) !== at(latest, source)) warn(`${path}: its template source ${source} changed since v${base}; reconcile by hand (${diff(source)}).`);
   const log = git('log', '--format=  %s', `v${base}..v${latest}`)?.trim();
   warn(`Harness template v${latest} is out (this project is on v${base}). See CHANGELOG.md in the template${log ? `; changes:\n${log}` : ''}\nReconcile the files above (APPLY.md, "Reconciling"), then set "version" in .harness.json to "${latest}".`);
 }
