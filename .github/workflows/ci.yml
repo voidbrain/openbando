@@ -39,6 +39,10 @@ jobs:
         # the generator, a block or the script that is not rebuilt shows up here
         run: npm run examples && git diff --exit-code -- library/bandos public/library
 
+      - name: Element map matches the code
+        # tools/build-element-map.mjs writes docs/agents/element-map.md from the templates and the tour (F-032)
+        run: node tools/build-element-map.mjs && git diff --exit-code -- docs/agents/element-map.md
+
       - name: Recordings and their sources (warnings only, never blocks)
         # guide clips and Welcome films are recorded in a browser: say which show files that changed since (F-031)
         run: node tools/check-media.mjs --github

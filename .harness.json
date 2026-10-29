@@ -134,6 +134,34 @@
       ],
       "then": "a new token, tool colour or shared component updates design-system/ (tokens.json, the component's guide)",
       "checked": "check:contrast (tokens and text/surface pairs)"
+    },
+    {
+      "when": [
+        "src/app/**/*.html",
+        "src/app/ui/**/*.ts",
+        "src/app/core/tour.ts"
+      ],
+      "then": "regenerate the element map (docs/agents/element-map.md)",
+      "run": "node tools/build-element-map.mjs",
+      "checked": "CI (element map matches the code)"
+    },
+    {
+      "when": [
+        "src/app/ui/panel-defs.ts",
+        "src/app/ui/panels/**"
+      ],
+      "then": "a new or renamed panel gets its Views entry, its guide step (core/tour.ts) and its line in the README",
+      "checked": "nothing"
+    },
+    {
+      "when": [
+        "src/app/ui/**",
+        "src/app/three/**",
+        "src/app/core/**",
+        "src/app/services/**"
+      ],
+      "then": "a new or changed feature updates the README (what the app does) and the area's notes in docs/agents/areas.md",
+      "checked": "nothing (BACKLOG-RULES, Documentation consistency)"
     }
   ]
 }

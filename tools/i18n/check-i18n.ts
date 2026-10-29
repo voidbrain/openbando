@@ -35,6 +35,24 @@ const templates = (path: string, src: string): string[] => {
   return out;
 };
 
+/**
+ * Cut every stretch from an opening marker to its closing text (an unclosed one to the end), scanning by index: a
+ * one-pass regex replace could leave a marker behind (nested or broken), which CodeQL rightly flags.
+ */
+const cut = (s: string, open: RegExp, close: string | ((m: RegExpExecArray) => string)): string => {
+  let out = '', i = 0;
+  for (;;) {
+    const m = open.exec(s.slice(i));
+    if (!m) return out + s.slice(i);
+    const a = i + m.index;
+    out += s.slice(i, a);
+    const end = typeof close === 'function' ? close(m) : close;
+    const b = s.indexOf(end, a + m[0].length);
+    if (b < 0) return out;
+    i = b + end.length;
+  }
+};
+const noComments = (s: string): string => cut(s, /<!--/, '-->');
 const ENT: Record<string, string> = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&nbsp;': ' ', '&quot;': '"' };
 const decode = (s: string): string => s.replace(/&(amp|lt|gt|nbsp|quot);/g, (m) => ENT[m]!);
 const wanted = (s: string): boolean => /[A-Za-z]{3}/.test(s) && !keep.has(s);
@@ -63,7 +81,7 @@ for (const path of files(`${ROOT}/src/app`)) {
   const rel = path.slice(ROOT.length + 1);
   for (const tpl of templates(path, src)) {
     // what svg, textarea and translate="no" hold is never translated
-    const t = tpl.replace(/<svg[\s\S]*?<\/svg>/g, '').replace(/<textarea[\s\S]*?<\/textarea>/g, '').replace(/<(\w+)[^>]*translate="no"[^>]*>[\s\S]*?<\/\1>/g, '').replace(/<!--[\s\S]*?-->/g, '');
+    const t = noComments(cut(cut(cut(tpl, /<svg\b/, '</svg>'), /<textarea\b/, '</textarea>'), /<(\w+)[^>]*translate="no"[^>]*>/, (m) => `</${m[1]}>`));
     // static attributes; a bound one is an expression
     for (const m of t.matchAll(/(?<![[\w.(-])(title|aria-label|placeholder)="([^"]*)"/g)) see(m[2]!, rel);
     for (const m of t.matchAll(/\[(?:title|attr\.aria-label|attr\.title|placeholder)\]="([^"]*)"/g)) for (const x of exprTexts(m[1]!)) see(x, rel);
