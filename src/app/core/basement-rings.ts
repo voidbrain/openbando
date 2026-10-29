@@ -97,3 +97,17 @@ export function keepValidRings(b: BuildingSpec): BuildingSpec['basement'] {
   const { courtyards: _courtyards, pieces: _pieces, ...rest } = basement;
   return { ...rest, ...(courtyards.length ? { courtyards } : {}), ...(pieces.length ? { pieces } : {}) };
 }
+
+/**
+ * Whether an edited outline still holds the courtyards (each strictly inside) and keeps clear of the pieces. Outline
+ * edits keep floor items where they are in the world, so their relation to a courtyard does not change.
+ */
+export function ringsFit(basement: NonNullable<BuildingSpec['basement']>, outline: Vec2[]): boolean {
+  return (basement.courtyards ?? []).every(c => strictlyInside(c.outline, outline)) && (basement.pieces ?? []).every(p => disjoint(p.outline, outline));
+}
+
+/** Whether a saved basement keeps every courtyard and piece it had (none would be dropped as invalid). */
+export function ringsKept(b: BuildingSpec, basement: NonNullable<BuildingSpec['basement']>): boolean {
+  const kept = keepValidRings({ ...b, basement });
+  return (kept?.courtyards?.length ?? 0) === (basement.courtyards?.length ?? 0) && (kept?.pieces?.length ?? 0) === (basement.pieces?.length ?? 0);
+}

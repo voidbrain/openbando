@@ -1,4 +1,5 @@
 import { MAX_COURTYARDS, cleanRings, keepValidRings } from './basement-rings';
+import { editBasementFloor, moveBasementVertex, reshapeBasement, resizeBasement } from './basement';
 import { emptySpec, sanitizeSpec, type BuildingSpec, type Vec2 } from './site-spec';
 
 /** A 10 × 8 building (centred frame: x −5…5, z −4…4) with a basement under it. */
@@ -58,4 +59,40 @@ describe('basement courtyards and pieces (model)', () => {
     const many = Array.from({ length: MAX_COURTYARDS + 5 }, (_, i) => ({ outline: square(i * 3, 0, 1) }));
     expect(cleanRings(many, MAX_COURTYARDS)).toHaveLength(MAX_COURTYARDS);
   });
+
+  it('edits refuse to leave a courtyard outside the outline or to put a column in it', () => {
+    const rect = [{ x: -5, z: -4 }, { x: 5, z: -4 }, { x: 5, z: 4 }, { x: -5, z: 4 }];
+    const fresh = (): BuildingSpec => building({ height: 3, outline: rect.map(p => ({ ...p })), courtyards: [{ outline: square(-1, -1, 2) }] });
+    const unchanged = (b: BuildingSpec, edit: (b: BuildingSpec) => boolean | void, ok: boolean): void => {
+      const before = structuredClone(b);
+      const result = edit(b);
+      if (result !== undefined) expect(result).toBe(ok);
+      if (!ok) expect(b).toEqual(before);
+    };
+    // a vertex dragged across the courtyard / outwards
+    unchanged(fresh(), b => moveBasementVertex(b, 1, { x: 0, z: 0 }), false);
+    unchanged(fresh(), b => moveBasementVertex(b, 1, { x: 6, z: -4 }), true);
+    // shrink until the courtyard no longer fits / grow
+    unchanged(fresh(), b => resizeBasement(b, 2, 2), false);
+    const grown = fresh();
+    expect(resizeBasement(grown, 20, 16)).toBe(true);
+    expect(grown.basement!.courtyards).toEqual([{ outline: square(-1, -1, 2) }]);
+    // a Cut through the courtyard / in a far corner (the tool rectangle is in the centred basement view)
+    unchanged(fresh(), b => reshapeBasement(b, { x0: -2, x1: 2, z0: -5, z1: 0 }, 'cut'), false);
+    unchanged(fresh(), b => reshapeBasement(b, { x0: 3, x1: 6, z0: 2, z1: 5 }, 'cut'), true);
+    // a column placed in the courtyard (min-corner frame: the centre is (5, 4)) is refused, one beside it kept
+    unchanged(fresh(), b => editBasementFloor(b, f => { (f.levels[0]!.columns ??= []).push({ x: 5, z: 4, size: 0.5 }); }), false);
+    const beside = fresh();
+    editBasementFloor(beside, f => { (f.levels[0]!.columns ??= []).push({ x: 1, z: 1, size: 0.5 }); });
+    expect(beside.basement!.columns).toHaveLength(1);
+  });
+
+  it('edits refuse to grow the outline into a separate piece', () => {
+    const b = building({ height: 3, outline: [{ x: -5, z: -4 }, { x: 5, z: -4 }, { x: 5, z: 4 }, { x: -5, z: 4 }], pieces: [{ outline: square(8, -2, 4) }] });
+    const before = structuredClone(b);
+    expect(resizeBasement(b, 20, 8)).toBe(false);
+    expect(b).toEqual(before);
+    expect(resizeBasement(b, 12, 8)).toBe(true);
+  });
 });
+
