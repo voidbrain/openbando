@@ -226,7 +226,11 @@ export class StudioPanel {
       untracked(() => {
         const w = this.layout.panels().studio.w;
         if (zone && w === null) {
-          this.layout.setWidth('studio', Math.min(900, innerWidth - 24));
+          const width = Math.min(900, innerWidth - 24);
+          this.layout.setWidth('studio', width);
+          // widening keeps the left edge: slide a panel opened right of centre back inside the window
+          const box = document.querySelector('app-panel[data-id="studio"]')?.getBoundingClientRect();
+          if (box && box.left + width > innerWidth - 12) this.layout.moveTo('studio', Math.max(12, innerWidth - 12 - width), box.top);
           widened = true;
         } else if (!zone && widened) {
           this.layout.restore({ studio: { w: null, h: null } });
