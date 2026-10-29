@@ -484,17 +484,19 @@ export class BandoEditor {
   protected readonly drawLine3d = computed(() => {
     if (this.tool() === 'measure') {
       const a = this.measure.chain().a, b = this.measure.hover();
-      return a && b ? { a, b, color: this.tc('measure'), height: this.indoorPlaneY() ?? undefined } : null;
+      return a && b ? { pts: [a, b], color: this.tc('measure'), height: this.indoorPlaneY() ?? undefined } : null;
     }
     const d = this.drag();
     const bd = this.floorBuilding(), height = this.indoorPlaneY();
-    if (bd && height !== null && d?.t === 'shape') return { a: this.fromLocal(bd, d.a), b: this.fromLocal(bd, d.b), color: this.tc(d.op === 'cut' ? 'cut' : 'wing'), height };
+    if (bd && height !== null && d?.t === 'shape') return { pts: [this.fromLocal(bd, d.a), this.fromLocal(bd, d.b)], color: this.tc(d.op === 'cut' ? 'cut' : 'wing'), height };
     if (bd && height !== null && (d?.t === 'wallDraw' || d?.t === 'voidDraw')) {
       const world = (p: Pt) => this.fromLocal(bd, { x: p.x - bd.length / 2, z: p.z - bd.width / 2 });
-      return { a: world(d.a), b: world(d.b), color: this.tc(d.t === 'wallDraw' ? 'wall' : 'void'), height };
+      return { pts: [world(d.a), world(d.b)], color: this.tc(d.t === 'wallDraw' ? 'wall' : 'void'), height };
     }
+    // the brush's area, as the plan draws it
+    if (d?.t === 'scatter') return { pts: areaOf(this.scatterMode(), d.pts, this.scatterWidth()), closed: true, color: this.tc('scatter') };
     if (d?.t !== 'fenceDraw' && d?.t !== 'bridgeDraw' && d?.t !== 'under') return null;
-    return { a: d.a, b: d.b, color: this.tc(d.t === 'fenceDraw' ? 'fence' : d.t === 'under' ? 'tunnel' : 'structure') };
+    return { pts: [d.a, d.b], color: this.tc(d.t === 'fenceDraw' ? 'fence' : d.t === 'under' ? 'tunnel' : 'structure') };
   });
   protected readonly hasPath = computed(() => !!this.flights.active);
   protected readonly atMax = computed(() => this.half().e >= MAX_HALF_EXTENT || this.half().n >= MAX_HALF_EXTENT);
@@ -766,7 +768,12 @@ export class BandoEditor {
     if (t === 'water' && this.layers.waterMode() === 'line') return 'Drag along the course of a canal or ditch: the water follows the line at the width above. Select it (click its edge) to change it.';
     if (t === 'surface' || t === 'water') return `Draw the outline by hand. Select it (click its edge, or in ☰ Elements) to change it or delete it.`;
     if (t === 'terrain') return { sculpt: 'Hold the left button to raise the ground, the right one to lower it: the longer you hold, the higher and wider it grows. Move while holding to shape a ridge or a ditch.', raise: 'Drag to raise the ground along the stroke.', lower: 'Drag to dig along the stroke.', smooth: 'Drag to soften bumps and steps.', flatten: 'Drag from a point: the ground around the stroke goes to that point\'s height.', hill: 'Click to put a hill there.', crater: 'Click to dig a crater (with a little rim).', ramp: 'Drag from the foot of the ramp to its top.' }[this.terrain.op()] + ' One stroke = one undo step.';
-    if (t === 'scatter') return { pen: 'Drag along a path: trees are planted randomly in a strip around it.', rect: 'Drag a square: it is filled with random trees.', circle: 'Drag from the centre: a circle is filled with random trees.', lasso: 'Draw a loop freehand: it is filled with random trees.' }[this.scatterMode()];
+    if (t === 'scatter') {
+      const shrubs = this.treeMix() === 'hedge' || this.treeMix() === 'bramble';
+      return (shrubs
+        ? { pen: 'Drag along a path: shrubs are planted randomly in a strip around it.', rect: 'Drag a square: it is filled with random shrubs.', circle: 'Drag from the centre: a circle is filled with random shrubs.', lasso: 'Draw a loop freehand: it is filled with random shrubs.' }
+        : { pen: 'Drag along a path: trees are planted randomly in a strip around it.', rect: 'Drag a square: it is filled with random trees.', circle: 'Drag from the centre: a circle is filled with random trees.', lasso: 'Draw a loop freehand: it is filled with random trees.' })[this.scatterMode()];
+    }
     if (t === 'door' || t === 'window') return this.b() ? `Click a wall of “${this.b()!.name}” to add a ${t}.` : 'Select a building first.';
     if (t === 'wall') return this.b() ? 'Drag inside the building to draw an interior wall.' : 'Select a building first.';
     if (t === 'measure') return 'Click points: each one continues the chain (B of one is A of the next); click the same point twice, Esc or right-click to stop. Click a line to select it, drag to move it, Delete removes it.';

@@ -11,6 +11,9 @@ import {pickModel,type SitePick} from './site-pick';
 import { floorPoint, indoorFloorHeight, indoorSourcePick, indoorViewSpec, type IndoorFloor } from './indoor-view';
 import { basementHandles, buildingHandles, type BuildingHandle } from './building-handles';
 import { siteGround } from '../core/site-ground';
+
+/** A gesture preview on the ground: a line through `pts`, closed into a ring for an area. */
+export interface DrawLine { pts: readonly { x: number; z: number }[]; closed?: boolean; color: string; height?: number }
 export type {SitePick} from './site-pick';
 
 /**
@@ -187,8 +190,8 @@ export class SiteViewRenderer {
     this.cursor.visible = true;
   }
 
-  /** Preview a two-point ground gesture while it is being drawn. */
-  setDrawLine(line: { a: { x: number; z: number }; b: { x: number; z: number }; color: string; height?: number } | null): void {
+  /** Preview a ground gesture while it is being drawn: a line through `pts` (a closed ring when `closed`) on the ground. */
+  setDrawLine(line: DrawLine | null): void {
     if (!line || !this.model) {
       if (this.drawLine) this.drawLine.visible = false;
       return;
@@ -198,10 +201,14 @@ export class SiteViewRenderer {
       this.drawLine.renderOrder = 10;
       this.scene.add(this.drawLine);
     }
-    const pts: number[] = [];
-    for (let i = 0; i <= 32; i++) {
-      const u = i / 32, x = line.a.x + (line.b.x - line.a.x) * u, z = line.a.z + (line.b.z - line.a.z) * u;
-      pts.push(x, (line.height ?? this.model.ground.at(x, z)) + 0.3, z);
+    const pts: number[] = [], ring = line.closed && line.pts.length > 2 ? [...line.pts, line.pts[0]!] : line.pts;
+    const steps = Math.max(2, Math.ceil(32 / Math.max(1, ring.length - 1))); // follow the ground along each edge
+    for (let k = 0; k + 1 < ring.length; k++) {
+      const a = ring[k]!, b = ring[k + 1]!;
+      for (let i = k ? 1 : 0; i <= steps; i++) {
+        const u = i / steps, x = a.x + (b.x - a.x) * u, z = a.z + (b.z - a.z) * u;
+        pts.push(x, (line.height ?? this.model.ground.at(x, z)) + 0.3, z);
+      }
     }
     this.drawLine.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
     (this.drawLine.material as THREE.LineBasicMaterial).color.set(line.color);

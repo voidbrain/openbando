@@ -33,6 +33,8 @@ const RULES = [
   [/:\s*any\b|\bas any\b|<any>/g, 'avoid any; use unknown'],
   // a static image needs NgOptimizedImage; bound sources (thumbnails, data URLs) are exempt
   [/<img\b[^>]*\ssrc="[^"]+"/g, 'static images use NgOptimizedImage (ngSrc)'],
+  // `this.r?.f(this.sig())` skips sig() while r is missing: the effect never subscribes (AGENTS known pitfall)
+  [/effect\(\(\) => this\.\w+\?\.\w+\([^)]*\b\w+\(\)/g, 'read signals before an optional-chained call in effect()'],
 ];
 for (const file of app) {
   for (const [pattern, message] of RULES)
