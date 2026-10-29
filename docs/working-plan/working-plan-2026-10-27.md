@@ -42,7 +42,7 @@ Measurements applied to `library/bandos/villetta-no-place.json` (release 8). Ori
 
 - `bando-img/IMG_4341.JPG`: broad steel greenhouse frame, approximated with a parabolic arch. Bare ribs remain intact; the artificial torn-glass deformation is only used on glazed frames.
 - `bando-img/IMG_4344.JPG`: tall annex colonnade and pitched terracotta roof. Replace the old barrel roof with a shallow gable; retain the upper storey's 3.60 m height and 2 m roof rise because no new dimensions establish them.
-- `bando-img/IMG_4352.DNG`: store interior, lower façade panels and the open blue ladder cage. Use the real ring/rail silhouette, not a solid tube or box hood.
+- `bando-img/IMG_4352.DNG` (removed 2026-10-29, B-027: its metadata held the private place's GPS position): store interior, lower façade panels and the open blue ladder cage. Use the real ring/rail silhouette, not a solid tube or box hood.
 - Release 6 restores the south interior partition, three eastern door-separated wall sections and the first-floor end wall; review their placement against the photos. The longer door-bearing wall segments extend to the 6.20 m underside of the first-floor slab. Exact roof pitch, column thicknesses and the east walkway require further measurements. The retained rectangular outer footprint is not claimed to be a full measured reconstruction.
 - Fresh copies get this release; existing edited copies are not overwritten. Playground also places the upgraded shared ladder.
 

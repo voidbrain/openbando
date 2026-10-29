@@ -175,6 +175,28 @@ Each item has a compact summary, followed by **→ Human action required** first
 
 </details>
 
+### B-027
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-027 | 🔺 P1 | Implemented | A survey photo published the private Villetta location |
+
+**→ Human action required:** 🧑 **Yes**<br />Decide whether to purge the photo from git history (a force push with "protect main" relaxed briefly).
+
+**Next action / closure evidence:** Found 2026-10-29 while preparing to move the working plan: `docs/working-plan/bando-img/IMG_4352.DNG`, committed 26 October in `6d2f161` to this public repository, carried GPS metadata with the private Villetta position (AGENTS: never in the repository). A scan of every tracked image and video found no other file with GPS metadata. [#191](https://github.com/voidbrain/openbando/pull/191) removes it from the tree; it remains in history, in existing clones and possibly in GitHub's caches. Purging needs a history rewrite of every commit since 26 October and a force push (blocked by "protect main" until relaxed), then GitHub support for cached views. Do not repeat the coordinates anywhere.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#191](https://github.com/voidbrain/openbando/pull/191) (removed from the tree) |
+| Opened | 2026-10-29 |
+| Verification | Documentation · 2026-10-29 · metadata scan of all tracked media: no other GPS; history purge · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
 ## Features and limitations
 
 ### F-001
