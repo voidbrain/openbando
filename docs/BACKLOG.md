@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `36c4b8d` (merged #213), with every CI job of #162–#213 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `7000959` (merged #212), with every CI job of #162–#215 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -324,7 +324,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR; report 2026-10-29 |
+| PR / evidence | [#215](https://github.com/voidbrain/openbando/pull/215) (all CI jobs green); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Unit · 2026-10-29 · `stripFrames` cases passed; 3D screenshot reviewed; live-site look · Pending |
 | Reviewed | 2026-10-29 |
@@ -348,7 +348,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR; request 2026-10-29 |
+| PR / evidence | [#215](https://github.com/voidbrain/openbando/pull/215) (all CI jobs green); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Unit · 2026-10-29 · slope case passed (fails on the previous build); 3D screenshot reviewed; live-site look · Pending |
 | Reviewed | 2026-10-29 |
@@ -496,7 +496,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#209](https://github.com/voidbrain/openbando/pull/209) (all CI jobs green), after [#206](https://github.com/voidbrain/openbando/pull/206) (the gambrel roof); request 2026-10-29 |
+| PR / evidence | [#209](https://github.com/voidbrain/openbando/pull/209) (all CI jobs green), after [#206](https://github.com/voidbrain/openbando/pull/206) (the gambrel roof); [#214](https://github.com/voidbrain/openbando/pull/214) release 2 (all CI jobs green); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Unit/visual · 2026-10-29 · `examples.spec.ts` passed locally; 2D plan compared with the top views and a 3D view reviewed by the agent; pilot's comparison · Pending |
 | Reviewed | 2026-10-29 |
@@ -616,7 +616,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR; request 2026-10-29 |
+| PR / evidence | [#215](https://github.com/voidbrain/openbando/pull/215) (all CI jobs green); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Unit · 2026-10-29 · rail case passed; 3D screenshot reviewed; live-site look · Pending |
 | Reviewed | 2026-10-29 |
@@ -629,20 +629,20 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-028 | 🔶 P2 | Open | Impact map: what must follow when something changes, reminded on every PR |
+| 🟡 | F-028 | 🔶 P2 | Implemented | Impact map: what must follow when something changes, reminded on every PR |
 
-💻 **→ Human action required: No**<br />Release it in the harness template (decided 2026-10-29), then reconcile here and fill the rows.
+💻 **→ Human action required: No**<br />Done with this PR; the checks the rows name as missing are F-026, F-029, F-030 and F-031.
 
-**Next action / closure evidence:** Requested 2026-10-29: the BACKLOG-RULES consistency rule ("for every modification, check README, AGENTS…") names no derived things, so updates depend on memory (today `check:i18n` missed fence labels written in TypeScript). Plan (decided with the user): a harness template feature, an impact-map file where each row says which files trigger it, what must follow, the command and what checks it; `check-freshness` reads it and lists, on every PR, "this branch changes X: update Y" (a warning, never blocking); AGENTS and BACKLOG-RULES point to it. Rows here: tour → guide pages; UI shown by a clip or film → the clip or film; user-facing text → Italian; controls → their tips; keys → Help panel; spec fields and AI commands → AI schema and prompt; example builder → examples and catalogue; tokens and components → design-system guides; features → README and area notes. The automatic checks are F-029, F-030, F-031 and F-026.
+**Next action / closure evidence:** Requested 2026-10-29: the BACKLOG-RULES consistency rule ("for every modification, check README, AGENTS…") names no derived things, so updates depend on memory (today `check:i18n` missed fence labels written in TypeScript). Plan (decided with the user): a harness template feature, an impact-map file where each row says which files trigger it, what must follow, the command and what checks it; `check-freshness` reads it and lists, on every PR, "this branch changes X: update Y" (a warning, never blocking); AGENTS and BACKLOG-RULES point to it. Rows here: tour → guide pages; UI shown by a clip or film → the clip or film; user-facing text → Italian; controls → their tips; keys → Help panel; spec fields and AI commands → AI schema and prompt; example builder → examples and catalogue; tokens and components → design-system guides; features → README and area notes. The automatic checks are F-029, F-030, F-031 and F-026. Done 2026-10-29: harness 1.11.0 (template #14) and nine rows in `.harness.json` here (guide pages, clips and films, texts and tips in templates, texts in TypeScript data, Help panel keys, spec and AI commands, example bandos, catalogue, design system); each names what checks it, or "nothing yet" with the record that will.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Request 2026-10-29 |
+| PR / evidence | This PR; template [#14](https://github.com/voidbrain/project-harness/pull/14) (v1.11.0); request 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Not implemented |
+| Verification | Script · 2026-10-29 · `check:freshness` on this branch: harness files listed, no impact row triggered (the branch touches none of their files); template `test:tools` 19/19 |
 | Reviewed | 2026-10-29 |
 
 </details>
@@ -735,6 +735,8 @@ The Villetta example is renamed "Bando Villetta" (2026-10-29, user request; [#21
 
 AGENTS: a green PR that conflicts with `main` may get a push that only resolves the conflict (2026-10-29, user; [#211](https://github.com/voidbrain/openbando/pull/211), then made a template rule in 1.10.0, below); its checks run again before it can merge. Before this, #207 and #208 were replaced by new PRs for a backlog conflict.
 
-Harness template 1.10.0 (2026-10-29, this PR; template [#12](https://github.com/voidbrain/project-harness/pull/12)): found here, after a rule for every project (conflict-only pushes to green PRs) was first written into this project's AGENTS without asking whether it belonged to the template. AGENTS gains "Changing a harness file" (the edit is the trigger; unsure: ask before editing) and the template's PR rules (no stacked PRs, no new work on a green PR, conflict-only pushes allowed); project lines inside template sections are marked `<!-- project -->` (12 in AGENTS); the Work tracking bullet points to the new section; BACKLOG-RULES: parallel PRs' backlog conflicts are resolved in the conflicting PR; `check-freshness` copied (it lists the harness files a branch changes); `.harness.json` on 1.10.0. Pending: this PR's CI.
+Harness template 1.10.0 (2026-10-29, this PR; template [#12](https://github.com/voidbrain/project-harness/pull/12)): found here, after a rule for every project (conflict-only pushes to green PRs) was first written into this project's AGENTS without asking whether it belonged to the template. AGENTS gains "Changing a harness file" (the edit is the trigger; unsure: ask before editing) and the template's PR rules (no stacked PRs, no new work on a green PR, conflict-only pushes allowed); project lines inside template sections are marked `<!-- project -->` (12 in AGENTS); the Work tracking bullet points to the new section; BACKLOG-RULES: parallel PRs' backlog conflicts are resolved in the conflicting PR; `check-freshness` copied (it lists the harness files a branch changes); `.harness.json` on 1.10.0. CI green.
+
+Harness template 1.11.0 (2026-10-29, this PR; template [#14](https://github.com/voidbrain/project-harness/pull/14)): the impact map (F-028); AGENTS gains "What follows a change", BACKLOG-RULES points to the map; `check-freshness` copied; `.harness.json` on 1.11.0 with nine rows. Harness 1.10.0 ([#212](https://github.com/voidbrain/openbando/pull/212)): CI green.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.

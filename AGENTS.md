@@ -128,6 +128,10 @@ Before editing a file listed in `.harness.json` (`copied`, `forked`, `adapted`, 
 
 `npm run check:freshness` lists the harness files a branch changes, locally and on every PR.
 
+### What follows a change
+
+When a change has consequences elsewhere (a generated page, a translation, a recording, a guide), they are rows of the impact map, `impact` in `.harness.json`: `{ "when": [file globs], "then": "what must follow", "run": "command", "checked": "what verifies it" }`. `npm run check:freshness` lists the rows a branch triggers, locally and on every PR. Do what each says in the same PR, or record in the backlog why not. A new consequence you find gets a row in the same PR; a row that nothing checks is a candidate for a check.
+
 ### Testing the joins
 
 - Two bugs reached the live site although every unit had tests: flights on generated bandos were turned 90° (the map's projection and the flight's were each right, but the default alignment between them was not), and a timeline click was undone while the video played (seek and video clock each worked alone). A change that touches how two parts meet gets a test across both: `calibration-default.spec.ts` (a GPS fix lands where the map puts the same point), the seek-with-a-playing-video case in `services.spec.ts`.
