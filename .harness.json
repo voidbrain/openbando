@@ -141,7 +141,7 @@
         "src/app/ui/**/*.ts",
         "src/app/core/tour.ts"
       ],
-      "then": "regenerate the element and impact map (docs/agents/element-map.md)",
+      "then": "regenerate the element map (docs/agents/element-map.md)",
       "run": "node tools/build-element-map.mjs",
       "checked": "CI (element map matches the code)"
     },

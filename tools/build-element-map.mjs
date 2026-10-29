@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 /**
- * The element and impact map: the impact rows of .harness.json as a table (what must follow a change), then every
- * control the templates show (buttons, inputs, selects, picture menus), with its label, its
+ * The element map: every control the templates show (buttons, inputs, selects, picture menus), with its label, its
  * `data-tour` mark, the guide steps that show it as a tip on hover and the guide steps (clips) that use it. Generated
  * from the code, so it cannot fall behind: CI rebuilds it and fails when the committed page differs (F-032, F-026).
  * Run: node tools/build-element-map.mjs   (writes docs/agents/element-map.md; --json prints the data instead)
@@ -68,11 +67,9 @@ if (process.argv.includes('--json')) {
 const n = rows.length, withTip = rows.filter((r) => r.tips.length).length, withTitle = rows.filter((r) => r.title).length;
 const noName = rows.filter((r) => !r.label).length, inClips = rows.filter((r) => r.clips.length).length;
 const cell = (s) => String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ');
-const impact = JSON.parse(readFileSync(join(root, '.harness.json'), 'utf8')).impact ?? [];
-let md = `<!-- Written by tools/build-element-map.mjs from .harness.json, the templates and src/app/core/tour.ts: change those, then run the script. -->\n\n`;
-md += `# Element and impact map\n\n## What must follow a change\n\nThe impact rows of \`.harness.json\` (AGENTS, "What follows a change"). \`npm run check:freshness\` lists the rows a branch triggers, on every PR.\n\n| When these change | This must follow | Command | Checked by |\n|---|---|---|---|\n`;
-for (const r of impact) md += `| ${cell((r.when ?? []).map((w) => `\`${w}\``).join(', '))} | ${cell(r.then ?? '')} | ${r.run ? `\`${cell(r.run)}\`` : ''} | ${cell(r.checked ?? 'nothing')} |\n`;
-md += `\n## Controls\n\nEvery control the templates show, with its label, its \`data-tour\` mark, the guide steps that show it as a tip on hover and the guide steps whose clips use it (F-032). Generated; CI fails when this page differs from the code.\n\n`;
+let md = `<!-- Written by tools/build-element-map.mjs from the templates and src/app/core/tour.ts: change those, then run the script. -->\n\n`;
+md += `# Element map\n\nThe element-level part of the impact map ([impact-map.md](impact-map.md), from the harness, lists what must follow a change). `;
+md += `Every control the templates show, with its label, its \`data-tour\` mark, the guide steps that show it as a tip on hover and the guide steps whose clips use it (F-032). Generated; CI fails when this page differs from the code.\n\n`;
 md += `**${n} controls** · ${withTip} with a tip on hover · ${withTitle} with a title · ${inClips} shown in a clip · ${noName} whose name the script cannot read (a bound expression; axe checks the real names)\n\n`;
 for (const file of [...new Set(rows.map((r) => r.file))]) {
   const rs = rows.filter((r) => r.file === file);
