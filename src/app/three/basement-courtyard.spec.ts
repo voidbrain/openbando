@@ -3,6 +3,7 @@ import { Vec3 } from '../core/math3d';
 import { emptySpec, type BuildingSpec, type SiteSpec } from '../core/site-spec';
 import { siteGround } from '../core/site-ground';
 import { floorUnder } from '../core/underground';
+import { addBasementPiece, removeBasementPiece } from '../core/basement';
 import { buildSiteFromSpec } from './site-model';
 
 /** A 10 × 8 building turned 90° (local x → site z, local z → site −x), a 3 m basement with a 2 m courtyard in the middle. */
@@ -52,5 +53,53 @@ describe('basement courtyards (geometry)', () => {
     expect(model.collider.hit(new Vec3(0, floorY + 1, 2))).toBe(true);
     expect(model.collider.hit(new Vec3(0, floorY + 1, 4))).toBe(true);
     expect(model.collider.hit(new Vec3(0, floorY + 1, -3))).toBe(false); // the open room
+  });
+});
+
+describe('basement pieces (geometry and editing)', () => {
+  /** A 10 × 8 building at the origin, not turned; its basement plus a 4 × 4 piece east of it (local x 8…12). */
+  const withPiece = (): SiteSpec => {
+    const s = emptySpec({ lat: 0, lon: 0 });
+    s.extent = 60; s.pads = [];
+    s.buildings = [{
+      id: 'b', name: 'B', pos: { x: 0, z: 0 }, rotDeg: 0, length: 10, width: 8,
+      levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'flat', roofRise: 0 }],
+      basement: { height: 3, pieces: [{ outline: [{ x: 8, z: -2 }, { x: 12, z: -2 }, { x: 12, z: 2 }, { x: 8, z: 2 }] }] },
+    }];
+    return s;
+  };
+
+  it('gives a piece its own volume: a floor under the drone and the ground cut there, not between', () => {
+    const g = siteGround(withPiece());
+    const piece = g.vols.find(v => v.id === 'basement-b-piece0')!;
+    expect(piece).toBeDefined();
+    expect(floorUnder(g.vols, 10, 0, -1)).toBeCloseTo(piece.floor, 3);
+    expect(floorUnder(g.vols, 6.5, 0, -1)).toBeNull(); // between the basement (x ≤ 5) and the piece (x ≥ 8)
+    const grid = g.grid!;
+    const at = (x: number, z: number): number => g.cut![Math.round((z - grid.z0) / grid.cell) * grid.nx + Math.round((x - grid.x0) / grid.cell)]!;
+    expect(at(10, 0)).toBe(1);
+    expect(at(6.5, 0)).toBe(0);
+  });
+
+  it('builds the piece with walls the drone collides with', () => {
+    const model = buildSiteFromSpec(withPiece());
+    const floorY = siteGround(withPiece()).vols.find(v => v.id === 'basement-b-piece0')!.floor;
+    expect(model.collider.hit(new Vec3(8, floorY + 1, 0))).toBe(true);
+    expect(model.collider.hit(new Vec3(12, floorY + 1, 0))).toBe(true);
+    expect(model.collider.hit(new Vec3(10, floorY + 1, 0))).toBe(false); // inside the piece
+  });
+
+  it('adds a drawn piece apart from the basement, refuses one touching it, and removes it', () => {
+    const b = withPiece().buildings[0]!;
+    b.basement!.pieces = undefined;
+    // the centred −1 view of a 10 × 8 basement at the origin is the outline frame itself
+    expect(addBasementPiece(b, { x0: 8, z0: -2, x1: 12, z1: 2 })).toBe(true);
+    const before = structuredClone(b);
+    expect(addBasementPiece(b, { x0: 5, z0: -1, x1: 7, z1: 1 })).toBe(false); // touches the east wall: that is a Wing
+    expect(addBasementPiece(b, { x0: 9, z0: -1, x1: 11, z1: 1 })).toBe(false); // inside the first piece
+    expect(addBasementPiece(b, { x0: -12, z0: -1, x1: -11, z1: 1 })).toBe(false); // narrower than 2 m
+    expect(b).toEqual(before);
+    expect(removeBasementPiece(b, 0)).toBe(true);
+    expect(b.basement!.pieces).toBeUndefined();
   });
 });

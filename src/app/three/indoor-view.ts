@@ -1,5 +1,6 @@
+import { basementPieceBuilding } from '../core/basement';
 import * as THREE from 'three';
-import type { SiteSpec } from '../core/site-spec';
+import type { BuildingSpec, SiteSpec } from '../core/site-spec';
 import { levelOnly } from './element-preview';
 import { siteGround } from '../core/site-ground';
 import type { SitePick } from './site-pick';
@@ -22,8 +23,11 @@ export function indoorViewSpec(spec: SiteSpec, floor: IndoorFloor): SiteSpec {
     const ground = siteGround(spec);
     const isolated = levelOnly(b, -1);
     isolated.levels[0]!.baseY += ground.building.get(b.id) ?? 0;
+    // separate pieces show beside it (own ids: selection and handles stay on the main basement)
+    const pieces = (b.basement?.pieces ?? []).map((_, i) => basementPieceBuilding(b, i)).filter((p): p is BuildingSpec => !!p)
+      .map((p, i) => ({ ...p, id: `${b.id}~piece${i}`, levels: [{ ...p.levels[0]!, baseY: p.levels[0]!.baseY + (ground.building.get(b.id) ?? 0) }] }));
     const structures = (spec.structures ?? []).filter(st => (st.kind === 'stairs' || st.kind === 'ramp') && (st.y ?? 0) < 0).map(st => ({ ...st, y: (st.y ?? 0) + ground.at(st.x, st.z) }));
-    return { ...spec, buildings: [isolated], structures, trees: [], pads: [], underground: [], terrain: undefined };
+    return { ...spec, buildings: [isolated, ...pieces], structures, trees: [], pads: [], underground: [], terrain: undefined };
   }
   return { ...spec, buildings: spec.buildings.map((building) => {
     if (building.id !== floor.id || !building.levels[floor.li]) return building;

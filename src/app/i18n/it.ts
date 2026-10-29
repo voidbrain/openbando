@@ -1316,4 +1316,11 @@ export const IT: Readonly<Record<string, string>> = {
   'Drag a courtyard into the basement: the ground stays, walls go around it': 'Trascina un cortile nel piano interrato: il terreno resta, i muri lo circondano',
   'Drag a rectangle inside the basement: the ground stays there and walls go around it.': 'Trascina un rettangolo dentro il piano interrato: lì il terreno resta e i muri lo circondano.',
   'A courtyard must lie inside the basement, at least 1 m across, clear of other courtyards and of columns, walls and voids.': 'Un cortile deve stare dentro il piano interrato, largo almeno 1 m, lontano da altri cortili e da colonne, muri e vuoti.',
+  'Basement piece': 'Parte di interrato',
+  'Piece {0}': 'Parte {0}',
+  'Delete piece {0}': 'Elimina parte {0}',
+  'Delete piece': 'Elimina parte',
+  'Drag a separate piece of basement, apart from the main one': "Trascina una parte di interrato separata, staccata da quella principale",
+  'Drag a rectangle apart from the basement: a separate piece with its own walls.': 'Trascina un rettangolo staccato dal piano interrato: una parte separata con i suoi muri.',
+  'A separate piece must be at least 2 m across and apart from the basement and the other pieces.': 'Una parte separata deve essere larga almeno 2 m e staccata dal piano interrato e dalle altre parti.',
 };

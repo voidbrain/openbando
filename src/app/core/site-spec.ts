@@ -125,6 +125,8 @@ export interface LevelSpec {
   wallEdges?: boolean[];
   /** Runtime-only, derived basements: courtyard rings in this floor's frame (no floor inside, walls around them). */
   courtyards?: { ring: Vec2[]; walls?: boolean[] }[];
+  /** Runtime-only, derived basements: the separate pieces' rings in this floor's frame (drawn on the plan). */
+  pieces?: Vec2[][];
   /** Interior partition walls (solid, no openings): segment endpoints in building-local metres. */
   partitions: [Vec2, Vec2][];
   /** 'gable' = pitched roof over the long axis, 'vault' = barrel vault(s), 'flat' = parapet slab. */
