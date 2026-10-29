@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `7000959` (merged #212), with every CI job of #162–#215 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `f0c9fd3` (merged #217), with every CI job of #162–#217 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -357,6 +357,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
+### B-035
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | B-035 | 🔶 P2 | Open | Two buildings flush against each other flicker where their walls meet |
+
+💻 **→ Human action required: No**<br />Draw one wall where two buildings' sides coincide (the magnet snaps buildings flush, so any pilot can make this), and test it.
+
+**Next action / closure evidence:** Found 2026-10-29 (user screenshot of Bardwell House: the dark wall flickering behind the windows). Each side wall is a 0.5 m box centred on the building's edge, so two buildings snapped flush put two identical boxes in one place, and their faces fight in the depth buffer (z-fighting), visible through windows and doors. Bardwell House is fixed in the example (release 4: the wing has no wall on the shared side). General plan: when the site is built, find sides of two buildings that lie on the same line with opposite faces and overlapping spans, and build that stretch once (or inset one of them), keeping both colliders correct; cover it with a model test (two flush buildings: no coincident wall faces) and a screenshot.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Report 2026-10-29; Bardwell House worked around in this PR |
+| Opened | 2026-10-29 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
 ## Features and limitations
 
 ### F-001
@@ -489,7 +513,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 🧑 **→ Human action required: Yes**<br />On the live site after merge: Bandos → Examples → Bardwell House → Open a copy; compare the model with your photos and say what to correct.
 
-**Next action / closure evidence:** Requested 2026-10-29 with the generated bando (private coordinates, never committed), two top views and two oblique photos. Decided with the user: a gambrel roof kind (F-022), the map's "concrete" over the west fields dropped, the real ground baked in. The input is the app's own place-hidden export (`tools/examples/data/bardwell-house.hidden.json`: embedded relative heights, origin 0, 0, no coordinates, terrain key or map names, checked before commit); `npm run examples` builds `library/bandos/bardwell-house-no-place.json` with the refinements measured on the photos (≈ 8 cm a pixel, scaled on the generated house and barn; the store's place agrees within ~2 m between the two top views): gambrel house and flat-roofed wing, gambrel barn, store, three sheds, patio and stepped brick wall, the drive's wooden fence, a camper and a car; duplicate trees removed. The FPV simulators' models of the place are game assets and were not used. Covered by `examples.spec.ts` (listed, hidden, origin 0, 0, no coordinates or names, embedded ground, gambrel roofs, store and sheds, no map surface over the fields). AGENTS' privacy rule names the place as private. Not checked: shapes and heights against the real place beyond the photos (porch, dormers, the wing's exact depth are estimates). Release 2 (user review 2026-10-29, with two more photos): the house turned a quarter (gambrel ends east and west, the flat-roofed wing south), the second drive from the lane to the front of the house under three big trees, the take-off pad in front of the house, the hedge along the south side and the south end of the east side, roads and trees cut to the area of the real heights (the map's roads ran hundreds of metres out) and the grass around ending 5 m past it; trees on a road removed.
+**Next action / closure evidence:** Requested 2026-10-29 with the generated bando (private coordinates, never committed), two top views and two oblique photos. Decided with the user: a gambrel roof kind (F-022), the map's "concrete" over the west fields dropped, the real ground baked in. The input is the app's own place-hidden export (`tools/examples/data/bardwell-house.hidden.json`: embedded relative heights, origin 0, 0, no coordinates, terrain key or map names, checked before commit); `npm run examples` builds `library/bandos/bardwell-house-no-place.json` with the refinements measured on the photos (≈ 8 cm a pixel, scaled on the generated house and barn; the store's place agrees within ~2 m between the two top views): gambrel house and flat-roofed wing, gambrel barn, store, three sheds, patio and stepped brick wall, the drive's wooden fence, a camper and a car; duplicate trees removed. The FPV simulators' models of the place are game assets and were not used. Covered by `examples.spec.ts` (listed, hidden, origin 0, 0, no coordinates or names, embedded ground, gambrel roofs, store and sheds, no map surface over the fields). AGENTS' privacy rule names the place as private. Not checked: shapes and heights against the real place beyond the photos (porch, dormers, the wing's exact depth are estimates). Release 2 (user review 2026-10-29, with two more photos): the house turned a quarter (gambrel ends east and west, the flat-roofed wing south), the second drive from the lane to the front of the house under three big trees, the take-off pad in front of the house, the hedge along the south side and the south end of the east side, roads and trees cut to the area of the real heights (the map's roads ran hundreds of metres out) and the grass around ending 5 m past it; trees on a road removed. Release 3 ([#217](https://github.com/voidbrain/openbando/pull/217)): the drive's fence is the white post-and-rail fence (F-027). Release 4 (this PR, user report with a screenshot): the dark wall flickered behind the windows of the house and its wing: the wing's north wall and the main block's south wall stood in one place (z-fighting); the wing has no north wall now (B-035 tracks the general case).
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -609,7 +633,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 🧑 **→ Human action required: Yes**<br />On the live site after merge: draw a fence and pick Post-and-rail in its material menu; Bardwell House's drive fence uses it.
 
-**Next action / closure evidence:** Requested 2026-10-29 for the library (Bardwell House has one). New fence material `rail`: posts every 2.4 m, three planks (`RAIL_PLANKS`) nailed to their face with open gaps between them, white by default, each plank following the ground; solid for the drone like the other fences. Material menu entry with its own icon and Italian. Covered by `site-model.spec.ts` (6 posts and 3 planks on a 12 m fence, solid). Bardwell House's drive fence is `rail` (release 3 of the example, this PR's follow-up).
+**Next action / closure evidence:** Requested 2026-10-29 for the library (Bardwell House has one). New fence material `rail`: posts every 2.4 m, three planks (`RAIL_PLANKS`) nailed to their face with open gaps between them, white by default, each plank following the ground; solid for the drone like the other fences. Material menu entry with its own icon and Italian. Covered by `site-model.spec.ts` (6 posts and 3 planks on a 12 m fence, solid). Bardwell House's drive fence is `rail` ([#217](https://github.com/voidbrain/openbando/pull/217), release 3 of the example).
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -640,7 +664,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR; template [#14](https://github.com/voidbrain/project-harness/pull/14) (v1.11.0); request 2026-10-29 |
+| PR / evidence | [#216](https://github.com/voidbrain/openbando/pull/216) (CI green); template [#14](https://github.com/voidbrain/project-harness/pull/14) (v1.11.0); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Script · 2026-10-29 · `check:freshness` on this branch: harness files listed, no impact row triggered (the branch touches none of their files); template `test:tools` 19/19 |
 | Reviewed | 2026-10-29 |
@@ -737,6 +761,6 @@ AGENTS: a green PR that conflicts with `main` may get a push that only resolves 
 
 Harness template 1.10.0 (2026-10-29, this PR; template [#12](https://github.com/voidbrain/project-harness/pull/12)): found here, after a rule for every project (conflict-only pushes to green PRs) was first written into this project's AGENTS without asking whether it belonged to the template. AGENTS gains "Changing a harness file" (the edit is the trigger; unsure: ask before editing) and the template's PR rules (no stacked PRs, no new work on a green PR, conflict-only pushes allowed); project lines inside template sections are marked `<!-- project -->` (12 in AGENTS); the Work tracking bullet points to the new section; BACKLOG-RULES: parallel PRs' backlog conflicts are resolved in the conflicting PR; `check-freshness` copied (it lists the harness files a branch changes); `.harness.json` on 1.10.0. CI green.
 
-Harness template 1.11.0 (2026-10-29, this PR; template [#14](https://github.com/voidbrain/project-harness/pull/14)): the impact map (F-028); AGENTS gains "What follows a change", BACKLOG-RULES points to the map; `check-freshness` copied; `.harness.json` on 1.11.0 with nine rows. Harness 1.10.0 ([#212](https://github.com/voidbrain/openbando/pull/212)): CI green.
+Harness template 1.11.0 (2026-10-29, [#216](https://github.com/voidbrain/openbando/pull/216), CI green; template [#14](https://github.com/voidbrain/project-harness/pull/14)): the impact map (F-028); AGENTS gains "What follows a change", BACKLOG-RULES points to the map; `check-freshness` copied; `.harness.json` on 1.11.0 with nine rows. Harness 1.10.0 ([#212](https://github.com/voidbrain/openbando/pull/212)): CI green.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.

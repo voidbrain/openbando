@@ -59,6 +59,7 @@ describe('example bandos', () => {
     expect(named('House')?.levels.at(-1)?.roof).toBe('gambrel');
     expect(named('Barn')?.levels.at(-1)?.roof).toBe('gambrel');
     expect(named('House wing')?.levels.at(-1)?.roof).toBe('flat');
+    expect(named('House wing')?.levels[0]?.sides.n).toBe(false); // the main block's wall stands there: one wall, no flicker
     expect(named('Store')).toBeDefined();
     expect(b.buildings.filter((x) => x.name === 'Shed')).toHaveLength(3);
     expect(b.walls?.filter((w) => w.material === 'brick')).toHaveLength(3);
