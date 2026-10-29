@@ -2,6 +2,18 @@
 
 This is the authoritative update and review procedure for [OpenBando backlog](BACKLOG.md). AGENTS and README link here; keep procedural changes here rather than adding competing instructions elsewhere. The backlog's lifecycle table is the status quick reference. Archived working plans and audits preserve dated evidence, not current state.
 
+## One repository, one backlog
+
+Each backlog owns the work of its own repository and nothing else (single responsibility). Dependencies point one way: a repository may wait on what it uses, never on what uses it.
+
+- **Here.** A record tracks a change made in this repository. Its next action is a step taken here, and its closure criteria are things this repository's PRs, CI, releases or human checks can show.
+- **Upstream** (a library, a service, the harness template): a record may wait on a release there. It is Blocked, names that release and links the issue or PR there.
+- **Downstream** (repositories that use this one): a record never waits for them to adopt a change. It closes when the change is released here; each of them records its own adoption in its own backlog.
+- **Evidence from elsewhere** can verify a record: a trial in a real consumer, an upstream fix reproduced. Record it in Verification once it has happened; never leave it as a condition still waiting on that repository.
+- Link another repository's record when it matters; never track its status here.
+
+Test: if a record's next action or closure condition can only happen in another repository, it is in the wrong backlog. Move that part to the backlog it belongs to and link it.
+
 ## When to update and review
 
 - Every code, documentation or asset change and every PR updates the affected bug/feature records. Add a stable ID if needed; maintenance-only changes belong in Other changes. Do not create a new product ID for each follow-up PR.
