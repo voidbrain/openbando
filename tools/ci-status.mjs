@@ -14,6 +14,9 @@ const LOG_NOTES = (config.logNotes ?? []).map(pattern => new RegExp(pattern));
 const gh = (...args) => execFileSync('gh', args, {encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe']});
 const json = (...args) => JSON.parse(gh(...args));
 
+const DEFAULT_BRANCH = JSON.parse(existsSync(stamp) ? readFileSync(stamp, 'utf8') : '{}').defaultBranch
+  ?? json('repo', 'view', '--json', 'defaultBranchRef').defaultBranchRef.name;
+
 let numbers = process.argv.slice(2).map(Number).filter(Boolean);
 if (!numbers.length)
   numbers = json('pr', 'list', '--state', 'all', '--limit', '8', '--json', 'number').map(p => p.number);
@@ -21,7 +24,7 @@ if (!numbers.length)
 for (const n of numbers) {
   const pr = json('pr', 'view', String(n), '--json', 'number,title,state,baseRefName,headRefOid,mergedAt,url');
   console.log(`\n#${pr.number} ${pr.title}\n  ${pr.state.toLowerCase()} into ${pr.baseRefName}${pr.mergedAt ? ` at ${pr.mergedAt}` : ''} · ${pr.url}`);
-  if (pr.baseRefName !== 'main') console.log('  ! not based on main: CI does not run, and merging does not reach main');
+  if (pr.baseRefName !== DEFAULT_BRANCH) console.log(`  ! based on ${pr.baseRefName}, not ${DEFAULT_BRANCH}: merging it does not reach the default branch`);
   const runs = json('run', 'list', '--commit', pr.headRefOid, '--workflow', WORKFLOW, '--json', 'databaseId,status,conclusion,url');
   if (!runs.length) { console.log('  no CI run for its head commit'); continue; }
   for (const run of runs) {

@@ -1,9 +1,13 @@
 // The AGENTS.md conventions a script can check, and exports nothing uses. A rule nobody checks drifts.
+// Heuristic: the rules are text patterns and the unused-export count is a word count, not type analysis, so a match in a
+// string, an alias or a same-named identifier can mislead it. ESLint owns what it can check; a false result here is
+// fixed in this script (a release), never silenced in the code.
 import {existsSync, readFileSync, readdirSync, statSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import {join, relative} from 'node:path';
+import {fileURLToPath} from 'node:url';
 
-const root = new URL('..', import.meta.url).pathname;
+const root = fileURLToPath(new URL('..', import.meta.url));
 // Framework-free folders (relative to the repo root) and the @angular/core names each may import, from .harness.json
 // (conventions.pureDirs), e.g. [["src/app/core/", ["signal", "computed", "untracked"]]]. Signal primitives run without
 // the framework, so a folder may allow them and stay unit-testable. None: no framework-free layer.
@@ -73,7 +77,7 @@ for (const file of app.filter(f => f.endsWith('.ts'))) {
 
 if (problems.length) {
   console.error(problems.join('\n'));
-  console.error(`${problems.length} convention problem(s); see AGENTS.md.`);
+  console.error(`${problems.length} convention problem(s) found by text patterns; see AGENTS.md. A false one is a defect of this check: report it to the harness.`);
   process.exit(1);
 }
 console.log(`${app.length} files follow the checked AGENTS.md conventions; no unused exports.`);

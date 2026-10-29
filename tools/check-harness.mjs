@@ -7,10 +7,11 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'no
 import { execFileSync } from 'node:child_process';
 import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const github = process.argv.includes('--github');
 const merge = process.argv.includes('--merge');
-const root = new URL('..', import.meta.url).pathname;
+const root = fileURLToPath(new URL('..', import.meta.url));
 const notes = [];
 const warn = (text) => notes.push(text);
 const done = (ok) => {
@@ -21,7 +22,9 @@ const done = (ok) => {
 
 const stampFile = join(root, '.harness.json');
 if (!existsSync(stampFile)) done('No .harness.json: this project was not applied from the harness template.');
-const stamp = JSON.parse(readFileSync(stampFile, 'utf8'));
+let stamp;
+try { stamp = JSON.parse(readFileSync(stampFile, 'utf8')); }
+catch (e) { warn(`.harness.json is not valid JSON (${e.message}): fix it; template check skipped.`); done(); }
 const home = (process.env.HARNESS_HOME ?? stamp.template?.path ?? '~/Projects/project-harness').replace(/^~(?=\/|$)/, homedir());
 if (!existsSync(join(home, 'VERSION'))) {
   // CI has no template clone: skipped quietly there; locally a missing clone is something to fix
