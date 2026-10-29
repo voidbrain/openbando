@@ -515,4 +515,6 @@ Harness template 1.7.0 (2026-10-29, [#200](https://github.com/voidbrain/openband
 
 Harness templates 1.8.0 and 1.9.0 (2026-10-29, [#204](https://github.com/voidbrain/openbando/pull/204)): BACKLOG-RULES gains "One repository, one backlog" (a record never waits for another repository); `check-harness` copied (comments only); the CI workflow clones the public template and runs `check:freshness` with `HARNESS_HOME`, so a PR on a project behind a release shows warnings (never blocking; a failed clone is a warning). `.harness.json` on 1.9.0. CI green; its freshness step read the cloned template ("on template v1.9.0").
 
+AGENTS: a green PR that conflicts with `main` may get a push that only resolves the conflict (2026-10-29, user; this PR); its checks run again before it can merge. Before this, #207 and #208 were replaced by new PRs for a backlog conflict.
+
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
