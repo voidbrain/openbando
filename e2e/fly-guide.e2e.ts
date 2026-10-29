@@ -75,3 +75,16 @@ test('Fly checklist: the simulator route opens the simulator without arming, and
   await expect(again.getByRole('button', {name: 'Simulator', exact: true})).toHaveAttribute('aria-pressed', 'true');
   await expect(again.locator('li').filter({hasText: 'Connect a controller'}).locator('.state')).toHaveText('skipped');
 });
+
+test('Fly checklist: the live route opens Live link without connecting', async ({page}) => {
+  const panel = await flyFromSavedBando(page);
+  await panel.getByRole('button', {name: 'Live', exact: true}).click();
+  await expect(current(panel)).toHaveText('Connect the live link');
+  await expect(panel.getByText('Connect first.')).toBeVisible();
+  await panel.getByRole('button', {name: 'Open Live link', exact: true}).click();
+  const live = page.locator('app-panel[data-id="live"]');
+  await expect(live).toBeVisible();
+  // opening the panel connects nothing: the pilot presses Connect
+  await expect(live.getByRole('button', {name: 'Connect', exact: true})).toBeVisible();
+  await expect(current(panel)).toHaveText('Connect the live link');
+});

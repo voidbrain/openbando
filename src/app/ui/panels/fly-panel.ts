@@ -20,12 +20,12 @@ const KEY = 'abando-fly-guide';
   imports: [Panel],
   template: `
     <app-panel id="fly">
-      <div class="seg" role="group" aria-label="What are you doing?">
+      <div class="seg" role="group" aria-label="What are you doing?" data-tour="fly-routes">
         @for (r of routes; track r.id) {
-          <button [class.on]="route() === r.id" [attr.aria-pressed]="route() === r.id" [title]="r.hint" (click)="choose(r.id)">{{ r.label }}</button>
+          <button [class.on]="route() === r.id" [attr.aria-pressed]="route() === r.id" [title]="r.hint" [attr.data-tour]="'fly-route-' + r.id" (click)="choose(r.id)">{{ r.label }}</button>
         }
       </div>
-      <ol class="steps">
+      <ol class="steps" data-tour="fly-steps">
         @for (st of steps(); track st.id; let i = $index) {
           <li [class.now]="i === current()" [class.done]="st.done" [class.off]="!!st.unavailable || skipped().has(st.id)" [attr.aria-current]="i === current() ? 'step' : null">
             <div class="head">

@@ -7,9 +7,9 @@ The app plays these as animated tours on the real interface: open **Guide me** f
 ## Tours
 
 - **Welcome** (~1 min): What OpenBando does, played automatically through the complete flight. Steps: welcome, open a bando, load the flight, replay in sync.
-- **Full tour** (~1 min): From a new bando to a synced replay. Steps: start a bando: find the place, generate the 3d model, look around in 3d, select a building, change a building, draw a building, plant trees with the brush, place a block from the library, edit with the ai assistant, load a flight log, load the flight video, sync the video with the log, replay the flight.
+- **Full tour** (~1 min): From a new bando to a synced replay. Steps: start a bando: find the place, generate the 3d model, look around in 3d, select a building, change a building, draw a building, plant trees with the brush, place a block from the library, edit with the ai assistant, load a flight log, load the flight video, sync the video with the log, replay the flight, follow the fly checklist.
 - **Build a bando** (~1 min): Find the place, generate the model, edit it. Steps: start a bando: find the place, generate the 3d model, look around in 3d, select a building, change a building, draw a building, plant trees with the brush, place a block from the library.
-- **Fly and sync** (~1 min): Load a flight and its video, sync them, replay. Steps: load a flight log, load the flight video, sync the video with the log, replay the flight.
+- **Fly and sync** (~1 min): Load a flight and its video, sync them, replay. Steps: load a flight log, load the flight video, sync the video with the log, replay the flight, follow the fly checklist.
 
 ## Sections
 

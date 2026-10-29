@@ -35,3 +35,13 @@ Shown as a tip over: `auto-sync`.
 - Play: the drone flies its real path through the model, with the video in step.
 
 Shown as a tip over: `play`.
+
+## Follow the Fly checklist
+
+<video src="clips/fly-checklist.webm" controls muted loop width="720"></video>
+
+- Fly opens this checklist beside the replay. Choose what you are doing: replay a recording, the simulator or live telemetry.
+- Each step ticks itself from what is loaded, so the list picks up where you left it. Skip what you do not have.
+- The simulator route opens the simulator and leaves arming to you.
+
+Shown as a tip over: `fly-routes`.
