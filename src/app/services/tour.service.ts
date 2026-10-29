@@ -46,7 +46,7 @@ export interface TourState {
 /** The copy of the Chiari e Forti example the tour builds and edits (replaced on every run: the pilot's own copies stay untouched). */
 const TOUR_BANDO = { id: 'tour-chiari', name: 'Chiari e Forti (tour)', file: 'library/bandos/chiari-e-forti.json' };
 /** Where the demo flight is replayed: a copy of the example without its place (the flight starts on its take-off pad). */
-const FLIGHT_BANDO = { id: 'tour-flight', name: 'Villetta (place hidden)', file: 'library/bandos/villetta-no-place.json' };
+const FLIGHT_BANDO = { id: 'tour-flight', name: 'Bando Villetta', file: 'library/bandos/villetta-no-place.json' };
 /**
  * The video offset Auto-sync finds for the demo flight (the showcase uses it instead of scanning a minute of video): the
  * mean of 9 local scans at normal, 4× and 6× slowed CPU with the averaged motion match (B-025: range −0.67 … −0.72 s;
