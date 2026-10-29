@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { digWater, insertPoint, layerShape, nearestEdge, removePoint, levelRoad, levelRoads, orderedRoads, padsToRoads, pathLength, sanitizeLayers, simplifyPath, waterLevel } from './layers';
 import { siteGround } from './site-ground';
-import { emptySpec, sanitizeSpec } from './site-spec';
+import { emptySpec, moveTakeoff, sanitizeSpec } from './site-spec';
 import { applyStroke, emptyGrid, heightAt } from './terrain';
 
 const sq = (cx: number, cz: number, h: number) => [
@@ -140,5 +140,17 @@ describe('road overlap priority', () => {
     const all = [...roads, { ...roads[0]!, kind: 'track' as const }, { ...roads[0]!, kind: 'rail' as const }];
     expect(orderedRoads(all).map((r) => r.kind)).toEqual(['path', 'track', 'road', 'rail']);
     expect(all[0]!.kind).toBe('road');
+  });
+});
+
+describe('moving the take-off pad', () => {
+  it('moves the last pad and the drone start together, keeping their offset; road pads stay', () => {
+    const s = emptySpec({ lat: 45.4642, lon: 9.19 });
+    s.pads = [{ x: 30, z: 5, w: 40, d: 4, rotDeg: 30 }, { x: -14, z: 1, w: 12, d: 12 }];
+    s.droneStart = { x: -14, z: 0 };
+    moveTakeoff(s, { x: 6, z: -8 });
+    expect(s.droneStart).toEqual({ x: 6, z: -8 });
+    expect(s.pads[1]).toMatchObject({ x: 6, z: -7, w: 12, d: 12 });
+    expect(s.pads[0]).toMatchObject({ x: 30, z: 5 });
   });
 });

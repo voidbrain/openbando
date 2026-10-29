@@ -317,15 +317,6 @@ export class SiteService {
     this.applyDraft();
   }
 
-  /** Move the take-off pad (and the drone start) to a ground point picked on the 3D scene. */
-  setTakeoffAt(x: number, z: number): void {
-    this.editor.commitSite((s) => {
-      s.droneStart = { x, z };
-    });
-    // applyDraft -> applySpec -> rebindSite already moves the parked drone to takeoffSpot()
-    this.applyDraft();
-  }
-
   /** Store the current active site in the library under its name. */
   saveActive(): void {
     const spec = this.active();
