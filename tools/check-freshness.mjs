@@ -16,7 +16,9 @@ const MAX_AUDIT_DAYS = stamp.freshness?.auditDays ?? 7;
 
 // Compare with the published default branch, never the local checkout: a local branch that is behind (or a feature
 // branch) would hide merged PRs. The branch is .harness.json defaultBranch, else the remote's HEAD, else main.
-git('fetch', '--prune', '--quiet', 'origin'); // ignored when offline
+// A failed fetch (offline, no access) never fails the check, but the cached refs may be old: say so instead of "Fresh".
+if (git('remote')?.split('\n').includes('origin') && git('fetch', '--prune', '--quiet', 'origin') === null)
+  warn('Could not fetch origin (offline or no access): compared with origin as last fetched, so anything merged since is not seen.');
 const branch = stamp.defaultBranch ?? git('symbolic-ref', '--short', 'refs/remotes/origin/HEAD')?.replace(/^origin\//, '') ?? 'main';
 const tip = git('rev-parse', '--verify', '--quiet', `origin/${branch}`) ? `origin/${branch}` : branch;
 if (tip === branch) warn(`No origin/${branch}: comparing with the local ${branch}, which may be behind GitHub.`);
@@ -32,12 +34,21 @@ else {
   // reconciliation would leave the backlog one PR behind forever
   const recordsOnly = (merge) => (git('diff', '--name-only', `${merge}^1`, merge)?.split('\n').filter(Boolean) ?? ['?'])
     .every((f) => /^docs\/(BACKLOG\.md|archive\/|audits\/)/.test(f));
-  // every commit on the branch's first-parent line is a PR landing: a merge commit ("Merge pull request #N") or a
-  // squash or rebase merge ("Title (#N)"); a commit without a PR number was pushed directly and is not a PR
+  // every commit on the branch's first-parent line changed the default branch, whatever its message says: a merge
+  // commit ("Merge pull request #N"), a squash merge ("Title (#N)"), or a rebase merge or direct push with no number,
+  // which gh looks up when it can; a commit no PR is found for is listed by its hash
+  const gh = (...args) => { try { return execFileSync('gh', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 15_000 }).trim() || null; } catch { return null; } };
   const landed = git('log', '--first-parent', '--format=%H %s', `${sha}..${tip}`)?.split('\n').filter(Boolean) ?? [];
-  const prs = landed.filter((l) => !recordsOnly(l.split(' ')[0]))
-    .map((l) => l.match(/^\S+ Merge pull request #(\d+)/)?.[1] ?? l.match(/\(#(\d+)\)$/)?.[1]).filter(Boolean);
-  if (prs.length) warn(`The backlog is ${prs.length} merged PR(s) behind ${branch} (#${prs.join(', #')}): read their CI (npm run ci:status -- ${prs.join(' ')}), update or close the records, archive closed ones, move the header to the current ${branch}.`);
+  const prs = new Set(), commits = [];
+  for (const line of landed) {
+    const hash = line.split(' ')[0];
+    if (recordsOnly(hash)) continue;
+    const pr = line.match(/^\S+ Merge pull request #(\d+)/)?.[1] ?? line.match(/\(#(\d+)\)$/)?.[1]
+      ?? gh('api', `repos/{owner}/{repo}/commits/${hash}/pulls`, '--jq', '.[0].number // empty');
+    if (pr) prs.add(pr); else commits.push(hash.slice(0, 7));
+  }
+  const n = [...prs];
+  if (n.length || commits.length) warn(`The backlog is behind ${branch} by ${[n.length && `${n.length} merged PR(s) (#${n.join(', #')})`, commits.length && `${commits.length} commit(s) with no PR found (${commits.join(', ')})`].filter(Boolean).join(' and ')}: ${n.length ? `read their CI (npm run ci:status -- ${n.join(' ')}), ` : ''}${commits.length ? 'review the commits without a PR (git show <hash>), ' : ''}update or close the records, archive closed ones, move the header to the current ${branch}.`);
 }
 
 // 2. branches already merged into the default branch but still on the remote
