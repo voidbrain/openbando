@@ -97,7 +97,7 @@ The app is **OpenBando** (tagline "Build, Fly, Share."). The repository is `void
 
 ### Checks before you finish
 
-`main` is protected: a PR merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` pass (ruleset "protect main"). Open every PR against `main`, and do not push to a PR once its CI is green (open a new one).
+`main` is protected: a PR merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` pass (ruleset "protect main"). Open every PR against `main`, and do not push new work to a PR once its CI is green (open a new one). Exception: a green PR that conflicts with `main` (it cannot merge) may get a push that only resolves the conflict; its checks run again before it can merge.
 
 ```bash
 npm run check:freshness                   # first, at session start: backlog behind main, merged branches, audit age

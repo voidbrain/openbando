@@ -14,7 +14,7 @@ shapes.
 - The list is the menu layer (`z-index` 1300) on `panel-solid`, `radius-menu`, `shadow-menu`; the current option has an
   `accent` border, the one under the pointer or keyboard a `wash-menu` fill.
 - The list opens below its button, or above when there is more room there (a panel at the bottom of the page), and
-  never reaches past the window: it is as tall as the room allows and scrolls inside (at most 320px). Opening it or
+  never reaches past the window or a box that clips it (the editor's work area, a panel body): it is as tall as the room allows and scrolls inside (at most 320px). Opening it or
   moving through it never scrolls the page (B-031).
 
 ## Accessibility

@@ -140,10 +140,10 @@ export class BandoEditor {
   protected readonly handles: readonly Handle[] = ['n', 's', 'e', 'w', 'nw', 'ne', 'sw', 'se'];
   protected readonly corners: readonly [number, number][] = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
   /** `where`: shown outdoors ('out'), only while editing a floor ('in'), or always. Tools that need a building hide without one. */
-  protected readonly tools: readonly { id: Tool; icon: string; name: string; color: string; hint: string; where: 'out' | 'in' | 'both'; group: string; needsBuilding?: boolean; sep?: boolean }[] = [
+  protected readonly tools: readonly { id: Tool; icon: string; name: string; color: string; hint: string; where: 'out' | 'in' | 'both'; group: string; needsBuilding?: boolean }[] = [
     { id: 'select', icon: 'select', group: 'select', name: 'Select', color: '#e6eee9', hint: 'Click selects · drag moves / resizes / rotates · indoors, drag on the floor to box-select columns, outside the building to pan', where: 'both' },
     { id: 'measure', icon: 'measure', group: 'measure', name: 'Measure', color: '#38d6ff', hint: 'Click points to chain measures (magnet to elements) · click a line to select / move it · Delete removes it', where: 'both' },
-    { id: 'building', icon: 'building', group: 'build', name: 'Building', color: '#b7ed83', hint: 'Drag a rectangle on the map; it snaps flush to close neighbours unless auto-align is off', where: 'out', sep: true },
+    { id: 'building', icon: 'building', group: 'build', name: 'Building', color: '#b7ed83', hint: 'Drag a rectangle on the map; it snaps flush to close neighbours unless auto-align is off', where: 'out' },
     { id: 'merge', icon: 'merge', group: 'build', name: 'Merge', color: '#a29bfe', hint: 'Then click a touching (or almost touching) building to join it into the selected one', where: 'out', needsBuilding: true },
     { id: 'cut', icon: 'cut', group: 'build', name: 'Cut', color: '#ff6b6b', hint: 'Cut a notch out of the selected building (U, H, L shapes)', where: 'out', needsBuilding: true },
     { id: 'wing', icon: 'wing', group: 'build', name: 'Wing', color: '#74b9ff', hint: 'Add a wing to the selected building', where: 'out', needsBuilding: true },
@@ -157,7 +157,7 @@ export class BandoEditor {
     { id: 'water', icon: 'water', group: 'layers', name: 'Water', color: '#5d8cff', hint: 'Draw an outline: a pond or basin, dug into the ground', where: 'out' },
     { id: 'terrain', icon: 'terrainRaise', group: 'terrain', name: 'Terrain', color: '#c49a6c', hint: 'Shape the ground: raise, lower, smooth, flatten, or stamp a hill, crater or ramp', where: 'out' },
     { id: 'tunnel', icon: 'tunnel', group: 'terrain', name: 'Tunnel', color: '#9b5de5', hint: 'Drag a tunnel (or a room) under the ground; it opens where the ground is cut', where: 'out' },
-    { id: 'wall', icon: 'wall', group: 'room', name: 'Wall', color: '#e1b12c', hint: 'Draw an interior wall on this floor', where: 'in', sep: true },
+    { id: 'wall', icon: 'wall', group: 'room', name: 'Wall', color: '#e1b12c', hint: 'Draw an interior wall on this floor', where: 'in' },
     { id: 'void', icon: 'void', group: 'room', name: 'Void', color: '#0984e3', hint: 'Drag a hole in this floor (water on the ground floor)', where: 'in' },
     { id: 'courtyard', icon: 'courtyard', group: 'room', name: 'Courtyard', color: '#cf6a87', hint: 'Drag a courtyard into the basement: the ground stays, walls go around it', where: 'in' },
     { id: 'piece', icon: 'piece', group: 'room', name: 'Basement piece', color: '#786fa6', hint: 'Drag a separate piece of basement, apart from the main one', where: 'in' },
@@ -174,7 +174,7 @@ export class BandoEditor {
   protected readonly groups = computed(() => {
     const by = new Map<string, (typeof this.tools)[number][]>();
     for (const t of this.visibleTools()) by.set(t.group, [...(by.get(t.group) ?? []), t]);
-    return [...by.entries()].map(([id, items]) => ({ id, items, sep: !!items[0]!.sep }));
+    return [...by.entries()].map(([id, items]) => ({ id, items }));
   });
 
   protected pickTool(id: Tool): void {
