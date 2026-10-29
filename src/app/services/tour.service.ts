@@ -286,6 +286,7 @@ export class TourService {
     if (needs.includes('zone')) {
       await this.open('studio');
       if (this.studio.view() !== 'zone' || !this.studio.isNew()) this.studio.create();
+      this.studio.placeChosen.set(true); // played alone, the step skips the search that picks the place
       await this.sleep(900);
     }
     if (needs.includes('model')) {

@@ -402,7 +402,9 @@ export class BandoEditor {
     this.toast.show(`${set.length} columns selected (${along === 'x' ? 'row' : along === 'z' ? 'line' : 'all alike'}).`);
   }
   /** A bando shared without its place: no map under it (it would show the sea at 0°, 0°), no area to regenerate. */
-  protected readonly placeHidden = computed(() => this.ed.draft().privacy === 'hidden');
+  // a new bando has a place of its own, whatever the bando open before it was shared as
+  protected readonly placeHidden = computed(() => !this.studio.isNew() && this.ed.draft().privacy === 'hidden');
+  protected readonly canGenerate = computed(() => !this.studio.busy() && (!this.studio.isNew() || this.studio.placeChosen()));
 
   // ---- tool controllers: a tool's own options, previews and edits (editor/) ----
   /** The ground the editor shows (contours, the height under the pointer): the draft's terrain, same cache as the 3D model. */
@@ -460,6 +462,7 @@ export class BandoEditor {
   protected query = '';
   protected readonly hits = signal<LocationInfo[]>([]);
   protected readonly searching = signal(false);
+  protected readonly hitPicked = signal<LocationInfo | null>(null);
 
   // map view (Leaflet) as signals: centre, zoom, pixel size
   private readonly center = signal({ lat: this.studio.start().lat, lon: this.studio.start().lon });
@@ -774,6 +777,7 @@ export class BandoEditor {
     return d?.t === 'wallDraw' ? d : { a: { x: 0, z: 0 }, b: { x: 0, z: 0 } };
   });
   protected readonly hint = computed(() => {
+    if (this.mode() === 'area' && !this.canGenerate() && !this.studio.busy()) return 'Search a place (or drag the map to it), then frame the area and Generate.';
     if (this.mode() === 'area') return 'Pan and zoom the map to place the area, drag the frame\'s edges and corners to size it, then Generate.';
     const t = this.tool();
     if (this.pinMode()) return 'Click the map where the flight ' + (this.pinMode() === 's' ? 'started' : 'ended') + '. Esc cancels.';
@@ -1023,6 +1027,10 @@ export class BandoEditor {
       if (s.x > 20 && s.y > 20) this.size.set({ w: s.x, h: s.y });
     };
     map.on('move zoom resize', sync);
+    map.on('dragstart', () => {
+      this.studio.placeChosen.set(true);
+      this.hits.set([]);
+    }); // the pilot moved to the place by hand
     map.on('click', () => {
       if (this.mode() === 'model' && this.tool() === 'select' && !this.indoor()) {
         this.pick.set(null);
@@ -1080,16 +1088,18 @@ export class BandoEditor {
     if (!this.query.trim()) return;
     this.searching.set(true);
     try {
+      // go to the best match at once; with more than one, the list stays open to switch to another
       const hits = await this.site.search(this.query, 6);
-      if (hits.length === 1) this.pick2(hits[0]!);
-      else this.hits.set(hits);
+      if (hits.length) this.pick2(hits[0]!);
+      this.hits.set(hits.length > 1 ? hits : []);
     } finally {
       this.searching.set(false);
     }
   }
 
   protected pick2(h: LocationInfo): void {
-    this.hits.set([]);
+    this.hitPicked.set(h);
+    this.studio.placeChosen.set(true);
     this.map?.setView([h.lat, h.lon], Math.max(this.map.getZoom(), 17));
     if (this.studio.isNew() && this.studio.name() === 'New bando') this.studio.name.set(h.label.split(',')[0]!.trim() || 'New bando');
   }

@@ -4,7 +4,7 @@ import { Injectable, computed, effect, inject, signal, untracked, type WritableS
 import { ELEVATION_ATTRIBUTION } from '../core/elevation';
 import type { Calibration, GeoPoint } from '../core/models';
 import { setSiteOrigin } from '../core/constants';
-import { parseLatLon, solveCalibration, toGeo } from '../core/geo';
+import { coarserQueries, parseLatLon, solveCalibration, toGeo } from '../core/geo';
 import { bounds, edgesOf, recentre, rectilinear, type Pt } from '../core/footprint';
 import type { BuildingSpec, LocationInfo, SiteSpec, StructureSpec, TreeSpec, Vec2, WallOpening, ZoneSpec } from '../core/site-spec';
 import { keepInsideAreas } from '../core/areas';
@@ -253,11 +253,17 @@ export class SiteService {
     if (typed) return [{ label: 'Entered position', lat: typed.lat, lon: typed.lon }];
     try {
       const hits = await this.geo.geocode(q, limit);
-      if (!hits.length) {
-        this.toast.show('No location found for that search.');
-        return [];
+      if (hits.length) return hits;
+      // OpenStreetMap often lacks the street or its number: fall back to the nearest coarser part of the address
+      for (const coarse of coarserQueries(q)) {
+        const near = await this.geo.geocode(coarse, limit);
+        if (near.length) {
+          this.toast.show(`Exact address not found: showing “${coarse}”. Move the map to the place.`, 5000);
+          return near;
+        }
       }
-      return hits;
+      this.toast.show('No location found for that search.');
+      return [];
     } catch {
       this.toast.show('Geocoding unreachable (offline?). Enter lat,lon instead.');
       return [];

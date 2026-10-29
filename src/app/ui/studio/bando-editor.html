@@ -573,9 +573,10 @@
       <button class="btn" (click)="search()" [disabled]="searching()" data-tour="search-go">Go</button>
     </div>
     @if (hits().length) {
-      <div class="hits">
+      <div class="hits" role="group" aria-label="Matches">
+        <span class="dim small">Matches <button class="x" (click)="hits.set([])" aria-label="Close the matches" title="Close the matches">✕</button></span>
         @for (h of hits(); track h.lat + ',' + h.lon) {
-          <button (click)="pick2(h)" [title]="h.label">{{ h.label }}</button>
+          <button (click)="pick2(h)" [class.on]="h === hitPicked()" [attr.aria-pressed]="h === hitPicked()" [title]="h.label">{{ h.label }}</button>
         }
       </div>
     }
@@ -919,6 +920,6 @@
       }
     </span>
     <button class="btn" (click)="setServer()" title="Use your own OpenStreetMap data server (e.g. the PHP proxy) instead of the public ones">Data server…</button>
-    <button class="btn primary" (click)="generate()" [disabled]="studio.busy()" data-tour="generate">{{ studio.busy() ? 'Building…' : studio.isNew() ? 'Generate 3D' : 'Regenerate 3D' }}</button>
+    <button class="btn primary" (click)="generate()" [disabled]="!canGenerate()" [title]="canGenerate() || studio.busy() ? '' : 'Search a place or drag the map to it first'" data-tour="generate">{{ studio.busy() ? 'Building…' : studio.isNew() ? 'Generate 3D' : 'Regenerate 3D' }}</button>
   }
 </div>

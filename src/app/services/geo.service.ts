@@ -53,11 +53,16 @@ const metresPerDegLon = (lat: number): number => 111320 * Math.cos((lat * Math.P
 @Injectable({ providedIn: 'root' })
 export class GeoService {
   private static readonly NOMINATIM = 'https://nominatim.openstreetmap.org/search';
+  private static lastGeocode = 0;
 
   /** Address / place search (Nominatim). Free-form input -> up to `limit` coordinates. */
   async geocode(query: string, limit = 6): Promise<GeoResult[]> {
     const q = query.trim();
     if (!q) return [];
+    // Nominatim's policy allows one request a second: a fallback search asks again at once
+    const wait = GeoService.lastGeocode + 1000 - Date.now();
+    if (wait > 0) await new Promise((done) => setTimeout(done, wait));
+    GeoService.lastGeocode = Date.now();
     const url = `${GeoService.NOMINATIM}?format=jsonv2&limit=${limit}&q=${encodeURIComponent(q)}`;
     const res = await fetch(url, { headers: { Accept: 'application/json' } });
     if (!res.ok) throw new Error(`Nominatim replied ${res.status}`);

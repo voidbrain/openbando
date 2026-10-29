@@ -157,4 +157,18 @@ describe('the map search', () => {
     await site.search('Piazza del Duomo');
     expect(asked).toBe(1); // a name is looked up
   });
+
+  it('falls back to a coarser part of an address OpenStreetMap does not know', async () => {
+    const { SiteService } = await import('./site.service');
+    const { GeoService } = await import('./geo.service');
+    const geo = TestBed.inject(GeoService);
+    const asked: string[] = [];
+    geo.geocode = async (q) => {
+      asked.push(q);
+      return q === 'Milano, Italia' ? [{ label: 'Milano', lat: 45.4642, lon: 9.19 }] : [];
+    };
+    const hits = await TestBed.inject(SiteService).search('12 Via Inesistente, Milano, Italia');
+    expect(hits).toEqual([{ label: 'Milano', lat: 45.4642, lon: 9.19 }]);
+    expect(asked).toEqual(['12 Via Inesistente, Milano, Italia', 'Via Inesistente, Milano, Italia', 'Milano, Italia']);
+  });
 });

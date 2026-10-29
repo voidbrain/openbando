@@ -1,5 +1,5 @@
 import { DEFAULT_CALIBRATION, setSiteOrigin } from './constants';
-import { courseDegrees, rotateCalibrationAbout, solveCalibration, toGeo, toLocal, toLocalAt, turnTowards, latLonText, parseLatLon, siteFromLatLon, toGeoAt } from './geo';
+import { courseDegrees, rotateCalibrationAbout, solveCalibration, toGeo, toLocal, toLocalAt, turnTowards, latLonText, parseLatLon, coarserQueries, siteFromLatLon, toGeoAt } from './geo';
 
 describe('geo', () => {
   beforeAll(() => setSiteOrigin({ lat: 45.464198, lon: 9.190005 })); // any site: Milan centre
@@ -133,5 +133,22 @@ describe('hidden flight projection', () => {
     const back = toGeo(north[0], north[1], cal);
     expect(back[0]).toBeCloseTo(start.lat + 0.001, 8);
     expect(back[1]).toBeCloseTo(start.lon, 8);
+  });
+});
+
+describe('coarser addresses for the geocoder', () => {
+  it('drops the house number, then the leading parts, keeping two', () => {
+    expect(coarserQueries('12 Via Inesistente, 20121 Milano MI, Italia')).toEqual([
+      'Via Inesistente, 20121 Milano MI, Italia',
+      '20121 Milano MI, Italia',
+    ]);
+    expect(coarserQueries('Via Inesistente 12, Milano')).toEqual(['Via Inesistente, Milano']);
+    expect(coarserQueries('Milano, Italia')).toEqual([]);
+    // made-up American address: no real place
+    expect(coarserQueries('123 Nowhere St, Springfield, IL 62701, USA')).toEqual([
+      'Nowhere St, Springfield, IL 62701, USA',
+      'Springfield, IL 62701, USA',
+      'IL 62701, USA',
+    ]);
   });
 });

@@ -142,3 +142,20 @@ export function latLonText(origin: GeoPoint, p: { x: number; z: number }): strin
   const [lat, lon] = toGeoAt(origin, p.x, p.z, { rot: 0, dx: 0, dz: 0 });
   return `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
 }
+
+/**
+ * Coarser versions of an address the geocoder found nothing for, most precise first: without the house number, then
+ * dropping the leading comma-separated part (street, then town…) while two parts remain. OpenStreetMap often lacks a
+ * street or its number; the pilot then lands on the town or postcode and frames the area by hand.
+ */
+export function coarserQueries(query: string): string[] {
+  const parts = query.split(',').map((p) => p.trim()).filter(Boolean);
+  const out: string[] = [];
+  const add = (q: string): void => {
+    if (q && q !== query.trim() && !out.includes(q)) out.push(q);
+  };
+  const first = parts[0]?.replace(/^\d+[a-z]?\s+|\s+\d+[a-z]?$/i, '').trim();
+  if (first && parts.length) add([first, ...parts.slice(1)].join(', '));
+  for (let i = 1; parts.length - i >= 2; i++) add(parts.slice(i).join(', '));
+  return out;
+}
