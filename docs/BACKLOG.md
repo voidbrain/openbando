@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `010d6ad` (merged #210), with every CI job of #162–#210 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `36c4b8d` (merged #213), with every CI job of #162–#213 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -245,7 +245,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 🧑 **→ Human action required: Yes**<br />On the live site after merge: open a bando in 2 · Model; every tool shows in the palette, two to a row.
 
-**Next action / closure evidence:** Reported 2026-10-29 (the user could not find Cut and Wing). The palette showed one button per group (paint-program style, from 66dfacb, 2026-10-22, with no record or decision); Merge, Cut, Wing, Tree brush, Surface, Water, Tunnel, Courtyard, Void… opened only by long press, right click or a 10 px corner triangle. Decided 2026-10-29 (user): every tool visible, two columns. Now each tool on offer has its own button (`aria-label`, `aria-pressed`), one 2-column block per group; the tree brush's shape and the terrain operation are picked in the options bar (their menus already existed; the sculpt hint moved there); a short editor scrolls the palette. The wider palette covered the 3D view's vertex box (top left), which #205's first CI run caught (two editor-regressions cases): that box and the keyboard measure box moved to the top right. The flyout code, its styles, the `z-flyout` token and the "hold or click the corner" texts are gone; `ToolPalette.md`, `tokens.json` and the editor area note updated. Covered by `e2e/tool-palette.e2e.ts` (16 outdoor tools visible, two to a row, one click arms, terrain operation from the options bar); the vegetation, courtyard and indoor-placement cases now click the tool's own button. Not checked: a short editor window on a device.
+**Next action / closure evidence:** Reported 2026-10-29 (the user could not find Cut and Wing). The palette showed one button per group (paint-program style, from 66dfacb, 2026-10-22, with no record or decision); Merge, Cut, Wing, Tree brush, Surface, Water, Tunnel, Courtyard, Void… opened only by long press, right click or a 10 px corner triangle. Decided 2026-10-29 (user): every tool visible, two columns. Now each tool on offer has its own button (`aria-label`, `aria-pressed`), one 2-column block per group; the tree brush's shape and the terrain operation are picked in the options bar (their menus already existed; the sculpt hint moved there); a short editor scrolls the palette; a hairline separates every category (user, 2026-10-29). The wider palette covered the 3D view's vertex box (top left), which #205's first CI run caught (two editor-regressions cases): that box and the keyboard measure box moved to the top right. The flyout code, its styles, the `z-flyout` token and the "hold or click the corner" texts are gone; `ToolPalette.md`, `tokens.json` and the editor area note updated. Covered by `e2e/tool-palette.e2e.ts` (16 outdoor tools visible, two to a row, one click arms, terrain operation from the options bar); the vegetation, courtyard and indoor-placement cases now click the tool's own button. Not checked: a short editor window on a device.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -269,7 +269,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 🧑 **→ Human action required: Yes**<br />On the live site after merge: move a panel with a picture menu (Trees options, for example) to the bottom of the page and open the menu.
 
-**Next action / closure evidence:** Reported 2026-10-29. `PickMenu` always opened its list below the button, up to 320 px, and moved the focus into it with a plain `focus()` (and `scrollIntoView` for the active choice): with the button near the bottom of the window the browser scrolled the page (and the panel body) to show the list, leaving a black band. Now the list opens above when there is more room there, is as tall as the room in the window allows (it scrolls inside), keeps inside the window's right edge, and takes the focus with `preventScroll`; the active choice is scrolled into view inside the list only. Covered by `e2e/pick-menu.e2e.ts` (window ending just below the Trees options: the list opens upwards inside the window, no element of the page scrolls on opening or on End; fails on the old menu at the opening). `PickMenu.md` updated. Not checked: a phone-sized window.
+**Next action / closure evidence:** Reported 2026-10-29. `PickMenu` always opened its list below the button, up to 320 px, and moved the focus into it with a plain `focus()` (and `scrollIntoView` for the active choice): with the button near the bottom of the window the browser scrolled the page (and the panel body) to show the list, leaving a black band. Now the list opens above when there is more room there, is as tall as the room in the window allows (it scrolls inside), keeps inside the window's right edge, and takes the focus with `preventScroll`; the active choice is scrolled into view inside the list only. Covered by `e2e/pick-menu.e2e.ts` (window ending just below the Trees options: the list opens upwards inside the window, no element of the page scrolls on opening or on End; fails on the old menu at the opening). `PickMenu.md` updated. Not checked: a phone-sized window. Reopened 2026-10-29 (user): in a Trees options bar dragged to the bottom of the editor the menu still opened downwards, out of sight: the room was measured against the window, but the editor's work area clips it. Now the room is the window cut by every ancestor that clips its content; `e2e/pick-menu-clip.e2e.ts` (fails on the previous fix) covers it.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -279,6 +279,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 | PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205); report 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Browser · 2026-10-29 · `pick-menu.e2e.ts` passed locally; live-site check · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### B-032
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-032 | 🔶 P2 | Implemented | A panel expanded near the bottom of the window was cut, and a click inside it scrolled the page |
+
+🧑 **→ Human action required: Yes**<br />On the live site after merge: collapse a panel, drag it to the bottom, expand it, click inside.
+
+**Next action / closure evidence:** Reported 2026-10-29. Expanding (or showing) a panel never checked that it still fits the window, so its lower part hung past the bottom edge; a click inside focused a control there and the browser scrolled the page (whose overflow is hidden but can still be scrolled by focus) to show it, so everything jumped up. Now a panel that is shown or expanded and reaches past the bottom moves up until it fits (`Panel` constructor effect, only on show / expand and only when the place changes: a first version looped, NG0103), and the app root undoes any page scroll. Covered by `e2e/panel-fit.e2e.ts` (collapse, drag to the bottom, expand: the panel fits; a click inside keeps the page at 0, 0 and the panel in place; no console errors); fails without the fix. Related: B-031 (the same page scroll from a picture menu).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | This PR (replaces [#208](https://github.com/voidbrain/openbando/pull/208): green CI, then a backlog conflict with #206); report 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Browser · 2026-10-29 · `panel-fit`, studio layout, fly entry, a11y, guide, pick menu and new bando e2e passed locally; live-site check · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
@@ -457,6 +481,78 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ---
 
+### F-024
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-024 | 🔹 P3 | Open | Take-off pad indoors, on an upper floor or on a flat roof |
+
+💻 **→ Human action required: No**<br />Implement after F-021: a take-off height for the pad (ground, a floor of the building under it, or its flat roof), with the drone starting there.
+
+**Next action / closure evidence:** Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-025
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-025 | 🔹 P3 | Open | Rework the Fly checklist |
+
+🧑 **→ Human action required: Yes**<br />Say what the Fly checklist should do differently (steps, order, what it checks, when it opens).
+
+**Next action / closure evidence:** Requested 2026-10-29 ("the Fly checklist must be worked"). The current checklist is the Fly panel's guide (`core/fly-guide.ts`, `ui/panels/fly-panel.ts`, guide snippet `fly-checklist`). Waiting for the pilot's direction before changing it.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Not started |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-026
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-026 | 🔹 P3 | Open | Rework the panels' "?" tips: what they cover, checked automatically |
+
+💻 **→ Human action required: No**<br />List which controls of each panel have a tip on hover and which do not, then propose the rework and a check that fails when a control has none.
+
+**Next action / closure evidence:** Requested 2026-10-29. The "?" button in every panel's title bar turns tips on hover on and off (`TourService.tips`); nobody has checked which controls they cover. Plan: an inventory per panel (controls with and without a tip), a proposal for the rework, and an automated check (unit or browser) that every control of a panel has its tip, like `check:i18n` for texts. Closes when the inventory is done, the rework is agreed and the check runs in CI.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Not started |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
 ## Other changes
 
 `main` protection active 2026-10-29 (user request, set through the API): ruleset "protect main" requires `check`, `e2e (1)`–`e2e (4)` and `race-browser` and refuses force pushes and deletion. B-025 (the flaky Auto-sync check) was closed first so the required checks are reliable.
@@ -468,6 +564,8 @@ Harness template 1.7.0 (2026-10-29, [#200](https://github.com/voidbrain/openband
 Harness templates 1.8.0 and 1.9.0 (2026-10-29, [#204](https://github.com/voidbrain/openbando/pull/204)): BACKLOG-RULES gains "One repository, one backlog" (a record never waits for another repository); `check-harness` copied (comments only); the CI workflow clones the public template and runs `check:freshness` with `HARNESS_HOME`, so a PR on a project behind a release shows warnings (never blocking; a failed clone is a warning). `.harness.json` on 1.9.0. CI green; its freshness step read the cloned template ("on template v1.9.0").
 
 The Villetta example is renamed "Bando Villetta" (2026-10-29, user request; [#210](https://github.com/voidbrain/openbando/pull/210)): its file, the guide's flight bando and the examples test. Same release: copies keep their own name.
+
+AGENTS: a green PR that conflicts with `main` may get a push that only resolves the conflict (2026-10-29, user; [#211](https://github.com/voidbrain/openbando/pull/211), then made a template rule in 1.10.0, below); its checks run again before it can merge. Before this, #207 and #208 were replaced by new PRs for a backlog conflict.
 
 Harness template 1.10.0 (2026-10-29, this PR; template [#12](https://github.com/voidbrain/project-harness/pull/12)): found here, after a rule for every project (conflict-only pushes to green PRs) was first written into this project's AGENTS without asking whether it belonged to the template. AGENTS gains "Changing a harness file" (the edit is the trigger; unsure: ask before editing) and the template's PR rules (no stacked PRs, no new work on a green PR, conflict-only pushes allowed); project lines inside template sections are marked `<!-- project -->` (12 in AGENTS); the Work tracking bullet points to the new section; BACKLOG-RULES: parallel PRs' backlog conflicts are resolved in the conflicting PR; `check-freshness` copied (it lists the harness files a branch changes); `.harness.json` on 1.10.0. Pending: this PR's CI.
 
