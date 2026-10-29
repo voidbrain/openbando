@@ -40,6 +40,7 @@ export function basementBuilding(b: BuildingSpec): BuildingSpec {
     partitions: b.basement?.partitions ?? [],
     roof: 'none',
     roofRise: 0,
+    ...(b.basement?.courtyards?.length ? { courtyards: b.basement.courtyards.map(y => ({ ring: y.outline.map(p => ({ x: p.x - offset.x, z: p.z - offset.z })), ...(y.wallEdges ? { walls: [...y.wallEdges] } : {}) })) } : {}),
   };
   const length = box.x1 - box.x0;
   const width = box.z1 - box.z0;
@@ -54,7 +55,7 @@ export function basementBuilding(b: BuildingSpec): BuildingSpec {
     pos: { x: b.pos.x + offset.x * c - offset.z * s, z: b.pos.z + offset.x * s + offset.z * c },
     length,
     width,
-    footprint: rectangular && !b.basement?.wallOpenings?.length && !b.basement?.wallEdges ? undefined : centred,
+    footprint: rectangular && !b.basement?.wallOpenings?.length && !b.basement?.wallEdges && !b.basement?.courtyards?.length ? undefined : centred,
     levels: [level],
     basement: undefined,
     fixtures: undefined,

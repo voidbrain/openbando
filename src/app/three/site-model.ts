@@ -809,7 +809,7 @@ function buildBasement(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, floorM
   const oldAt = ctx.at;
   ctx.at = [basement.pos.x, basement.pos.z];
   target.add(room);
-  if (basement.footprint && !isRectilinear(basement.footprint)) {
+  if (basement.footprint && (!isRectilinear(basement.footprint) || level.courtyards?.length)) {
     buildDiagonalBasement(ctx, basement, level, room, floorMat);
   } else {
     buildFloorAndColumns(ctx, basement, level, room, floorMat);
@@ -819,13 +819,18 @@ function buildBasement(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, floorM
   room.traverse(o=>{if(o.userData['pick'])o.userData['pick']={kind:'basement',id:b.id};});
 }
 
-/** A freeform basement floor, clipped by its rectangular floor openings, and walls along its actual edges. */
+/**
+ * A freeform basement floor, clipped by its rectangular floor openings and its courtyards (rings in the floor's frame,
+ * where the ground is kept), and walls along its actual edges and around each courtyard.
+ */
 function buildDiagonalBasement(ctx: Ctx, b: BuildingSpec, l: LevelSpec, room: THREE.Object3D, floorMat: THREE.Material): void {
+  const yards = l.courtyards ?? [];
   const poly = b.footprint!;
   const shape = new THREE.Shape();
   shape.moveTo(poly[0]!.x, poly[0]!.z);
   for (const p of poly.slice(1)) shape.lineTo(p.x, p.z);
   shape.closePath();
+  for (const { ring } of yards) shape.holes.push(new THREE.Path(ring.map(p => new THREE.Vector2(p.x, p.z))));
   const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.2, bevelEnabled: false });
   geo.rotateX(Math.PI / 2);
   geo.translate(0, l.baseY + 0.1, 0);
@@ -852,46 +857,51 @@ function buildDiagonalBasement(ctx: Ctx, b: BuildingSpec, l: LevelSpec, room: TH
   const interior = { ...contents, levels: [{ ...l, sides: { n: false, s: false, e: false, w: false } }] };
   buildWalls(ctx, interior, interior.levels[0]!, room);
 
-  for (let i = 0; i < poly.length; i++) {
-    if (l.wallEdges?.[i] === false) continue;
-    const a = poly[i]!, end = poly[(i + 1) % poly.length]!;
-    const dx = end.x - a.x, dz = end.z - a.z, length = Math.hypot(dx, dz);
-    if (length < 0.01) continue;
-    const ux = dx / length, uz = dz / length, angle = Math.atan2(dz, dx);
-    const openings = (l.wallOpenings ?? []).map(o => {
-      const x = o.x - a.x, z = o.z - a.z, c = x * ux + z * uz;
-      return { o, c, distance: Math.abs(x * uz - z * ux) };
-    }).filter(x => x.distance < 0.08 && x.c >= -0.08 && x.c <= length + 0.08).sort((x, y) => x.c - y.c);
-    const part = (from: number, to: number, bottom: number, top: number, mat: THREE.Material): void => {
-      if (to - from < 0.01 || top - bottom < 0.01) return;
-      const centre = (from + to) / 2, mx = a.x + ux * centre, mz = a.z + uz * centre;
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(to - from, top - bottom, 0.5), mat);
-      mesh.rotation.y = -angle;
-      mesh.castShadow = mesh.receiveShadow = true;
-      ctx.addMesh(room, mesh, mx, (bottom + top) / 2, mz);
-      // Small conservative boxes follow the wall instead of one huge diagonal bounding box.
-      const n = Math.max(1, Math.ceil((to - from) / 0.5));
-      const rot = b.rotDeg * Math.PI / 180, c = Math.cos(rot), s = Math.sin(rot);
-      for (let k = 0; k < n; k++) {
-        const p = from + (to - from) * (k + 0.5) / n;
-        const x = a.x + ux * p, z = a.z + uz * p;
-        ctx.solids.push(rotBoxLocal(ctx.at[0] + x * c - z * s, ctx.at[1] + x * s + z * c, (to - from) / n, 0.5, b.rotDeg + angle * 180 / Math.PI, bottom, top, false));
+  // one wall per edge, openings punched out; the perimeter carries the floor's openings, courtyards have none
+  const ringWalls = (ring: readonly { x: number; z: number }[], flags: readonly boolean[] | undefined, wallOpenings: LevelSpec['wallOpenings']): void => {
+    for (let i = 0; i < ring.length; i++) {
+      if (flags?.[i] === false) continue;
+      const a = ring[i]!, end = ring[(i + 1) % ring.length]!;
+      const dx = end.x - a.x, dz = end.z - a.z, length = Math.hypot(dx, dz);
+      if (length < 0.01) continue;
+      const ux = dx / length, uz = dz / length, angle = Math.atan2(dz, dx);
+      const openings = (wallOpenings ?? []).map(o => {
+        const x = o.x - a.x, z = o.z - a.z, c = x * ux + z * uz;
+        return { o, c, distance: Math.abs(x * uz - z * ux) };
+      }).filter(x => x.distance < 0.08 && x.c >= -0.08 && x.c <= length + 0.08).sort((x, y) => x.c - y.c);
+      const part = (from: number, to: number, bottom: number, top: number, mat: THREE.Material): void => {
+        if (to - from < 0.01 || top - bottom < 0.01) return;
+        const centre = (from + to) / 2, mx = a.x + ux * centre, mz = a.z + uz * centre;
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(to - from, top - bottom, 0.5), mat);
+        mesh.rotation.y = -angle;
+        mesh.castShadow = mesh.receiveShadow = true;
+        ctx.addMesh(room, mesh, mx, (bottom + top) / 2, mz);
+        // Small conservative boxes follow the wall instead of one huge diagonal bounding box.
+        const n = Math.max(1, Math.ceil((to - from) / 0.5));
+        const rot = b.rotDeg * Math.PI / 180, c = Math.cos(rot), s = Math.sin(rot);
+        for (let k = 0; k < n; k++) {
+          const p = from + (to - from) * (k + 0.5) / n;
+          const x = a.x + ux * p, z = a.z + uz * p;
+          ctx.solids.push(rotBoxLocal(ctx.at[0] + x * c - z * s, ctx.at[1] + x * s + z * c, (to - from) / n, 0.5, b.rotDeg + angle * 180 / Math.PI, bottom, top, false));
+        }
+      };
+      let from = 0;
+      for (const { o, c } of openings) {
+        const left = Math.max(from, c - o.w / 2), right = Math.min(length, c + o.w / 2);
+        if (right <= left) continue;
+        part(from, left, l.baseY, l.baseY + l.height, ctx.mat.wall);
+        const sill = o.kind === 'door' ? 0 : Math.min(l.height - 0.2, o.sill ?? Math.max(0.4, l.height * 0.75));
+        const top = Math.min(l.height, sill + o.h);
+        part(left, right, l.baseY, l.baseY + sill, ctx.mat.wall);
+        part(left, right, l.baseY + top, l.baseY + l.height, ctx.mat.wall);
+        if (o.closed) part(left, right, l.baseY + sill, l.baseY + top, material(o.kind === 'door' ? '#7a5a3d' : '#9ec7d8'));
+        from = right;
       }
-    };
-    let from = 0;
-    for (const { o, c } of openings) {
-      const left = Math.max(from, c - o.w / 2), right = Math.min(length, c + o.w / 2);
-      if (right <= left) continue;
-      part(from, left, l.baseY, l.baseY + l.height, ctx.mat.wall);
-      const sill = o.kind === 'door' ? 0 : Math.min(l.height - 0.2, o.sill ?? Math.max(0.4, l.height * 0.75));
-      const top = Math.min(l.height, sill + o.h);
-      part(left, right, l.baseY, l.baseY + sill, ctx.mat.wall);
-      part(left, right, l.baseY + top, l.baseY + l.height, ctx.mat.wall);
-      if (o.closed) part(left, right, l.baseY + sill, l.baseY + top, material(o.kind === 'door' ? '#7a5a3d' : '#9ec7d8'));
-      from = right;
+      part(from, length, l.baseY, l.baseY + l.height, ctx.mat.wall);
     }
-    part(from, length, l.baseY, l.baseY + l.height, ctx.mat.wall);
-  }
+  };
+  ringWalls(poly, l.wallEdges, l.wallOpenings);
+  for (const y of yards) ringWalls(y.ring, y.walls, []);
 }
 
 /** Build the whole site from a {@link SiteSpec}. Deterministic: the same spec always produces the same scene. */
@@ -1058,7 +1068,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
       const anyRuin = ruin > 0.01 || Object.values(b.ruinWalls ?? {}).some((v) => (v ?? 0) > 0.01);
     const height = (b.levels.at(-1)?.baseY ?? 0) + (b.levels.at(-1)?.height ?? 0);
     ctx.ruin = anyRuin && !b.frame ? { level: ruin, li, open, height, id: b.id } : null;
-      if (b.footprint && !isRectilinear(b.footprint)) {
+      if (b.footprint && (!isRectilinear(b.footprint) || l.courtyards?.length)) {
         buildDiagonalBasement(ctx, b, l, inner, floorMat);
         if (!open && l.roof !== 'none') buildRoof(ctx, b, l, localRoof);
         continue;
