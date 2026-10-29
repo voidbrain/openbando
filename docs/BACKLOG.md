@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `f0c9fd3` (merged #217), with every CI job of #162–#217 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `80205b9` (merged #221), with every CI job of #162–#222 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -583,7 +583,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 |:---:|---|---|---|---|
 | 🔴 | F-024 | 🔹 P3 | Open | Take-off pad indoors, on an upper floor or on a flat roof |
 
-💻 **→ Human action required: No**<br />Ready (F-021 is merged): a take-off height for the pad (ground, a floor of the building under it, or its flat roof), with the drone starting there.
+💻 **→ Human action required: No**<br />Implement after F-021: a take-off height for the pad (ground, a floor of the building under it, or its flat roof), with the drone starting there.
 
 **Next action / closure evidence:** Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof.
 
@@ -775,7 +775,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 |:---:|---|---|---|---|
 | 🔴 | F-033 | 🔶 P2 | Open | Full impact map: chains, content, couplings, outside the repository, as a readable page |
 
-💻 **→ Human action required: No**<br />Next steps, in order: (1) done: harness 1.14.0 (template [#20](https://github.com/voidbrain/project-harness/pull/20): content dependencies, value couplings, outside the repository; coupling warnings) and 1.15.0 (template [#22](https://github.com/voidbrain/project-harness/pull/22): `pages`, the impact map links the project's own maps); (2) reconcile here to 1.12.0 – 1.15.0, after #221 (the element map) merges: `docs/agents/impact-map.md` from the harness tool is the one readable impact page and lists the element map in `pages` (the element map lists controls only and links back), and: every row with an `id` and its `after` chains (blocks → catalogue → examples; tour → guide pages; UI → clips → guide pages; UI → Welcome films; `.harness.json` → map page), the theme-colour row chained to every visual output and the art, a `package-lock.json` row (renderer upgrades → recordings), each recording's inputs read from its script (Chiari e Forti → Welcome film 1 and the tour's clips; Bando Villetta and the demo flight → the flight clips); (3) list the value couplings (mascot timing ↔ the three Welcome films, `DEMO_OFFSET` ↔ the demo video, tour waits ↔ animation lengths, others found) and give each one source or a relation test, one record each; (4) the outside list: library upgrades, CI browser and GPU, OSM / Overpass, terrain tiles, Nominatim, AI models, each with what it affects and how it is noticed.
+💻 **→ Human action required: No**<br />Next steps, in order: (1) harness 1.14.0 (template): the map page gains "Content dependencies", "Value couplings" and "Outside the repository" sections from `.harness.json` (`inputs` on rows, `couplings`, `outside`), and `check:freshness` warns when a branch changes one side of a coupling; (2) reconcile here to 1.12.0, 1.13.0 and 1.14.0: every row with an `id` and its `after` chains (blocks → catalogue → examples; tour → guide pages; UI → clips → guide pages; UI → Welcome films; `.harness.json` → map page), the theme-colour row chained to every visual output and the art, a `package-lock.json` row (renderer upgrades → recordings), each recording's inputs read from its script (Chiari e Forti → Welcome film 1 and the tour's clips; Bando Villetta and the demo flight → the flight clips); (3) list the value couplings (mascot timing ↔ the three Welcome films, `DEMO_OFFSET` ↔ the demo video, tour waits ↔ animation lengths, others found) and give each one source or a relation test, one record each; (4) the outside list: library upgrades, CI browser and GPU, OSM / Overpass, terrain tiles, Nominatim, AI models, each with what it affects and how it is noticed.
 
 **Next action / closure evidence:** Requested 2026-10-29: the user asked which dependencies a file trigger misses (a mascot animation synced with the Welcome films, a film that records an example bando, a theme colour that changes everything visual) and asked for a readable list of content dependencies and value couplings, plus what lies outside the repository if useful to people. Template rules already released: 1.12.0 (chains, the map page, plans become records) and 1.13.0 (inputs, wide-reach settings, couplings, audits look outside). Recorded here at once because a plan given in the conversation is otherwise forgotten (BACKLOG-RULES).
 
@@ -787,6 +787,30 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 | PR / evidence | Request 2026-10-29; template [#16](https://github.com/voidbrain/project-harness/pull/16) (1.12.0), [#18](https://github.com/voidbrain/project-harness/pull/18) (1.13.0) |
 | Opened | 2026-10-29 |
 | Verification | Not implemented |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-032
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-032 | 🔶 P2 | Open | Element and impact map, generated from the code |
+
+💻 **→ Human action required: No**<br />Next steps, in order: (2) per-clip staleness in `check:media` from each clip's controls; (3) keys ↔ Help panel lines; (4) components ↔ design-system guides; (5) tips for every control (F-026). Each adds its column or check to the generated page.
+
+**Next action / closure evidence:** Requested 2026-10-29 (decided with the user: element level, generated by a script). Step 1 (this PR): `tools/build-element-map.mjs` (`npm run element-map`) writes `docs/agents/element-map.md`: every control the templates show (406) with its label, `data-tour` mark, the guide steps that show it as a tip on hover (9 controls) and the guide steps whose clips use it (18); CI fails when the page differs from the code. The readable impact table is the harness's `docs/agents/impact-map.md` (1.12.0 and later, F-033), not this page: a first version of this PR had it here too, removed so there is one place. Missing rows added (the user noticed the promised full table and rows had been dropped): README and area notes, panels ↔ Views and guide steps, the element map itself. Lesson recorded in the harness: plans given to the user become records at once (template release after this).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | This PR (step 1); request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Script · 2026-10-29 · page generated: 406 controls, 9 with a tip, 116 with a title, 18 in clips, 32 names in bound expressions; CI step added |
 | Reviewed | 2026-10-29 |
 
 </details>
