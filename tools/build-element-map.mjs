@@ -34,12 +34,17 @@ const templates = (p, src) => (p.endsWith('.html') ? [src] : [...src.matchAll(/t
 const attr = (tag, name) => tag.match(new RegExp(`(?:^|\\s)${name}="([^"]*)"`))?.[1];
 const bound = (tag, name) => tag.match(new RegExp(`\\[${name}\\]="([^"]*)"`))?.[1];
 const lit = (e) => e?.match(/'([^']+)'/)?.[1];
+/** Template comments out, repeated until none is left (one pass can leave `<!--` behind), an unclosed one to the end. */
+const noComments = (s) => {
+  for (let prev = ''; prev !== s; ) [prev, s] = [s, s.replace(/<!--[\s\S]*?-->/g, '')];
+  return s.replace(/<!--[\s\S]*$/, '');
+};
 
 const rows = [];
 for (const p of files(join(root, 'src/app'))) {
   const rel = relative(root, p);
   for (const tpl of templates(p, readFileSync(p, 'utf8'))) {
-    const t = tpl.replace(/<!--[\s\S]*?-->/g, '');
+    const t = noComments(tpl);
     for (const m of t.matchAll(/<(button|input|select|textarea|app-pick-menu|a)\b([^>]*)>([\s\S]{0,400}?)(?:<\/\1>|(?=<))/g)) {
       const [, el, tag, inner] = m;
       if (el === 'input' && /type="(hidden)"/.test(tag)) continue;

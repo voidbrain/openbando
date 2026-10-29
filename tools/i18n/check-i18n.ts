@@ -35,6 +35,11 @@ const templates = (path: string, src: string): string[] => {
   return out;
 };
 
+/** Template comments out, repeated until none is left (one pass can leave `<!--` behind), an unclosed one to the end. */
+const noComments = (s: string): string => {
+  for (let prev = ''; prev !== s; ) [prev, s] = [s, s.replace(/<!--[\s\S]*?-->/g, '')];
+  return s.replace(/<!--[\s\S]*$/, '');
+};
 const ENT: Record<string, string> = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&nbsp;': ' ', '&quot;': '"' };
 const decode = (s: string): string => s.replace(/&(amp|lt|gt|nbsp|quot);/g, (m) => ENT[m]!);
 const wanted = (s: string): boolean => /[A-Za-z]{3}/.test(s) && !keep.has(s);
@@ -63,7 +68,7 @@ for (const path of files(`${ROOT}/src/app`)) {
   const rel = path.slice(ROOT.length + 1);
   for (const tpl of templates(path, src)) {
     // what svg, textarea and translate="no" hold is never translated
-    const t = tpl.replace(/<svg[\s\S]*?<\/svg>/g, '').replace(/<textarea[\s\S]*?<\/textarea>/g, '').replace(/<(\w+)[^>]*translate="no"[^>]*>[\s\S]*?<\/\1>/g, '').replace(/<!--[\s\S]*?-->/g, '');
+    const t = noComments(tpl.replace(/<svg[\s\S]*?<\/svg>/g, '').replace(/<textarea[\s\S]*?<\/textarea>/g, '').replace(/<(\w+)[^>]*translate="no"[^>]*>[\s\S]*?<\/\1>/g, ''));
     // static attributes; a bound one is an expression
     for (const m of t.matchAll(/(?<![[\w.(-])(title|aria-label|placeholder)="([^"]*)"/g)) see(m[2]!, rel);
     for (const m of t.matchAll(/\[(?:title|attr\.aria-label|attr\.title|placeholder)\]="([^"]*)"/g)) for (const x of exprTexts(m[1]!)) see(x, rel);
