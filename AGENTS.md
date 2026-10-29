@@ -97,7 +97,8 @@ The app is **OpenBando** (tagline "Build, Fly, Share."). The repository is `void
 
 ### Checks before you finish
 
-`main` is protected: a PR merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` pass (ruleset "protect main"). Open every PR against `main`, and do not push to a PR once its CI is green (open a new one).
+`main` is protected: a PR merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` pass (ruleset "protect main"). <!-- project -->
+Open every PR against `main`, never on another PR's branch (merging it would not reach `main`). Once a PR's CI is green the owner may merge it at any moment: push no new work to it, open a new PR. Exception: a green PR that conflicts with `main` cannot merge, so it may get a push that only resolves the conflict; its checks run again before it can merge.
 
 ```bash
 npm run check:freshness                   # first, at session start: backlog behind main, merged branches, audit age
@@ -112,11 +113,20 @@ npm run check:backlog                     # active record layout and lifecycle c
 npm run check:conventions                 # Angular conventions above, core/ imports, unused exports
 ```
 
-- `npm run e2e` (Playwright, also a CI job): every guide step plays alone in a headless browser without errors, and the first visit, the editor with the library and a running guide step pass axe (WCAG 2.1 A / AA). Locate panels by `app-panel[data-id=…]` or by role: component hosts have no box of their own. Software WebGL is slow there: keep the long timeouts.
-- A failing test is evidence until shown otherwise: check it against the intended behaviour. Change its expectation only when the requirement deliberately changed, and say which requirement; otherwise fix the code. Tests that encoded the old
-  demo site now set their site up explicitly (origin, take-off pad).
-- Keep logic in `core/` where possible. Playwright covers selected UI and pointer workflows, but coverage is not exhaustive.
-- Do not leave dead code behind when replacing a feature: a panel removed means its store, helpers and tests go too.
+- `npm run e2e` (Playwright, also a CI job): every guide step plays alone in a headless browser without errors, and the first visit, the editor with the library and a running guide step pass axe (WCAG 2.1 A / AA). Locate panels by `app-panel[data-id=…]` or by role: component hosts have no box of their own. Software WebGL is slow there: keep the long timeouts. <!-- project -->
+- A failing test is evidence until shown otherwise: check it against the intended behaviour. Change its expectation only when the requirement deliberately changed, and say which requirement; otherwise fix the code.
+- Tests that encoded the old demo site now set their site up explicitly (origin, take-off pad). <!-- project -->
+- Keep logic in `core/` where possible. Playwright covers selected UI and pointer workflows, but coverage is not exhaustive. <!-- project -->
+- Do not leave dead code behind when replacing a feature: a panel removed means its store, helpers and tests go too. <!-- project -->
+
+### Changing a harness file
+
+Before editing a file listed in `.harness.json` (`copied`, `forked`, `adapted`, or `.harness.json` itself), decide whether the change holds for this project only or for every project. The edit is the trigger, whatever the request's words: an "allow X" that changes how work is done is a rule.
+- **This project only**: its content or a setting stays here. A project line inside a section that comes from the template ends with `<!-- project -->`, so a reconcile keeps it; a changed harness rule is an override (APPLY.md, "Project overrides").
+- **Every project**: the template first, then reconcile here (APPLY.md, "Changing the harness from a project").
+- **Unsure**: ask the user before editing. Never decide silently.
+
+`npm run check:freshness` lists the harness files a branch changes, locally and on every PR.
 
 ### Testing the joins
 
@@ -157,19 +167,20 @@ Before changing an area, read its section in [docs/agents/areas.md](docs/agents/
 
 ## Privacy
 
-- Villetta's and Bardwell House's places are private: their coordinates, addresses, map data and survey points are not in the repository. Never add them (tests, tour, tools, docs, commit messages). Hidden bandos never reveal geographic coordinates (see "Sharing and privacy").
+- Never commit secrets, tokens or personal data. Test data is neutral and invented.
+- Villetta's and Bardwell House's places are private: their coordinates, addresses, map data and survey points are not in the repository. Never add them (tests, tour, tools, docs, commit messages). Hidden bandos never reveal geographic coordinates (see "Sharing and privacy"). <!-- project -->
 
 ## Work tracking
 
 **At the start of every session, before other work, run `npm run check:freshness`** and do what it lists, in the session's first PR:
 - the backlog is behind `main`: read the CI of the PRs merged since (`npm run ci:status -- <numbers>`) and review any commit it lists without a PR, update or close their records, archive closed ones, move the header to the current `main`;
 - merged branches are still on GitHub: delete them (and their local branches and worktrees);
-- the newest audit in `docs/audits/` is older than `freshness.auditDays` in `.harness.json` (7 by default): audit what changed since (docs, tests, guides and clips, design system, accessibility, privacy such as GPS metadata in images) and write `docs/audits/<date>.md`;
-- the harness template has a newer release (`.harness.json` names the one this project is on), or its clone is missing, behind or unreachable: pull it first (`git -C ~/Projects/project-harness pull --ff-only --tags`), reconcile it as `~/Projects/project-harness/APPLY.md` ("Reconciling") says, then move `version` forward. `check-backlog`, `check-freshness`, `check-harness`, `ci-status` and `check-conventions` are copies of the template: never edit them here unless one is listed under `forked`; their settings are in `.harness.json` (`core/` imports, the CI workflow, the Auto-sync log note). A generic improvement goes into the template as a new release.
+- the newest audit in `docs/audits/` is older than `freshness.auditDays` in `.harness.json` (7 by default): audit what changed since (docs, tests, guides and clips, design system, accessibility, privacy such as GPS metadata in images) and write `docs/audits/<date>.md`; <!-- project -->
+- the harness template has a newer release (`.harness.json` names the one this project is on), or its clone is missing, behind or unreachable: pull it first (`git -C ~/Projects/project-harness pull --ff-only --tags`), reconcile it as `~/Projects/project-harness/APPLY.md` ("Reconciling") says, then move `version` forward. `check-backlog`, `check-freshness`, `check-harness`, `ci-status` and `check-conventions` are copies of the template: never edit them here unless one is listed under `forked`; their settings are in `.harness.json` (`core/` imports, the CI workflow, the Auto-sync log note). A generic improvement goes into the template as a new release. <!-- project -->
 
-CI prints the same as warnings on every PR (it never blocks), so a person reviewing a PR sees it too. `ci:status` needs a logged-in `gh`; if it is not, say so instead of skipping the step.
+CI prints the same as warnings on every PR (it never blocks), so a person reviewing a PR sees it too. <!-- project --> `ci:status` needs a logged-in `gh`; if it is not, say so instead of skipping the step.
 
 - [docs/BACKLOG.md](docs/BACKLOG.md) is the source of truth for status; [docs/BACKLOG-RULES.md](docs/BACKLOG-RULES.md) is the procedure (statuses, human-action cues, record layout, CI reconciliation, closure and archives, documentation ownership and the consistency check every PR records). Update the affected records in the same PR as the change, and run `npm run check:backlog`.
-- Keep a confirmed bug, a candidate fix awaiting review, an unimplemented feature and a completed check distinct. A merge is not verification, and a passing unit test is not a verified visual, pointer or device fix. A green CI run establishes the checks it named, not the absence of bugs; keep real-device, pointer/visual and untested tool combinations explicit. Archives (`docs/archive/`: closed backlog records, the old working plan, finished plans) and audits (`docs/audits/`) are dated evidence, not current status; the current audit is the newest file in `docs/audits/`.
-- A request that changes a copied tool, or adds a rule that would hold for every project, is a harness change: make it in the template first, then reconcile here, as the template's `APPLY.md` ("Changing the harness from a project") says. Settings and project content in adapted files (this file's project conventions, the area notes, the style guide) stay here; a change only this project needs is a project override, marked or forked as the template's `APPLY.md` ("Project overrides") says.
-- Generated guide text changes in `tools/build-guide.mjs` or the tour source, then `node tools/build-guide.mjs`. That is not re-recording: `npm run clips` and `npm run films` are separate browser/media workflows (F-011).
+- Keep a confirmed bug, a candidate fix awaiting review, an unimplemented feature and a completed check distinct. A merge is not verification, and a passing unit test is not a verified visual, pointer or device fix. A green CI run establishes the checks it named, not the absence of bugs; keep real-device, pointer/visual and untested tool combinations explicit. Archives (`docs/archive/`: closed backlog records, the old working plan, finished plans) and audits (`docs/audits/`) are dated evidence, not current status; the current audit is the newest file in `docs/audits/`. <!-- project -->
+- A change to a harness file follows "Changing a harness file" above: this project only, every project (the template first), or ask.
+- Generated guide text changes in `tools/build-guide.mjs` or the tour source, then `node tools/build-guide.mjs`. That is not re-recording: `npm run clips` and `npm run films` are separate browser/media workflows (F-011). <!-- project -->
