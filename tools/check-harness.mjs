@@ -1,8 +1,8 @@
 // Is this project behind the harness template it was applied from? Compares .harness.json with the template's release
 // tags and says, per file, what to reconcile. Never fails: run by check-freshness at session start; --github prints
-// GitHub warnings. The template is a local clone (HARNESS_HOME, else template.path in .harness.json); without one the
-// check is skipped, as in CI. --merge three-way merges every forked file the template changed since its base, writes
-// the result (with conflict markers if any) and moves the base of the clean ones forward.
+// GitHub warnings. The template is a local clone (HARNESS_HOME, else template.path in .harness.json; the Angular CI
+// workflow clones it); without one the check is skipped. --merge three-way merges every forked file the template
+// changed since its base, writes the result (with conflict markers if any) and moves the base of the clean ones forward.
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { homedir, tmpdir } from 'node:os';
@@ -27,7 +27,7 @@ try { stamp = JSON.parse(readFileSync(stampFile, 'utf8')); }
 catch (e) { warn(`.harness.json is not valid JSON (${e.message}): fix it; template check skipped.`); done(); }
 const home = (process.env.HARNESS_HOME ?? stamp.template?.path ?? '~/Projects/project-harness').replace(/^~(?=\/|$)/, homedir());
 if (!existsSync(join(home, 'VERSION'))) {
-  // CI has no template clone: skipped quietly there; locally a missing clone is something to fix
+  // a CI run without a clone (no clone step, or the clone failed) skips quietly; locally a missing clone is something to fix
   const text = `Harness template not found at ${home}${stamp.template?.repo ? `: clone it (git clone ${stamp.template.repo} ${home})` : ''}; template check skipped.`;
   if (process.env.CI) console.log(text); else warn(text);
   done();

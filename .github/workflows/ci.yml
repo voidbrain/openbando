@@ -51,7 +51,18 @@ jobs:
       - name: Backlog records and layout
         run: npm run check:backlog
 
-      - name: Backlog freshness (warnings only, never blocks)
+      - name: Harness template, for the release check below
+        # check-harness compares this project with the template's release tags; the template is public, so no token.
+        run: |
+          repo=$(node -p "require('./.harness.json').template?.repo ?? ''")
+          if [ -n "$repo" ]; then
+            git clone --quiet "$repo" "$RUNNER_TEMP/project-harness" ||
+              echo "::warning title=Harness template::Could not clone $repo: template release check skipped."
+          fi
+
+      - name: Backlog freshness and template release (warnings only, never blocks)
+        env:
+          HARNESS_HOME: ${{ runner.temp }}/project-harness
         run: npm run check:freshness -- --github
 
       - name: Shared surface text contrast
