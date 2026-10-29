@@ -34,9 +34,11 @@ function prisms(v: UndergroundSpec, lift: number): Plane[][] {
     }
     return [p];
   }
-  // Triangulate arbitrary (including concave) room footprints into convex prisms.
-  const pts = v.outline.map((q) => new THREE.Vector2(q.x, q.z));
-  return THREE.ShapeUtils.triangulateShape(pts, []).map((ids) => {
+  // Triangulate arbitrary (including concave) room footprints into convex prisms; courtyards are holes (ground kept).
+  const contour = v.outline.map((q) => new THREE.Vector2(q.x, q.z));
+  const holes = (v.holes ?? []).map((h) => h.map((q) => new THREE.Vector2(q.x, q.z)));
+  const pts = [...contour, ...holes.flat()];
+  return THREE.ShapeUtils.triangulateShape(contour, holes).map((ids) => {
     const tri = ids.map((i) => pts[i]!);
     if (THREE.ShapeUtils.isClockWise(tri)) tri.reverse();
     const p: Plane[] = [

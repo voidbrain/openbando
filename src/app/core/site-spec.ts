@@ -123,6 +123,8 @@ export interface LevelSpec {
   wallOpenings?: WallOpening[];
   /** Per-footprint-edge wall visibility, used by edited basement previews. */
   wallEdges?: boolean[];
+  /** Runtime-only, derived basements: courtyard rings in this floor's frame (no floor inside, walls around them). */
+  courtyards?: { ring: Vec2[]; walls?: boolean[] }[];
   /** Interior partition walls (solid, no openings): segment endpoints in building-local metres. */
   partitions: [Vec2, Vec2][];
   /** 'gable' = pitched roof over the long axis, 'vault' = barrel vault(s), 'flat' = parapet slab. */
@@ -187,7 +189,7 @@ export interface BuildingSpec {
   fixtures?: StructureSpec[];
   /** A basement under the ground floor, `height` metres deep inside (see core/underground.ts basementVolume). */
   basement?: { height: number; outline?: Vec2[]; wallEdges?: boolean[]; sides?: Partial<Record<'n'|'s'|'e'|'w', boolean>>; partitions?: [Vec2,Vec2][]; doors?: LevelSpec['doors']; wallOpenings?: WallOpening[]; columns?: ColumnSpec[]; voids?: VoidSpec[];
-    /** Holes through the basement and further perimeters (F-002, core/basement-rings.ts); described, not drawn yet. */
+    /** Holes through the basement (drawn, ground kept) and further perimeters (not drawn yet); F-002, core/basement-rings.ts. */
     courtyards?: BasementRing[]; pieces?: BasementRing[] };
   /** Placed from a library block. */
   block?: BlockRef;
@@ -257,6 +259,8 @@ export interface UndergroundSpec {
   water?: number;
   /** Runtime-only holes in a generated basement floor, in site coordinates. */
   floorHoles?: Vec2[][];
+  /** Runtime-only basement courtyards: outside the volume (the ground is kept, nothing is cut), in site coordinates. */
+  holes?: Vec2[][];
   /** Runtime-only openings in a box room ceiling, in site coordinates. */
   ceilingHoles?: Vec2[][];
 }

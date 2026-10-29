@@ -28,7 +28,15 @@ function distToSegment(x: number, z: number, a: Vec2, b: Vec2): number {
 }
 
 /** The volume's footprint at a vertex: inside the outline, or within half a cell of it — vertices on the border count. */
+/** Inside the volume's outline and outside its courtyards. */
+export function insideVolume(v: UndergroundSpec, x: number, z: number): boolean {
+  return insidePolygon(v.outline, x, z) && !v.holes?.some(h => insidePolygon(h, x, z));
+}
+
 function coversVertex(v: UndergroundSpec, x: number, z: number, cell: number): boolean {
+  // a courtyard keeps its ground, except the half cell along its walls (as along the outline)
+  const near = (ring: readonly Vec2[]): boolean => ring.some((p, i) => distToSegment(x, z, p, ring[(i + 1) % ring.length]!) <= cell / 2);
+  if (v.holes?.some(h => insidePolygon(h, x, z) && !near(h))) return false;
   if (insidePolygon(v.outline, x, z)) return true;
   const n = v.outline.length;
   for (let i = 0; i < n; i++) if (distToSegment(x, z, v.outline[i]!, v.outline[(i + 1) % n]!) <= cell / 2) return true;
@@ -103,7 +111,7 @@ export function cutMask(g: HeightGrid, vols: readonly UndergroundSpec[]): Uint8A
  * otherwise null (the terrain decides).
  */
 export function floorUnder(vols: readonly UndergroundSpec[], x: number, z: number, y: number): number | null {
-  const inside = vols.filter(v => insidePolygon(v.outline, x, z));
+  const inside = vols.filter(v => insideVolume(v, x, z));
   const current = inside.filter(v => y < v.ceiling && y > v.floor - v.wall - 0.5).sort((a, b) => b.floor - a.floor)[0];
   if (!current) return null;
   if (!current.floorHoles?.some(hole => insidePolygon(hole, x, z))) return current.floor + (current.water ?? 0);
@@ -227,7 +235,9 @@ export function basementVolume(b: BuildingSpec, outline: Vec2[], ground: number)
   const a = b.rotDeg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
   const world = (x: number, z: number): Vec2 => ({ x: b.pos.x + x * c - z * s, z: b.pos.z + x * s + z * c });
   const floorHoles = b.basement.voids?.map(v => [world(x0 + v.x0, z0 + v.z0), world(x0 + v.x1, z0 + v.z0), world(x0 + v.x1, z0 + v.z1), world(x0 + v.x0, z0 + v.z1)]);
-  return { id: `basement-${b.id}`, name: `${b.name} basement`, outline, floor: ground - h, ceiling: ground, shape: 'box', wall: BASEMENT_WALL, ...(floorHoles?.length ? { floorHoles } : {}) };
+  // courtyards are rings in the outline's own (centred) frame
+  const holes = b.basement.courtyards?.map(c => c.outline.map(p => world(p.x, p.z)));
+  return { id: `basement-${b.id}`, name: `${b.name} basement`, outline, floor: ground - h, ceiling: ground, shape: 'box', wall: BASEMENT_WALL, ...(floorHoles?.length ? { floorHoles } : {}), ...(holes?.length ? { holes } : {}) };
 }
 
 /**
