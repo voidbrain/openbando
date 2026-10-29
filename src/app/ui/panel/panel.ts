@@ -1,4 +1,4 @@
-import { Component, ElementRef, computed, inject, input } from '@angular/core';
+import { Component, ElementRef, Injector, afterNextRender, computed, effect, inject, input } from '@angular/core';
 import { LayoutStore } from '../../state/layout.store';
 import { TourService } from '../../services/tour.service';
 import { CASCADE_STEP, PANEL_BY_ID, cascadeIndex, type PanelId } from '../panel-defs';
@@ -171,6 +171,26 @@ export class Panel {
   protected readonly layout = inject(LayoutStore);
   protected readonly tour = inject(TourService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+
+  /**
+   * Shown or expanded, a panel never reaches past the bottom of the window: it moves up until it fits (B-032). A panel
+   * left hanging off the bottom was cut, and a click inside it made the browser scroll the whole page to show it.
+   */
+  private readonly open = computed(() => this.state().visible && !this.state().minimized);
+
+  constructor() {
+    effect(() => {
+      if (!this.open()) return; // only when it is shown or expanded, not on every move or raise
+      afterNextRender(() => {
+        const el = this.host.nativeElement, r = el.getBoundingClientRect();
+        const bottom = el.ownerDocument.documentElement.clientHeight - 4;
+        const y = Math.round(Math.max(0, bottom - r.height));
+        if (el.hidden || r.height === 0 || r.bottom <= bottom || y === Math.round(r.top)) return;
+        this.layout.moveTo(this.id(), Math.round(r.left), y);
+      }, { injector: this.injector });
+    });
+  }
   readonly def = computed(() => PANEL_BY_ID[this.id()]);
   readonly state = computed(() => this.layout.panels()[this.id()]);
   /** Panels opened at the same first place step aside, so the new one never covers the last exactly. */

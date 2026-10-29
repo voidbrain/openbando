@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `14b9c1a` (merged #209), with every CI job of #162–#209 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `010d6ad` (merged #210), with every CI job of #162–#210 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -285,6 +285,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
+### B-032
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-032 | 🔶 P2 | Implemented | A panel expanded near the bottom of the window was cut, and a click inside it scrolled the page |
+
+🧑 **→ Human action required: Yes**<br />On the live site after merge: collapse a panel, drag it to the bottom, expand it, click inside.
+
+**Next action / closure evidence:** Reported 2026-10-29. Expanding (or showing) a panel never checked that it still fits the window, so its lower part hung past the bottom edge; a click inside focused a control there and the browser scrolled the page (whose overflow is hidden but can still be scrolled by focus) to show it, so everything jumped up. Now a panel that is shown or expanded and reaches past the bottom moves up until it fits (`Panel` constructor effect, only on show / expand and only when the place changes: a first version looped, NG0103), and the app root undoes any page scroll. Covered by `e2e/panel-fit.e2e.ts` (collapse, drag to the bottom, expand: the panel fits; a click inside keeps the page at 0, 0 and the panel in place; no console errors); fails without the fix. Related: B-031 (the same page scroll from a picture menu).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | This PR (replaces [#208](https://github.com/voidbrain/openbando/pull/208): green CI, then a backlog conflict with #206); report 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Browser · 2026-10-29 · `panel-fit`, studio layout, fly entry, a11y, guide, pick menu and new bando e2e passed locally; live-site check · Pending |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
 ## Features and limitations
 
 ### F-001
@@ -457,6 +481,78 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ---
 
+### F-024
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-024 | 🔹 P3 | Open | Take-off pad indoors, on an upper floor or on a flat roof |
+
+💻 **→ Human action required: No**<br />Implement after F-021: a take-off height for the pad (ground, a floor of the building under it, or its flat roof), with the drone starting there.
+
+**Next action / closure evidence:** Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-025
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-025 | 🔹 P3 | Open | Rework the Fly checklist |
+
+🧑 **→ Human action required: Yes**<br />Say what the Fly checklist should do differently (steps, order, what it checks, when it opens).
+
+**Next action / closure evidence:** Requested 2026-10-29 ("the Fly checklist must be worked"). The current checklist is the Fly panel's guide (`core/fly-guide.ts`, `ui/panels/fly-panel.ts`, guide snippet `fly-checklist`). Waiting for the pilot's direction before changing it.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Not started |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-026
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-026 | 🔹 P3 | Open | Rework the panels' "?" tips: what they cover, checked automatically |
+
+💻 **→ Human action required: No**<br />List which controls of each panel have a tip on hover and which do not, then propose the rework and a check that fails when a control has none.
+
+**Next action / closure evidence:** Requested 2026-10-29. The "?" button in every panel's title bar turns tips on hover on and off (`TourService.tips`); nobody has checked which controls they cover. Plan: an inventory per panel (controls with and without a tip), a proposal for the rework, and an automated check (unit or browser) that every control of a panel has its tip, like `check:i18n` for texts. Closes when the inventory is done, the rework is agreed and the check runs in CI.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Not started |
+| Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
 ## Other changes
 
 `main` protection active 2026-10-29 (user request, set through the API): ruleset "protect main" requires `check`, `e2e (1)`–`e2e (4)` and `race-browser` and refuses force pushes and deletion. B-025 (the flaky Auto-sync check) was closed first so the required checks are reliable.
@@ -468,5 +564,7 @@ Harness template 1.7.0 (2026-10-29, [#200](https://github.com/voidbrain/openband
 Harness templates 1.8.0 and 1.9.0 (2026-10-29, [#204](https://github.com/voidbrain/openbando/pull/204)): BACKLOG-RULES gains "One repository, one backlog" (a record never waits for another repository); `check-harness` copied (comments only); the CI workflow clones the public template and runs `check:freshness` with `HARNESS_HOME`, so a PR on a project behind a release shows warnings (never blocking; a failed clone is a warning). `.harness.json` on 1.9.0. CI green; its freshness step read the cloned template ("on template v1.9.0").
 
 The Villetta example is renamed "Bando Villetta" (2026-10-29, user request; [#210](https://github.com/voidbrain/openbando/pull/210)): its file, the guide's flight bando and the examples test. Same release: copies keep their own name.
+
+AGENTS: a green PR that conflicts with `main` may get a push that only resolves the conflict (2026-10-29, user; this PR); its checks run again before it can merge. Before this, #207 and #208 were replaced by new PRs for a backlog conflict.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.

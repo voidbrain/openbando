@@ -40,6 +40,8 @@ import { ToastHost } from './ui/toast-host';
 /** Root: the full-page stage plus every floating panel. Panels hide themselves; nothing here holds state. */
 @Component({
   selector: 'app-root',
+  // the page never scrolls (html and body hide their overflow): a focus or scrollIntoView that moved it is undone (B-032)
+  host: { '(window:scroll)': 'unscroll()' },
   imports: [
     Stage, ViewsPanel, FlightsPanel, SimulatorPanel, RadioPanel, TimelinePanel, SpeedPanel, AttitudePanel, CompassPanel, PathPanel,
     BlackboxPanel, VideoPanel, LivePanel, FlyPanel, RenderPanel, HelpPanel, GuidePanel, WelcomePanel, FeaturesPanel, ViewportPanel, VersionBadge, StudioPanel, ToastHost, TourOverlay,
@@ -81,6 +83,10 @@ export class App {
   private readonly radio = inject(RadioService);
   private readonly tour = inject(TourService);
   private openedRadio = false;
+
+  protected unscroll(): void {
+    if (scrollX || scrollY) scrollTo(0, 0);
+  }
 
   constructor() {
     // a showcase link (?tour=showcase&lang=it): set the language, then the welcome tour plays by itself
