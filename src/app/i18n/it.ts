@@ -12,6 +12,13 @@ export const IT: Readonly<Record<string, string>> = {
 
   'Vegetation': 'Vegetazione',
   'Plant vegetation here': 'Pianta vegetazione qui',
+  'New building here': 'Nuovo edificio qui',
+  'Move the take-off pad here': 'Sposta qui la piazzola di decollo',
+  'Take-off pad': 'Piazzola di decollo',
+  'drag it with Select, or right-click the ground': 'trascinala con Seleziona, o clic destro sul terreno',
+  'Take-off pad · flights start here. Drag it, or right-click the ground: Move the take-off pad here.': 'Piazzola di decollo · i voli partono da qui. Trascinala, o clic destro sul terreno: Sposta qui la piazzola di decollo.',
+  'x (east) m': 'x (est) m',
+  'z (south) m': 'z (sud) m',
   'Click the map to plant a tree, hedge or bramble': 'Clicca la mappa per piantare un albero, una siepe o un rovo',
   'Paint vegetation with a pen, or fill a square, circle or hand-drawn area': 'Dipingi la vegetazione o riempi un quadrato, un cerchio o un’area disegnata',
   'A short editable hedge': 'Una breve siepe modificabile',
