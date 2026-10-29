@@ -47,8 +47,8 @@ test('Go goes to the first match and lists the others', async ({page}) => {
   await expect(matches).toHaveCount(0);
 });
 
-/** Zooming in never leaves the frame larger than the map: the area shrinks with it, so the frame shows what is built. */
-test('the area frame stays inside the map when zooming in', async ({page}) => {
+/** The frame stays inside the map minus a margin: zooming in, dragging an edge past the map, turning it, resizing. */
+test('the area frame is never cut by the map edge', async ({page}) => {
   await page.addInitScript(() => localStorage.setItem('openbando-welcome', JSON.stringify({completed: true})));
   await page.emulateMedia({reducedMotion: 'reduce'});
   await page.goto('/');
@@ -59,17 +59,37 @@ test('the area frame stays inside the map when zooming in', async ({page}) => {
   const map = studio.locator('[data-tour=map]');
   const readout = studio.locator('.read');
   await expect(frame).toBeVisible();
-  // drag the east edge away from the middle first: an off-centre frame left the view before
-  const east = (await studio.locator('.frame .h.e').boundingBox())!;
-  await page.mouse.move(east.x + east.width / 2, east.y + east.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(east.x + 120, east.y + east.height / 2, {steps: 5});
-  await page.mouse.up();
+  // the frame's corners (it may be turned) keep 30 px from the map's edges
+  const inside = async (): Promise<boolean> => {
+    const m = (await map.boundingBox())!;
+    const corners = await frame.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return [r.left, r.top, r.right, r.bottom];
+    });
+    const [l, t, r, b] = corners as [number, number, number, number];
+    return l >= m.x + 30 && t >= m.y + 30 && r <= m.x + m.width - 30 && b <= m.y + m.height - 30;
+  };
+  const drag = async (handle: string, to: (box: {x: number; y: number; width: number; height: number}) => [number, number]): Promise<void> => {
+    const h = (await studio.locator(handle).boundingBox())!;
+    await page.mouse.move(h.x + h.width / 2, h.y + h.height / 2);
+    await page.mouse.down();
+    const [x, y] = to(h);
+    await page.mouse.move(x, y, {steps: 8});
+    await page.mouse.up();
+  };
+  // an edge dragged far past the map stops at the margin
+  await drag('.frame .h.e', (h) => [h.x + 2000, h.y + h.height / 2]);
+  expect(await inside()).toBe(true);
+  // zooming in shrinks the area rather than cutting the frame
   const before = await readout.textContent();
   for (let i = 0; i < 3; i++) await studio.locator('.leaflet-control-zoom-in').click();
-  await expect.poll(async () => {
-    const f = (await frame.boundingBox())!, m = (await map.boundingBox())!;
-    return f.x >= m.x && f.y >= m.y && f.x + f.width <= m.x + m.width && f.y + f.height <= m.y + m.height;
-  }).toBe(true);
+  await expect.poll(inside).toBe(true);
   expect(await readout.textContent()).not.toBe(before);
+  await studio.locator('.leaflet-control-zoom-out').click();
+  // turning it 45° keeps its corners in
+  await drag('.frame .rotk', (h) => [h.x + 400, h.y + 8]);
+  await expect.poll(inside).toBe(true);
+  // a smaller window: the panel shrinks and the frame follows
+  await page.setViewportSize({width: 900, height: 600});
+  await expect.poll(inside).toBe(true);
 });

@@ -64,6 +64,8 @@ type VegetationMix = 'd' | 'c' | 'mix' | ShrubKind;
 /** Tools that place something on the selected building: while one is active, a click puts the thing where the ghost is. */
 const PLACE: readonly Tool[] = ['door', 'window', 'wall', 'void', 'column', 'stairs', 'cut', 'wing', 'courtyard', 'piece'];
 const MIN_HALF = 20;
+/** Room kept between the area frame and the map's edges (px): the handles, the turn knob and the search bar stay clear. */
+const FRAME_MARGIN = 36;
 const M_LAT = 111132;
 const snap = (v: number, step: number): number => Math.round(v / step) * step;
 
@@ -1045,6 +1047,7 @@ export class BandoEditor {
       this.fullWidth.set(this.wrapEl().nativeElement.clientWidth);
       map.invalidateSize();
       sync();
+      if (this.mode() === 'area') this.fitFrame();
     });
     ro.observe(this.wrapEl().nativeElement);
     ro.observe(this.workEl().nativeElement);
@@ -1055,6 +1058,7 @@ export class BandoEditor {
     this.rot.set(sh?.rot ?? 0);
     this.half.set(sh ? { e: clampHalf(sh.e), n: clampHalf(sh.n) } : { e: clampHalf(this.size().w * 0.35 * mpp), n: clampHalf(this.size().h * 0.35 * mpp) });
     this.mode.set((this.studio.initialMode() === 'model' || this.placeHidden()) && this.hasModel() ? 'model' : 'area');
+    if (this.mode() === 'area') this.fitFrame();
     this.destroyRef.onDestroy(() => {
       ro.disconnect();
       if (this.indoor()) this.view.setRoofHidden(this.roofBefore);
@@ -1108,11 +1112,12 @@ export class BandoEditor {
   }
 
   /**
-   * Zooming in or shrinking the view never leaves the frame larger than the map: the area itself shrinks to fit, so
-   * the frame always shows what Generate builds (it was drawn clipped while the area stayed larger).
+   * The frame never reaches past the map minus FRAME_MARGIN (zoom, resize, turn): the area itself shrinks to fit, so
+   * the frame is never cut and always shows what Generate builds (it was drawn clipped while the area stayed larger).
    */
   private fitFrame(): void {
     const { w, h } = this.size();
+    if (w < FRAME_MARGIN * 4 || h < FRAME_MARGIN * 4) return; // not laid out yet (or folded away): nothing to fit
     const k = this.ppm();
     const r = (this.rot() * Math.PI) / 180, cos = Math.abs(Math.cos(r)), sin = Math.abs(Math.sin(r));
     let o = this.off();
@@ -1121,13 +1126,14 @@ export class BandoEditor {
       y: h / 2 + (o.u * Math.sin(r) + o.v * Math.cos(r)) * k,
     });
     let c = centre();
-    if (c.x < 8 || c.x > w - 8 || c.y < 8 || c.y > h - 8) {
+    const m = FRAME_MARGIN;
+    if (c.x < m || c.x > w - m || c.y < m || c.y > h - m) {
       o = { u: 0, v: 0 }; // the frame left the view: bring it back to the middle
       this.off.set(o);
       c = centre();
     }
     const he = this.half().e, hn = this.half().n;
-    const room = Math.min((Math.min(c.x, w - c.x) - 4) / ((he * cos + hn * sin) * k), (Math.min(c.y, h - c.y) - 4) / ((he * sin + hn * cos) * k));
+    const room = Math.min((Math.min(c.x, w - c.x) - m) / ((he * cos + hn * sin) * k), (Math.min(c.y, h - c.y) - m) / ((he * sin + hn * cos) * k));
     if (room < 1) this.half.set({ e: clampHalf(he * room), n: clampHalf(hn * room) });
   }
 
@@ -1138,7 +1144,10 @@ export class BandoEditor {
     if (m === 'model') {
       const z = this.ed.draft().zone;
       if (z && this.map) this.map.setView([z.lat, z.lon], this.map.getZoom());
-    } else if (this.indoor()) this.exitIndoor();
+    } else {
+      if (this.indoor()) this.exitIndoor();
+      this.fitFrame();
+    }
   }
 
   protected async generate(): Promise<void> {
@@ -1985,7 +1994,9 @@ export class BandoEditor {
         // only the dragged edge / corner moves: the opposite side stays where it is on the map
         const host = this.workEl().nativeElement.getBoundingClientRect();
         const r = (this.rot() * Math.PI) / 180;
-        const px = (e.clientX - (host.left + host.width / 2)) * this.mpp(), pz = (e.clientY - (host.top + host.height / 2)) * this.mpp();
+        // the dragged edge stops at the margin: the frame is never cut by the map's edge
+        const m = FRAME_MARGIN, cx = Math.min(host.right - m, Math.max(host.left + m, e.clientX)), cy = Math.min(host.bottom - m, Math.max(host.top + m, e.clientY));
+        const px = (cx - (host.left + host.width / 2)) * this.mpp(), pz = (cy - (host.top + host.height / 2)) * this.mpp();
         const u = px * Math.cos(r) + pz * Math.sin(r), v = -px * Math.sin(r) + pz * Math.cos(r); // pointer in the frame's axes
         const h0 = this.half(), o0 = this.off();
         let E = o0.u + h0.e, W = o0.u - h0.e, S = o0.v + h0.n, N = o0.v - h0.n;
@@ -1999,6 +2010,7 @@ export class BandoEditor {
         const ov = d.h.includes('s') ? N + hn : d.h.includes('n') ? S - hn : o0.v;
         this.half.set({ e: he, n: hn });
         this.off.set({ u: ou, v: ov });
+        if (r) this.fitFrame(); // a turned frame's corners can still reach past the edge
         break;
       }
       case 'frameRot': {
@@ -2007,6 +2019,7 @@ export class BandoEditor {
         const cx = host.left + f.l + f.w / 2, cy = host.top + f.t + f.h / 2;
         const ang = (Math.atan2(e.clientY - cy, e.clientX - cx) * 180) / Math.PI + 90;
         this.rot.set((((snap(ang, e.shiftKey ? 15 : 1) % 360) + 540) % 360) - 180);
+        this.fitFrame();
         break;
       }
       case 'move': {
