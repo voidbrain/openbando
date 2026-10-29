@@ -60,7 +60,7 @@ const PILLARS: readonly Pillar[] = [
     <app-panel id="welcome">
       <div class="welcome">
         <header>
-          <div class="brand"><h2 translate="no"><img class="wordmark" ngSrc="mascot/openbando-wordmark.png" width="2172" height="554" priority alt="OpenBando" /></h2><app-mascot /></div>
+          <div class="brand"><h2 translate="no"><img class="wordmark" ngSrc="mascot/openbando-wordmark.png" width="1440" height="367" priority alt="OpenBando" /></h2><app-mascot /></div>
           <p class="tag">Build, Fly, Share.</p>
           <p class="dim">Your bandos in 3D, and your flights back inside them.</p>
         </header>
