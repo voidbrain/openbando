@@ -445,6 +445,8 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ## Other changes
 
+In review (`fix/untrack-node-modules-link`): #166 committed a `node_modules` symlink to an absolute local path (made for a scratch worktree; `.gitignore` had `node_modules/`, which matches only directories). Untracked it and ignore `/node_modules` in either form. A checkout of main over a real `node_modules` let git delete its ignored contents to place the link; `npm ci` restores them.
+
 Merged ([#163](https://github.com/voidbrain/openbando/pull/163), CI being reconciled): splits AGENTS.md (414 → about 165 lines: conventions, architecture, checks, joins, pitfalls, privacy, work tracking) from [docs/agents/areas.md](agents/areas.md) (area rules and lessons moved verbatim, regrouped by area; the scattered Welcome/Views bullets now sit together). Backlog-procedure paragraphs that BACKLOG-RULES already owns were replaced by a pointer.
 
 In review: [#164](https://github.com/voidbrain/openbando/pull/164) adds `npm run ci:status` (per-PR CI jobs, failed and retried tests, PRs not based on main) and makes Verification cells current-state (one entry per method; earlier results move to PR / evidence as labelled history). Applied to B-011, B-024, F-003, F-004, F-005, F-006, F-008 and F-012.
