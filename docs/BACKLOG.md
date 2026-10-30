@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `6a0a52e` (merged #254), with every CI job of #162–#254 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `07249ed` (merged #255), with every CI job of #162–#255 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -55,17 +55,11 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟠 | B-017 | 🔶 P2 | Investigate | Villetta replay misalignment with video |
+| 🔴 | B-017 | 🔶 P2 | Open | Villetta replay misalignment with video |
 
-🧑 **→ Human action required: Yes**<br />Provide the affected saved alignment/session and confirm the changed arch control.
+💻 **→ Human action required: No**<br />Build pins at chosen moments of a flight (the owner agreed, 2026-10-30), with a test that a pinned moment lands where it is pinned.
 
-| | |
-|---|---|
-| **Issue** | Villetta's replay is displaced from the video around the main store and the greenhouse west exit. |
-| **Reproduce** | Your saved Villetta session with its flight and video. |
-| **Check** | Send the saved alignment or session; say whether the changed greenhouse arch looks right. |
-
-**Next action / closure evidence:** User confirms video and log timing is synchronized and that the greenhouse is approximately 30–40 cm above the surrounding ground; release 11 models an estimated 35 cm raised floor and frame. Investigate spatial displacement around the main store and greenhouse west exit. The [demo investigation](audits/2026-10-27-villetta-replay.md) matches the screenshots and identifies a separate hidden-origin projection defect (B-018), but does not establish its effect in the saved session. The greenhouse arch control uses a dimensionless crown-height-to-half-width ratio; the inspector now labels it and displays the resulting height in metres. Confirm which control was changed.
+**Next action / closure evidence:** 2026-10-30, measured on the demo flight against three moments the owner named in the video (0:27.6 out through the greenhouse's west-face bottom hole; 1:13.1 in the middle of the greenhouse; 1:35.9 leaving the store): the replay is about 14 m short along the greenhouse and 4 m aside at the first, 8 m towards its north edge at the second, 6 m inside the store's edge at the third. Not timing: the GPS horizontal acceleration matches the IMU's (accelerometer turned by the attitude) best at a 0.1 s lag (r 0.84), so the GPS is on time and the video offset (Auto-sync, r 0.88) is right; a 1.2 s GPS delay first suggested by fitting the three moments was ruled out by this test. Not a single shift or turn either: the errors change size and direction within the flight. It is GPS drift (5–15 m over a minute or two). Plan, agreed: pins at chosen moments: stop the replay where the video shows clearly where the drone is, drag it there; each pin corrects the path around its moment, blending to the next pin (start and end pins become the first two cases); pins are saved with the flight. Also release 13 raises the greenhouse crown to 11.2 m (ratio 1.1), the owner's estimate, which also brings the arch above the replayed path at the west face. History: User confirms video and log timing is synchronized and that the greenhouse is approximately 30–40 cm above the surrounding ground; release 11 models an estimated 35 cm raised floor and frame. Investigate spatial displacement around the main store and greenhouse west exit. The [demo investigation](audits/2026-10-27-villetta-replay.md) matches the screenshots and identifies a separate hidden-origin projection defect (B-018), but does not establish its effect in the saved session. The greenhouse arch control uses a dimensionless crown-height-to-half-width ratio; the inspector now labels it and displays the resulting height in metres. Confirm which control was changed.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -75,7 +69,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 | PR / evidence | [#112](https://github.com/voidbrain/openbando/pull/112) (report and arch label; alignment remains open); [#114](https://github.com/voidbrain/openbando/pull/114) (raised greenhouse; visual review pending); [#113](https://github.com/voidbrain/openbando/pull/113) (spatial investigation) |
 | Opened | 2026-10-27 |
 | Verification | Pending |
-| Reviewed | 2026-10-27 |
+| Reviewed | 2026-10-30 |
 
 </details>
 
@@ -165,6 +159,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 | PR / evidence | [#253](https://github.com/voidbrain/openbando/pull/253); report 2026-10-30 |
 | Opened | 2026-10-30 |
 | Verification | Browser · 2026-10-30 · `showcase.e2e.ts` (all 6, the new case included), `new-bando.e2e.ts`, `takeoff-pad.e2e.ts` passed locally; the new case fails without the fix |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
+### B-040
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟠 | B-040 | 🔶 P2 | Investigate | Dragging the timeline sometimes does not move the video |
+
+💻 **→ Human action required: No**<br />Reproduce a timeline drag that leaves the video where it was, find the cause, fix it with a test across timeline and video.
+
+**Next action / closure evidence:** Reported 2026-10-30 by the owner, replaying the Villetta demo flight with its video (Auto-sync offset −0.69 s). A related case was fixed before: a timeline click undone while the video played (the seek-with-a-playing-video case in `services.spec.ts`). To check: a drag (many seeks in a row) while playing and while paused, at the speeds used (0.25×), and a drag that ends where the video is still seeking.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Report 2026-10-30 |
+| Opened | 2026-10-30 |
+| Verification | Not reproduced yet |
 | Reviewed | 2026-10-30 |
 
 </details>
@@ -530,5 +548,7 @@ Harness template 1.18.0 (2026-10-30, requested by the owner; template [#32](http
 Harness templates 1.19.0 and 1.19.1 (2026-10-30, decided with the owner after a merged placeholder twice failed `check:backlog` on every PR; template [#34](https://github.com/voidbrain/project-harness/pull/34), [#35](https://github.com/voidbrain/project-harness/pull/35)): on a PR's CI run `check-backlog` fails on a placeholder the branch adds and names the number; the rule is to write the number right after opening the PR. `merge-when-green` retries GitHub timeouts and ignores a stale failure after a push; `merge-backlog` keeps archived records gone.
 
 Villetta release 12 (2026-10-30, the owner's photo): a deciduous tree at the greenhouse's south-west corner, 7 m with a 3.2 m crown, placed 4 m out on the corner's diagonal; copies are offered the update. The Welcome films and the clips that show Villetta follow it (F-031).
+
+Villetta release 13 (2026-10-30, the owner): the greenhouse crown is 11.2 m (ratio 1.1) instead of the 9.3 m estimated from below; the two tests that held the old value now hold this one, with the reason.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
