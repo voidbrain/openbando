@@ -937,6 +937,54 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ---
 
+### F-038
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-038 | 🔹 P3 | Open | Code coverage table, per folder, with a warning when it drops |
+
+💻 **→ Human action required: No**<br />Next steps, in order: (1) harness template release (decided 2026-10-30: template + OpenBando): a copied tool reads the standard coverage summary and writes `docs/agents/coverage.md` (per folder: lines, statements, branches, functions, and the files no test runs), CI prints the current table and warns (never fails) when a folder drops against the committed baseline; the Angular stack adds `@vitest/coverage-v8` and `npm run coverage`; (2) reconcile here: list the folders (`core/`, `three/`, `services/`, `state/`, `ui/`), commit the first baseline, link the page from the impact map (`pages`); (3) coverage of the browser tests (Playwright): F-039, since much of `ui/` and the 3D views is tested there and unit coverage shows it low.
+
+**Next action / closure evidence:** Requested 2026-10-30. Coverage is evidence of what the tests run, not that behaviour is verified (BACKLOG-RULES); branch coverage says the most; no fixed minimum (a number to hit invites tests written for it): a table to find untested parts, and a warning when a folder drops. Recorded at once (plans become records).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-30 |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
+### F-039
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-039 | 🔹 P3 | Open | Coverage of the browser tests in the coverage table |
+
+💻 **→ Human action required: No**<br />Collect V8 coverage in the Playwright runs (the e2e jobs), merge it with the unit coverage, and show both (or a column each) in `docs/agents/coverage.md`.
+
+**Next action / closure evidence:** Split from F-038 (step 3) on 2026-10-30: the unit coverage table shows `ui/` at under 1 % of lines, though its panels and editors are tested in the browser (Playwright). Until browser coverage is counted, the table says so above the numbers.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Split from F-038, 2026-10-30 |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
 ## Other changes
 
 `main` protection active 2026-10-29 (user request, set through the API): ruleset "protect main" requires `check`, `e2e (1)`–`e2e (4)` and `race-browser` and refuses force pushes and deletion. B-025 (the flaky Auto-sync check) was closed first so the required checks are reliable.
