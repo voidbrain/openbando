@@ -574,3 +574,34 @@ Every global key the app handles and whether the Help panel names it (F-032 step
 | ↓ | ArrowDown | src/app/core/radio/radio-input.ts | yes |
 | Shift | ShiftLeft, ShiftRight | src/app/core/radio/radio-input.ts | yes |
 
+## Design-system guides
+
+Each guide in `design-system/components/` and the code its `Source:` line names (F-032 step 4). The script fails when a guide has no Source line or names a file or CSS class the code no longer has. A change to one of these files should be checked against its guide (design-system/README.md, "Keeping it in step").
+
+| Guide | Source files (classes) | Status |
+|---|---|---|
+| [BlocksPanel](../../design-system/components/BlocksPanel.md) | src/app/ui/studio/blocks-box.ts | ok |
+| [Button](../../design-system/components/Button.md) | src/styles.scss (.btn) | ok |
+| [CameraCompass](../../design-system/components/CameraCompass.md) | src/app/ui/widgets/camera-compass.ts | ok |
+| [ContextMenu](../../design-system/components/ContextMenu.md) | src/app/ui/studio/bando-editor.scss (.ctx) | ok |
+| [ElementsList](../../design-system/components/ElementsList.md) | src/app/ui/studio/elements-box.ts | ok |
+| [FloatBox](../../design-system/components/FloatBox.md) | src/app/ui/float-box.ts | ok |
+| [FlyChecklist](../../design-system/components/FlyChecklist.md) | src/app/ui/panels/fly-panel.ts; src/app/core/fly-guide.ts | ok |
+| [FormControls](../../design-system/components/FormControls.md) | src/styles.scss | ok |
+| [GuidePanel](../../design-system/components/GuidePanel.md) | src/app/ui/panels/guide-panel.ts; src/app/core/tour.ts | ok |
+| [InspectorSection](../../design-system/components/InspectorSection.md) | src/app/ui/studio/bando-editor.scss (.sec, .st, .fld) | ok |
+| [Notice](../../design-system/components/Notice.md) | src/app/ui/studio/bando-editor.scss (.notice); src/app/ui/studio/assistant-box.ts (.err, .ok) | ok |
+| [OptionsBar](../../design-system/components/OptionsBar.md) | src/app/ui/studio/bando-editor.scss (.opts) | ok |
+| [Panel](../../design-system/components/Panel.md) | src/app/ui/panel/panel.ts | ok |
+| [PickMenu](../../design-system/components/PickMenu.md) | src/app/ui/studio/pick-menu.ts | ok |
+| [RacingControls](../../design-system/components/RacingControls.md) | src/app/ui/panels/racing-controls.ts | ok |
+| [Readout](../../design-system/components/Readout.md) | src/app/ui/studio/bando-editor.scss (.read) | ok |
+| [SegmentedControl](../../design-system/components/SegmentedControl.md) | src/app/ui/studio/bando-editor.scss (.seg); src/app/ui/studio/elements-box.ts (.tabs) | ok |
+| [Spinner](../../design-system/components/Spinner.md) | src/app/ui/studio/bando-editor.scss (.spin) | ok |
+| [Toast](../../design-system/components/Toast.md) | src/styles.scss (.toast); src/app/services/toast.service.ts | ok |
+| [ToolPalette](../../design-system/components/ToolPalette.md) | src/app/ui/studio/bando-editor.scss (.palette, .pg, .pbtn); src/app/ui/studio/tool-icon.ts | ok |
+| [TourOverlay](../../design-system/components/TourOverlay.md) | src/app/ui/tour-overlay.ts | ok |
+| [VersionBadge](../../design-system/components/VersionBadge.md) | src/app/ui/version-badge.ts | ok |
+| [ViewsPanel](../../design-system/components/ViewsPanel.md) | src/app/ui/panels/views-panel.ts | ok |
+| [WelcomePanel](../../design-system/components/WelcomePanel.md) | src/app/ui/panels/welcome-panel.ts | ok |
+

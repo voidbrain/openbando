@@ -88,6 +88,7 @@ is `.row` scoped to `ElementsBox`; the guideline calls it `.el-row` to keep it a
   `src/styles.scss` AND to `tokens.json` (name, value, usage) in the same change.
 - A new tool: its colour goes in `tools` and in `tokens.json` as `tool-<id>`, distinct from every other tool and the accent.
 - A new or changed shared component: update its `components/<Name>.md` (or add one).
+- Every guide ends with a `Source:` line naming its files and, in brackets, the CSS classes it describes (`src/app/ui/studio/bando-editor.scss (.read)`); `node tools/build-element-map.mjs` fails when one is missing or names a file or class the code no longer has (F-032). <!-- project -->
 - New user-facing text: its Italian goes in `src/app/i18n/it.ts`; a control the guided tour uses keeps its `data-tour` mark.
 - Text on a fill keeps 4.5:1 contrast (3:1 for icons, borders and focus rings), as `AGENTS.md` requires.
 
