@@ -673,63 +673,15 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ---
 
-### F-034
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-034 | 🔹 P3 | Implemented | Merge only when every check passes, CodeQL included |
-
-💻 **→ Human action required: No**<br />Close the first time a failing CodeQL run is seen blocking a merge (or a test PR shows it).
-
-**Next action / closure evidence:** Found 2026-10-30: the required checks (ruleset "protect main") did not include CodeQL, and the agent's merge watcher waited only for the required ones, so a PR could merge with an open code-scanning alert (#221 had four: incomplete sanitization in two build tools, fixed in that PR). Decided 2026-10-30 (user): option (c), CodeQL made a required check of "protect main" through the API (required now: check, e2e (1)–(4), race-browser, CodeQL), so GitHub blocks the merge whoever merges; AGENTS names it (a project line). The watcher, a session script, stops on any failing check too.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | Ruleset 25780506 updated 2026-10-30; [#223](https://github.com/voidbrain/openbando/pull/223) (AGENTS); found on [#221](https://github.com/voidbrain/openbando/pull/221) |
-| Opened | 2026-10-30 |
-| Verification | Settings · 2026-10-30 · the ruleset lists CodeQL among the required checks (API); PR · 2026-10-30 · [#238](https://github.com/voidbrain/openbando/pull/238) lists CodeQL among its checks and merged only after it passed; blocking while it fails · not yet seen |
-| Reviewed | 2026-10-30 |
-
-</details>
-
----
-
-### F-038
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-038 | 🔹 P3 | Implemented | Code coverage table, per folder, with a warning when it drops |
-
-💻 **→ Human action required: No**<br />Next steps, in order: (1) harness template release (decided 2026-10-30: template + OpenBando): a copied tool reads the standard coverage summary and writes `docs/agents/coverage.md` (per folder: lines, statements, branches, functions, and the files no test runs), CI prints the current table and warns (never fails) when a folder drops against the committed baseline; the Angular stack adds `@vitest/coverage-v8` and `npm run coverage`; (2) reconcile here: list the folders (`core/`, `three/`, `services/`, `state/`, `ui/`), commit the first baseline, link the page from the impact map (`pages`); (3) coverage of the browser tests (Playwright): F-039, since much of `ui/` and the 3D views is tested there and unit coverage shows it low.
-
-**Next action / closure evidence:** Requested 2026-10-30. Coverage is evidence of what the tests run, not that behaviour is verified (BACKLOG-RULES); branch coverage says the most; no fixed minimum (a number to hit invites tests written for it): a table to find untested parts, and a warning when a folder drops. Recorded at once (plans become records). Done 2026-10-30: steps 1–2 (template [#26](https://github.com/voidbrain/project-harness/pull/26), here [#227](https://github.com/voidbrain/openbando/pull/227), CI green): `docs/agents/coverage.md` and its baseline, CI warnings on drops; step 3 is F-039.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#227](https://github.com/voidbrain/openbando/pull/227); [#226](https://github.com/voidbrain/openbando/pull/226) (plan); request 2026-10-30 |
-| Opened | 2026-10-30 |
-| Verification | Script · 2026-10-30 · first table written (all 53.8 % of lines; ui 0.8 %, browser tests not counted); CI step runs on every PR |
-| Reviewed | 2026-10-30 |
-
-</details>
-
----
-
 ### F-039
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🔴 | F-039 | 🔹 P3 | Open | Coverage of the browser tests in the coverage table |
 
-💻 **→ Human action required: No**<br />Collect V8 coverage in the Playwright runs (the e2e jobs), merge it with the unit coverage, and show both (or a column each) in `docs/agents/coverage.md`.
+💻 **→ Human action required: No**<br />Next steps, in order: (1) template release: optional browser and combined coverage in `coverage-table.mjs`; (2) template, every stack with Playwright: an optional coverage fixture and merge script; (3) reconcile here, the e2e shards collect and a CI job merges.
 
-**Next action / closure evidence:** Split from F-038 (step 3) on 2026-10-30: the unit coverage table shows `ui/` at under 1 % of lines, though its panels and editors are tested in the browser (Playwright). Until browser coverage is counted, the table says so above the numbers.
+**Next action / closure evidence:** Split from F-038 (step 3) on 2026-10-30: the unit coverage table shows `ui/` at under 1 % of lines, though its panels and editors are tested in the browser (Playwright). Until browser coverage is counted, the table says so above the numbers. Plan (2026-10-30, the user: a template thing, optional, since any project can have Playwright): (1) template `core/tools/coverage-table.mjs` reads two optional summaries besides the unit one, `coverage.browser` and `coverage.combined` in `.harness.json`; with them the table shows unit, browser and combined lines per folder, and the drop warning follows the combined numbers; without them nothing changes. (2) Template, optional for a project with Playwright: a test fixture that collects V8 coverage in Chromium when `COVERAGE=1`, and a script that turns it into the standard summary through the source maps and merges it with the unit coverage (`monocart-coverage-reports`, one dev dependency). (3) Here: the e2e tests take the fixture, each e2e shard uploads its raw coverage, a CI job after the shards merges them and prints the table (a warning, never a failure), and the baseline is refreshed.
 
 <details>
 <summary>PR history, dates and verification</summary>
