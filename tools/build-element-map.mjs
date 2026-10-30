@@ -113,6 +113,34 @@ for (const k of keyRows) md += `| ${cell(k.key)} | ${k.codes.join(', ')} | ${k.f
 md += '\n';
 const missing = keyRows.filter((k) => !inHelp(k.key));
 
+// design-system guides (F-032 step 4): each guide's `Source:` line names its files and the CSS classes it describes;
+// the script fails when a guide has no Source line, or names a file or class the code no longer has (a stale guide)
+const guideDir = join(root, 'design-system/components');
+const guides = readdirSync(guideDir).filter((f) => f.endsWith('.md')).sort().map((f) => {
+  const line = readFileSync(join(guideDir, f), 'utf8').match(/^Source: (.+)$/m)?.[1] ?? '';
+  const srcs = [];
+  let base = 'src/app';
+  for (const m of line.matchAll(/`([^`]+)`/g)) for (const part of m[1].split(/,\s*(?![^(]*\))/)) {
+    const pm = part.trim().match(/^([\w./-]+\.(?:ts|scss|html))(?:\s*\(([^)]*)\))?/);
+    if (!pm) continue;
+    const path = pm[1].startsWith('src/') ? pm[1] : pm[1].includes('/') ? `src/app/${pm[1]}` : `${base}/${pm[1]}`;
+    base = dirname(path);
+    srcs.push({ path, classes: (pm[2] ?? '').split(/,\s*/).filter((c) => c.startsWith('.')) });
+  }
+  const problems = [];
+  if (!srcs.length) problems.push('no Source line');
+  for (const { path, classes } of srcs) {
+    if (!existsSync(join(root, path))) { problems.push(`${path} is gone`); continue; }
+    const code = readFileSync(join(root, path), 'utf8');
+    for (const c of classes) if (!new RegExp(`\\${c}(?![\\w-])`).test(code)) problems.push(`${c} is not in ${path}`);
+  }
+  return { name: f.replace(/\.md$/, ''), srcs, problems };
+});
+md += `## Design-system guides\n\nEach guide in \`design-system/components/\` and the code its \`Source:\` line names (F-032 step 4). The script fails when a guide has no Source line or names a file or CSS class the code no longer has. A change to one of these files should be checked against its guide (design-system/README.md, "Keeping it in step").\n\n| Guide | Source files (classes) | Status |\n|---|---|---|\n`;
+for (const g of guides) md += `| [${g.name}](../../design-system/components/${g.name}.md) | ${cell(g.srcs.map((x) => x.path + (x.classes.length ? ` (${x.classes.join(', ')})` : '')).join('; '))} | ${g.problems.length ? `**${cell(g.problems.join('; '))}**` : 'ok'} |\n`;
+md += '\n';
+const stale = guides.filter((g) => g.problems.length);
+
 writeFileSync(join(root, 'docs/agents/element-map.md'), md);
 
 // each clip's component files: the file of every control it uses, and that component's other files (same stem)
@@ -120,6 +148,10 @@ const siblings = (f) => ['.html', '.scss', '.ts'].map((x) => f.replace(/\.(html|
 const sources = {};
 for (const r of rows) for (const c of r.clips) sources[c] = [...new Set([...(sources[c] ?? []), ...siblings(r.file)])].sort();
 const clipSources = Object.fromEntries(Object.keys(sources).sort().filter((c) => existsSync(join(root, `docs/guide/clips/${c}.webm`))).map((c) => [c, sources[c]])); // showcase steps have no clip
+if (stale.length) {
+  console.error(`Design-system guides out of step with the code: ${stale.map((g) => `${g.name} (${g.problems.join('; ')})`).join(', ')}.`);
+  process.exitCode = 1;
+}
 if (missing.length) {
   console.error(`The Help panel (src/app/ui/panels/help-panel.ts) does not name these keys: ${missing.map((k) => k.key).join(', ')}. Add them (and their Italian).`);
   process.exitCode = 1;

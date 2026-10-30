@@ -177,7 +177,10 @@
       "when": [
         "src/app/**/*.html",
         "src/app/ui/**/*.ts",
-        "src/app/core/tour.ts"
+        "src/app/core/tour.ts",
+        "src/app/services/shortcuts.service.ts",
+        "src/app/core/radio/radio-input.ts",
+        "design-system/components/*.md"
       ],
       "then": "regenerate the element map (docs/agents/element-map.md) and each clip's sources (docs/guide/clip-sources.json)",
       "run": "node tools/build-element-map.mjs",
