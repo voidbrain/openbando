@@ -4,7 +4,7 @@
 
 What must follow a change, and what must run again after it (AGENTS, "What follows a change"). `npm run check:freshness` lists, on every PR, the rows a branch sets off and the order to run them.
 
-**More detail:** [Element map](element-map.md) (every control, its tip, the clips that show it) · [Guide](../guide/README.md) (generated from the tour) · [Design system](../../design-system/README.md)
+**More detail:** [Element map](element-map.md) (every control, its tip, the clips that show it) · [Guide](../guide/README.md) (generated from the tour) · [Design system](../../design-system/README.md) · [Code coverage](coverage.md) (unit tests, per folder; browser tests not counted)
 
 | Id | When these change | Made of (content) | This must follow | Command | Runs again after | Checked by |
 |---|---|---|---|---|---|---|
@@ -25,6 +25,7 @@ What must follow a change, and what must run again after it (AGENTS, "What follo
 | panels | `src/app/ui/panel-defs.ts`, `src/app/ui/panels/**` |  | a new or renamed panel gets its Views entry, its guide step (core/tour.ts) and its line in the README |  |  | nothing |
 | docs | `src/app/ui/**`, `src/app/three/**`, `src/app/core/**`, `src/app/services/**` |  | a new or changed feature updates the README (what the app does) and the area's notes in docs/agents/areas.md |  |  | nothing (BACKLOG-RULES, Documentation consistency) |
 | impact-page | `.harness.json` |  | regenerate the impact map page | `node tools/impact-map.mjs` |  | CI (impact map page matches the rows) |
+| coverage | `src/app/**/*.ts` |  | when coverage changes on purpose (code removed, tests added), refresh the coverage table and its baseline | `npm run coverage` |  | CI (warns when a folder drops more than 2 points) |
 
 ## Content dependencies
 

@@ -119,6 +119,10 @@ npm run check:conventions                 # Angular conventions above, core/ imp
 - Keep logic in `core/` where possible. Playwright covers selected UI and pointer workflows, but coverage is not exhaustive. <!-- project -->
 - Do not leave dead code behind when replacing a feature: a panel removed means its store, helpers and tests go too. <!-- project -->
 
+### Code coverage
+
+`docs/agents/coverage.md` shows, per folder, how much of the code the unit tests run (lines, statements, branches, functions) and the files no test runs; `npm run coverage` (or the stack's coverage run, then `node tools/coverage-table.mjs --write`) refreshes it and its baseline. CI prints the current table and warns, never fails, when a folder drops more than `coverage.drop` points. Coverage says what ran, not that the behaviour is checked: a table to find untested parts, never a number to hit. Refresh the baseline in the PR that changes coverage on purpose (code removed, tests added) and in audits.
+
 ### Changing a harness file
 
 Before editing a file listed in `.harness.json` (`copied`, `forked`, `adapted`, or `.harness.json` itself), decide whether the change holds for this project only or for every project. The edit is the trigger, whatever the request's words: an "allow X" that changes how work is done is a rule.

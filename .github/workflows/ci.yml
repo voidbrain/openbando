@@ -56,8 +56,12 @@ jobs:
         # here (F-029). Clips are recorded in a browser and not checked here (F-031).
         run: node tools/build-guide.mjs && git diff --exit-code -- docs/guide
 
-      - name: Test
-        run: npx ng test --watch=false
+      - name: Test, with coverage
+        # every source file is included, so a file no test runs shows at 0 % instead of being left out
+        run: npx ng test --watch=false --coverage --coverage-reporters=json-summary --coverage-include='src/**/*.ts' --coverage-exclude='**/*.spec.ts'
+
+      - name: Code coverage table (warnings only, never blocks)
+        run: node tools/coverage-table.mjs --check --github
 
       - name: Race relay integration
         run: npm run test:race-relay
