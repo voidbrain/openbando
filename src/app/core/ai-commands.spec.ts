@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeCommands, runCommands } from './ai-commands';
-import { parseReply } from './ai-prompt';
+import { AI_SCHEMA, SYSTEM_PROMPT, parseReply } from './ai-prompt';
 import { listOpenings } from './openings';
-import { emptySpec, type BuildingSpec, type SiteSpec } from './site-spec';
+import { ROOF_KINDS, emptySpec, type BuildingSpec, type SiteSpec } from './site-spec';
 
 const site = (rot = 0): SiteSpec => {
   const s = emptySpec({ lat: 45, lon: 12 }, 'T');
@@ -138,5 +138,13 @@ describe('ai commands: structures, openings state, columns, conversion', () => {
     expect(g.buildings[0]!.levels[0]!.columns!.length).toBeGreaterThan(6);
     runCommands(g, normalizeCommands([{ op: 'convert', to: 'greenhouse' }]).cmds, 'w');
     expect(g.buildings[0]!.frame).toBe('greenhouse');
+  });
+});
+
+describe('one list of roof kinds (F-037)', () => {
+  it('the assistant\'s schema offers every roof kind, and set_roof accepts each of them', () => {
+    expect(JSON.stringify(AI_SCHEMA)).toContain(JSON.stringify([...ROOF_KINDS]));
+    for (const roof of ROOF_KINDS) expect(normalizeCommands([{ op: 'set_roof', roof }]).cmds[0]).toMatchObject({ roof });
+    for (const roof of ROOF_KINDS) expect(SYSTEM_PROMPT, `the prompt explains ${roof}`).toContain(roof); // its prose cannot read the list
   });
 });
