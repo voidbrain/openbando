@@ -409,20 +409,20 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟡 | B-037 | 🔶 P2 | Implemented | The camera can go below the terrain |
+| 🔴 | B-037 | 🔶 P2 | Open | The camera can go below the terrain |
 
-🧑 **→ Human action required: Yes**<br />On the live site after merge: orbit and chase around a bando with hills (Chiari e Forti, Bardwell House): the camera stays above the ground.
+💻 **→ Human action required: No**<br />Rework the fix: lift a camera only above the ground the drone itself uses (`SiteCollider.groundAt` with the camera's height, which knows tunnels and basements), with a small clearance (about 0.3 m), and not in the editor's indoor and basement views; then rerun `editor-regressions.e2e.ts` (the close-up case) and the camera-rig tests.
 
-**Next action / closure evidence:** Reported 2026-10-30: the camera does not know the terrain's height, so it can be moved below the ground. To find: which cameras (main orbit, editor 3D view) clamp to a flat ground at y = 0 instead of the height grid, then keep them a little above `groundAt` under them. Done 2026-10-30 (this PR): the orbit kept its angle above the point it looks at, not above the ground under the camera, so a hill between them put the camera inside it (also after a pan over a hill); the chase camera sat 2.5 m over the drone and 6 m behind it, inside a slope behind; the editor's 3D view the same. Now `keepAbove` (`three/camera-rig.ts`) lifts the camera to `CAMERA_CLEARANCE` (1.5 m) above the ground under it, still aimed at its target, for the orbit and chase views (`PlaceOptions.groundAt`, the site's ground in scene units) and the editor's 3D view. Covered by `camera-rig.spec.ts` (an orbit behind a hill rises over it still aimed at the target; flat ground unchanged; a chase camera over a slope); both fail without the fix.
+**Next action / closure evidence:** Reported 2026-10-30. Cause: the orbit keeps its angle above the point it looks at, not above the ground under the camera, so a hill between them (or a pan over a hill) puts the camera inside it; the chase camera sits 2.5 m over and 6 m behind the drone, inside a slope behind; the editor's 3D view has the same orbit limits. A first fix (PR #228, 2026-10-30) lifted every orbit, chase and editor camera to 1.5 m above the terrain surface under it: CI failed the close-up case in `editor-regressions.e2e.ts` (two clicks 0.17 m apart instead of under 0.1 m: the zoomed-in editor camera was lifted), and the same rule would wrongly lift cameras in basements (the indoor view of −1 is below ground on purpose) and in tunnels. The fix was taken out of #228; the plan above replaces it.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR; report 2026-10-30 |
+| PR / evidence | Report 2026-10-30; first fix withdrawn from [#228](https://github.com/voidbrain/openbando/pull/228) after CI (race-browser, editor-regressions close-up) |
 | Opened | 2026-10-30 |
-| Verification | Unit · 2026-10-30 · camera-rig cases passed (fail without the fix); on the live site · Pending |
+| Verification | Not implemented |
 | Reviewed | 2026-10-30 |
 
 </details>

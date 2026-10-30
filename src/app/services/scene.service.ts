@@ -5,7 +5,7 @@ import { Injectable, effect, inject, signal, untracked, type WritableSignal } fr
 import * as THREE from 'three';
 import type { CameraView } from '../core/models';
 import { rotateCalibrationAbout, turnTowards } from '../core/geo';
-import { activeGround, takeoffSpot } from '../core/takeoff';
+import { takeoffSpot } from '../core/takeoff';
 import type { SiteModel } from '../three/site-model';
 import { CalibrationStore } from '../state/calibration.store';
 import { FlightStore } from '../state/flight.store';
@@ -225,14 +225,11 @@ export class SceneService {
 
   private placeOptions(): PlaceOptions {
     const f = this.flights.active;
-    const ground = activeGround(), k = this.calibration.modelScale();
     return {
       orbitFollow: this.view.orbitFollow(),
       calRotDeg: this.calibration.rot(),
       // the sim drone and replays with attitude data use the camera tilt; GPS-only replays do not
       fpvTiltDeg: !this.followingReplay() || !!(f && (f.tel || f.att)) ? this.view.fpvTiltDeg() : 0,
-      // the site is drawn scaled by the model scale: the ground under a scene point, in scene units
-      groundAt: ground ? (x: number, z: number) => k * ground(x / k, z / k) : undefined,
     };
   }
 
