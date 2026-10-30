@@ -27,3 +27,8 @@ export const setAutoAlign = (on: boolean): void => autoAlignSignal.set(on);
 const hiddenSignal = signal(false);
 export const hiddenSite = computed(() => hiddenSignal());
 export const setHiddenSite = (hidden: boolean): void => hiddenSignal.set(hidden);
+
+/** The active bando's id: flights keep the pilot's pins at moments per bando (they are in its model metres). */
+const siteIdSignal = signal('');
+export const activeSiteId = computed(() => siteIdSignal());
+export const setActiveSiteId = (id: string): void => siteIdSignal.set(id);

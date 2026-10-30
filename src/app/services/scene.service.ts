@@ -19,6 +19,9 @@ import { XRay } from '../three/xray';
 import { FlightService } from './flight.service';
 import { FrameLoopService, FrameOrder } from './frame-loop.service';
 import { PlaybackService } from './playback.service';
+import { positionAt } from '../core/flight/flight';
+import { addPin } from '../core/flight/moment-pins';
+import { formatClock } from '../core/math';
 import { SimulatorService } from './simulator.service';
 import { ToastService } from './toast.service';
 
@@ -79,8 +82,11 @@ export class SceneService {
     fpv: this.makeViewport('fpv'),
     top: this.makeViewport('top'),
   };
-  /** Armed ground pin: the next click on the ground moves the flight's start ('s') or end ('e') there. */
-  readonly pin = signal<'s' | 'e' | null>(null);
+  /**
+   * Armed ground pin: the next click on the ground moves the flight's start ('s') or end ('e') there, or puts the drone
+   * there at the replay's current moment ('m', a pin against GPS drift, B-017).
+   */
+  readonly pin = signal<'s' | 'e' | 'm' | null>(null);
   /**
    * The flight's start is fixed: pinned by the pilot, or a bando without its place (flights start on its take-off
    * pad). Then pinning the end turns the path about its start instead of sliding the whole path.
@@ -291,7 +297,7 @@ export class SceneService {
   }
 
   // ---- ground pin ----
-  armPin(which: 's' | 'e'): void {
+  armPin(which: 's' | 'e' | 'm'): void {
     if (!this.flights.active) {
       this.toast.show('Load a log first');
       return;
@@ -301,7 +307,8 @@ export class SceneService {
       return;
     }
     this.pin.set(which);
-    this.toast.show(`Click the ground where the flight ${which === 's' ? 'started' : 'ended'} — in any 3D view or panel. Esc cancels; your view is not changed.`);
+    if (which === 'm') this.toast.show('Click the ground where the drone is at this moment (the video shows it) — in any 3D view or panel. Esc cancels.');
+    else this.toast.show(`Click the ground where the flight ${which === 's' ? 'started' : 'ended'} — in any 3D view or panel. Esc cancels; your view is not changed.`);
   }
   endPin(): void {
     this.pin.set(null);
@@ -329,7 +336,14 @@ export class SceneService {
     const which = this.pin();
     const f = this.flights.active;
     const start = f?.loc[0], end = f?.loc[f.loc.length - 1];
-    if (!which || !start || !end) return;
+    if (!which || !f || !start || !end) return;
+    if (which === 'm') {
+      const t = this.playback.time, from = positionAt(f, t);
+      if (!from) return;
+      this.flights.setPins(f, addPin(f.pins ?? [], t, from, { x, z }));
+      this.toast.show(`Pinned at ${formatClock(t)}: the path around this moment moves there, blending to the next pin.`);
+      return;
+    }
     if (which === 's') {
       this.calibration.shift(x - start.x, z - start.z);
       this.startFixed.set(true);

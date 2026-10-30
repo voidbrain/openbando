@@ -5,6 +5,8 @@ import { betaflightCsv, makeTelemetry } from '../core/testing/fixtures';
 import { CalibrationStore } from '../state/calibration.store';
 import { FlightStore } from '../state/flight.store';
 import { PlaybackStore } from '../state/playback.store';
+import { positionAt } from '../core/flight/flight';
+import { addPin } from '../core/flight/moment-pins';
 import { FlightService } from './flight.service';
 import { FrameLoopService } from './frame-loop.service';
 import { PlaybackService } from './playback.service';
@@ -35,6 +37,29 @@ describe('services', () => {
   });
 
   describe('FlightService', () => {
+    it('a pin at a moment puts the drone there, keeps the take-off, and comes back with the log (B-017)', async () => {
+      const flights = TestBed.inject(FlightService);
+      await flights.loadFiles([csvFile('pinned.csv', 1600 * 3)]);
+      TestBed.tick();
+      const f = flights.active!;
+      const t = 3, before = positionAt(f, t)!, start = f.loc[0]!.clone();
+      const target = { x: before.x + 6, z: before.z - 4 };
+      flights.setPins(f, addPin([], t, before, target));
+      const after = positionAt(f, t)!;
+      expect(after.x).toBeCloseTo(target.x, 6);
+      expect(after.z).toBeCloseTo(target.z, 6);
+      expect(f.loc[0]!.distanceTo(start)).toBeLessThan(1e-6); // the take-off stays where it was placed
+      // the same log loaded again on this bando gets its pins back
+      flights.clear();
+      await flights.loadFiles([csvFile('pinned.csv', 1600 * 3)]);
+      TestBed.tick();
+      const again = flights.active!;
+      expect(again.pins).toHaveLength(1);
+      expect(positionAt(again, t)!.x).toBeCloseTo(target.x, 6);
+      flights.setPins(again, []); // and removing them forgets them
+      expect(positionAt(again, t)!.x).toBeCloseTo(before.x, 6);
+    });
+
     it('loads a Betaflight log: parses, prepares, indexes and asks for the camera to frame it', async () => {
       const flights = TestBed.inject(FlightService);
       const store = TestBed.inject(FlightStore);

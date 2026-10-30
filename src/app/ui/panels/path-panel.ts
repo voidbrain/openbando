@@ -49,6 +49,14 @@ import { Panel } from '../panel/panel';
             <button class="ico" [class.on]="scene.pin() === 'e'" [disabled]="!alignment.atEnd()" (click)="scene.armPin('e')" [title]="alignment.videoLoaded() ? 'Pin end: position at the end of the video and click the ground where the flight ended' : 'Pin end: position at the end of the flight and click the ground where the flight ended'" aria-label="Pin end">
               <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="e" d="M6 21V4h11v8H6" /><path class="e" d="M6 8h11M11.5 4v8" /></svg>
             </button>
+            <button class="ico" [class.on]="scene.pin() === 'm'" [disabled]="!hasFlight()" (click)="scene.armPin('m')" title="Pin this moment: stop where the video shows clearly where the drone is, then click the ground there; the path around this moment moves there (GPS drift)" aria-label="Pin this moment">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="m" d="M12 21s-6-6.2-6-11a6 6 0 0 1 12 0c0 4.8-6 11-6 11z" /><path class="m" d="M12 7.5v5M9.5 10h5" /></svg>
+            </button>
+            @if (pins()) {
+              <button class="ico" (click)="clearPins()" title="Remove the pins at moments of this flight" aria-label="Remove the pins at moments">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+              </button>
+            }
             <div
               class="knob"
               role="slider"
@@ -156,6 +164,9 @@ import { Panel } from '../panel/panel';
     .ico .e {
       stroke: var(--danger);
     }
+    .ico .m {
+      stroke: var(--accent);
+    }
     .knob {
       display: flex;
       flex-direction: column;
@@ -202,6 +213,8 @@ export class PathPanel {
   /** The bando has its real place: the start is shown and typed as latitude, longitude (else as site metres). */
   protected readonly placed = computed(() => this.site.active().privacy !== 'hidden' && !(this.site.active().origin.lat === 0 && this.site.active().origin.lon === 0));
   protected readonly hasFlight = signal(false);
+  /** How many pins at moments the active flight has (B-017). */
+  protected readonly pins = signal(0);
   protected readonly startText = signal('');
   protected readonly startX = signal(0);
   protected readonly startZ = signal(0);
@@ -244,6 +257,13 @@ export class PathPanel {
     this.scene.turnPath(d);
   }
 
+  protected clearPins(): void {
+    const f = this.flights.active;
+    if (!f) return;
+    this.flights.setPins(f, []);
+    this.toast.show('Pins at moments removed: the path follows the GPS again.');
+  }
+
   protected setMode(m: PathViewMode): void {
     this.view.mode = m;
     this.mode.set(m);
@@ -260,6 +280,7 @@ export class PathPanel {
     // the start fields follow pins, the knob and typed values (cheap: the signals only change when the start moves)
     const s = active?.loc[0];
     this.hasFlight.set(!!s);
+    this.pins.set(active?.pins?.length ?? 0);
     if (s) {
       this.startX.set(Math.round(s.x * 10) / 10);
       this.startZ.set(Math.round(s.z * 10) / 10);

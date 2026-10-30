@@ -1,3 +1,4 @@
+import type { MomentPin } from './flight/moment-pins';
 import type { Vec3 } from './math3d';
 
 /** Geodetic position of the model: how local metres relate to latitude / longitude. */
@@ -59,6 +60,8 @@ export interface Flight {
   dur: number;
   /** Replay cursor cache (index of the segment the playhead is in). */
   cursor: number;
+  /** Pins at moments (B-017): the pilot's corrections of the GPS drift, model metres; applied by `prepareFlight`. */
+  pins?: MomentPin[];
   /** Cached analysis results; undefined = not computed yet. */
   liftoff?: number | null;
   firstFlip?: number | null;
