@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `80205b9` (merged #221), with every CI job of #162–#222 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `0798ee4` (merged #223), with every CI job of #162–#223 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -865,13 +865,61 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ---
 
+### F-036
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-036 | 🔹 P3 | Open | Fence materials: one list, not three |
+
+💻 **→ Human action required: No**<br />Make `FENCES` (core/fences.ts) the one source: `FenceMaterial` and `WallSpec.material` derive from it, `FENCE_ICON` stays typed by it; add a test.
+
+**Next action / closure evidence:** Found 2026-10-30 while listing the value couplings (F-033): the same list is written by hand in `core/fences.ts` (`FenceMaterial`), `core/site-spec.ts` (`WallSpec.material`) and the editor's icon map, and nothing keeps them equal. Closes when one source feeds the others (or a test fails when they differ) and the coupling in `.harness.json` says so.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Found in this PR (F-033) |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
+### F-037
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-037 | 🔹 P3 | Open | Roof kinds: one list, not four |
+
+💻 **→ Human action required: No**<br />One list of roof kinds that `LevelSpec.roof`, the AI command type, `AI_SCHEMA` and the editor's Roof → shape menu all read; add a test.
+
+**Next action / closure evidence:** Found 2026-10-30 while listing the value couplings (F-033): the same list is written by hand in `core/site-spec.ts`, `core/ai-commands.ts`, `core/ai-prompt.ts` and the editor template, and nothing keeps them equal. Closes when one source feeds the others (or a test fails when they differ) and the coupling in `.harness.json` says so.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Found in this PR (F-033) |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
 ### F-038
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🔴 | F-038 | 🔹 P3 | Open | Code coverage table, per folder, with a warning when it drops |
 
-💻 **→ Human action required: No**<br />Next steps, in order: (1) harness template release (decided 2026-10-30: template + OpenBando): a copied tool reads the standard coverage summary and writes `docs/agents/coverage.md` (per folder: lines, statements, branches, functions, and the files no test runs), CI prints the current table and warns (never fails) when a folder drops against the committed baseline; the Angular stack adds `@vitest/coverage-v8` and `npm run coverage`; (2) reconcile here: list the folders (`core/`, `three/`, `services/`, `state/`, `ui/`), commit the first baseline, link the page from the impact map (`pages`); (3) later, as its own record: coverage of the browser tests (Playwright), since much of `ui/` and the 3D views is tested there and unit coverage will show it low.
+💻 **→ Human action required: No**<br />Next steps, in order: (1) harness template release (decided 2026-10-30: template + OpenBando): a copied tool reads the standard coverage summary and writes `docs/agents/coverage.md` (per folder: lines, statements, branches, functions, and the files no test runs), CI prints the current table and warns (never fails) when a folder drops against the committed baseline; the Angular stack adds `@vitest/coverage-v8` and `npm run coverage`; (2) reconcile here: list the folders (`core/`, `three/`, `services/`, `state/`, `ui/`), commit the first baseline, link the page from the impact map (`pages`); (3) coverage of the browser tests (Playwright): F-039, since much of `ui/` and the 3D views is tested there and unit coverage shows it low.
 
 **Next action / closure evidence:** Requested 2026-10-30. Coverage is evidence of what the tests run, not that behaviour is verified (BACKLOG-RULES); branch coverage says the most; no fixed minimum (a number to hit invites tests written for it): a table to find untested parts, and a warning when a folder drops. Recorded at once (plans become records).
 
@@ -881,6 +929,30 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 | Field | Value |
 |---|---|
 | PR / evidence | Request 2026-10-30 |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
+### F-039
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-039 | 🔹 P3 | Open | Coverage of the browser tests in the coverage table |
+
+💻 **→ Human action required: No**<br />Collect V8 coverage in the Playwright runs (the e2e jobs), merge it with the unit coverage, and show both (or a column each) in `docs/agents/coverage.md`.
+
+**Next action / closure evidence:** Split from F-038 (step 3) on 2026-10-30: the unit coverage table shows `ui/` at under 1 % of lines, though its panels and editors are tested in the browser (Playwright). Until browser coverage is counted, the table says so above the numbers.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Split from F-038, 2026-10-30 |
 | Opened | 2026-10-30 |
 | Verification | Not implemented |
 | Reviewed | 2026-10-30 |
@@ -906,5 +978,7 @@ AGENTS: a green PR that conflicts with `main` may get a push that only resolves 
 Harness template 1.10.0 (2026-10-29, this PR; template [#12](https://github.com/voidbrain/project-harness/pull/12)): found here, after a rule for every project (conflict-only pushes to green PRs) was first written into this project's AGENTS without asking whether it belonged to the template. AGENTS gains "Changing a harness file" (the edit is the trigger; unsure: ask before editing) and the template's PR rules (no stacked PRs, no new work on a green PR, conflict-only pushes allowed); project lines inside template sections are marked `<!-- project -->` (12 in AGENTS); the Work tracking bullet points to the new section; BACKLOG-RULES: parallel PRs' backlog conflicts are resolved in the conflicting PR; `check-freshness` copied (it lists the harness files a branch changes); `.harness.json` on 1.10.0. CI green.
 
 Harness template 1.11.0 (2026-10-29, [#216](https://github.com/voidbrain/openbando/pull/216), CI green; template [#14](https://github.com/voidbrain/project-harness/pull/14)): the impact map (F-028); AGENTS gains "What follows a change", BACKLOG-RULES points to the map; `check-freshness` copied; `.harness.json` on 1.11.0 with nine rows. Harness 1.10.0 ([#212](https://github.com/voidbrain/openbando/pull/212)): CI green.
+
+Harness templates 1.12.0 – 1.15.1 (2026-10-30, this PR; 1.15.1 escapes backslashes in the impact map's cells, found by CodeQL on this PR): `tools/impact-map.mjs` copied and `check-freshness` updated; AGENTS ("What follows a change", the plans-become-records bullet, audits look outside) and BACKLOG-RULES reconciled; the CI step and `npm run impact-map`; `.harness.json` on 1.15.1 with the full map (F-033).
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.

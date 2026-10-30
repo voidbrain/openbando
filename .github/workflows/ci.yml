@@ -39,6 +39,10 @@ jobs:
         # the generator, a block or the script that is not rebuilt shows up here
         run: npm run examples && git diff --exit-code -- library/bandos public/library
 
+      - name: Impact map page matches the rows
+        # tools/impact-map.mjs (harness) writes docs/agents/impact-map.md from .harness.json
+        run: node tools/impact-map.mjs && git diff --exit-code -- docs/agents/impact-map.md
+
       - name: Element map matches the code
         # tools/build-element-map.mjs writes docs/agents/element-map.md from the templates and the tour (F-032)
         run: node tools/build-element-map.mjs && git diff --exit-code -- docs/agents/element-map.md
