@@ -5,7 +5,7 @@ import { findFlips, findLiftoff } from '../flight/analysis';
 import { fakeContext } from '../testing/fake-canvas';
 import { makeFlight, makeTelemetry } from '../testing/fixtures';
 import { createBlackboxState, drawBlackbox, inDroneDragArea } from './blackbox';
-import { cameraUpAngle, drawCompass } from './compass';
+import { cameraUpAngle } from './camera-compass';
 import { drawDroneModel, DEFAULT_DRONE_VIEW, heatRGB } from './drone-model';
 import { createPathView, dragPathView, drawFlightPath, niceStep, resetPathView, zoomPathView, type PathViewMode } from './flight-path';
 import { drawGauge, replayScaleMax } from './gauge';
@@ -50,13 +50,7 @@ describe('instruments', () => {
   });
 });
 
-describe('map-north compass', () => {
-  it('draws N E S W', () => {
-    const c = fakeContext();
-    drawCompass(c.g, { calRot: -6.76, cameraUp: 0.3, droneHeading: 1 });
-    for (const l of ['N', 'E', 'S', 'W']) expect(c.texts()).toContain(l);
-  });
-
+describe('the camera up angle (the compass widget)', () => {
   it('derives the camera up angle for the top view and for perspective views', () => {
     expect(cameraUpAngle('top', { x: 0, z: -1 }, { x: 0, z: 0 })).toBeCloseTo(0, 9);
     expect(cameraUpAngle('top', { x: 1, z: 0 }, { x: 0, z: 0 })).toBeCloseTo(Math.PI / 2, 9);

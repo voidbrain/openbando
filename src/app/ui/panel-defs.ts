@@ -1,6 +1,6 @@
 /** Every floating panel in the app: identity, title and where it first appears. */
 export type PanelId =
-  | 'views' | 'flights' | 'simulator' | 'radio' | 'timeline' | 'speed' | 'attitude' | 'compass'
+  | 'views' | 'flights' | 'simulator' | 'radio' | 'timeline' | 'speed' | 'attitude'
   | 'features' | 'path' | 'studio' | 'blackbox' | 'video' | 'live' | 'render' | 'help' | 'guide' | 'fly' | 'welcome' | 'vpOrbit' | 'vpChase' | 'vpFpv' | 'vpTop';
 
 export interface PanelDef {
@@ -32,7 +32,6 @@ export const PANELS: readonly PanelDef[] = [
   { id: 'timeline', title: 'Timeline', group: 'telemetry', sub: 'controls', visible: false, anchor: { left: 280, bottom: 12 }, width: 560 },
   { id: 'speed', title: 'Speed', group: 'telemetry', sub: 'views', visible: false, anchor: { right: 12, top: 12 }, width: 170 },
   { id: 'attitude', title: 'Attitude & heading', group: 'telemetry', sub: 'views', visible: false, anchor: { right: 12, top: 168 }, width: 270 },
-  { id: 'compass', title: 'Map north', group: 'telemetry', sub: 'views', visible: false, anchor: { right: 300, top: 12 }, width: 170 },
   { id: 'path', title: 'Flight path', group: 'telemetry', sub: 'views', visible: false, anchor: { right: 12, bottom: 12 }, width: 330, resizable: true, height: 270 },
   { id: 'studio', title: 'Bandos editor', group: 'tools', visible: false, anchor: { right: 12, top: 60 }, width: 600, resizable: true, maxHeight: 800 },
   { id: 'blackbox', title: 'Blackbox', group: 'telemetry', sub: 'controls', visible: false, anchor: { right: 12, top: 330 }, width: 360 },

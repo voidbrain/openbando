@@ -14,7 +14,6 @@ import { FlightStore } from './state/flight.store';
 import { LayoutStore } from './state/layout.store';
 import { AttitudePanel } from './ui/panels/attitude-panel';
 import { BlackboxPanel } from './ui/panels/blackbox-panel';
-import { CompassPanel } from './ui/panels/compass-panel';
 import { FlightsPanel } from './ui/panels/flights-panel';
 import { HelpPanel } from './ui/panels/help-panel';
 import { GuidePanel } from './ui/panels/guide-panel';
@@ -43,7 +42,7 @@ import { ToastHost } from './ui/toast-host';
   // the page never scrolls (html and body hide their overflow): a focus or scrollIntoView that moved it is undone (B-032)
   host: { '(window:scroll)': 'unscroll()' },
   imports: [
-    Stage, ViewsPanel, FlightsPanel, SimulatorPanel, RadioPanel, TimelinePanel, SpeedPanel, AttitudePanel, CompassPanel, PathPanel,
+    Stage, ViewsPanel, FlightsPanel, SimulatorPanel, RadioPanel, TimelinePanel, SpeedPanel, AttitudePanel, PathPanel,
     BlackboxPanel, VideoPanel, LivePanel, FlyPanel, RenderPanel, HelpPanel, GuidePanel, WelcomePanel, FeaturesPanel, ViewportPanel, VersionBadge, StudioPanel, ToastHost, TourOverlay,
   ],
   template: `
@@ -56,7 +55,6 @@ import { ToastHost } from './ui/toast-host';
     <app-timeline-panel />
     <app-speed-panel />
     <app-attitude-panel />
-    <app-compass-panel />
     <app-path-panel />
     <app-studio-panel />
     <app-blackbox-panel />

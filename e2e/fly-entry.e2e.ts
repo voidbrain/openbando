@@ -14,7 +14,7 @@ test('returning pilots open bandos, Fly opens telemetry, and Views can close and
   const card = studio.locator('.card').filter({hasText: 'Fly yard'});
   await card.getByRole('button', {name: 'Fly', exact: true}).click();
   await expect(page.locator('app-panel[data-id="studio"]')).toBeHidden();
-  for (const id of ['flights', 'video', 'timeline', 'speed', 'attitude', 'compass', 'path', 'blackbox']) {
+  for (const id of ['flights', 'video', 'timeline', 'speed', 'attitude', 'path', 'blackbox']) {
     await expect(page.locator(`app-panel[data-id="${id}"]`)).toBeVisible();
   }
   await expect(page.locator('app-panel[data-id="live"]')).toBeHidden();

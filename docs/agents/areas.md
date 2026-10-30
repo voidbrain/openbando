@@ -135,7 +135,7 @@ Detailed rules and lessons for each part of the app, moved from AGENTS.md so tha
 
 - X-ray uses only the actively followed replay or armed simulator; free orbit, manual pan and an idle parked simulator do not trace to a parked drone; a surface immediately in front of the camera can still fade. See `core/xray-policy.ts`.
 
-- `ui/widgets/camera-compass.ts` is the fixed north widget in the main stage and editor 3D view; it follows each camera and calibration. Keep the old ground north marker removed.
+- `ui/widgets/camera-compass.ts` is the fixed north widget in the main stage and editor 3D view; it follows each camera and calibration. Keep the old ground north marker removed, and the old "Map north" panel (`compass`, removed 2026-10-30 at the owner's request: the widget shows north wherever there is a 3D view); `cameraUpAngle` now lives with the widget in `core/drawing/camera-compass.ts`.
 
 - A hidden site's flight calibration may contain a private GPS `reference` established from the first accepted flight or live fix after alignment. Do not save a live reference while the initial recorded-flight alignment is still pending. Replay, pin/rotation, inverse projection and live GPS use the same fixed local frame. Keep the reference through local save/import and remove the entire calibration when sharing hidden sites. Never include the reference in race packages. Existing calibrations without a reference migrate by preserving the first fix.
 

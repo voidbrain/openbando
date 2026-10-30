@@ -593,4 +593,6 @@ Villetta release 12 (2026-10-30, the owner's photo): a deciduous tree at the gre
 
 Villetta release 13 (2026-10-30, the owner): the greenhouse crown is 11.2 m (ratio 1.1) instead of the 9.3 m estimated from below; the two tests that held the old value now hold this one, with the reason.
 
+The "Map north" panel removed (2026-10-30, the owner: the compass widget is on the main view and in the editor's 3D view): the panel, its drawing (`core/drawing/compass.ts`, its `cameraUpAngle` moved to `camera-compass.ts`) and its test go; old saved layouts drop it. What follows, by the impact map: Views lists panels from `PANELS` (gone there); no guide step, README line or clip source names it (guide pages and element map unchanged); the clips that show the Views list show its old row until they are re-recorded (F-031); coverage table refreshed (code removed).
+
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
