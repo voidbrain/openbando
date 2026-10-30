@@ -54,6 +54,13 @@ export class VideoService {
   private objectUrl: string | null = null;
   private fileKey = '';
   private lastPlayAttempt = 0;
+  /**
+   * The loaded video has been started once (muted, an instant, then paused again). Safari does not redraw a video that
+   * never played after a paused seek: the time moved, the picture stayed (B-040: timeline clicks after Auto-sync, before
+   * any Play). A priming play while paused is invisible: the replay reads the video's clock only while it plays.
+   */
+  private primed = false;
+  private priming = false;
   /** When the app last asked the video to seek and the video has not said `seeked` since; 0 when none is pending. */
   private seekIssuedAt = 0;
   private lastSeekTarget = -1;
@@ -111,6 +118,7 @@ export class VideoService {
     this.frameReady.set(false);
     this.loadFailed.set(false);
     this.element.src = this.objectUrl;
+    this.primed = false;
     this.lastSeekTarget = -1;
     this.fileKey = `${file.name}:${file.size}`;
     this.fileName.set(file.name);
@@ -275,7 +283,7 @@ export class VideoService {
   /** Per frame: keep the video where the replay is (playing: free-run and correct drift; paused: seek). */
   private syncFrame(): void {
     const v = this.element;
-    if (this.suspended || !this.loaded() || v.readyState < 1) return;
+    if (this.suspended || this.priming || !this.loaded() || v.readyState < 1) return;
     const target = this.playback.time + this.offset();
     if (this.transport.playing() && this.transport.direction() > 0) {
       const rate = this.transport.speed();
@@ -298,6 +306,20 @@ export class VideoService {
     }
   }
 
+  /** Start the newly loaded video once, muted, and pause it again where the replay is (see {@link primed}). */
+  private prime(): void {
+    if (this.primed || this.transport.playing()) return;
+    this.primed = true;
+    this.priming = true;
+    const v = this.element;
+    void v.play().catch(() => undefined).finally(() => {
+      this.priming = false;
+      if (this.transport.playing()) return;
+      v.pause();
+      this.seekVideo(Math.max(0, this.playback.time + this.offset()));
+    });
+  }
+
   /** Seek the video and remember it is pending until `seeked`, so a stalled seek is noticed and issued again. */
   private seekVideo(t: number): void {
     this.seekIssuedAt = performance.now();
@@ -309,7 +331,10 @@ export class VideoService {
     v.playsInline = true;
     v.muted = true;
     v.preload = 'auto';
-    v.addEventListener('loadeddata', () => this.frameReady.set(true));
+    v.addEventListener('loadeddata', () => {
+      this.frameReady.set(true);
+      this.prime();
+    });
     v.addEventListener('canplay', () => this.frameReady.set(true));
     v.addEventListener('error', () => this.loadFailed.set(true));
     return v;
