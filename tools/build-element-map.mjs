@@ -91,6 +91,15 @@ let md = `<!-- Written by tools/build-element-map.mjs from the templates and src
 md += `# Element map\n\nThe element-level part of the impact map ([impact-map.md](impact-map.md), from the harness, lists what must follow a change). `;
 md += `Every control the templates show, with its label, its \`data-tour\` mark, the guide steps that show it as a tip on hover and the guide steps whose clips use it (F-032). Generated; CI fails when this page differs from the code.\n\n`;
 md += `**${n} controls** · ${withTip} with a tip on hover · ${withTitle} with a title · ${inClips} shown in a clip · ${noName} whose name the script cannot read (a bound expression; axe checks the real names)\n\n`;
+// tips per file (F-032 step 5, F-026): what "?" (tips on hover) can show today, and what only the browser's title shows
+md += `## Tips per file\n\nWhat the panels' "?" (tips on hover) covers: a guide step's tip, the browser's own \`title\`, or neither (F-026, inventory before the rework).\n\n| File | Controls | Tip on hover | Title | Neither |\n|---|---|---|---|---|\n`;
+const tipFiles = [...new Set(rows.map((r) => r.file))].map((file) => {
+  const rs = rows.filter((r) => r.file === file);
+  return { file, n: rs.length, tip: rs.filter((r) => r.tips.length).length, title: rs.filter((r) => r.title).length, neither: rs.filter((r) => !r.tips.length && !r.title).length };
+}).sort((a, b) => b.neither - a.neither || a.file.localeCompare(b.file));
+for (const t of tipFiles) md += `| ${t.file} | ${t.n} | ${t.tip} | ${t.title} | ${t.neither} |\n`;
+md += `| **all** | ${n} | ${withTip} | ${withTitle} | ${tipFiles.reduce((a, t) => a + t.neither, 0)} |\n\n`;
+
 for (const file of [...new Set(rows.map((r) => r.file))]) {
   const rs = rows.filter((r) => r.file === file);
   md += `### ${file}\n\n| Control | Element | Mark | Title | Tip (guide step) | In clips |\n|---|---|---|---|---|---|\n`;
