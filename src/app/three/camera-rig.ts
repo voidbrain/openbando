@@ -35,6 +35,24 @@ export interface PlaceOptions {
   calRotDeg: number;
   /** FPV up-tilt in degrees; 0 for GPS-only replays (their orientation has no real camera angle to correct). */
   fpvTiltDeg: number;
+  /** The drone's ground under a point, scene units: terrain, floors and, with `y`, the floor of a tunnel or basement the point is in. Absent = no clamp. */
+  groundAt?: (x: number, z: number, y?: number) => number;
+}
+
+/** How far above the ground under it a camera stays, scene units: enough not to look into a hill, small enough for close-ups. */
+export const CAMERA_CLEARANCE = 0.3;
+
+/**
+ * Lift camera `c` that is below the ground under it (plus the clearance), keeping it aimed at `look`. A target under
+ * the terrain (a drone in a tunnel or basement) is left alone: the camera follows it down there. Returns whether it moved.
+ */
+export function keepAbove(c: THREE.Camera, groundAt: PlaceOptions['groundAt'], look: { x: number; y: number; z: number }): boolean {
+  if (!groundAt || look.y < groundAt(look.x, look.z)) return false;
+  const min = groundAt(c.position.x, c.position.z, c.position.y) + CAMERA_CLEARANCE;
+  if (c.position.y >= min) return false;
+  c.position.y = min;
+  c.lookAt(look.x, look.y, look.z);
+  return true;
 }
 
 const tiltQ = new THREE.Quaternion();
@@ -55,6 +73,7 @@ export function placeCamera(c: THREE.PerspectiveCamera, view: CameraView, st: Or
   if (view === 'orbit') {
     c.position.set(st.tg.x + st.rad * Math.sin(st.ph) * Math.sin(st.th), st.tg.y + st.rad * Math.cos(st.ph), st.tg.z + st.rad * Math.sin(st.ph) * Math.cos(st.th));
     c.lookAt(st.tg);
+    keepAbove(c, o.groundAt, st.tg); // a hill between the target and the camera: over it, not inside it
   } else if (view === 'top') {
     const a = (o.calRotDeg * Math.PI) / 180;
     c.up.set(Math.sin(a), 0, -Math.cos(a)); // straight down, true north up
@@ -71,6 +90,7 @@ export function placeCamera(c: THREE.PerspectiveCamera, view: CameraView, st: Or
     const want = new THREE.Vector3(f.p.x + Math.sin(yaw) * 6, f.p.y + 2.5, f.p.z + Math.cos(yaw) * 6);
     c.position.lerp(want, 1 - Math.exp(-dt * 5));
     c.lookAt(f.p.x, f.p.y + 0.5, f.p.z);
+    keepAbove(c, o.groundAt, { x: f.p.x, y: f.p.y + 0.5, z: f.p.z }); // behind the drone may be a slope
   }
 }
 

@@ -223,6 +223,9 @@ export class SceneService {
     return { followingReplay: this.followingReplay(), flight: this.race.enabled() || this.layout.panels().welcome.visible ? null : this.flights.active, simPosition: this.sim.state.p, replayPosition: this.playback.pose.p };
   }
 
+  /** The drone's own ground (scene units, the collider is scaled with the model): cameras stay above it. */
+  private readonly groundAt = (x: number, z: number, y?: number): number => this.host?.site.collider.groundAt(x, z, y) ?? 0;
+
   private placeOptions(): PlaceOptions {
     const f = this.flights.active;
     return {
@@ -230,6 +233,7 @@ export class SceneService {
       calRotDeg: this.calibration.rot(),
       // the sim drone and replays with attitude data use the camera tilt; GPS-only replays do not
       fpvTiltDeg: !this.followingReplay() || !!(f && (f.tel || f.att)) ? this.view.fpvTiltDeg() : 0,
+      groundAt: this.groundAt,
     };
   }
 
