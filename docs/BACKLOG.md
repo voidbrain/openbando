@@ -252,7 +252,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205); report 2026-10-29 |
+| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205) (CI green on its last run; the first run caught the covered 3D vertex box); report 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Browser · 2026-10-29 · `tool-palette`, vegetation, courtyard and indoor-placement e2e passed locally; screenshot of the 2D editor reviewed by the agent; live-site check · Pending |
 | Reviewed | 2026-10-29 |
@@ -276,7 +276,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205); report 2026-10-29 |
+| PR / evidence | [#205](https://github.com/voidbrain/openbando/pull/205) (CI green); report 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Browser · 2026-10-29 · `pick-menu.e2e.ts` passed locally; live-site check · Pending |
 | Reviewed | 2026-10-29 |
@@ -533,21 +533,21 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-024 | 🔹 P3 | Open | Take-off pad indoors, on an upper floor or on a flat roof |
+| 🟡 | F-024 | 🔹 P3 | Implemented | Take-off pad indoors, on an upper floor or on a flat roof |
 
-💻 **→ Human action required: No**<br />Implement after F-021: a take-off height for the pad (ground, a floor of the building under it, or its flat roof), with the drone starting there.
+🧑 **→ Human action required: Yes**<br />On the live site after merge: put the pad inside a building with a flat roof, choose "stands on: roof" (or an upper floor), Fly, and take off from there.
 
-**Next action / closure evidence:** Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof.
+**Next action / closure evidence:** Restored 2026-10-30: this record was set Implemented in #225 and put back to Open by a later backlog conflict resolution (the agent's merge helper; fixed). Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof. Done 2026-10-30 ([#225](https://github.com/voidbrain/openbando/pull/225), every check green): `SiteSpec.takeoffOn` (`{ building, level }`, absent = ground, older bandos unchanged); `core/takeoff-place.ts`: `standingLevels` (upper floors, a flat roof; none for open shells or deep ruins) is the one source for the inspector's "stands on" menu, `takeoffHeight` and the model's standing surfaces; the collider's `groundAt` returns a floor or flat roof under the drone, so it rests, takes off and lands there; a roof stands `ROOF_CLEARANCE` (0.15 m, the collider margin) above its box, or every move from the pad would be a collision; the pad and the start marker are drawn at that height and the simulator starts there; in the 2D plan the take-off pad is now drawn over the buildings (it could not be picked inside one). Covered by `takeoff-place.spec.ts` (choices and heights, a vanished floor falls back to the ground, old specs, a drone resting on a roof stays clear of it and takes off) and `takeoff-pad.e2e.ts` (the menu offers ground / floor L1 / roof, the export keeps it). Not done: holes in floors (a stairwell) still count as floor; a drone flying up from below still passes through upper slabs (they are not solid); dragging the pad in 3D (F-035, since done in [#231](https://github.com/voidbrain/openbando/pull/231)).
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#225](https://github.com/voidbrain/openbando/pull/225) (all CI jobs green, CodeQL included); request 2026-10-29 |
+| PR / evidence | [#225](https://github.com/voidbrain/openbando/pull/225); request 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Not implemented |
-| Reviewed | 2026-10-29 |
+| Verification | Unit/browser · 2026-10-30 · `takeoff-place.spec.ts` and `takeoff-pad.e2e.ts` passed locally; [#225 CI](https://github.com/voidbrain/openbando/actions/runs/40977633280) passed; flying from a roof on the live site · Pending |
+| Reviewed | 2026-10-30 |
 
 </details>
 
@@ -725,11 +725,11 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-033 | 🔶 P2 | Open | Full impact map: chains, content, couplings, outside the repository, as a readable page |
+| 🟡 | F-033 | 🔶 P2 | Implemented | Full impact map: chains, content, couplings, outside the repository, as a readable page |
 
-💻 **→ Human action required: No**<br />Next steps, in order: (1) harness 1.14.0 (template): the map page gains "Content dependencies", "Value couplings" and "Outside the repository" sections from `.harness.json` (`inputs` on rows, `couplings`, `outside`), and `check:freshness` warns when a branch changes one side of a coupling; (2) reconcile here to 1.12.0, 1.13.0 and 1.14.0: every row with an `id` and its `after` chains (blocks → catalogue → examples; tour → guide pages; UI → clips → guide pages; UI → Welcome films; `.harness.json` → map page), the theme-colour row chained to every visual output and the art, a `package-lock.json` row (renderer upgrades → recordings), each recording's inputs read from its script (Chiari e Forti → Welcome film 1 and the tour's clips; Bando Villetta and the demo flight → the flight clips); (3) list the value couplings (mascot timing ↔ the three Welcome films, `DEMO_OFFSET` ↔ the demo video, tour waits ↔ animation lengths, others found) and give each one source or a relation test, one record each; (4) the outside list: library upgrades, CI browser and GPU, OSM / Overpass, terrain tiles, Nominatim, AI models, each with what it affects and how it is noticed.
+🧑 **→ Human action required: Yes**<br />Read `docs/agents/impact-map.md` and say what is missing or wrong: it is meant to list everything that follows a change.
 
-**Next action / closure evidence:** Requested 2026-10-29: the user asked which dependencies a file trigger misses (a mascot animation synced with the Welcome films, a film that records an example bando, a theme colour that changes everything visual) and asked for a readable list of content dependencies and value couplings, plus what lies outside the repository if useful to people. Template rules already released: 1.12.0 (chains, the map page, plans become records) and 1.13.0 (inputs, wide-reach settings, couplings, audits look outside). Recorded here at once because a plan given in the conversation is otherwise forgotten (BACKLOG-RULES).
+**Next action / closure evidence:** Restored 2026-10-30: [#224](https://github.com/voidbrain/openbando/pull/224) set this record Implemented, and a later backlog conflict resolution put the old version back (the agent's merge helper kept main's record; fixed to merge record by record). Requested 2026-10-29: the user asked which dependencies a file trigger misses (a mascot animation synced with the Welcome films, a film that records an example bando, a theme colour that changes everything visual) and asked for a readable list of content dependencies and value couplings, plus what lies outside the repository if useful to people. Template rules already released: 1.12.0 (chains, the map page, plans become records) and 1.13.0 (inputs, wide-reach settings, couplings, audits look outside). Recorded here at once because a plan given in the conversation is otherwise forgotten (BACKLOG-RULES). Done 2026-10-30 (this PR, harness 1.15.0): 17 rows with ids, inputs and chains (block → catalogue → examples; Chiari e Forti, Bando Villetta and the demo flight → clips → guide pages, films; theme → art, design system, clips, films; library upgrades → clips, films), 6 value couplings (film length, `DEMO_OFFSET`, theme tokens, fence materials, roof kinds, structure kinds), 8 outside sources, links to the element map, the guide and the design system. A dry run gives the user's examples: a block → catalogue, examples; Chiari e Forti → clips, guide, films; `styles.scss` → theme, art, design system, clips, guide, films and the token coupling; the tour service → the film-length and demo-offset couplings. The two couplings nothing keeps equal have their own records (F-036, F-037).
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -738,8 +738,8 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 |---|---|
 | PR / evidence | [#224](https://github.com/voidbrain/openbando/pull/224) (steps 2–4; all CI jobs green after the CodeQL fix of 1.15.1); template [#16](https://github.com/voidbrain/project-harness/pull/16), [#18](https://github.com/voidbrain/project-harness/pull/18), [#20](https://github.com/voidbrain/project-harness/pull/20), [#22](https://github.com/voidbrain/project-harness/pull/22), [#24](https://github.com/voidbrain/project-harness/pull/24); request 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Not implemented |
-| Reviewed | 2026-10-29 |
+| Verification | Script · 2026-10-30 · page generated (17 rows, 6 couplings, 8 outside); chains and couplings dry-run on four changes; user's reading · Pending |
+| Reviewed | 2026-10-30 |
 
 </details>
 
