@@ -147,7 +147,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 |:---:|---|---|---|---|
 | 🟡 | B-039 | 🔶 P2 | Implemented | Opening a bando during the Welcome showcase left its flight and video playing |
 
-🧑 **→ Human action required: Yes**<br />Open a bando while Welcome plays, on the live site after this fix merges.
+🧑 **→ Human action required: Yes**<br />Open a bando while Welcome plays, on the live site (since #253).
 
 | | |
 |---|---|
@@ -162,7 +162,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR; report 2026-10-30 |
+| PR / evidence | [#253](https://github.com/voidbrain/openbando/pull/253); report 2026-10-30 |
 | Opened | 2026-10-30 |
 | Verification | Browser · 2026-10-30 · `showcase.e2e.ts` (all 6, the new case included), `new-bando.e2e.ts`, `takeoff-pad.e2e.ts` passed locally; the new case fails without the fix |
 | Reviewed | 2026-10-30 |
