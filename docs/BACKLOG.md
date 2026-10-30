@@ -141,51 +141,21 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
-### B-039
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-039 | 🔶 P2 | Implemented | Opening a bando during the Welcome showcase left its flight and video playing |
-
-🧑 **→ Human action required: Yes**<br />Open a bando while Welcome plays, on the live site (since #253).
-
-| | |
-|---|---|
-| **Issue** | With Welcome playing, opening Views, then the Bandos, then an example kept the showcase's Villetta flight and video playing. |
-| **Reproduce** | Live site: start Welcome; during the replay open Views (menu button), Bandos, and open an example (or Fly, Edit, New bando). |
-| **Check** | Welcome's caption bar goes, the video and the replay stop, and you stay on the bando you chose. |
-
-**Next action / closure evidence:** Reported 2026-10-30 by the owner. Only Welcome's own buttons ended the showcase (`leaveForNavigation`). Now every Bandos action that opens or switches a bando (its title, Fly, Edit, Open a fresh copy, New bando) ends a running guide first when the click is the pilot's (`isTrusted`; the guide's own clicks are synthetic), so the replay and video stop and the pilot stays where they went. `showcase.e2e.ts` reproduces the report (fails without the fix, passes with it).
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#253](https://github.com/voidbrain/openbando/pull/253); report 2026-10-30 |
-| Opened | 2026-10-30 |
-| Verification | Browser · 2026-10-30 · `showcase.e2e.ts` (all 6, the new case included), `new-bando.e2e.ts`, `takeoff-pad.e2e.ts` passed locally; the new case fails without the fix |
-| Reviewed | 2026-10-30 |
-
-</details>
-
----
-
 ### B-040
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🟡 | B-040 | 🔶 P2 | Implemented | Dragging the timeline sometimes does not move the video |
 
-🧑 **→ Human action required: Yes**<br />Drag the timeline again on the live site (since #257) and say whether the video still sticks.
+🧑 **→ Human action required: Yes**<br />After Auto-sync, click the timeline without pressing Play, in Safari on the live site (since #260).
 
 | | |
 |---|---|
-| **Issue** | After timeline drags, paused, the video kept its old frame until a jump to the start and Play. |
-| **Reproduce** | Live site, Villetta demo flight with its video, paused: drag the Timeline chart back and forth several times, fast, in the middle of the flight. |
-| **Check** | The video frame follows every drag; if it ever sticks, it catches up within about a second by itself. |
+| **Issue** | After Auto-sync, timeline clicks before any Play left the video's picture where it was (the owner, 2026-10-30); fast drags could too. |
+| **Reproduce** | Live site, Safari: load the Villetta demo flight and its video, Auto-sync, then click the Timeline chart in a few places without pressing Play; also drag it fast. |
+| **Check** | The video's picture moves to every place you click or drag to, from the first click. |
 
-**Next action / closure evidence:** Candidate fix 2026-10-30 ([#257](https://github.com/voidbrain/openbando/pull/257)). The owner's details: the Timeline chart, paused, the old frame stays, mid-video; only a seek to the start and Play unstuck it. Not reproduced in Chromium or WebKit headless (the video followed every drag within 0.1 s). Likely cause: the browser dropped a seek after fast drags; the video then reported the target time while showing the old frame, and both guards (`currentTime` already at the target in the timeline seek; the target unchanged in the frame sync) skipped asking again. Now every app seek goes through `seekVideo`, pending until `seeked`; while paused a seek pending for over a second is issued again, and the timeline seek no longer trusts `currentTime` while one is pending. `services.spec.ts` fakes a stalled seek (fails without the fix); `timeline-video.e2e.ts` checks drags keep the video in step with the real demo files. History: Reported 2026-10-30 by the owner, replaying the Villetta demo flight with its video (Auto-sync offset −0.69 s). A related case was fixed before: a timeline click undone while the video played (the seek-with-a-playing-video case in `services.spec.ts`). To check: a drag (many seeks in a row) while playing and while paused, at the speeds used (0.25×), and a drag that ends where the video is still seeking.
+**Next action / closure evidence:** 2026-10-30, the owner (after the first fix): it fails when, after Auto-sync, the timeline is clicked without pressing Play first. In Chromium and WebKit headless the video's time follows those clicks (within 0.04 s), so the time is right and the picture is not: Safari does not redraw a video that never played after a paused seek. Second fix ([#260](https://github.com/voidbrain/openbando/pull/260)): a newly loaded video is started once, muted, and paused again where the replay is (`VideoService.prime`; invisible, the replay reads the video's clock only while playing); a unit test checks it starts once per video and ends paused at the replay's time; the video e2e (timeline drags, the showcase, the Fly checklist) pass. History: Candidate fix 2026-10-30 ([#257](https://github.com/voidbrain/openbando/pull/257)). The owner's details: the Timeline chart, paused, the old frame stays, mid-video; only a seek to the start and Play unstuck it. Not reproduced in Chromium or WebKit headless (the video followed every drag within 0.1 s). Likely cause: the browser dropped a seek after fast drags; the video then reported the target time while showing the old frame, and both guards (`currentTime` already at the target in the timeline seek; the target unchanged in the frame sync) skipped asking again. Now every app seek goes through `seekVideo`, pending until `seeked`; while paused a seek pending for over a second is issued again, and the timeline seek no longer trusts `currentTime` while one is pending. `services.spec.ts` fakes a stalled seek (fails without the fix); `timeline-video.e2e.ts` checks drags keep the video in step with the real demo files. History: Reported 2026-10-30 by the owner, replaying the Villetta demo flight with its video (Auto-sync offset −0.69 s). A related case was fixed before: a timeline click undone while the video played (the seek-with-a-playing-video case in `services.spec.ts`). To check: a drag (many seeks in a row) while playing and while paused, at the speeds used (0.25×), and a drag that ends where the video is still seeking.
 
 <details>
 <summary>PR history, dates and verification</summary>
