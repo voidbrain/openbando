@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `bab7265` (merged #230), with every CI job of #162–#230 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `59ac964` (merged #232), with every CI job of #162–#233 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -352,54 +352,6 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 | Opened | 2026-10-29 |
 | Verification | Unit · 2026-10-29 · slope case passed (fails on the previous build); 3D screenshot reviewed; live-site look · Pending |
 | Reviewed | 2026-10-29 |
-
-</details>
-
----
-
-### B-035
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-035 | 🔶 P2 | Implemented | Two buildings flush against each other flicker where their walls meet |
-
-💻 **→ Human action required: No**<br />Close when this PR merges on a green CI; a look on the live site (two buildings snapped flush, seen through a window) is welcome but not required.
-
-**Next action / closure evidence:** Found 2026-10-29 (user screenshot of Bardwell House: the dark wall flickering behind the windows). Each side wall is a 0.5 m box centred on the building's edge, so two buildings snapped flush put two identical boxes in one place, and their faces fight in the depth buffer (z-fighting), visible through windows and doors. Bardwell House is fixed in the example (release 4: the wing has no wall on the shared side). General plan: when the site is built, find sides of two buildings that lie on the same line with opposite faces and overlapping spans, and build that stretch once (or inset one of them), keeping both colliders correct; cover it with a model test (two flush buildings: no coincident wall faces) and a screenshot. Done 2026-10-30 (this PR): `core/flush-walls.ts` `flushWalls` finds wall edges of two buildings on one line (site coordinates, any rotation, rectangles and shaped buildings, more than 10 cm shared); the later building's wall there is built `FLUSH_INSET` (3 cm) thinner on each face, so it sits inside the other and only one face shows. Colliders keep (almost) the same boxes. `flush-walls.spec.ts` covers the pairs; `site-model.spec.ts` checks two flush buildings draw no two wall boxes in one place (it fails with the inset at 0). Not done: a screenshot test (the WebGL e2e cannot see depth fighting reliably).
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | This PR; report 2026-10-29; Bardwell House worked around earlier (release 4 of the example) |
-| Opened | 2026-10-29 |
-| Verification | Unit · 2026-10-30 · flush-walls and site-model tests passed (the model test fails without the fix) |
-| Reviewed | 2026-10-29 |
-
-</details>
-
----
-
-### B-036
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-036 | 🔶 P2 | Implemented | Road curves are angular: a sharp corner at every map point |
-
-💻 **→ Human action required: No**<br />Close when this PR merges on a green CI; a look at a curved road on the live site (plan and 3D) is welcome.
-
-**Next action / closure evidence:** Reported 2026-10-29 ("roads curves are not very good", with a screenshot). B-033 fixed the wedge-shaped gaps at the bends; the road still turns in straight pieces with a corner at each point of the map's line. The rounding has to be applied where the ground under the road is levelled too (`levelRoad`), or the road and the levelled strip part at the corners. Split from B-033 on 2026-10-30 at the user's request. Done 2026-10-30 (this PR): `roadLine` (core/layers.ts) rounds every corner with a curve tangent to both segments, `roadRadius` wide (1.5 × the width, at least 3 m), never using more than half of either segment; the 3D strip, the levelled ground and the plan (road and its highlight) all draw it, so road and levelled strip stay together at the bends. `layers.spec.ts` checks the curve (tangent points, no step over 30°), that straight and dense lines stay, and that the ground is levelled along the curve; a local screenshot of the plan showed the rounded corners (not a committed test).
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | This PR; report 2026-10-29; B-033 ([#215](https://github.com/voidbrain/openbando/pull/215)) fixed the gaps only |
-| Opened | 2026-10-30 |
-| Verification | Unit · 2026-10-30 · road curve tests passed; Visual · 2026-10-30 · local plan screenshot, corners rounded |
-| Reviewed | 2026-10-30 |
 
 </details>
 
@@ -835,30 +787,6 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 | PR / evidence | Ruleset 25780506 updated 2026-10-30; this PR (AGENTS); found on [#221](https://github.com/voidbrain/openbando/pull/221) |
 | Opened | 2026-10-30 |
 | Verification | Settings · 2026-10-30 · the ruleset lists CodeQL among the required checks (API); on a PR · Pending |
-| Reviewed | 2026-10-30 |
-
-</details>
-
----
-
-### F-035
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-035 | 🔹 P3 | Implemented | Drag the take-off pad in the editor's 3D view |
-
-💻 **→ Human action required: No**<br />Close when this PR merges on a green CI (the e2e drags the pad in 3D); a look on the live site with a real mouse is welcome.
-
-**Next action / closure evidence:** Split from F-021 on 2026-10-30 at the user's request: F-021 moves the pad in the 2D plan (select, drag, right-click menus) but not in the 3D view. Done 2026-10-30 (this PR): the take-off pad and its start marker are pickable in the 3D view (`{ kind: 'pad' }`, the last pad only); a click selects it (the inspector shows the pad), and the selected pad has one move handle that drags it through the plan's `pad` gesture (`moveTakeoff`, one undo step). `e2e/takeoff-pad.e2e.ts` drags it in 3D and checks the export; `site-pick.spec.ts` checks that only the take-off pad is picked.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | This PR; F-021 ([#210](https://github.com/voidbrain/openbando/pull/210)) did the 2D plan only |
-| Opened | 2026-10-30 |
-| Verification | Unit · 2026-10-30 · pad pick test passed; Browser · 2026-10-30 · `takeoff-pad.e2e.ts` (3 tests, the 3D drag included) passed locally |
 | Reviewed | 2026-10-30 |
 
 </details>
