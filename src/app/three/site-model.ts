@@ -13,6 +13,7 @@ import { satelliteTexture } from './satellite-ground';
 import { type BuildingSpec, type LevelSpec, type RoadSpec, type SiteSpec, type SurfaceSpec, type TreeSpec, type UndergroundSpec, type WallSpec, createRandom, fixturesInSite } from '../core/site-spec';
 import { SiteCollider, type SolidBox, type StandingSurface, type TreeCylinder } from '../core/sim/collider';
 import { standingLevels, takeoffHeight } from '../core/takeoff-place';
+import { FLUSH_INSET, flushWalls } from '../core/flush-walls';
 import { siteGround, siteOutline, type SiteGround } from '../core/site-ground';
 import { heightColor, heightRange, meshHeightAt, type HeightGrid } from '../core/terrain';
 
@@ -101,6 +102,8 @@ interface Ctx {
   ruin: { level: number; li: number; open: boolean; height: number; id: string } | null;
   /** The building being built has lost its upper floor slabs (a deep ruin, or an open shell). */
   noSlabs: boolean;
+  /** Walls of the building being built that another building's wall coincides with (`side` or `edge3`): built thinner (B-035). */
+  thin: ReadonlySet<string>;
   /** Centre of the building currently being built, in site coordinates. */
   at: [number, number];
   /** Rotation of that building (degrees about Y), baked conservatively into the collider AABBs. */
@@ -198,7 +201,7 @@ function roofSolid(ctx: Ctx, x: number, z: number, w: number, d: number, y0: num
 function buildSide(ctx: Ctx, b: BuildingSpec, l: LevelSpec, side: 'n' | 's' | 'e' | 'w', target: THREE.Object3D): void {
   const runLen = side === 'n' || side === 's' ? b.length : b.width; // n and s run along the length, e and w along the width
   const acrossPos = side === 'w' ? -b.length / 2 : side === 'e' ? b.length / 2 : side === 'n' ? -b.width / 2 : b.width / 2;
-  const th = 0.5;
+  const th = ctx.thin.has(side) ? 0.5 - 2 * FLUSH_INSET : 0.5;
   // a ruin open to the sky: this wall stands up to its broken line (its own ruin level if it has one)
   const standing = standingOf(ctx, runLen, b.ruinWalls?.[side] ?? ctx.ruin?.level ?? 0, side);
   const wall = (from: number, len: number, y: number, hh: number): void => {
@@ -225,9 +228,9 @@ function buildSide(ctx: Ctx, b: BuildingSpec, l: LevelSpec, side: 'n' | 's' | 'e
 
 /** Walls of a shaped building: one wall per footprint edge, openings (door / window centres) punched out of them. */
 function buildPolyWalls(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object3D): void {
-  const th = 0.5;
   edgesOf(b.footprint ?? []).forEach((e, k) => {
     if (l.wallEdges?.[k] === false) return;
+    const th = ctx.thin.has(`edge${k}`) ? 0.5 - 2 * FLUSH_INSET : 0.5;
     const standing = standingOf(ctx, e.to - e.from, ctx.ruin?.level ?? 0, `edge${k}`);
     const ops = (l.wallOpenings ?? [])
       .filter((o) => (e.axis === 'x' ? Math.abs(o.z - e.at) < 0.08 && o.x >= e.from - 0.08 && o.x <= e.to + 0.08 : Math.abs(o.x - e.at) < 0.08 && o.z >= e.from - 0.08 && o.z <= e.to + 0.08))
@@ -949,6 +952,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
   const ctx: Ctx = {
     ruin: null,
     noSlabs: false,
+    thin: new Set(),
     at: [0, 0],
     rot: 0,
     solids,
@@ -1080,6 +1084,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
 
   // ---- buildings (and the floors and flat roofs a drone can stand on: one source with the take-off menu)
   const standing: StandingSurface[] = [];
+  const flush = flushWalls(spec.buildings);
   for (const b of spec.buildings) {
     const inner = new THREE.Group();
     inner.userData['pick'] = { kind: 'building', id: b.id }; // what a click on it in the 3D editor selects
@@ -1113,7 +1118,9 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
         buildGreenhouse(ctx, b, inner, localRoof);
         break;
       }
+      ctx.thin = new Set([...flush].filter((k) => k.startsWith(`${b.id}:`)).map((k) => k.slice(b.id.length + 1)));
       buildWalls(ctx, b, l, inner);
+      ctx.thin = new Set();
       if (!open) buildRoof(ctx, b, l, localRoof); // a deep ruin or an open shell has lost its roof
     }
     const last = b.levels[b.levels.length - 1];

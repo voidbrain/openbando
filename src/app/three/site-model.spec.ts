@@ -543,3 +543,25 @@ describe('Villetta measured frame and ladder', () => {
     for (const p of cage) if (p.prim === 'box') expect(p.at.y - p.size.y / 2).toBeGreaterThanOrEqual(1.98);
   });
 });
+
+describe('buildings snapped flush (B-035)', () => {
+  it('draws no two wall boxes in the same place', () => {
+    const s = emptySpec();
+    s.pads = [];
+    const level = { baseY: 0, height: 3, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'flat' as const, roofRise: 0 };
+    s.buildings = [
+      { id: 'house', name: 'House', pos: { x: 0, z: 0 }, rotDeg: 20, length: 10, width: 8, levels: [level] },
+      { id: 'shed', name: 'Shed', pos: { x: 8 * Math.cos(Math.PI / 9), z: 8 * Math.sin(Math.PI / 9) }, rotDeg: 20, length: 6, width: 8, levels: [level] },
+    ];
+    const model = buildSiteFromSpec(s);
+    model.group.updateMatrixWorld(true);
+    const boxes: string[] = [];
+    model.group.traverse((o) => {
+      if (!(o instanceof THREE.Mesh) || !(o.geometry instanceof THREE.BoxGeometry)) return;
+      const b = new THREE.Box3().setFromObject(o);
+      boxes.push([b.min.x, b.min.y, b.min.z, b.max.x, b.max.y, b.max.z].map((v) => v.toFixed(3)).join(' '));
+    });
+    expect(boxes.length).toBeGreaterThan(8);
+    expect(new Set(boxes).size).toBe(boxes.length);
+  });
+});
