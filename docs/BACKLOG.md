@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `0798ee4` (merged #223), with every CI job of #162–#223 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `d5f7708` (merged #227), with every CI job of #162–#227 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -411,16 +411,16 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 |:---:|---|---|---|---|
 | 🔴 | B-037 | 🔶 P2 | Open | The camera can go below the terrain |
 
-💻 **→ Human action required: No**<br />Keep the orbit (and editor) camera above the ground under it, terrain included, with a test; check the other cameras (chase, top) the same way.
+💻 **→ Human action required: No**<br />Rework the fix: lift a camera only above the ground the drone itself uses (`SiteCollider.groundAt` with the camera's height, which knows tunnels and basements), with a small clearance (about 0.3 m), and not in the editor's indoor and basement views; then rerun `editor-regressions.e2e.ts` (the close-up case) and the camera-rig tests.
 
-**Next action / closure evidence:** Reported 2026-10-30: the camera does not know the terrain's height, so it can be moved below the ground. To find: which cameras (main orbit, editor 3D view) clamp to a flat ground at y = 0 instead of the height grid, then keep them a little above `groundAt` under them.
+**Next action / closure evidence:** Reported 2026-10-30. Cause: the orbit keeps its angle above the point it looks at, not above the ground under the camera, so a hill between them (or a pan over a hill) puts the camera inside it; the chase camera sits 2.5 m over and 6 m behind the drone, inside a slope behind; the editor's 3D view has the same orbit limits. A first fix (PR #228, 2026-10-30) lifted every orbit, chase and editor camera to 1.5 m above the terrain surface under it: CI failed the close-up case in `editor-regressions.e2e.ts` (two clicks 0.17 m apart instead of under 0.1 m: the zoomed-in editor camera was lifted), and the same rule would wrongly lift cameras in basements (the indoor view of −1 is below ground on purpose) and in tunnels. The fix was taken out of #228; the plan above replaces it.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Report 2026-10-30 |
+| PR / evidence | Report 2026-10-30; first fix withdrawn from [#228](https://github.com/voidbrain/openbando/pull/228) after CI (race-browser, editor-regressions close-up) |
 | Opened | 2026-10-30 |
 | Verification | Not implemented |
 | Reviewed | 2026-10-30 |
@@ -616,7 +616,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Field | Value |
 |---|---|
-| PR / evidence | Request 2026-10-29 |
+| PR / evidence | [#225](https://github.com/voidbrain/openbando/pull/225) (all CI jobs green, CodeQL included); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Not implemented |
 | Reviewed | 2026-10-29 |
@@ -808,7 +808,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Field | Value |
 |---|---|
-| PR / evidence | Request 2026-10-29; template [#16](https://github.com/voidbrain/project-harness/pull/16) (1.12.0), [#18](https://github.com/voidbrain/project-harness/pull/18) (1.13.0) |
+| PR / evidence | [#224](https://github.com/voidbrain/openbando/pull/224) (steps 2–4; all CI jobs green after the CodeQL fix of 1.15.1); template [#16](https://github.com/voidbrain/project-harness/pull/16), [#18](https://github.com/voidbrain/project-harness/pull/18), [#20](https://github.com/voidbrain/project-harness/pull/20), [#22](https://github.com/voidbrain/project-harness/pull/22), [#24](https://github.com/voidbrain/project-harness/pull/24); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Not implemented |
 | Reviewed | 2026-10-29 |
@@ -941,20 +941,20 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-038 | 🔹 P3 | Open | Code coverage table, per folder, with a warning when it drops |
+| 🟡 | F-038 | 🔹 P3 | Implemented | Code coverage table, per folder, with a warning when it drops |
 
 💻 **→ Human action required: No**<br />Next steps, in order: (1) harness template release (decided 2026-10-30: template + OpenBando): a copied tool reads the standard coverage summary and writes `docs/agents/coverage.md` (per folder: lines, statements, branches, functions, and the files no test runs), CI prints the current table and warns (never fails) when a folder drops against the committed baseline; the Angular stack adds `@vitest/coverage-v8` and `npm run coverage`; (2) reconcile here: list the folders (`core/`, `three/`, `services/`, `state/`, `ui/`), commit the first baseline, link the page from the impact map (`pages`); (3) coverage of the browser tests (Playwright): F-039, since much of `ui/` and the 3D views is tested there and unit coverage shows it low.
 
-**Next action / closure evidence:** Requested 2026-10-30. Coverage is evidence of what the tests run, not that behaviour is verified (BACKLOG-RULES); branch coverage says the most; no fixed minimum (a number to hit invites tests written for it): a table to find untested parts, and a warning when a folder drops. Recorded at once (plans become records).
+**Next action / closure evidence:** Requested 2026-10-30. Coverage is evidence of what the tests run, not that behaviour is verified (BACKLOG-RULES); branch coverage says the most; no fixed minimum (a number to hit invites tests written for it): a table to find untested parts, and a warning when a folder drops. Recorded at once (plans become records). Done 2026-10-30: steps 1–2 (template [#26](https://github.com/voidbrain/project-harness/pull/26), here [#227](https://github.com/voidbrain/openbando/pull/227), CI green): `docs/agents/coverage.md` and its baseline, CI warnings on drops; step 3 is F-039.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Request 2026-10-30 |
+| PR / evidence | [#227](https://github.com/voidbrain/openbando/pull/227); [#226](https://github.com/voidbrain/openbando/pull/226) (plan); request 2026-10-30 |
 | Opened | 2026-10-30 |
-| Verification | Not implemented |
+| Verification | Script · 2026-10-30 · first table written (all 53.8 % of lines; ui 0.8 %, browser tests not counted); CI step runs on every PR |
 | Reviewed | 2026-10-30 |
 
 </details>
@@ -1003,8 +1003,8 @@ Harness template 1.10.0 (2026-10-29, this PR; template [#12](https://github.com/
 
 Harness template 1.11.0 (2026-10-29, [#216](https://github.com/voidbrain/openbando/pull/216), CI green; template [#14](https://github.com/voidbrain/project-harness/pull/14)): the impact map (F-028); AGENTS gains "What follows a change", BACKLOG-RULES points to the map; `check-freshness` copied; `.harness.json` on 1.11.0 with nine rows. Harness 1.10.0 ([#212](https://github.com/voidbrain/openbando/pull/212)): CI green.
 
-Harness templates 1.12.0 – 1.15.1 (2026-10-30, this PR; 1.15.1 escapes backslashes in the impact map's cells, found by CodeQL on this PR): `tools/impact-map.mjs` copied and `check-freshness` updated; AGENTS ("What follows a change", the plans-become-records bullet, audits look outside) and BACKLOG-RULES reconciled; the CI step and `npm run impact-map`; `.harness.json` on 1.15.1 with the full map (F-033).
+Harness templates 1.12.0 – 1.15.1 (2026-10-30, [#224](https://github.com/voidbrain/openbando/pull/224), CI green; 1.15.1 escapes backslashes in the impact map's cells, found by CodeQL on this PR): `tools/impact-map.mjs` copied and `check-freshness` updated; AGENTS ("What follows a change", the plans-become-records bullet, audits look outside) and BACKLOG-RULES reconciled; the CI step and `npm run impact-map`; `.harness.json` on 1.15.1 with the full map (F-033).
 
-Harness template 1.16.0 (2026-10-30, this PR; template [#26](https://github.com/voidbrain/project-harness/pull/26)): the code coverage table (F-038 steps 1–2). `@vitest/coverage-v8` added, `npm run coverage` (every app file included, so untested files count at 0 %), CI runs the tests with coverage and `coverage-table --check` (warnings only); `docs/agents/coverage.md` and its baseline committed: core 93.8 % of lines, state 90.3 %, three 69.3 %, services 39.8 %, ui 0.8 % (its parts are tested in the browser, not counted yet), all 53.8 %; the page is linked from the impact map and has its impact row. `.harness.json` on 1.16.0.
+Harness template 1.16.0 (2026-10-30, [#227](https://github.com/voidbrain/openbando/pull/227), CI green; template [#26](https://github.com/voidbrain/project-harness/pull/26)): the code coverage table (F-038 steps 1–2). `@vitest/coverage-v8` added, `npm run coverage` (every app file included, so untested files count at 0 %), CI runs the tests with coverage and `coverage-table --check` (warnings only); `docs/agents/coverage.md` and its baseline committed: core 93.8 % of lines, state 90.3 %, three 69.3 %, services 39.8 %, ui 0.8 % (its parts are tested in the browser, not counted yet), all 53.8 %; the page is linked from the impact map and has its impact row. `.harness.json` on 1.16.0.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
