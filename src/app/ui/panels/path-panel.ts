@@ -7,6 +7,7 @@ import { createPathView, dragPathView, drawFlightPath, resetPathView, zoomPathVi
 import { FlightService } from '../../services/flight.service';
 import { PlaybackService } from '../../services/playback.service';
 import { AlignmentPositionService } from '../../services/alignment-position.service';
+import { AutoAlignService } from '../../services/auto-align.service';
 import { SceneService } from '../../services/scene.service';
 import { CalibrationStore } from '../../state/calibration.store';
 import { CanvasWidget } from '../panel/canvas-widget';
@@ -35,6 +36,20 @@ import { Panel } from '../panel/panel';
             } @else {
               <label>start x m <input class="mini" type="number" step="0.5" [value]="startX()" (change)="typeStartX($event)" title="Where the flight starts in the bando, metres east of its centre" /></label>
               <label>z m <input class="mini" type="number" step="0.5" [value]="startZ()" (change)="typeStartZ($event)" title="Where the flight starts in the bando, metres south of its centre" /></label>
+            }
+          </div>
+          <div class="row align">
+            @if (align.progress(); as pr) {
+              <span class="dim small grow" aria-live="polite">Aligning: {{ pr.done }} / {{ pr.total }} moments</span>
+              <button class="btn mini" (click)="align.stop()">Stop</button>
+            } @else if (align.proposal(); as pp) {
+              <span class="small grow" aria-live="polite"><span>{{ pp.pins.length }} pins proposed · {{ pp.sure }} sure, {{ pp.likely }} likely, {{ pp.unsure }} left as they were</span>
+                @if (pp.throughSolid.length) { <span>· {{ pp.throughSolid.length }} through a solid: an opening missing from the model?</span> }
+                @if (!pp.visual) { <span>· no video: geometry only</span> }</span>
+              <button class="btn mini primary" (click)="align.keep()">Keep</button>
+              <button class="btn mini" (click)="align.discard()">Discard</button>
+            } @else {
+              <button class="btn mini" (click)="align.run()" title="Align automatically: at a moment every 2 s, the shift that keeps the drone out of solids and makes the model match the video; you keep or discard the result" aria-label="Align automatically">Align automatically</button>
             }
           </div>
         }
@@ -114,6 +129,11 @@ import { Panel } from '../panel/panel';
     }
     .ico path {
       stroke: var(--text);
+    }
+    .align {
+      align-items: center;
+      gap: 6px;
+      min-height: 26px;
     }
     .start label {
       display: flex;
@@ -214,6 +234,7 @@ export class PathPanel {
   private readonly cal = inject(CalibrationStore);
   private readonly toast = inject(ToastService);
   protected readonly scene = inject(SceneService);
+  protected readonly align = inject(AutoAlignService);
   private readonly site = inject(SiteService);
   protected readonly modes: readonly { mode: PathViewMode; label: string; icon: string }[] = [
     { mode: 'top', label: 'Top view', icon: 'M5 5h14v14H5zM12 9v6M9 12h6' },

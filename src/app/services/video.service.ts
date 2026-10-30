@@ -52,6 +52,10 @@ export class VideoService {
   private readonly layout = inject(LayoutStore);
 
   private objectUrl: string | null = null;
+  /** The loaded video's address in this page (automatic alignment reads its frames with a video of its own, F-041). */
+  get url(): string | null {
+    return this.loaded() ? this.objectUrl : null;
+  }
   private fileKey = '';
   private lastPlayAttempt = 0;
   /**

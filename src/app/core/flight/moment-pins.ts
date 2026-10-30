@@ -12,6 +12,8 @@ export interface MomentPin {
   dz: number;
   /** Height offset, metres (F-040); absent in pins saved before it: 0. */
   dy?: number;
+  /** Placed by automatic alignment (F-041), not by the pilot. */
+  auto?: true;
 }
 
 /** An offset at a moment: across the ground and in height. */
@@ -53,6 +55,6 @@ export function sanitizePins(raw: unknown): MomentPin[] {
   if (!Array.isArray(raw)) return [];
   return raw
     .filter((p): p is MomentPin => !!p && typeof p === 'object' && [p.t, p.dx, p.dz].every((v) => typeof v === 'number' && Number.isFinite(v)))
-    .map((p) => ({ t: p.t, dx: Math.max(-500, Math.min(500, p.dx)), dz: Math.max(-500, Math.min(500, p.dz)), ...(typeof p.dy === 'number' && Number.isFinite(p.dy) && p.dy ? { dy: Math.max(-200, Math.min(200, p.dy)) } : {}) }))
+    .map((p) => ({ t: p.t, dx: Math.max(-500, Math.min(500, p.dx)), dz: Math.max(-500, Math.min(500, p.dz)), ...(typeof p.dy === 'number' && Number.isFinite(p.dy) && p.dy ? { dy: Math.max(-200, Math.min(200, p.dy)) } : {}), ...(p.auto === true ? { auto: true as const } : {}) }))
     .sort((a, b) => a.t - b.t);
 }
