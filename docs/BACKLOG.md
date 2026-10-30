@@ -385,20 +385,20 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | B-036 | 🔶 P2 | Open | Road curves are angular: a sharp corner at every map point |
+| 🟡 | B-036 | 🔶 P2 | Implemented | Road curves are angular: a sharp corner at every map point |
 
-💻 **→ Human action required: No**<br />Smooth the road's centre line into curves (rounded corners with a turn radius that suits the road's width), drawn and levelled the same way, with a unit test and a screenshot.
+💻 **→ Human action required: No**<br />Close when this PR merges on a green CI; a look at a curved road on the live site (plan and 3D) is welcome.
 
-**Next action / closure evidence:** Reported 2026-10-29 ("roads curves are not very good", with a screenshot). B-033 fixed the wedge-shaped gaps at the bends; the road still turns in straight pieces with a corner at each point of the map's line. The rounding has to be applied where the ground under the road is levelled too (`levelRoad`), or the road and the levelled strip part at the corners. Split from B-033 on 2026-10-30 at the user's request.
+**Next action / closure evidence:** Reported 2026-10-29 ("roads curves are not very good", with a screenshot). B-033 fixed the wedge-shaped gaps at the bends; the road still turns in straight pieces with a corner at each point of the map's line. The rounding has to be applied where the ground under the road is levelled too (`levelRoad`), or the road and the levelled strip part at the corners. Split from B-033 on 2026-10-30 at the user's request. Done 2026-10-30 (this PR): `roadLine` (core/layers.ts) rounds every corner with a curve tangent to both segments, `roadRadius` wide (1.5 × the width, at least 3 m), never using more than half of either segment; the 3D strip, the levelled ground and the plan (road and its highlight) all draw it, so road and levelled strip stay together at the bends. `layers.spec.ts` checks the curve (tangent points, no step over 30°), that straight and dense lines stay, and that the ground is levelled along the curve; a local screenshot of the plan showed the rounded corners (not a committed test).
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Report 2026-10-29; B-033 ([#215](https://github.com/voidbrain/openbando/pull/215)) fixed the gaps only |
+| PR / evidence | This PR; report 2026-10-29; B-033 ([#215](https://github.com/voidbrain/openbando/pull/215)) fixed the gaps only |
 | Opened | 2026-10-30 |
-| Verification | Not implemented |
+| Verification | Unit · 2026-10-30 · road curve tests passed; Visual · 2026-10-30 · local plan screenshot, corners rounded |
 | Reviewed | 2026-10-30 |
 
 </details>

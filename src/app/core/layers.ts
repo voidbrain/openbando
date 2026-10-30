@@ -114,6 +114,41 @@ export function padsToRoads(pads: readonly PadSpec[]): { roads: RoadSpec[]; pads
   return { roads, pads: start ? [start] : [] };
 }
 
+/** Turn radius of a road's rounded corners: one and a half times its width, at least 3 m. */
+export const roadRadius = (width: number): number => Math.max(3, 1.5 * width);
+
+const curves = new WeakMap<readonly Vec2[], { width: number; line: Vec2[] }>();
+
+/**
+ * A road's centre line with every corner rounded (B-036): the corner point is replaced by a curve tangent to both
+ * segments, `roadRadius` wide, never using more than half of either segment (dense map lines stay as they are). The
+ * 3D strip, the levelled ground and the plan all draw this line, so they meet at the bends. Memoised per point list and width.
+ */
+export function roadLine(r: Pick<RoadSpec, 'pts' | 'width'>): Vec2[] {
+  const hit = curves.get(r.pts);
+  if (hit?.width === r.width) return hit.line;
+  const pts = r.pts, out: Vec2[] = pts.length ? [pts[0]!] : [];
+  for (let i = 1; i + 1 < pts.length; i++) {
+    const a = pts[i - 1]!, b = pts[i]!, c = pts[i + 1]!;
+    const l1 = Math.hypot(b.x - a.x, b.z - a.z), l2 = Math.hypot(c.x - b.x, c.z - b.z);
+    if (l1 < 0.01 || l2 < 0.01) { out.push(b); continue; }
+    const u = { x: (b.x - a.x) / l1, z: (b.z - a.z) / l1 }, v = { x: (c.x - b.x) / l2, z: (c.z - b.z) / l2 };
+    const turn = Math.acos(clamp(u.x * v.x + u.z * v.z, -1, 1));
+    if (turn < 0.035) { out.push(b); continue; } // straight on (under 2°)
+    const t = Math.min(roadRadius(r.width) * Math.tan(Math.min(turn, 3) / 2), l1 / 2, l2 / 2);
+    const p = { x: b.x - u.x * t, z: b.z - u.z * t }, q = { x: b.x + v.x * t, z: b.z + v.z * t };
+    // a quadratic curve from p to q with the corner as its control point: tangent to both segments, about 1 m a step
+    const n = Math.max(2, Math.ceil((turn * t) / 1));
+    for (let k = 0; k <= n; k++) {
+      const s = k / n, w0 = (1 - s) * (1 - s), w1 = 2 * s * (1 - s), w2 = s * s;
+      out.push({ x: w0 * p.x + w1 * b.x + w2 * q.x, z: w0 * p.z + w1 * b.z + w2 * q.z });
+    }
+  }
+  if (pts.length > 1) out.push(pts.at(-1)!);
+  curves.set(r.pts, { width: r.width, line: out });
+  return out;
+}
+
 /** Distance from (x, z) to a polyline, and the parameter of the nearest point (segment index + fraction). */
 export function nearestOnPath(path: readonly Vec2[], x: number, z: number): { d: number; at: Vec2 } {
   let best = { d: Infinity, at: path[0]! };
@@ -167,12 +202,12 @@ export function levelRoads(g: HeightGrid, roads: readonly RoadSpec[]): void {
   const src = { ...g, h: g.h.slice() };
   const blend = 2;
   const touched = new Set<number>();
-  for (const r of live) cellsNear(g, r.pts, r.width / 2 + blend, (k, x, z) => {
+  for (const r of live) cellsNear(g, roadLine(r), r.width / 2 + blend, (k, x, z) => {
     if (touched.has(k)) return;
     touched.add(k);
     let chosen: { d: number; at: Vec2; half: number; priority: number } | null = null;
     for (const q of live) {
-      const m = nearestOnPath(q.pts, x, z), half = q.width / 2;
+      const m = nearestOnPath(roadLine(q), x, z), half = q.width / 2;
       if (m.d > half + blend) continue;
       const priority = m.d <= half ? roadPriority(q) : -1;
       if (!chosen || priority > chosen.priority || (priority === chosen.priority && m.d < chosen.d)) {

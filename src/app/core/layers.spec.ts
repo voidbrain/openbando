@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { digWater, insertPoint, stripFrames, layerShape, nearestEdge, removePoint, levelRoad, levelRoads, orderedRoads, padsToRoads, pathLength, sanitizeLayers, simplifyPath, waterLevel } from './layers';
+import { digWater, insertPoint, stripFrames, layerShape, nearestEdge, removePoint, levelRoad, levelRoads, orderedRoads, padsToRoads, pathLength, roadLine, roadRadius, nearestOnPath, sanitizeLayers, simplifyPath, waterLevel } from './layers';
 import { siteGround } from './site-ground';
 import { emptySpec, moveTakeoff, sanitizeSpec } from './site-spec';
 import { applyStroke, emptyGrid, heightAt } from './terrain';
@@ -169,5 +169,48 @@ describe('road strips turn without gaps', () => {
     expect(bend).toHaveLength(5); // 0, 5, 10 | 5, 10 along the second segment
     // a hairpin is capped, and a repeated point is skipped
     expect(Math.max(...stripFrames([{ x: 0, z: 0 }, { x: 10, z: 0 }, { x: 10, z: 0 }, { x: 0, z: 0.5 }], 5).map((f) => f.s))).toBeLessThanOrEqual(2);
+  });
+});
+
+describe('rounded road corners (B-036)', () => {
+  const corner = { pts: [{ x: 0, z: 0 }, { x: 40, z: 0 }, { x: 40, z: 40 }], width: 4, kind: 'road' as const };
+
+  it('replaces a corner with a curve tangent to both segments, the road\'s turn radius wide', () => {
+    const line = roadLine(corner);
+    expect(line[0]).toEqual({ x: 0, z: 0 });
+    expect(line.at(-1)).toEqual({ x: 40, z: 40 });
+    expect(line.length).toBeGreaterThan(5);
+    expect(line.some((p) => p.x === 40 && p.z === 0)).toBe(false); // the corner itself is cut
+    const t = roadRadius(4); // a right angle: the curve starts and ends one radius from the corner
+    const near = (x: number, z: number) => line.some((p) => Math.hypot(p.x - x, p.z - z) < 1e-9);
+    expect(near(40 - t, 0)).toBe(true);
+    expect(near(40, t)).toBe(true);
+    // no step turns by more than 30°: a curve, not a corner
+    for (let i = 1; i + 1 < line.length; i++) {
+      const a = line[i - 1]!, b = line[i]!, c = line[i + 1]!;
+      const u = Math.atan2(b.z - a.z, b.x - a.x), v = Math.atan2(c.z - b.z, c.x - b.x);
+      expect(Math.abs(v - u)).toBeLessThan(Math.PI / 6);
+    }
+  });
+
+  it('keeps straight lines, end points and dense map lines as they are', () => {
+    const straight = { pts: [{ x: 0, z: 0 }, { x: 10, z: 0 }, { x: 20, z: 0.1 }], width: 6, kind: 'road' as const };
+    expect(roadLine(straight)).toEqual(straight.pts);
+    // points 1 m apart: the curve uses at most half a segment each side, so it stays within 0.5 m of the corner
+    const dense = { pts: [{ x: 0, z: 0 }, { x: 1, z: 0 }, { x: 1, z: 1 }], width: 6, kind: 'road' as const };
+    for (const p of roadLine(dense)) expect(nearestOnPath(dense.pts, p.x, p.z).d).toBeLessThan(0.3);
+  });
+
+  it('levels the ground along the curve, where the strip is drawn', () => {
+    // a ramp rising to the east, flattened across the road; the inside of the bend, off the old corner, is levelled
+    const g = emptyGrid({ cell: 1, half: { e: 60, n: 60 } });
+    for (let k = 0; k < g.h.length; k++) g.h[k] = (k % g.nx) * 0.1;
+    levelRoad(g, corner);
+    const line = roadLine(corner), mid = line[Math.floor(line.length / 2)]!;
+    expect(nearestOnPath(line, mid.x, mid.z).d).toBe(0);
+    // a point on the curve, inside the old corner by more than the half width: levelled to the curve's height
+    const inner = { x: mid.x - 1, z: mid.z + 1 };
+    expect(nearestOnPath(corner.pts, inner.x, inner.z).d).toBeGreaterThan(2);
+    expect(Math.abs(heightAt(g, inner.x, inner.z) - heightAt(g, mid.x, mid.z))).toBeLessThan(0.25);
   });
 });

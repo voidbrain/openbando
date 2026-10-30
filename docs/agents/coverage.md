@@ -11,7 +11,7 @@ How much of the code the unit tests run, per folder. It says what ran, not that 
 | `src/app/services/` | 33 | 39.8 % | 38.7 % | 33.9 % | 40.1 % |
 | `src/app/state/` | 7 | 90.3 % | 84.2 % | 73.7 % | 81.2 % |
 | `src/app/ui/` | 49 | 0.8 % | 0.8 % | 0.7 % | 0.7 % |
-| **all** | 188 | 53.9 % | 54.0 % | 48.1 % | 50.4 % |
+| **all** | 188 | 54.0 % | 54.1 % | 48.1 % | 50.4 % |
 
 ## Files no unit test runs
 
