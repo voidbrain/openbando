@@ -10,6 +10,7 @@
     "test": "ng test",
     "element-map": "node tools/build-element-map.mjs",
     "impact-map": "node tools/impact-map.mjs",
+    "coverage": "ng test --watch=false --coverage --coverage-reporters=json-summary --coverage-include='src/**/*.ts' --coverage-exclude='**/*.spec.ts' && node tools/coverage-table.mjs --write",
     "examples": "esbuild tools/examples/build-examples.ts --bundle --platform=node --format=esm --outfile=.angular/build-examples.mjs --log-level=warning && node .angular/build-examples.mjs && node tools/build-catalog.mjs",
     "check:i18n": "esbuild tools/i18n/check-i18n.ts --bundle --platform=node --format=esm --outfile=.angular/check-i18n.mjs --log-level=warning && node .angular/check-i18n.mjs",
     "clips": "playwright test --config=playwright.clips.config.ts e2e/clips.record.ts && node tools/build-guide.mjs && node tools/check-media.mjs --stamp clips",
@@ -49,10 +50,11 @@
     "@types/leaflet": "1.9",
     "@types/node": "^22.20.5",
     "@types/three": "^0.186.0",
+    "@vitest/coverage-v8": "^5.0.5",
+    "axe-core": "~4.14.0",
     "jsdom": "^30.0.0",
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",
-    "vitest": "^5.0.0",
-    "axe-core": "~4.14.0"
+    "vitest": "^5.0.0"
   }
 }

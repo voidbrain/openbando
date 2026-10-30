@@ -3,7 +3,7 @@
     "path": "~/Projects/project-harness",
     "repo": "https://github.com/voidbrain/project-harness"
   },
-  "version": "1.15.1",
+  "version": "1.16.0",
   "stacks": [
     "core",
     "angular"
@@ -14,7 +14,8 @@
     "tools/check-harness.mjs": "core/tools/check-harness.mjs",
     "tools/ci-status.mjs": "core/tools/ci-status.mjs",
     "tools/check-conventions.mjs": "angular/tools/check-conventions.mjs",
-    "tools/impact-map.mjs": "core/tools/impact-map.mjs"
+    "tools/impact-map.mjs": "core/tools/impact-map.mjs",
+    "tools/coverage-table.mjs": "core/tools/coverage-table.mjs"
   },
   "forked": {},
   "adapted": {
@@ -255,6 +256,15 @@
       "then": "regenerate the impact map page",
       "run": "node tools/impact-map.mjs",
       "checked": "CI (impact map page matches the rows)"
+    },
+    {
+      "id": "coverage",
+      "when": [
+        "src/app/**/*.ts"
+      ],
+      "then": "when coverage changes on purpose (code removed, tests added), refresh the coverage table and its baseline",
+      "run": "npm run coverage",
+      "checked": "CI (warns when a folder drops more than 2 points)"
     }
   ],
   "couplings": [
@@ -426,6 +436,22 @@
     {
       "title": "Design system",
       "path": "design-system/README.md"
+    },
+    {
+      "title": "Code coverage",
+      "path": "docs/agents/coverage.md",
+      "about": "unit tests, per folder; browser tests not counted"
     }
-  ]
+  ],
+  "coverage": {
+    "summary": "coverage/openbando/coverage-summary.json",
+    "folders": [
+      "src/app/core/",
+      "src/app/three/",
+      "src/app/services/",
+      "src/app/state/",
+      "src/app/ui/"
+    ],
+    "drop": 2
+  }
 }

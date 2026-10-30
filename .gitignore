@@ -13,3 +13,4 @@ public/demo/
 
 # macOS folder metadata
 .DS_Store
+/coverage
