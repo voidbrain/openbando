@@ -43,20 +43,25 @@ import { Panel } from '../panel/panel';
             <app-canvas panel="path" [draw]="draw" />
           </div>
           <div class="side">
-            <button class="ico" [class.on]="scene.pin() === 's'" [disabled]="!alignment.atStart()" (click)="scene.armPin('s')" [title]="alignment.videoLoaded() ? 'Pin start: position at the start of the video and click the ground where the flight started' : 'Pin start: position at the start of the flight and click the ground where the flight started'" aria-label="Pin start">
-              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="s" d="M6 21V4h11l-2 4 2 4H6" /></svg>
-            </button>
-            <button class="ico" [class.on]="scene.pin() === 'e'" [disabled]="!alignment.atEnd()" (click)="scene.armPin('e')" [title]="alignment.videoLoaded() ? 'Pin end: position at the end of the video and click the ground where the flight ended' : 'Pin end: position at the end of the flight and click the ground where the flight ended'" aria-label="Pin end">
-              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="e" d="M6 21V4h11v8H6" /><path class="e" d="M6 8h11M11.5 4v8" /></svg>
-            </button>
-            <button class="ico" [class.on]="scene.pin() === 'm'" [disabled]="!hasFlight()" (click)="scene.armPin('m')" title="Pin this moment: stop where the video shows clearly where the drone is, then click the ground there; the path around this moment moves there (GPS drift)" aria-label="Pin this moment">
-              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="m" d="M12 21s-6-6.2-6-11a6 6 0 0 1 12 0c0 4.8-6 11-6 11z" /><path class="m" d="M12 7.5v5M9.5 10h5" /></svg>
-            </button>
-            @if (pins()) {
-              <button class="ico" (click)="clearPins()" title="Remove the pins at moments of this flight" aria-label="Remove the pins at moments">
-                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            <div class="pins">
+              <button class="ico" [class.on]="scene.pin() === 's'" [disabled]="!alignment.atStart()" (click)="scene.armPin('s')" [title]="alignment.videoLoaded() ? 'Pin start: position at the start of the video and click the ground where the flight started' : 'Pin start: position at the start of the flight and click the ground where the flight started'" aria-label="Pin start">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="s" d="M6 21V4h11l-2 4 2 4H6" /></svg>
               </button>
-            }
+              <button class="ico" [class.on]="scene.pin() === 'e'" [disabled]="!alignment.atEnd()" (click)="scene.armPin('e')" [title]="alignment.videoLoaded() ? 'Pin end: position at the end of the video and click the ground where the flight ended' : 'Pin end: position at the end of the flight and click the ground where the flight ended'" aria-label="Pin end">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="e" d="M6 21V4h11v8H6" /><path class="e" d="M6 8h11M11.5 4v8" /></svg>
+              </button>
+              <button class="ico" [class.on]="scene.pin() === 'm'" [disabled]="!hasFlight()" (click)="scene.armPin('m')" title="Pin this moment: stop where the video shows clearly where the drone is, then click the ground there; the path around this moment moves there (GPS drift)" aria-label="Pin this moment">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="m" d="M12 21s-6-6.2-6-11a6 6 0 0 1 12 0c0 4.8-6 11-6 11z" /><path class="m" d="M12 7.5v5M9.5 10h5" /></svg>
+              </button>
+              <button class="ico" [class.on]="!!scene.adjusting()" [disabled]="!hasFlight()" (click)="scene.startAdjust()" [title]="scene.adjusting() ? 'Done: keep the drone where you put it (Enter); Esc puts it back' : 'Adjust position: arrows on the replay drone in the 3D view; drag it to where it is at this moment, height included'" [attr.aria-label]="scene.adjusting() ? 'Done adjusting' : 'Adjust position'" [attr.aria-pressed]="!!scene.adjusting()">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="m" d="M12 3v18M3 12h18M12 3l-2.5 2.5M12 3l2.5 2.5M21 12l-2.5-2.5M21 12l-2.5 2.5M12 21l-2.5-2.5M12 21l2.5-2.5M3 12l2.5-2.5M3 12l2.5 2.5" /></svg>
+              </button>
+              @if (pins()) {
+                <button class="ico" (click)="clearPins()" title="Remove the pins at moments of this flight" aria-label="Remove the pins at moments">
+                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                </button>
+              }
+            </div>
             <div
               class="knob"
               role="slider"
@@ -131,6 +136,12 @@ import { Panel } from '../panel/panel';
       flex-direction: column;
       align-items: center;
       gap: 6px;
+    }
+    /* the pin buttons two to a row, so the column fits the panel (F-040 added two) */
+    .pins {
+      display: grid;
+      grid-template-columns: repeat(2, 32px);
+      gap: 4px;
     }
     .ico {
       width: 32px;

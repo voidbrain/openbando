@@ -108,6 +108,12 @@ export class FlightService {
     this.speedMax = 1;
   }
 
+  /** Show a flight with these pins without keeping them (the Adjust position control's live preview, F-040). */
+  previewPins(f: Flight, pins: MomentPin[]): void {
+    f.pins = pins;
+    this.refresh(f);
+  }
+
   /** Set a flight's pins at moments (B-017), keep them for this log on this bando, and redraw its path. */
   setPins(f: Flight, pins: MomentPin[]): void {
     f.pins = pins;

@@ -37,23 +37,24 @@ export function prepareFlight(f: Flight, cal: Calibration, groundAt?: (x: number
   const minAlt = f.pts.reduce((m, p) => Math.min(m, p.alt), Infinity);
   // the model position of a fix: the calibration, then the pilot's pins at moments (GPS drift, B-017)
   const pins = f.pins ?? [];
-  const at = (p: GeoSample): [number, number] => {
+  // the pins' height offset (F-040) moves the drone up or down, never under the ground
+  const at = (p: GeoSample): [number, number, number] => {
     const [x, z] = toLocal(p.lat, p.lon, cal);
-    if (!pins.length) return [x, z];
+    if (!pins.length) return [x, z, 0];
     const o = pinOffset(pins, p.t - first.t);
-    return [x + o.dx, z + o.dz];
+    return [x + o.dx, z + o.dz, o.dy];
   };
   if (groundAt) {
     const [x0, z0] = at(first);
     const y0 = groundAt(x0, z0) - first.alt + 0.3;
     f.loc = f.pts.map((p) => {
-      const [x, z] = at(p);
-      return new Vec3(x, Math.max(groundAt(x, z) + 0.2, y0 + p.alt), z);
+      const [x, z, dy] = at(p);
+      return new Vec3(x, Math.max(groundAt(x, z) + 0.2, y0 + p.alt + dy), z);
     });
   } else {
     f.loc = f.pts.map((p) => {
-      const [x, z] = at(p);
-      return new Vec3(x, Math.max(0.2, p.alt - minAlt + 0.3), z);
+      const [x, z, dy] = at(p);
+      return new Vec3(x, Math.max(0.2, p.alt - minAlt + 0.3 + dy), z);
     });
   }
   const last = f.loc.length - 1;

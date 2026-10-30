@@ -20,7 +20,8 @@ import { FlightService } from './flight.service';
 import { FrameLoopService, FrameOrder } from './frame-loop.service';
 import { PlaybackService } from './playback.service';
 import { positionAt } from '../core/flight/flight';
-import { addPin } from '../core/flight/moment-pins';
+import { addPin, type MomentPin } from '../core/flight/moment-pins';
+import { AdjustGizmo } from '../three/adjust-gizmo';
 import { formatClock } from '../core/math';
 import { SimulatorService } from './simulator.service';
 import { ToastService } from './toast.service';
@@ -294,6 +295,67 @@ export class SceneService {
     } finally {
       host.scene.fog = fog;
     }
+  }
+
+  // ---- Adjust position (F-040): a move control on the replay drone, height included ----
+  /** The control is out: the moment it pins and the pins it started from (Esc puts them back). */
+  readonly adjusting = signal<{ t: number } | null>(null);
+  private adjust: { gizmo: AdjustGizmo; t: number; from: THREE.Vector3; before: MomentPin[]; pins: MomentPin[]; keys: (e: KeyboardEvent) => void } | null = null;
+
+  /** A press on the main view the camera must leave alone: it drags the Adjust position control. */
+  adjustBlocks(): boolean {
+    return !!this.adjust?.gizmo.active;
+  }
+
+  startAdjust(): void {
+    const f = this.flights.active, host = this.host;
+    if (!f || !host) return void this.toast.show('Load a log first');
+    if (this.adjust) return this.endAdjust(true);
+    this.endPin();
+    this.playback.pause();
+    const t = this.playback.time, from = positionAt(f, t);
+    if (!from) return;
+    const before = f.pins ?? [];
+    const gizmo = new AdjustGizmo(host.mainCamera, host.canvas, host.scene, new THREE.Vector3(from.x, from.y, from.z), (p) => this.adjustTo(p));
+    // while it is out the arrow keys nudge the drone (Shift: up and down), Enter keeps it, Esc puts it back
+    const keys = (e: KeyboardEvent): void => {
+      if (!this.adjust || (e.target as HTMLElement | null)?.closest?.('input, textarea, select')) return;
+      const step = 0.5;
+      const k = e.key;
+      const d = k === 'ArrowLeft' ? [-step, 0, 0] : k === 'ArrowRight' ? [step, 0, 0] : k === 'ArrowUp' ? (e.shiftKey ? [0, step, 0] : [0, 0, -step]) : k === 'ArrowDown' ? (e.shiftKey ? [0, -step, 0] : [0, 0, step]) : null;
+      if (d) this.adjustTo(gizmo.nudge(d[0]!, d[1]!, d[2]!));
+      else if (k === 'Enter') this.endAdjust(true);
+      else if (k === 'Escape') this.endAdjust(false);
+      else return;
+      e.preventDefault();
+      e.stopImmediatePropagation(); // not the replay's seek, the simulator's arm or the pin's cancel
+    };
+    addEventListener('keydown', keys, { capture: true });
+    this.adjust = { gizmo, t, from: from.clone() as unknown as THREE.Vector3, before, pins: before, keys };
+    this.adjusting.set({ t });
+    this.toast.show('Drag the arrows (or a square) to where the drone is at this moment; arrows nudge, Shift+↑↓ up and down. Enter keeps it, Esc puts it back.', 6000);
+  }
+
+  private adjustTo(p: THREE.Vector3): void {
+    const a = this.adjust, f = this.flights.active;
+    if (!a || !f) return;
+    a.pins = addPin(a.before, a.t, { x: a.from.x, y: a.from.y, z: a.from.z }, { x: p.x, y: p.y, z: p.z });
+    this.flights.previewPins(f, a.pins);
+  }
+
+  /** Put the control away: keep the moved position as a pin, or put the path back as it was. */
+  endAdjust(keep: boolean): void {
+    const a = this.adjust, f = this.flights.active;
+    if (!a) return;
+    this.adjust = null;
+    this.adjusting.set(null);
+    removeEventListener('keydown', a.keys, { capture: true });
+    a.gizmo.dispose();
+    if (!f) return;
+    if (keep && a.pins !== a.before) {
+      this.flights.setPins(f, a.pins);
+      this.toast.show(`Pinned at ${formatClock(a.t)}: the drone stays where you put it, the path blends to the next pin.`);
+    } else this.flights.previewPins(f, a.before);
   }
 
   // ---- ground pin ----

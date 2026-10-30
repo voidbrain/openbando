@@ -101,6 +101,7 @@ export class Stage {
           this.scene.noteInput();
         },
         takeOver: () => this.scene.lookAround(),
+        blocked: () => this.scene.adjustBlocks(), // a press on the Adjust position control drags it, not the camera
         onClick: (x, y, alt) => {
           const cam = this.scene.host?.mainCamera;
           if (!cam) return;

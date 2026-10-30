@@ -559,6 +559,60 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ---
 
+### F-040
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | F-040 | 🔶 P2 | Implemented | Adjust the replay drone's position in 3D, height included |
+
+🧑 **→ Human action required: Yes**<br />Try Adjust position on the live site (since this PR), mouse and keyboard.
+
+| | |
+|---|---|
+| **Issue** | Pins moved the drone only across the ground, by a click; its height could not be corrected. |
+| **Reproduce** | Live site, a flight loaded, main 3D view: pause where the video shows the drone, Path panel → Adjust position (the four-arrow button). |
+| **Check** | Arrows and squares appear on the drone; dragging moves it, the path follows live, height included; arrow keys nudge it (Shift+↑↓ up and down) without seeking the replay; Enter keeps it as a pin, Esc puts it back. |
+
+**Next action / closure evidence:** Implemented 2026-10-30 (this PR): pins carry `dy` (blended like `dx`, `dz`; older saved pins read 0; the path never goes under the ground); Path panel → Adjust position puts a three.js TransformControls on the replay drone in the main 3D view (`three/adjust-gizmo.ts`); the orbit steps aside while the pointer is on it (`ControlTarget.blocked`); dragging previews the path live (`FlightService.previewPins`), Enter or the button again keeps one pin, Esc restores; arrow keys nudge 0.5 m (Shift+↑↓ vertical), captured so they do not seek the replay. The Path panel's pin buttons sit two to a row (the column had grown taller than the panel). Not done yet: the control in the editor's 3D view (Pin this moment works there). Tests: height in `moment-pins.spec.ts`; the keyboard path in `moment-pins.e2e.ts` (a pin, the replay not moved). History: Requested 2026-10-30 by the owner after trying Pin this moment (B-017): pins only move the drone across the ground, and its height still comes from the barometer and the ground under it. Plan: pins carry `dy` too (blended the same way, the take-off still at 0); "Adjust position" puts a move control (three axes and three planes, three.js TransformControls) on the replay drone in the main 3D view and the editor's 3D view; dragging moves the drone at this moment, Enter or a click elsewhere confirms (one pin), Esc cancels; arrow keys nudge it (Shift: vertical) for keyboard use. The automatic proposals of F-041 are pins of this kind, accepted or corrected with the same control.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-30 |
+| Opened | 2026-10-30 |
+| Verification | Unit + Browser · 2026-10-30 · height pins, keyboard adjust e2e passed locally (the mouse drag is the owner's check) |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
+### F-041
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-041 | 🔹 P3 | Open | Align a replay to the model automatically, with a confidence level |
+
+💻 **→ Human action required: No**<br />Prototype the two signals offline on the demo flight and measure them against the owner's three pins before building anything.
+
+**Next action / closure evidence:** Requested 2026-10-30 by the owner. Two signals together. Geometric: where the replayed path passes through something solid, look for the smallest smooth shift that threads a nearby opening of the model. Visual: at that moment, render the FPV view at the shifted and unshifted positions and compare each with the video frame (local, no service). The model may lack small gaps that exist, so a path through a wall is evidence about the model as much as about the GPS. Confidence decides: both agree → go (automatic pins, marked, undoable); one sure, the other neutral → propose (dashed path, accept or reject); they disagree (through a wall, no opening near, the video prefers the unshifted path) → ask ("the flight goes through here, the model has no opening: add one?"). Prototype first: on the demo flight, how close the suggestions land to the owner's pins (0:27.6 west-face hole, 1:13.1 mid-greenhouse, 1:35.9 leaving the store), and whether hiding one opening in a copy of the model makes it ask instead of forcing a detour. A vision-language model on frame pairs was considered: hints rather than metres, seconds per call, and it would send frames of a private place to a service; only ever an opt-in experiment, if the local signals fall short. Not real time.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Request 2026-10-30 |
+| Opened | 2026-10-30 |
+| Verification | Not started |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
 ## Other changes
 
 `main` protection active 2026-10-29 (user request, set through the API): ruleset "protect main" requires `check`, `e2e (1)`–`e2e (4)` and `race-browser` and refuses force pushes and deletion. B-025 (the flaky Auto-sync check) was closed first so the required checks are reliable.
