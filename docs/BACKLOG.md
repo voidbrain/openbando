@@ -357,6 +357,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
+### B-038
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-038 | 🔺 P1 | Implemented | The telemetry bridge served the drone's GPS position to the whole network |
+
+🧑 **→ Human action required: Yes**<br />Decide the open CodeQL alert on the bridge's UDP listener: dismiss it as "won't fix" (it must receive the backpack's Wi-Fi packets and only receives), or bind it to one address by default.
+
+**Next action / closure evidence:** Found 2026-10-30 while checking main's code-scanning alerts after the F-034 test: alert 1 (`py/bind-socket-all-network-interfaces`, open since 2026-10-26) on `tools/elrs_bridge.py` line 95, the UDP listener. Reading the file showed a bigger exposure CodeQL does not flag: the WebSocket that publishes the telemetry (GPS position included, the pilot's secret) listened on `0.0.0.0`, so anyone on the same Wi-Fi could follow the drone, though the page connects to `localhost`. Fixed in this PR: the WebSocket binds `127.0.0.1` by default, `--ws-host` opens it on purpose (the racing README says when: a bridge on another device); the UDP listener keeps every interface by default (it receives the backpack's packets over Wi-Fi), with `--udp-host` to narrow it. Smoke test: `--simulate` listens on `127.0.0.1` only (`lsof`). The CodeQL alert stays open until the decision above.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | This PR; code-scanning alert 1 |
+| Opened | 2026-10-30 |
+| Verification | Manual · 2026-10-30 · the simulated bridge listens on 127.0.0.1 only (`lsof`); compiles |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
 ## Features and limitations
 
 ### F-001
