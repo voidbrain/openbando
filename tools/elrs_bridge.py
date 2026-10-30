@@ -90,9 +90,9 @@ def enc_link(rssi, lq, snr, power):
     return frame(0x14, bytes([r, r, lq, snr, 0, 4, power, r, lq, snr]))
 
 # ------------------------------------------------------------------ sources
-def udp_source(port, parser, dump):
+def udp_source(host, port, parser, dump):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM); s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    s.bind(('0.0.0.0', port)); print('listening for UDP on port', port)
+    s.bind((host, port)); print('listening for UDP on %s port %d' % (host or 'every interface', port))
     while True:
         data, addr = s.recvfrom(4096); n = parser.feed(data)
         if dump:
@@ -179,10 +179,11 @@ async def ws_handler(reader, writer, clients):
         try: writer.close()
         except Exception: pass
 
-async def serve(parser, port, hz):
+async def serve(parser, host, port, hz):
     clients = set()
-    srv = await asyncio.start_server(lambda r, w: ws_handler(r, w, clients), '0.0.0.0', port)
-    print('WebSocket on ws://localhost:%d  (enter this in the Live link card)' % port)
+    # this computer only by default: the stream carries the drone's GPS position, which is the pilot's secret
+    srv = await asyncio.start_server(lambda r, w: ws_handler(r, w, clients), host, port)
+    print('WebSocket on ws://%s:%d  (enter this in the Live link card)' % ('localhost' if host == '127.0.0.1' else host, port))
     last = -1
     async with srv:
         while True:
@@ -202,16 +203,18 @@ def main():
     ap.add_argument('--serial', metavar='DEVICE'); ap.add_argument('--baud', type=int, default=420000)
     ap.add_argument('--simulate', action='store_true'); ap.add_argument('--dump', action='store_true', help='print every incoming packet')
     ap.add_argument('--ws-port', type=int, default=8765); ap.add_argument('--rate', type=float, default=10, help='messages per second to the page')
+    ap.add_argument('--ws-host', default='127.0.0.1', help='address the WebSocket listens on (default: this computer only; it carries the GPS position)')
+    ap.add_argument('--udp-host', default='', help='address the UDP listener binds to (default: every interface, so the ELRS backpack can reach it over Wi-Fi)')
     a = ap.parse_args()
     if not (a.udp or a.tcp or a.serial or a.simulate):
         ap.print_help(); return
     p = Crsf()
     if a.simulate: threading.Thread(target=simulate, args=(p,), daemon=True).start()
-    if a.udp: threading.Thread(target=udp_source, args=(a.udp, p, a.dump), daemon=True).start()
+    if a.udp: threading.Thread(target=udp_source, args=(a.udp_host, a.udp, p, a.dump), daemon=True).start()
     if a.tcp: threading.Thread(target=tcp_source, args=(a.tcp, p, a.dump), daemon=True).start()
     if a.serial: threading.Thread(target=serial_source, args=(a.serial, a.baud, p, a.dump), daemon=True).start()
     try:
-        asyncio.run(serve(p, a.ws_port, a.rate))
+        asyncio.run(serve(p, a.ws_host, a.ws_port, a.rate))
     except KeyboardInterrupt:
         pass
 

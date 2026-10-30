@@ -60,7 +60,7 @@ python tools/elrs_bridge.py --simulate --ws-port 8765
 python tools/elrs_bridge.py --simulate --ws-port 8766
 ```
 
-Connect those two WebSocket URLs from an HTTP localhost frontend. For real devices use their reachable hostnames/IPs and telemetry ports; separate devices can use the same port on different hosts.
+Connect those two WebSocket URLs from an HTTP localhost frontend. For real devices use their reachable hostnames/IPs and telemetry ports; separate devices can use the same port on different hosts. The bridge's WebSocket listens on its own computer only (`127.0.0.1`), because it carries the drone's GPS position: a bridge another device must reach is started with `--ws-host` set to its LAN address (or `0.0.0.0` intentionally), like the relay's `RACE_HOST` below.
 
 - Intake is limited to 5 GPS points/s per source, with 64 KB/message and coordinate bounds. A ghost whose most recent fix is older than about 5 s is hidden and marked stale. The trace remains visible.
 - Disconnect retains the received points as a normal race recording. The trace is capped at 12,000 points (~40 minutes at maximum intake); reaching the cap closes that connection and reports the limit, rather than silently dropping laps or growing memory indefinitely.
