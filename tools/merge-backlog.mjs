@@ -5,6 +5,7 @@
 // It starts from the default branch's file ("theirs": its header, its records, its order), then for each record:
 // - only the branch changed it (or added it): the branch's version;
 // - only the default branch changed it, or archived it: the default branch's;
+// - the branch archived it and the default branch left it alone: gone;
 // - both changed it differently: the default branch's version stays and the record is named, to merge by hand (exit 1).
 // Paragraphs under "## Other changes" that only the branch has are added. Never keep one side's record wholesale: that
 // silently drops the other side's edits to records both have.
@@ -49,6 +50,12 @@ for (const [id, rec] of O) {
   const heads = [...out.matchAll(/^## .*$/gm)].map((h) => h[0]);
   const next = heads[heads.indexOf(sectionOf(ours, id)) + 1];
   out = next ? out.replace(`${next}\n`, () => `${rec}\n${next}\n`) : `${out.trimEnd()}\n\n${rec}`;
+}
+// records the branch removed (archived): gone, unless the default branch changed them meanwhile
+for (const [id, was] of B) {
+  if (O.has(id) || !T.has(id)) continue;
+  if (T.get(id) === was) out = out.replace(was, () => '');
+  else byHand.push(id);
 }
 // "## Other changes": paragraphs only the branch wrote
 const other = (text) => (text.split(/^## Other changes\n/m)[1] ?? '').split(/\n\n+/).map((p) => p.trim()).filter(Boolean);

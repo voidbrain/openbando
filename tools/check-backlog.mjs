@@ -83,4 +83,11 @@ const mainBacklog = new Set(mainText.split('\n'));
 const placeholder = /(?<!["“`'])\bthis PR\b(?!["”`'])/i;
 const stale = text.split('\n').filter(line => placeholder.test(line) && mainBacklog.has(line));
 assert(!stale.length, `docs/BACKLOG.md: ${stale.length} line(s) already on ${branch} still say "this PR": name the merged PR instead (BACKLOG-RULES, Review procedure 7). First: "${stale[0]?.slice(0, 100)}"`);
+// On a PR's CI run the number is known: a placeholder the branch adds fails there, before it can reach the default
+// branch, where it would fail every other PR (openbando, twice). Write the number right after opening the PR.
+const prNumber = process.env.PR_NUMBER || process.env.GITHUB_REF?.match(/^refs\/pull\/(\d+)\//)?.[1];
+if (prNumber) {
+  const added = text.split('\n').filter(line => placeholder.test(line) && !mainBacklog.has(line));
+  assert(!added.length, `docs/BACKLOG.md: ${added.length} line(s) this branch adds say "this PR": write #${prNumber} instead (BACKLOG-RULES, Review procedure 7). First: "${added[0]?.slice(0, 100)}"`);
+}
 console.log(`${ids.size} backlog records passed: summary, visible actions, metadata, dates, cues and table widths${published.length ? `; ${published.length} archive file(s) keep every line they have on ${branch}` : ''}.`);

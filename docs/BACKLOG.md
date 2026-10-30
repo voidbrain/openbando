@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `ddf090f` (merged #250), with every CI job of #162–#250 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `81df73d` (merged #251), with every CI job of #162–#251 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -616,5 +616,7 @@ Harness template 1.17.0 (2026-10-30, [#244](https://github.com/voidbrain/openban
 Harness template 1.17.1 (2026-10-30, template [#30](https://github.com/voidbrain/project-harness/pull/30)): `check-backlog` ignores a quoted mention of the placeholder phrase; the 1.17.0 note here had quoted it and failed every PR until [#245](https://github.com/voidbrain/openbando/pull/245) reworded it.
 
 Harness template 1.18.0 (2026-10-30, requested by the owner; template [#32](https://github.com/voidbrain/project-harness/pull/32)): a record waiting for a person shows an Issue / Reproduce / Check table under its human-action line; `check-backlog` requires it on records a branch touches. All 25 waiting records got it at once. B-011 and F-008 closed on the owner's review of Welcome.
+
+Harness templates 1.19.0 and 1.19.1 (2026-10-30, decided with the owner after a merged placeholder twice failed `check:backlog` on every PR; template [#34](https://github.com/voidbrain/project-harness/pull/34), [#35](https://github.com/voidbrain/project-harness/pull/35)): on a PR's CI run `check-backlog` fails on a placeholder the branch adds and names the number; the rule is to write the number right after opening the PR. `merge-when-green` retries GitHub timeouts and ignores a stale failure after a push; `merge-backlog` keeps archived records gone.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
