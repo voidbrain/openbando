@@ -1,6 +1,6 @@
 import { OPS, COMPASS, STRUCTURE_KINDS, normalizeCommands, type AiCommand } from './ai-commands';
 import { listOpenings } from './openings';
-import type { SiteSpec } from './site-spec';
+import { ROOF_KINDS, type SiteSpec } from './site-spec';
 
 /** JSON schema the model is forced to follow (WebLLM compiles it into a grammar, so the output always parses). */
 export const AI_SCHEMA = {
@@ -36,7 +36,7 @@ export const AI_SCHEMA = {
           roofless: { type: 'boolean' },
           crenels: { type: 'boolean' },
           name: { type: 'string' },
-          roof: { type: 'string', enum: ['gable', 'gambrel', 'flat', 'vault'] },
+          roof: { type: 'string', enum: [...ROOF_KINDS] },
           turn: { type: 'boolean' },
           structure: { type: 'string', enum: [...STRUCTURE_KINDS] },
           state: { type: 'string', enum: ['open', 'closed'] },

@@ -862,7 +862,7 @@
                   <div class="st">Roof</div>
                   @if (bd.roofless || (bd.ruin ?? 0) >= 0.6) { <div class="dim small span2">Roof removed by ruin or open shell. Choosing a shape restores it.</div><button class="btn span2" (click)="editTop(setRoof,tl.roof === 'none' ? 'gable' : tl.roof)">Restore roof</button> }
                   @if (!bd.footprint) {
-                    <label class="fld">shape <select (change)="editTop(setRoof, roofOf($event))"><option value="gable" [selected]="tl.roof === 'gable'">gable</option><option value="gambrel" [selected]="tl.roof === 'gambrel'">gambrel</option><option value="vault" [selected]="tl.roof === 'vault'">vault</option><option value="flat" [selected]="tl.roof === 'flat'">flat</option></select></label>
+                    <label class="fld">shape <select (change)="editTop(setRoof, roofOf($event))">@for (k of roofKinds; track k) {<option [value]="k" [selected]="tl.roof === k">{{ k }}</option>}</select></label>
                     <label class="fld">repeat × <input type="number" min="1" max="12" step="1" [value]="tl.roofCount ?? tl.vaultCount ?? 1" (change)="editTop(setCount, num($event))" /></label>
                     @if (tl.roof === 'vault' && (tl.roofCount ?? tl.vaultCount ?? 1) >= 2 && (tl.roofCount ?? tl.vaultCount ?? 1) % 2 === 0) {
                       <label class="fld" title="Flat strip between the two halves of the barrel roof">centre strip m <input type="number" min="0" max="100" step="0.1" [value]="tl.roofCenterStrip ?? 0" (change)="editTop(setRoofCenterStrip, num($event))" /></label>
