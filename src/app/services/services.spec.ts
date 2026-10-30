@@ -147,6 +147,36 @@ describe('services', () => {
       p.pause();
     });
 
+    it('asks the video again when a seek stalls while paused (B-040: the frame stayed old after timeline drags)', async () => {
+      await load();
+      const p = TestBed.inject(PlaybackService);
+      const v = TestBed.inject(VideoService);
+      // a paused video whose seek never finishes: `seeking` stays true and no `seeked` comes
+      let vt = 0, sets = 0, seeking = true, now = 1000;
+      vi.spyOn(performance, 'now').mockImplementation(() => now);
+      Object.defineProperty(v.element, 'readyState', { get: () => 4 });
+      Object.defineProperty(v.element, 'paused', { get: () => true });
+      Object.defineProperty(v.element, 'seeking', { get: () => seeking });
+      Object.defineProperty(v.element, 'currentTime', { get: () => vt, set: (t: number) => { vt = t; sets++; } });
+      v.loaded.set(true);
+      v.setOffset(0);
+      frames(1);
+      sets = 0;
+      p.seekTo(3); // a timeline drag ends here
+      frames(1);
+      expect(sets).toBe(1);
+      now += 500; frames(5);
+      expect(sets).toBe(1); // not yet: a seek may take a moment
+      now += 700; frames(1);
+      expect(sets).toBe(2); // stalled for over a second: asked again, at the same place
+      expect(vt).toBeCloseTo(3, 6);
+      seeking = false;
+      v.element.dispatchEvent(new Event('seeked'));
+      now += 5000; frames(5);
+      expect(sets).toBe(2); // done: nothing more
+      vi.restoreAllMocks();
+    });
+
     it('holds the playhead while paused and follows the flight while playing', async () => {
       await load();
       const p = TestBed.inject(PlaybackService);
