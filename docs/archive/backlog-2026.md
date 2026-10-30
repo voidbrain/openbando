@@ -1,4 +1,14 @@
-# Closed backlog — 28 October 2026
+# Closed backlog — 2026
+
+Closed records, moved from the [active backlog](../BACKLOG.md) with their full history. Dated evidence, not current status.
+
+One file per year; records follow their closing date, under a heading per day.
+
+## Closed 27–29 October 2026, before the record layout
+
+| ID | Item | Closure evidence | PR |
+|---|---|---|---|
+| B-004 | Warehouse wall/terrain flicker | User confirmed on 27 October 2026 that the warehouse/ground intersection looks correct. | [#100](https://github.com/voidbrain/openbando/pull/100) |
 
 B-001 was reopened later on 28 October after a new failed browser run. Its earlier acceptance below is historical; the active backlog records the new investigation and correction.
 
@@ -22,7 +32,7 @@ User visual/functional acceptance on 28 October 2026 closes these items. B-013 i
 | B-014 | ◻️ P2 | Closed | First video shows Sync again | Saved offsets are restored automatically for a matching flight and file; the action is consistently labelled Auto-sync. Verify first load and restored offsets in the browser. | [#112](https://github.com/voidbrain/openbando/pull/112) (fix; browser checks pending) | 2026-10-27 | Human · 2026-10-28 · accepted in conversation | 2026-10-28 |
 | B-015 | ◻️ P2 | Closed | Welcome mascot resumes instead of restarting | The mascot restarts at the first frame when Welcome opens. Verify reopening and reduced-motion behavior in a browser. | [#112](https://github.com/voidbrain/openbando/pull/112) (fix; browser checks pending) | 2026-10-27 | Human · 2026-10-28 · accepted in conversation | 2026-10-28 |
 
-## Completed maintenance and documentation
+### Completed maintenance and documentation
 
 Closed on 28 October after checking the merged documentation and recorded verification evidence. Pending product/media work remains in the active backlog; closing these maintenance records does not close those features.
 
@@ -43,7 +53,7 @@ Closed on 28 October after checking the merged documentation and recorded verifi
 | 🔵 | Harness template 1.3.0: the AGENTS Work-tracking bullet on harness changes asked from a project, `.harness.json` on 1.3.0; no copied file changed. | [#197](https://github.com/voidbrain/openbando/pull/197) | Closed | Script · 2026-10-29 · `check:freshness` reported "Harness: on template v1.3.0"; all required jobs passed in [CI](https://github.com/voidbrain/openbando/actions/runs/40882878042) | 2026-10-29 |
 | 🔵 | Harness template 1.4.0: `tools/check-harness.mjs` copied (forked files, override markers), the AGENTS Work-tracking bullets reconciled, `.harness.json` on 1.4.0 with an empty `forked`. | [#198](https://github.com/voidbrain/openbando/pull/198) | Closed | Script · 2026-10-29 · `check:freshness` reported "Harness: on template v1.4.0"; all required jobs passed in [CI](https://github.com/voidbrain/openbando/actions/runs/40887744213) | 2026-10-29 |
 
-## B-001 closure after reopening
+### B-001 closure after reopening
 
 This supersedes the earlier acceptance record: reopening led to the elapsed-time correction in #123 and the complete successful #124 browser run. No required human check remains for this timeout fix.
 
@@ -51,7 +61,7 @@ This supersedes the earlier acceptance record: reopening led to the elapsed-time
 |:---:|---|---|---|---|---|---|---|---|---|---|
 | 🔵 | B-001 | ◻️ P1 | Closed | 3D guide timeout (reopened) | Resolved after all PR #124 browser shards passed the unchanged timeout; closed on 28 October 2026. | [#121 CI](https://github.com/voidbrain/openbando/actions/runs/40645425377) (failed shard 2); [#123](https://github.com/voidbrain/openbando/pull/123) (animation clock and static shadows) | 2026-10-27 | Unit/integration + Browser/accessibility · 2026-10-28 · 513 tests and all browser jobs passed in [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649) | 2026-10-28 | **No**<br />No remaining action; automated acceptance criteria passed. |
 
-## B-016 verified Reset workflow
+### B-016 verified Reset workflow
 
 Closed after checking the focused browser test and every job in PR #134 CI, not from merge alone.
 
@@ -59,7 +69,7 @@ Closed after checking the focused browser test and every job in PR #134 CI, not 
 |:---:|---|---|---|---|---|---|---|---|---|---|
 | 🔵 | B-016 | ◻️ P2 | Closed | Reset UI after Hide all | Reset after repeated Hide all restores the working panel set and default geometry/appearance; a subsequent Reset preserves an explicitly closed panel. | [#112](https://github.com/voidbrain/openbando/pull/112) (fix; browser checks pending); [#119](https://github.com/voidbrain/openbando/pull/119) (merged; browser checks pending)  [#134](https://github.com/voidbrain/openbando/pull/134) (focused Reset workflow); | 2026-10-27 | Unit/integration + Browser/accessibility · 2026-10-28 · focused Reset regression passed (5.3 s); all jobs passed in [#134 CI](https://github.com/voidbrain/openbando/actions/runs/40675787359) | 2026-10-28 | **No**<br />No remaining action; focused automated acceptance passed. |
 
-## Verified automated closure — PR #136
+### Verified automated closure — PR #136
 
 Closed on 28 October after inspecting all jobs and the focused browser log in [PR #136 CI](https://github.com/voidbrain/openbando/actions/runs/40684523297). All nine focused tests passed, including diagonal export/import at both rotations and the English/Italian credential notice. B-002 also has passing mesh/raycast/collision regression evidence; browser captures are diagnostics rather than a claimed human visual review.
 
@@ -77,7 +87,7 @@ Closed on 28 October after inspecting all jobs and the focused browser log in [P
 |:---:|---|---|---|---|---|
 | 🔵 | Require active reassessment of status/actions/verification and execution of authorized feasible next steps on every change/review. | [#136](https://github.com/voidbrain/openbando/pull/136) | Closed | Documentation · 2026-10-28 · merged #136 rules reviewed; CI passed | 2026-10-28 |
 
-## F-013 close-zoom verification
+### F-013 close-zoom verification
 
 Closed after inspecting every job in [run 40708072276](https://github.com/voidbrain/openbando/actions/runs/40708072276), including the focused log showing all nine tests passed. This closure records the final correction after the earlier failed #137/#138 test setups; their history remains below in the PR evidence. Closure reconciliation: [#140](https://github.com/voidbrain/openbando/pull/140).
 
@@ -91,13 +101,13 @@ Closed after inspecting every job in [run 40708072276](https://github.com/voidbr
 |:---:|---|---|---|---|---|
 | 🔵 | Reconcile #136 verification, close five accepted automated items and fix the remaining overlay zoom limit. | [#137](https://github.com/voidbrain/openbando/pull/137) | Closed | Documentation + Browser/accessibility · 2026-10-28 · merged #137/#138/#139 reconciled; final [CI](https://github.com/voidbrain/openbando/actions/runs/40708072276) passed | 2026-10-28 |
 
-## Accepted interface palette — 28 October
+### Accepted interface palette — 28 October
 
 | Signal | ID | Priority | Status | Item | Resolution | PR / evidence | Opened | Verification | Reviewed | Human action required |
 |:---: |---|---|---|---|---|---|---|---|---|---|
 | 🔵 | F-016 | ◻️ P3 | Closed | Indigo/purple interface chrome trial | Dark blue/purple panels, buttons, fields and overlays replace green chrome; lime active controls and existing semantic/data/tool colours retained. Accepted by the user on 28 October; retained as the current palette. Closed after all #144 CI jobs passed. | [#144](https://github.com/voidbrain/openbando/pull/144) | 2026-10-28 | Documentation + contrast checks · 2026-10-28 · semantic/tool tokens unchanged; text, dim, warning and danger >=4.5:1 on opaque surfaces, active buttons 12.49:1; Browser/accessibility · 2026-10-28 · all jobs passed in [#144 CI](https://github.com/voidbrain/openbando/actions/runs/40730326801); Human · 2026-10-28 · “nice, keep new colors” accepted | 2026-10-28 | **No**<br />No action remains. |
 
-## Showcase model continuation — closed 28 October
+## Closed 2026-10-28
 
 ### B-021
 
@@ -121,8 +131,6 @@ Closed after inspecting every job in [run 40708072276](https://github.com/voidbr
 
 </details>
 
-## Shared contrast checks — closed 28 October
-
 ### B-020
 
 | Signal | ID | Priority | Status | Item |
@@ -145,7 +153,7 @@ Closed after inspecting every job in [run 40708072276](https://github.com/voidbr
 
 </details>
 
-## Fly entry, video feedback and Welcome navigation — closed 28 October
+**Fly entry, video feedback and Welcome navigation — closed 28 October**
 
 Closed after reading every job of the #154 and #158 CI runs: each item's own browser tests passed in both runs (B-023's in #158, after it existed). Those runs' other failures belong to F-019, F-020 and B-025.
 
@@ -215,7 +223,9 @@ Closed after reading every job of the #154 and #158 CI runs: each item's own bro
 
 </details>
 
-## Welcome countdown and Views hierarchy — closed 29 October
+## Closed 2026-10-29
+
+**Welcome countdown and Views hierarchy — closed 29 October**
 
 Closed after reading every job of [#159 CI](https://github.com/voidbrain/openbando/actions/runs/40784413716): all passed without retries.
 
@@ -263,7 +273,7 @@ Closed after reading every job of [#159 CI](https://github.com/voidbrain/openban
 
 </details>
 
-## Harness and maintenance — closed 29 October
+**Harness and maintenance — closed 29 October**
 
 Closed after reading every job of each PR's CI with `npm run ci:status`. Lesson recorded: stacked PRs (#160, #161) merged into feature branches without CI and needed #162 to reach main; PRs now target main.
 
@@ -273,8 +283,6 @@ Closed after reading every job of each PR's CI with `npm run ci:status`. Lesson 
 | 🔵 | AGENTS.md split: conventions, architecture, checks, joins, pitfalls, privacy and work tracking stay; area rules move verbatim to `docs/agents/areas.md`. | [#163](https://github.com/voidbrain/openbando/pull/163) | Closed | Unit/integration + Browser/accessibility · 2026-10-29 · [#163 CI](https://github.com/voidbrain/openbando/actions/runs/40788783214) passed (one Auto-sync retry, B-025) | 2026-10-29 |
 | 🔵 | `npm run ci:status` (per-PR jobs, failed and retried tests, PRs not based on main); Verification cells hold the current state. | [#164](https://github.com/voidbrain/openbando/pull/164) | Closed | Unit/integration + Browser/accessibility · 2026-10-29 · [#164 CI](https://github.com/voidbrain/openbando/actions/runs/40789398212) all jobs passed | 2026-10-29 |
 | 🔵 | Untrack the `node_modules` symlink #166 committed; `.gitignore` ignores `/node_modules` in either form. | [#169](https://github.com/voidbrain/openbando/pull/169) | Closed | Unit/integration + Browser/accessibility · 2026-10-29 · [#169 CI](https://github.com/voidbrain/openbando/actions/runs/40791582789) all jobs passed, no retries | 2026-10-29 |
-
-## Guide clips and Welcome films — closed 29 October
 
 ### F-011
 
@@ -298,7 +306,7 @@ Closed after reading every job of each PR's CI with `npm run ci:status`. Lesson 
 
 </details>
 
-## Auto-sync on CI and 3D indoor tools — closed 29 October
+**Auto-sync on CI and 3D indoor tools — closed 29 October**
 
 Closed after reading every job of the listed runs with `npm run ci:status`.
 
@@ -346,8 +354,6 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 
 </details>
 
-## Studio controls and vegetation — closed 29 October
-
 ### F-006
 
 | Signal | ID | Priority | Status | Item |
@@ -369,8 +375,6 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 | Reviewed | 2026-10-29 |
 
 </details>
-
-## Basement vertex edits and legacy doors — closed 29 October
 
 ### F-004
 
@@ -394,8 +398,6 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 
 </details>
 
-## Basement courtyards and separate pieces — closed 29 October
-
 ### F-002
 
 | Signal | ID | Priority | Status | Item |
@@ -418,8 +420,6 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 
 </details>
 
-## 3D basement vertex handles — closed 29 October
-
 ### F-003
 
 | Signal | ID | Priority | Status | Item |
@@ -441,8 +441,6 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 | Reviewed | 2026-10-29 |
 
 </details>
-
-## Fly checklist and the published photo — closed 29 October
 
 ### F-018
 
@@ -487,6 +485,8 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 | Reviewed | 2026-10-29 |
 
 </details>
+
+## Closed 2026-10-30
 
 ### F-036
 
