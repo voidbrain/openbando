@@ -3,7 +3,7 @@ import { addFloor, columnGrid, columnRow, convertBuilding } from './building-ops
 import { STRUCTURE_DEFAULTS } from '../three/structures';
 import { contains, type Rect } from './footprint';
 import { addOpening, listOpenings, outlineOf, patchOpening, removeOpening, reshapeBuilding, wallsOf } from './openings';
-import { uid, type BuildingSpec, type SiteSpec, type StructureKind } from './site-spec';
+import { ROOF_KINDS, uid, type BuildingSpec, type RoofKind, type SiteSpec, type StructureKind } from './site-spec';
 
 /**
  * The only things the assistant can do. A language model never writes geometry: it picks commands from this fixed
@@ -57,7 +57,7 @@ export interface AiCommand {
   roofless?: boolean;
   crenels?: boolean;
   name?: string;
-  roof?: 'gable' | 'gambrel' | 'flat' | 'vault';
+  roof?: RoofKind;
   /** set_roof: turn the roof a quarter, and repeat the module `count` times (3 gables ...). */
   turn?: boolean;
   degrees?: number;
@@ -118,7 +118,7 @@ export function normalizeCommands(raw: unknown): { cmds: AiCommand[]; errors: st
     if (typeof o['name'] === 'string' && o['name'].trim()) c.name = o['name'].trim().slice(0, 60);
     if (typeof o['side'] === 'string' && (COMPASS as readonly string[]).includes(o['side'].toLowerCase())) c.side = o['side'].toLowerCase() as Compass;
     if (o['axis'] === 'length' || o['axis'] === 'width') c.axis = o['axis'];
-    if (o['roof'] === 'gable' || o['roof'] === 'gambrel' || o['roof'] === 'flat' || o['roof'] === 'vault') c.roof = o['roof'];
+    if (ROOF_KINDS.includes(o['roof'] as RoofKind)) c.roof = o['roof'] as RoofKind;
     if (typeof o['doors'] === 'boolean') c.doors = o['doors'];
     if (typeof o['turn'] === 'boolean') c.turn = o['turn'];
     if (typeof o['roofless'] === 'boolean') c.roofless = o['roofless'];

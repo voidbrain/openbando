@@ -11,6 +11,7 @@ import { sanitizeTerrain, type TerrainSpec } from './terrain';
 import { sanitizeLayers } from './layers';
 import { sanitizeShapes, type ShapeSpec } from './shapes';
 import type { BlockRef } from './blocks';
+import type { FenceMaterial } from './fences';
 import { BASEMENT_COORD_LIMIT, validOutline } from './footprint';
 import { MAX_COURTYARDS, MAX_PIECES, cleanRings, keepValidRings, type BasementRing } from './basement-rings';
 import { migrateCompassDoors } from './basement';
@@ -46,6 +47,10 @@ export interface WallOpening {
   sill?: number;
   closed?: boolean;
 }
+
+/** Every roof shape, the one list the spec type, the AI command, its schema and the editor's menu follow (F-037). */
+export const ROOF_KINDS = ['gable', 'gambrel', 'vault', 'flat'] as const;
+export type RoofKind = (typeof ROOF_KINDS)[number];
 
 /** One storey of a building: a slab at `baseY`, walls up to `baseY + height`, roof on top, interior partitions. */
 /** A rectangular opening in a floor slab; on the ground floor `water` fills it with a basin instead. */
@@ -106,7 +111,7 @@ export interface WallSpec {
   thick: number;
   color?: string;
   /** What it is made of (see core/fences.ts); absent = a masonry wall. */
-  material?: 'masonry' | 'concrete' | 'brick' | 'wood' | 'rail' | 'metal' | 'chainlink' | 'hedge' | 'bramble' | 'wires';
+  material?: FenceMaterial;
   /** Placed from a library block. */
   block?: BlockRef;
 }
@@ -134,7 +139,7 @@ export interface LevelSpec {
    * 'gable' = pitched roof over the long axis, 'gambrel' = a barn roof (two slopes a side, the lower one steep),
    * 'vault' = barrel vault(s), 'flat' = parapet slab.
    */
-  roof: 'gable' | 'gambrel' | 'vault' | 'flat' | 'none';
+  roof: RoofKind | 'none';
   /** Turn the roof a quarter: the ridge / barrels run across the building instead of along it. */
   roofTurn?: boolean;
   /** Repeat the roof module this many times (3 side-by-side gables, 4 barrels ...). Default 1. */

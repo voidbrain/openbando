@@ -322,7 +322,7 @@
       "places": [
         {
           "file": "src/app/core/fences.ts",
-          "what": "FenceMaterial, FENCES"
+          "what": "FENCE_MATERIALS (the one list), FENCES"
         },
         {
           "file": "src/app/core/site-spec.ts",
@@ -333,14 +333,14 @@
           "what": "FENCE_ICON"
         }
       ],
-      "kept": "TypeScript for FENCE_ICON only; nothing for WallSpec.material (F-036)"
+      "kept": "one source: FENCE_MATERIALS types WallSpec.material and FENCE_ICON; fences.spec.ts checks the menu (F-036)"
     },
     {
       "value": "Roof kinds",
       "places": [
         {
           "file": "src/app/core/site-spec.ts",
-          "what": "LevelSpec.roof"
+          "what": "ROOF_KINDS (the one list), LevelSpec.roof"
         },
         {
           "file": "src/app/core/ai-commands.ts",
@@ -355,7 +355,7 @@
           "what": "Roof \u2192 shape options"
         }
       ],
-      "kept": "ai-commands.spec.ts, partly; nothing for the editor menu (F-037)"
+      "kept": "one source: ROOF_KINDS types the spec and the AI command and feeds AI_SCHEMA and the editor menu; ai-commands.spec.ts checks the schema, set_roof and the prompt prose (F-037)"
     },
     {
       "value": "Structure kinds",

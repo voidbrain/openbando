@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FENCES, fenceDef, hedgeLumps, newFence, postsAlong, setFenceMaterial, wireSag } from './fences';
+import { FENCES, FENCE_MATERIALS, fenceDef, hedgeLumps, newFence, postsAlong, setFenceMaterial, wireSag } from './fences';
 
 describe('fence materials', () => {
   it('every material has distinct ids and sane sizes; unknown falls back to masonry', () => {
@@ -53,5 +53,11 @@ describe('hedges and lines', () => {
     expect(s[0]![0]!.drop).toBe(0);
     expect(s[0]![10]!.drop).toBeCloseTo(0);
     expect(s[0]![5]!.drop).toBeCloseTo(4 * 0.03 * 35 * 0.25);
+  });
+});
+
+describe('one list of fence materials (F-036)', () => {
+  it('the material menu offers exactly the materials the spec accepts, in order', () => {
+    expect(FENCES.map((f) => f.id)).toEqual([...FENCE_MATERIALS]);
   });
 });

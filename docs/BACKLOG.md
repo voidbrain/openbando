@@ -893,20 +893,20 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-036 | 🔹 P3 | Open | Fence materials: one list, not three |
+| 🟡 | F-036 | 🔹 P3 | Implemented | Fence materials: one list, not three |
 
-💻 **→ Human action required: No**<br />Make `FENCES` (core/fences.ts) the one source: `FenceMaterial` and `WallSpec.material` derive from it, `FENCE_ICON` stays typed by it; add a test.
+💻 **→ Human action required: No**<br />Close when this PR merges on a green CI: the tests keep the list single.
 
-**Next action / closure evidence:** Found 2026-10-30 while listing the value couplings (F-033): the same list is written by hand in `core/fences.ts` (`FenceMaterial`), `core/site-spec.ts` (`WallSpec.material`) and the editor's icon map, and nothing keeps them equal. Closes when one source feeds the others (or a test fails when they differ) and the coupling in `.harness.json` says so.
+**Next action / closure evidence:** Found 2026-10-30 while listing the value couplings (F-033): the same list is written by hand in `core/fences.ts` (`FenceMaterial`), `core/site-spec.ts` (`WallSpec.material`) and the editor's icon map, and nothing keeps them equal. Closes when one source feeds the others (or a test fails when they differ) and the coupling in `.harness.json` says so. Done 2026-10-30 (this PR): `FENCE_MATERIALS` (core/fences.ts) is the one list; `FenceMaterial` and `WallSpec.material` derive from it, `FENCE_ICON` is typed by it; `fences.spec.ts` checks the menu offers exactly that list.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Found in this PR (F-033) |
+| PR / evidence | This PR; found in [#224](https://github.com/voidbrain/openbando/pull/224) (F-033) |
 | Opened | 2026-10-30 |
-| Verification | Not implemented |
+| Verification | Unit · 2026-10-30 · the one-list tests passed |
 | Reviewed | 2026-10-30 |
 
 </details>
@@ -917,20 +917,20 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-037 | 🔹 P3 | Open | Roof kinds: one list, not four |
+| 🟡 | F-037 | 🔹 P3 | Implemented | Roof kinds: one list, not four |
 
-💻 **→ Human action required: No**<br />One list of roof kinds that `LevelSpec.roof`, the AI command type, `AI_SCHEMA` and the editor's Roof → shape menu all read; add a test.
+💻 **→ Human action required: No**<br />Close when this PR merges on a green CI: the tests keep the list single.
 
-**Next action / closure evidence:** Found 2026-10-30 while listing the value couplings (F-033): the same list is written by hand in `core/site-spec.ts`, `core/ai-commands.ts`, `core/ai-prompt.ts` and the editor template, and nothing keeps them equal. Closes when one source feeds the others (or a test fails when they differ) and the coupling in `.harness.json` says so.
+**Next action / closure evidence:** Found 2026-10-30 while listing the value couplings (F-033): the same list is written by hand in `core/site-spec.ts`, `core/ai-commands.ts`, `core/ai-prompt.ts` and the editor template, and nothing keeps them equal. Closes when one source feeds the others (or a test fails when they differ) and the coupling in `.harness.json` says so. Done 2026-10-30 (this PR): `ROOF_KINDS` (core/site-spec.ts) is the one list; `LevelSpec.roof`, the AI command type and its check, `AI_SCHEMA` and the editor's Roof → shape menu read it; `ai-commands.spec.ts` checks the schema, `set_roof` for each kind, and that the prompt's prose (which cannot read the list) mentions each.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Found in this PR (F-033) |
+| PR / evidence | This PR; found in [#224](https://github.com/voidbrain/openbando/pull/224) (F-033) |
 | Opened | 2026-10-30 |
-| Verification | Not implemented |
+| Verification | Unit · 2026-10-30 · the one-list tests passed |
 | Reviewed | 2026-10-30 |
 
 </details>

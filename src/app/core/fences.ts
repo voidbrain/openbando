@@ -1,7 +1,9 @@
 import type { WallSpec } from './site-spec';
 
 /** What a free-standing wall or fence is made of: drives its look, default size and whether you can see through it. */
-export type FenceMaterial = 'masonry' | 'concrete' | 'brick' | 'wood' | 'rail' | 'metal' | 'chainlink' | 'hedge' | 'bramble' | 'wires';
+/** Every fence material, the one list the spec type, the material menu and the icons follow (F-036). */
+export const FENCE_MATERIALS = ['masonry', 'concrete', 'brick', 'wood', 'rail', 'metal', 'chainlink', 'hedge', 'bramble', 'wires'] as const;
+export type FenceMaterial = (typeof FENCE_MATERIALS)[number];
 
 export interface FenceDef {
   id: FenceMaterial;
