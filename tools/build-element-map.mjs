@@ -97,6 +97,22 @@ for (const file of [...new Set(rows.map((r) => r.file))]) {
   for (const r of rs) md += `| ${cell(r.label || '(none)')} | ${r.el} | ${cell(r.mark)} | ${r.title} | ${r.tips.join(', ')} | ${r.clips.join(', ')} |\n`;
   md += '\n';
 }
+// keys (F-032 step 3): every global key the app handles (ShortcutsService, the flight keys of the pilot input) and
+// whether the Help panel names it; the script fails when one is missing, so a new shortcut gets its Help line
+const read = (f) => readFileSync(join(root, f), 'utf8');
+const shown = (code) => ({ Enter: 'Enter', Escape: 'Esc', Space: 'Space', ArrowLeft: '←', ArrowRight: '→', ArrowUp: '↑', ArrowDown: '↓', ShiftLeft: 'Shift', ShiftRight: 'Shift' })[code] ?? code.replace(/^Key/, '');
+const keys = [
+  ...[...read('src/app/services/shortcuts.service.ts').matchAll(/case '(\w+)':/g)].map((m) => ({ code: m[1], from: 'src/app/services/shortcuts.service.ts' })),
+  ...[...read('src/app/core/radio/radio-input.ts').matchAll(/k\('(\w+)'\)/g)].map((m) => ({ code: m[1], from: 'src/app/core/radio/radio-input.ts' })),
+];
+const help = noComments(templates('help-panel.ts', read('src/app/ui/panels/help-panel.ts')).join(' ')).replace(/<[^>]*>/g, ' ');
+const inHelp = (k) => new RegExp(`(^|[\\s/·(])${k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?=[\\s/·)]|$)`).test(help);
+const keyRows = [...new Map(keys.map((k) => [shown(k.code), { key: shown(k.code), codes: keys.filter((o) => shown(o.code) === shown(k.code)).map((o) => o.code), from: k.from }])).values()];
+md += `## Keys\n\nEvery global key the app handles and whether the Help panel names it (F-032 step 3). The script fails when one is missing. The editor's own keys (Delete, Esc, Ctrl+Z, arrows on a selected point) are shown where they apply, in its hints and titles, and are not listed here.\n\n| Key | Codes | Handled in | In Help |\n|---|---|---|---|\n`;
+for (const k of keyRows) md += `| ${cell(k.key)} | ${k.codes.join(', ')} | ${k.from} | ${inHelp(k.key) ? 'yes' : '**no**'} |\n`;
+md += '\n';
+const missing = keyRows.filter((k) => !inHelp(k.key));
+
 writeFileSync(join(root, 'docs/agents/element-map.md'), md);
 
 // each clip's component files: the file of every control it uses, and that component's other files (same stem)
@@ -104,5 +120,9 @@ const siblings = (f) => ['.html', '.scss', '.ts'].map((x) => f.replace(/\.(html|
 const sources = {};
 for (const r of rows) for (const c of r.clips) sources[c] = [...new Set([...(sources[c] ?? []), ...siblings(r.file)])].sort();
 const clipSources = Object.fromEntries(Object.keys(sources).sort().filter((c) => existsSync(join(root, `docs/guide/clips/${c}.webm`))).map((c) => [c, sources[c]])); // showcase steps have no clip
+if (missing.length) {
+  console.error(`The Help panel (src/app/ui/panels/help-panel.ts) does not name these keys: ${missing.map((k) => k.key).join(', ')}. Add them (and their Italian).`);
+  process.exitCode = 1;
+}
 writeFileSync(join(root, 'docs/guide/clip-sources.json'), `${JSON.stringify({ about: 'Written by tools/build-element-map.mjs: the component files of the controls each guide clip uses (F-032 step 2). tools/check-media.mjs names the clips whose files changed since they were recorded.', clips: clipSources }, null, 2)}\n`);
 console.log(`docs/agents/element-map.md: ${n} controls, ${withTip} with a tip, ${withTitle} with a title, ${inClips} in clips, ${noName} unnamed; docs/guide/clip-sources.json: ${Object.keys(clipSources).length} clips`);

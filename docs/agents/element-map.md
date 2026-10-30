@@ -548,3 +548,29 @@ The element-level part of the impact map ([impact-map.md](impact-map.md), from t
 |---|---|---|---|---|---|
 | Orient camera: click for north, drag or use arrow keys to turn | button |  | yes |  |  |
 
+## Keys
+
+Every global key the app handles and whether the Help panel names it (F-032 step 3). The script fails when one is missing. The editor's own keys (Delete, Esc, Ctrl+Z, arrows on a selected point) are shown where they apply, in its hints and titles, and are not listed here.
+
+| Key | Codes | Handled in | In Help |
+|---|---|---|---|
+| Esc | Escape | src/app/services/shortcuts.service.ts | yes |
+| Enter | Enter | src/app/services/shortcuts.service.ts | yes |
+| V | KeyV | src/app/services/shortcuts.service.ts | yes |
+| M | KeyM | src/app/services/shortcuts.service.ts | yes |
+| H | KeyH | src/app/services/shortcuts.service.ts | yes |
+| R | KeyR | src/app/services/shortcuts.service.ts | yes |
+| P | KeyP | src/app/services/shortcuts.service.ts | yes |
+| ← | ArrowLeft | src/app/services/shortcuts.service.ts | yes |
+| → | ArrowRight | src/app/services/shortcuts.service.ts | yes |
+| D | KeyD | src/app/core/radio/radio-input.ts | yes |
+| A | KeyA | src/app/core/radio/radio-input.ts | yes |
+| W | KeyW | src/app/core/radio/radio-input.ts | yes |
+| S | KeyS | src/app/core/radio/radio-input.ts | yes |
+| E | KeyE | src/app/core/radio/radio-input.ts | yes |
+| Q | KeyQ | src/app/core/radio/radio-input.ts | yes |
+| ↑ | ArrowUp | src/app/core/radio/radio-input.ts | yes |
+| Space | Space | src/app/core/radio/radio-input.ts | yes |
+| ↓ | ArrowDown | src/app/core/radio/radio-input.ts | yes |
+| Shift | ShiftLeft, ShiftRight | src/app/core/radio/radio-input.ts | yes |
+

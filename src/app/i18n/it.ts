@@ -292,7 +292,7 @@ export const IT: Readonly<Record<string, string>> = {
   'LOGS': 'LOG',
   'ORBIT': 'ORBITA',
   '· Enter arm/record · W/S pitch · A/D roll · Q/E yaw · ↑/↓ or Space/Shift throttle': '· Invio arma/registra · W/S beccheggio · A/D rollio · Q/E imbardata · ↑/↓ o Spazio/Shift gas',
-  '· V view · M angle/acro · H alt-hold · R reset · P replay · ←/→ seek (Shift = 10 s) · radio via USB (Radio panel)': '· V vista · M angle/acro · H mantieni quota · R reimposta · P replay · ←/→ scorri (Shift = 10 s) · radio via USB (pannello Radio)',
+  '· V view · M angle/acro · H alt-hold · R reset · P replay · ←/→ seek (Shift = 10 s) · Esc cancel a pin · radio via USB (Radio panel)': '· V vista · M angle/acro · H mantieni quota · R reimposta · P replay · ←/→ scorri (Shift = 10 s) · Esc annulla il fissaggio · radio via USB (pannello Radio)',
   '· drag rotate · right-drag pan · wheel zoom · pinch on touch': '· trascina ruota · tasto destro sposta · rotella zoom · pizzica sul touch',
   '· drop a Betaflight Blackbox CSV, GPX or JSON file anywhere · drop a satellite screenshot to replace the map': '· trascina ovunque un file Betaflight Blackbox CSV, GPX o JSON · trascina uno screenshot satellitare per sostituire la mappa',
 
