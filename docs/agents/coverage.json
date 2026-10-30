@@ -6,15 +6,15 @@
   "functions": 89.9
  },
  "src/app/three/": {
-  "lines": 69.6,
-  "statements": 70.4,
-  "branches": 60.1,
-  "functions": 68.2
+  "lines": 69.5,
+  "statements": 70.3,
+  "branches": 60,
+  "functions": 68
  },
  "src/app/services/": {
   "lines": 39.8,
   "statements": 38.7,
-  "branches": 33.9,
+  "branches": 34,
   "functions": 40.1
  },
  "src/app/state/": {

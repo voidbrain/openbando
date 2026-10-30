@@ -665,6 +665,7 @@ export class BandoEditor {
   /** What is selected, as the 3D view needs it (for the yellow box). */
   protected readonly sel3d = computed<SitePick | null>(() => {
     const p = this.pick();
+    if (p?.t === 'pad') return { kind: 'pad' };
     if (p?.t === 'tree') return { kind: 'tree', i: p.i };
     if (p?.t === 'fence') return { kind: 'fence', i: p.i };
     if (p?.t === 'structure') {
@@ -1617,18 +1618,23 @@ export class BandoEditor {
     } else if(p.kind === 'road'||p.kind === 'surface'||p.kind === 'water') this.pick.set({t:p.kind,i:p.i});
     else if (p.kind === 'fence') this.pick.set({ t: 'fence', i: p.i });
     else if(p.kind==='tree') this.pick.set({ t: 'tree', i: p.i });
+    else if (p.kind === 'pad') this.pick.set({ t: 'pad' });
   }
 
   /** Use the same building gesture, overlap guard and undo step as the plan handles. */
   protected onTransform3d(g: { phase: 'down' | 'move' | 'up'; handle: BuildingHandle; x: number; z: number }): void {
-    const bd = this.b();
-    if (!bd || (this.indoor() && !(this.basementFocus() && g.handle.kind === 'basementVertex'))) return;
+    const bd = this.b(), pad = this.pick()?.t === 'pad';
+    if (!pad && (!bd || (this.indoor() && !(this.basementFocus() && g.handle.kind === 'basementVertex')))) return;
     const fake = { clientX: 0, clientY: 0, pointerId: 1, shiftKey: false, altKey: false, button: 0, currentTarget: null, stopPropagation: () => undefined, preventDefault: () => undefined } as unknown as PointerEvent;
     this.world3d = { x: g.x, z: g.z };
     try {
       if (g.phase === 'down') {
         this.capture(fake);
-        if (g.handle.kind === 'basementVertex' && g.handle.vertex !== undefined) this.basementVertexDown(fake, g.handle.vertex);
+        if (pad) {
+          const st = this.ed.draft().droneStart;
+          this.drag.set({ t: 'pad', dx: st.x - g.x, dz: st.z - g.z });
+        } else if (!bd) return;
+        else if (g.handle.kind === 'basementVertex' && g.handle.vertex !== undefined) this.basementVertexDown(fake, g.handle.vertex);
         else if (g.handle.kind === 'move') this.drag.set({ t: 'move', ox: bd.pos.x, oz: bd.pos.z, px: g.x, pz: g.z });
         else if (g.handle.kind === 'edge' && g.handle.edge !== undefined) this.edgeDown(fake, g.handle.edge);
         else this.cornerDown(fake, g.handle.sx, g.handle.sz);
