@@ -171,6 +171,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
+### B-042
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-042 | 🔶 P2 | Implemented | During the showcase, a panel the pilot opened from Views was closed again by its next step |
+
+💻 **→ Human action required: No**<br />Once the PR's CI is green and merged, close on that run (the e2e covers it).
+
+**Next action / closure evidence:** Found 2026-10-30 when the B-039 showcase e2e failed twice on #264 (a docs-only PR): the pilot opened Bandos from Views during the showcase replay; the showcase's next step rearranged the panels, closing Bandos (and once covering Views with the video panel), so the example to open was hidden. Decided by the owner 2026-10-30: a pilot's own click in Views stops the showcase. A real click on a panel toggle in Views now ends a playing guide or showcase through `leaveForNavigation()` (as opening a bando does: replay stopped, the pilot keeps the layout), then shows or hides the panel. The showcase e2e now checks that: the caption bar goes, the replay stays paused, the Bandos panel stays open, and an example then opens (passed 3 times locally). Area note added (Welcome and showcase sequencing). What follows (impact map): no clip, film or guide step changes (the guide's own clicks are not trusted, so they never end it), the element map is unchanged, no new text.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Found on [#264](https://github.com/voidbrain/openbando/pull/264)'s CI (e2e (4), both attempts) |
+| Opened | 2026-10-30 |
+| Verification | Browser · 2026-10-30 · showcase e2e (Views click during the replay) passed 3 times locally |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
 ### B-041
 
 | Signal | ID | Priority | Status | Item |
