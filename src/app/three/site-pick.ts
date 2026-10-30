@@ -4,7 +4,8 @@ import type { SiteModel } from './site-model';
 export type SitePick =
   | { kind: 'building' | 'basement' | 'structure' | 'underground'; id: string }
   | { kind: 'column' | 'wall'; id: string; li: number; i: number }
-  | { kind: 'fence' | 'tree' | 'road' | 'surface' | 'water'; i: number };
+  | { kind: 'fence' | 'tree' | 'road' | 'surface' | 'water'; i: number }
+  | { kind: 'pad' };
 /** Nearest visible surface only: terrain occludes underground selections. */
 export function pickModel(ray: THREE.Raycaster, model: SiteModel, spec: SiteSpec): SitePick | null {
   model.group.updateMatrixWorld(true);
@@ -33,7 +34,7 @@ export function pickModel(ray: THREE.Raycaster, model: SiteModel, spec: SiteSpec
       const p = o.userData['pick'] as SitePick | undefined;
       if (p) return p;
     }
-    // An unlabelled surface (ground, pad) blocks elements behind it.
+    // An unlabelled surface (ground, a plain pad) blocks elements behind it.
     return null;
   }
   return null;

@@ -86,6 +86,8 @@ export class TreeField {
 /** Draw order of the ground (first) and of the meadow patches (after it, one step per patch). */
 const GROUND_ORDER = -2000;
 const DECAL_ORDER = -1000;
+/** The take-off pad (the last pad) and its start marker: the editor's 3D view selects and drags them. */
+const TAKEOFF_PICK = { kind: 'pad' } as const;
 
 const material = (color: string, o: THREE.MeshStandardMaterialParameters = {}): THREE.MeshStandardMaterial =>
   new THREE.MeshStandardMaterial({ color, roughness: 0.95, ...o });
@@ -1000,13 +1002,19 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
         const o = new THREE.Mesh(new THREE.BoxGeometry(pd.w, 0.16, pd.d), material(pd.color ?? '#a9aaa0'));
         o.position.set(pd.x, ground.start + lift - 0.06, pd.z);
         o.rotation.y = (-(pd.rotDeg ?? 0) * Math.PI) / 180;
+        o.userData['pick'] = TAKEOFF_PICK;
         group.add(o);
-      } else group.add(drapedPad(ground, pd.x, pd.z, pd.w, pd.d, pd.rotDeg ?? 0, material(pd.color ?? '#a9aaa0')));
+      } else {
+        const o = drapedPad(ground, pd.x, pd.z, pd.w, pd.d, pd.rotDeg ?? 0, material(pd.color ?? '#a9aaa0'));
+        if (i === spec.pads.length - 1) o.userData['pick'] = TAKEOFF_PICK;
+        group.add(o);
+      }
     }
     for (const [i, r] of orderedRoads(spec.roads ?? []).entries()) {const m=roadMesh(ground,r,1+i);m.userData['pick']={kind:'road',i:spec.roads!.indexOf(r)};group.add(m);}
     const start = new THREE.Mesh(new THREE.BoxGeometry(4, 0.04, 4), material('#e8c65a'));
     start.position.set(spec.droneStart.x, ground.start + takeoffHeight(spec) + 0.2, spec.droneStart.z);
     start.receiveShadow = true;
+    start.userData['pick'] = TAKEOFF_PICK;
     group.add(start);
   } else if (!opts.bare) {
     // ---- ground + meadow patches (patches ignore depth; everything drawn after them covers them)
@@ -1034,6 +1042,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
       o.rotation.y = (-(pd.rotDeg ?? 0) * Math.PI) / 180;
       o.receiveShadow = true;
       o.renderOrder = order++;
+      if (i === spec.pads.length - 1) o.userData['pick'] = TAKEOFF_PICK;
       group.add(o);
     }
     // flat ground: surfaces and roads are decals drawn after the meadow patches
@@ -1047,6 +1056,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     const start = new THREE.Mesh(new THREE.BoxGeometry(4, 0.04, 4), material('#e8c65a'));
     start.position.set(spec.droneStart.x, takeoffHeight(spec) + 0.2, spec.droneStart.z);
     start.receiveShadow = true;
+    start.userData['pick'] = TAKEOFF_PICK;
     group.add(start);
   }
   // ---- water: a flat, see-through surface at each basin's level (the ground under it is dug when there is a terrain)
