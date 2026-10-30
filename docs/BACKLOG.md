@@ -552,7 +552,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 |---|---|
 | PR / evidence | Request 2026-10-30 |
 | Opened | 2026-10-30 |
-| Verification | Unit + Browser · 2026-10-30 · height pins, keyboard adjust e2e passed locally (the mouse drag is the owner's check) |
+| Verification | Unit + Browser · 2026-10-30 · height pins, keyboard adjust e2e passed locally (the mouse drag is the owner's check); the keyboard e2e read the replay time before the seek reached the caption and failed on #264's CI, fixed in [#265](https://github.com/voidbrain/openbando/pull/265) (test only) |
 | Reviewed | 2026-10-30 |
 
 </details>
