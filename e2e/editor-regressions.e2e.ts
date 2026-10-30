@@ -607,6 +607,8 @@ test('a shown panel is fully opaque even when its entrance animation stalls', as
   expect(await opacity('studio')).toBe('1');
   await page.getByRole('button', {name: 'Close Views', exact: true}).click();
   await page.getByRole('button', {name: 'Open the Views panel', exact: true}).click();
+  // Views itself appears at once (B-024: Safari could still freeze it half-drawn while it slid in)
+  expect(await page.locator('app-panel[data-id="views"]').evaluate(el => el.getAnimations().length)).toBe(0);
   await frozen();
   expect(await opacity('views')).toBe('1');
   await expect(page.getByRole('button', {name: 'Open the Views panel', exact: true})).toHaveCount(0);

@@ -90,6 +90,11 @@ import { CASCADE_STEP, PANEL_BY_ID, cascadeIndex, type PanelId } from '../panel-
         animation: none;
       }
     }
+    /* Views appears at once (B-024): in Safari its entrance could still freeze half-drawn when it is reopened, and it
+       is the panel opened most often (candidate fix: the big blurred panel moving is what Safari composites worst) */
+    :host([data-id='views']) {
+      animation: none;
+    }
     :host([hidden]) {
       display: none;
     }
