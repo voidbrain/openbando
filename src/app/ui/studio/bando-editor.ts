@@ -415,7 +415,7 @@ export class BandoEditor {
   // map view (Leaflet) as signals: centre, zoom, pixel size
   private readonly center = signal({ lat: this.studio.start().lat, lon: this.studio.start().lon });
   private readonly zoom = signal(this.studio.start().zoom);
-  private readonly size = signal({ w: 600, h: 400 });
+  private readonly size = signal({ w: 600, h: 400 }, { equal: (a, b) => a.w === b.w && a.h === b.h }); // set on every map move: only a real change counts
   /** The area to build, in metres either side of the map centre: independent of the window size and the zoom. */
   protected readonly half = signal<{ e: number; n: number }>({ e: 120, n: 80 });
   /** The frame's centre relative to the map centre, in the frame's own axes (metres, u = its east, v = its south): resizing one edge moves only that edge. */
@@ -887,6 +887,12 @@ export class BandoEditor {
       this.ed.selectedId(); // another building: back to the whole building
       untracked(() => { this.floorFocus.set(false); if(this.ed.selectedId()!==this.basementFocusId())this.basementFocus.set(false); });
     });
+    // zooming in past the frame's fit refines the area instead of cutting the frame (B-029); before the effect below,
+    // so a zoom shrinks the area rather than being undone
+    effect(() => {
+      this.zoom();
+      if (this.mapOn()) untracked(() => this.refineFrame());
+    });
     // the frame stays inside the map: whatever changes its size, place or turn, the view or the mode
     effect(() => {
       this.mode();
@@ -1068,10 +1074,33 @@ export class BandoEditor {
   }
 
   /**
-   * The area frame is a place on the map: it zooms with the map (about the view's centre, like the wheel in 1 · Area)
-   * and never changes size by itself. Zooming in stops where the frame would reach FRAME_MARGIN from the map's edge;
-   * a smaller panel, a turn or a reopened area zooms the map out instead. Only when even the farthest zoom is too close
-   * does the area shrink.
+   * The pixels per metre at which the frame (its half-sizes and offset scaled by `k`) just fits inside the view, keeping
+   * FRAME_MARGIN from every edge; null before the view is laid out.
+   */
+  private fitPpm(k = 1): number | null {
+    const { w, h } = this.size();
+    if (w < FRAME_MARGIN * 4 || h < FRAME_MARGIN * 4) return null; // not laid out yet (or folded away)
+    const r = (this.rot() * Math.PI) / 180, cos = Math.abs(Math.cos(r)), sin = Math.abs(Math.sin(r));
+    const { e: he, n: hn } = this.half(), o = this.off();
+    // metres from the view's centre to the frame's farthest side, across and down
+    const across = k * (Math.abs(o.u * Math.cos(r) - o.v * Math.sin(r)) + he * cos + hn * sin);
+    const down = k * (Math.abs(o.u * Math.sin(r) + o.v * Math.cos(r)) + he * sin + hn * cos);
+    return Math.min((w / 2 - FRAME_MARGIN) / across, (h / 2 - FRAME_MARGIN) / down);
+  }
+  private zoomFor(ppm: number): number {
+    return Math.log2(ppm * 156543.03392 * Math.cos((this.center().lat * Math.PI) / 180)) - 1e-6;
+  }
+  /** Scale the area (sizes and offset from the view's centre) by `k`. */
+  private scaleArea(k: number): void {
+    const { e, n } = this.half(), o = this.off();
+    this.half.set({ e: clampHalf(e * k), n: clampHalf(n * k) });
+    this.off.set({ u: o.u * k, v: o.v * k });
+  }
+
+  /**
+   * The area frame is a place on the map and never leaves it (B-029). A smaller panel, a turn or a reopened area zooms
+   * the map out to keep it whole (only when even the farthest zoom is too close does the area shrink). The map may zoom
+   * in further, to refine the area: then `refineFrame` shrinks it to the view (its smallest size caps the zoom).
    */
   private keepFrame(): void {
     const map = this.map;
@@ -1080,22 +1109,31 @@ export class BandoEditor {
       map.setMaxZoom(MAX_MAP_ZOOM);
       return;
     }
-    const { w, h } = this.size();
-    if (w < FRAME_MARGIN * 4 || h < FRAME_MARGIN * 4) return; // not laid out yet (or folded away)
-    const r = (this.rot() * Math.PI) / 180, cos = Math.abs(Math.cos(r)), sin = Math.abs(Math.sin(r));
-    const { e: he, n: hn } = this.half(), o = this.off();
-    // metres from the view's centre to the frame's farthest side, across and down
-    const across = Math.abs(o.u * Math.cos(r) - o.v * Math.sin(r)) + he * cos + hn * sin;
-    const down = Math.abs(o.u * Math.sin(r) + o.v * Math.cos(r)) + he * sin + hn * cos;
-    const ppm = Math.min((w / 2 - FRAME_MARGIN) / across, (h / 2 - FRAME_MARGIN) / down);
-    const fit = Math.log2(ppm * 156543.03392 * Math.cos((this.center().lat * Math.PI) / 180)) - 1e-6;
+    const ppm = this.fitPpm();
+    if (ppm === null) return;
+    const fit = this.zoomFor(ppm);
     if (fit < map.getMinZoom()) {
-      const k = ppm / this.ppm() / Math.pow(2, map.getMinZoom() - this.zoom()); // the scale that fits at the farthest zoom
-      this.half.set({ e: clampHalf(he * k), n: clampHalf(hn * k) });
-      this.off.set({ u: o.u * k, v: o.v * k });
+      this.scaleArea(ppm / this.ppm() / Math.pow(2, map.getMinZoom() - this.zoom())); // the scale that fits at the farthest zoom
       return; // runs again with the smaller area
     }
-    map.setMaxZoom(Math.min(MAX_MAP_ZOOM, fit)); // also zooms out when the map is closer than that
+    // zooming in may go on until the area, shrunk to the view, reaches its smallest size
+    // zoom levels on the map's snap grid, rounded down: a zoom-out never lands past the fit (or the area would shrink),
+    // and the zoom-in button turns off where zooming stops
+    const snap = map.options.zoomSnap || 1, down = (z: number): number => Math.floor(z / snap + 1e-6) * snap;
+    if (map.getZoom() > fit + 1e-3) map.setZoom(Math.max(map.getMinZoom(), down(fit)), { animate: false }); // the frame grew or the view shrank
+    // zooming in may go on until the area, shrunk to the view, reaches its smallest size
+    const { e, n } = this.half(), smallest = Math.min(1, MIN_HALF / Math.min(e, n));
+    map.setMaxZoom(Math.min(MAX_MAP_ZOOM, Math.max(map.getZoom(), down(this.zoomFor(this.fitPpm(smallest) ?? ppm)))));
+  }
+
+  /**
+   * The pilot zoomed in past the frame's fit: the area shrinks so the frame stays inside the view, keeping its place,
+   * turn and shape on the screen. Zooming out does not make it grow back: drag its edges for that.
+   */
+  private refineFrame(): void {
+    if (this.mode() !== 'area' || !this.map) return;
+    const ppm = this.fitPpm();
+    if (ppm !== null && this.ppm() > ppm * (1 + 1e-6)) this.scaleArea(ppm / this.ppm());
   }
 
   protected setMode(m: 'area' | 'model'): void {

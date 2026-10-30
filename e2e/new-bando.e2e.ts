@@ -48,11 +48,12 @@ test('Go goes to the first match and lists the others', async ({page}) => {
 });
 
 /**
- * The area frame is a place on the map and is never cut by its edge: an edge dragged past the map stops at the margin,
- * zooming in stops before the frame reaches it, the wheel zooms about the centre (as the frame does), and a turn or a
- * smaller window zooms the map out. None of them changes the area.
+ * The area frame is a place on the map and is never cut by its edge: an edge dragged past the map stops at the margin;
+ * zooming in past the frame's fit refines the area (it shrinks to the view, B-029, the owner 2026-10-30), down to its
+ * smallest size, and zooming back out does not make it grow; the wheel zooms about the centre (as the frame does); a turn
+ * or a smaller window zooms the map out and does not change the area.
  */
-test('the area frame is never cut by the map edge and keeps its size', async ({page}) => {
+test('the area frame is never cut by the map edge; zooming in refines it, nothing else resizes it', async ({page}) => {
   await page.addInitScript(() => localStorage.setItem('openbando-welcome', JSON.stringify({completed: true})));
   await page.emulateMedia({reducedMotion: 'reduce'});
   await page.goto('/');
@@ -88,15 +89,22 @@ test('the area frame is never cut by the map edge and keeps its size', async ({p
   });
   await drag('.frame .h.e', (h) => [h.x + 2000, h.y + h.height / 2]);
   expect(await inside()).toBe(true);
-  const size = await readout.textContent();
-  // zooming in stops at the frame's limit: the button turns off
+  // zooming in past the fit refines the area: the frame stays inside, the area gets smaller, down to its smallest size
+  const metres = async (): Promise<number> => Number((await readout.textContent())!.match(/([\d.]+)\s*×/)?.[1] ?? NaN);
+  const big = await metres();
   const zoomIn = studio.locator('.leaflet-control-zoom-in');
-  for (let i = 0; i < 12 && !/leaflet-disabled/.test((await zoomIn.getAttribute('class')) ?? ''); i++) {
+  for (let i = 0; i < 30 && !/leaflet-disabled/.test((await zoomIn.getAttribute('class')) ?? ''); i++) {
     await zoomIn.click();
     expect(await inside()).toBe(true);
   }
   await expect(zoomIn).toHaveClass(/leaflet-disabled/);
-  expect(await readout.textContent()).toBe(size);
+  const small = await metres();
+  expect(small).toBeLessThan(big);
+  // zooming back out keeps the refined area
+  await studio.locator('.leaflet-control-zoom-out').click();
+  await studio.locator('.leaflet-control-zoom-out').click();
+  expect(await metres()).toBe(small);
+  const size = await readout.textContent();
   // the wheel, off-centre, zooms about the view's centre like the frame (out, then back in up to the limit)
   const before = await centre();
   const m = (await map.boundingBox())!;
