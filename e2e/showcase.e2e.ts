@@ -172,3 +172,27 @@ test('Welcome navigation cancels the tour overlays and keeps the requested desti
   await expect(page.locator('app-panel[data-id=studio]')).toBeVisible();
   await expect(page.locator('app-panel[data-id=welcome]')).toBeHidden();
 });
+
+/** Opening another bando while the showcase replays ends it, with its replay and video (the pilot's report, 2026-10-30). */
+test('opening a bando during the showcase stops it and its replay', async ({page}) => {
+  test.setTimeout(240_000);
+  await page.goto('/?tour=showcase&lang=en');
+  const bar = page.locator('app-tour-overlay .bar');
+  const replayVideo = page.locator('app-video-panel video');
+  // wait for the replay: the showcase's flight and video are playing
+  await expect.poll(() => replayVideo.evaluate((v) => !(v as HTMLVideoElement).paused).catch(() => false), {timeout: 180_000}).toBe(true);
+  await expect(bar).toBeVisible();
+  // the pilot opens Views, then the Bandos, then an example
+  const menu = page.getByRole('button', {name: 'Open the Views panel', exact: true});
+  if (await menu.count()) await menu.click();
+  await page.locator('app-views-panel button.vis[data-panel=studio]').click();
+  const example = page.locator('app-studio-panel button[data-tour^="example-"]').first();
+  await expect(example).toBeVisible({timeout: 30_000});
+  await example.click();
+  await expect(bar).toBeHidden();
+  await expect.poll(() => replayVideo.evaluate((v) => (v as HTMLVideoElement).paused)).toBe(true);
+  // nothing restarts it: still paused a moment later
+  await page.waitForTimeout(1500);
+  expect(await replayVideo.evaluate((v) => (v as HTMLVideoElement).paused)).toBe(true);
+  await expect(page.locator('app-panel[data-id=studio]')).toBeVisible();
+});

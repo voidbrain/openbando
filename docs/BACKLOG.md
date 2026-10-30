@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `81df73d` (merged #251), with every CI job of #162–#251 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `8e8aed0` (merged #252), with every CI job of #162–#252 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -111,66 +111,6 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
-### B-019
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-019 | 🔶 P2 | Implemented | Indoor measures |
-
-🧑 **→ Human action required: Yes**<br />Check indoor measures in 3D, and that every label is now the same pill.
-
-| | |
-|---|---|
-| **Issue** | Indoor measures: placement on floors, and the 3D labels were wide bars with small text (now pills sized to the text). |
-| **Reproduce** | Editor, a building with a basement or an upper floor, Indoors, measure in 2D, then switch to 3D. |
-| **Check** | Lines lie on the floor you measured, and every label is the same rounded pill, readable at any zoom. |
-
-**Next action / closure evidence:** 2026-10-30, the owner: measuring works, but the 3D labels were inconsistent (wide dark bars with small text in one bando, rounded pills elsewhere). Cause: each 3D label was a fixed 768 × 100 canvas, filled to the edges, its text centred whatever its length. [#248](https://github.com/voidbrain/openbando/pull/248) draws it as the Readout pill (`--overlay-soft`, `--line` border, `--mono` text), sized to its text, at a fixed share of the view's height; a screenshot of the editor's 3D view showed the pill. History: Focused editor workflow passed indoor 2D measurements, debug coordinates, basement keyboard editing, 3D view and measure selection. Review indoor 3D measurement placement specifically; this is not every floor/tool combination.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#119](https://github.com/voidbrain/openbando/pull/119) (implemented; browser checks pending) |
-| Opened | 2026-10-28 |
-| Verification | Unit/integration + Browser/accessibility · 2026-10-28 · focused editor checks passed in [PR #124 CI](https://github.com/voidbrain/openbando/actions/runs/40652964649); Human + 3D indoor placement · Pending; Visual · 2026-10-30 · local screenshot of a 3D measure label (pill sized to the text); Human · 2026-10-30 · measuring works (owner) |
-| Reviewed | 2026-10-30 |
-
-</details>
-
----
-
-### B-024
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-024 | 🔺 P1 | Implemented | Shown panels stay transparent or invisible (Safari) |
-
-🧑 **→ Human action required: Yes**<br />Reopen Views a few times in real Safari (since #249).
-
-| | |
-|---|---|
-| **Issue** | In Safari, reopening Views could still freeze it half-transparent for a moment (owner, 2026-10-30; only Views). |
-| **Reproduce** | Real Safari, live site: close Views (×), reopen it from the menu button at the bottom, several times, with a bando open. |
-| **Check** | Views appears at once and fully opaque every time (it no longer slides in). |
-
-**Next action / closure evidence:** 2026-10-30, the owner: "still a bit of freeze with partial opacity on Views panel reopening; it happens only with the Views panel". Not reproduced in Playwright WebKit (the first frame after reopening is fully opaque there), so this is a candidate fix: [#249](https://github.com/voidbrain/openbando/pull/249) lets Views appear without the entrance slide (the other panels keep it), since a big blurred panel moving is what Safari composites worst; the opacity regression also checks that Views has no entrance animation (Chromium and WebKit pass). The Panel guide had kept the old 0.7 s fade-in description: corrected. History: WebKit check 2026-10-29 (Playwright WebKit 27.2, the engine behind Safari): the opacity regression, Fly entry (Open the bandos, close Views, reopen from the menu button), Views and Welcome cases pass; sampling every frame for 400 ms after Open the bandos and after the menu button, Views is at opacity 1 from the first frame. Real Safari not run. User report (Safari): Welcome's Open the bandos hid the menu button but Views did not appear; the menu button left the Views area semi-transparent, loading slowly or never. Cause: every panel's 0.7 s entrance animated opacity from 0 with fill both; when frames stall (WebKit entrance on a backdrop-filter element leaving display none, or a busy 3D main thread) the panel stayed near opacity 0 while the app counted it as shown. The entrance is now a 0.35 s transform-only slide. New browser regression freezes entrance animations at their start and requires opacity 1 for Views and Bandos after Open the bandos and after the menu button; it fails on the old fade in Chromium and WebKit and passes with the fix.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#158](https://github.com/voidbrain/openbando/pull/158); history: local Chromium and WebKit (Desktop Safari) regression passed with the fix and failed (opacity 0) without it, 2026-10-28 |
-| Opened | 2026-10-28 |
-| Verification | Browser/accessibility · 2026-10-28 · opacity regression passed in [#158 CI](https://github.com/voidbrain/openbando/actions/runs/40778367395) shard 1 (Chromium); Browser · 2026-10-29 · WebKit 27.2 locally: 4 cases passed, Views opaque from the first frame on both entry points; real Safari · Pending; Browser · 2026-10-30 · the opacity regression with the no-entrance check passed locally in Chromium and WebKit; real Safari · Pending |
-| Reviewed | 2026-10-30 |
-
-</details>
-
----
-
 ### B-028
 
 | Signal | ID | Priority | Status | Item |
@@ -201,30 +141,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
-### B-029
+### B-039
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟡 | B-029 | 🔶 P2 | Implemented | The 1 · Area frame drifts from the map on wheel zoom and can be cut by the map edge |
+| 🟡 | B-039 | 🔶 P2 | Implemented | Opening a bando during the Welcome showcase left its flight and video playing |
 
-🧑 **→ Human action required: Yes**<br />Try refining an area by zooming in on the live site (since #250).
+🧑 **→ Human action required: Yes**<br />Open a bando while Welcome plays, on the live site after this fix merges.
 
 | | |
 |---|---|
-| **Issue** | 1 · Area stopped zooming where the frame filled the map; now zooming in refines the area instead (owner, 2026-10-30). |
-| **Reproduce** | Live site, New bando, 1 · Area: frame a large area, then wheel-zoom (or +) in, then out; turn the frame; resize the panel. |
-| **Check** | Zooming in: the frame stays the same on screen and its metres go down, to about 40 m, where + turns off. Zooming out: the area stays as refined. Turn and resize: the map zooms out, the area keeps its size. |
+| **Issue** | With Welcome playing, opening Views, then the Bandos, then an example kept the showcase's Villetta flight and video playing. |
+| **Reproduce** | Live site: start Welcome; during the replay open Views (menu button), Bandos, and open an example (or Fly, Edit, New bando). |
+| **Check** | Welcome's caption bar goes, the video and the replay stop, and you stay on the bando you chose. |
 
-**Next action / closure evidence:** Changed 2026-10-30 ([#250](https://github.com/voidbrain/openbando/pull/250)), the owner: the margin rule was meant to keep the frame in view, not to stop zooming in to refine it. `refineFrame` shrinks the area when the pilot zooms in past the fit (the frame keeps its place, turn and shape on screen), down to `MIN_HALF`, where the zoom stops; zooming out does not grow it back; a turn or a smaller panel still zooms the map out and keeps the area. Two bugs found on the way: `size` was set as a new object on every map move, so `keepFrame` ran before the refine and undid every zoom (now it changes only on a real resize, and the refine runs first); and zoom limits off the map's 0.25 snap grid left + enabled at the end (now rounded down to the grid). `new-bando.e2e.ts` now checks the refine (the frame inside at every step, the area smaller, unchanged on zooming out, unchanged on a turn and a resize). History: 2026-10-30, the owner: "seems better; is the zoom level the max I can get? seems not enough". The maximum zoom in 1 · Area is the one where the frame reaches `FRAME_MARGIN` from the map's edge (`keepFrame`, the owner's rule: the frame is never cut and never changes size by itself), so it depends on the area's size and the panel's. History: Reported 2026-10-29 (several reports the same day). Causes: the frame is held in metres about the view's centre, while Leaflet's wheel zooms about the cursor, so each wheel step moved the map under the frame; nothing limited zooming in, so the frame grew past the map, was drawn clipped (`fb` capped it at the view) and its handles were out of reach (the pilot had to reload). [#202](https://github.com/voidbrain/openbando/pull/202) shrank the area to fit after each zoom: wrong, the user never asked for the area to change by itself (replaced here). Now (`keepFrame`): the area never changes size by itself; in 1 · Area the wheel and pinch zoom about the view's centre, as the frame does; zooming in stops where the frame would come within `FRAME_MARGIN` (36 px: handles, turn knob, search bar) of the map's edge (`setMaxZoom`, the + button turns off); a turn, a smaller panel or a reopened area zooms the map out instead; an edge drag stops at the margin. Only if even zoom 15 is too close does the area shrink. Covered by `e2e/new-bando.e2e.ts` ("never cut by the map edge and keeps its size": edge past the map, zoom to the limit, off-centre wheel keeps the map's centre, 45° turn, smaller window, size readout unchanged; fails on #202's code). Not checked: pinch zoom on a touch device.
+**Next action / closure evidence:** Reported 2026-10-30 by the owner. Only Welcome's own buttons ended the showcase (`leaveForNavigation`). Now every Bandos action that opens or switches a bando (its title, Fly, Edit, Open a fresh copy, New bando) ends a running guide first when the click is the pilot's (`isTrusted`; the guide's own clicks are synthetic), so the replay and video stop and the pilot stays where they went. `showcase.e2e.ts` reproduces the report (fails without the fix, passes with it).
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#203](https://github.com/voidbrain/openbando/pull/203) (zoom limit, centred wheel, margin; replaces #202's shrinking; all CI jobs green, no retries); [#202](https://github.com/voidbrain/openbando/pull/202) (all CI jobs green, no retries); report 2026-10-29 |
-| Opened | 2026-10-29 |
-| Verification | Browser · 2026-10-29 · `new-bando.e2e.ts`, guide, studio layout, a11y and editor regressions passed locally (one editor-regressions case timed out under parallel load and passed alone); live-site check · Pending; Browser · 2026-10-30 · `new-bando.e2e.ts` (3 tests, the refine included) passed locally; unit 588 passed |
+| PR / evidence | This PR; report 2026-10-30 |
+| Opened | 2026-10-30 |
+| Verification | Browser · 2026-10-30 · `showcase.e2e.ts` (all 6, the new case included), `new-bando.e2e.ts`, `takeoff-pad.e2e.ts` passed locally; the new case fails without the fix |
 | Reviewed | 2026-10-30 |
 
 </details>
@@ -295,36 +235,6 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 User-accepted fixes are preserved in the dated archives rather than repeated here. New findings reuse an existing ID when they concern the same behavior.
 
-### F-022
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-022 | 🔹 P3 | Implemented | Gambrel (barn) roof |
-
-🧑 **→ Human action required: Yes**<br />On the live site after merge: give a building a gambrel roof in the inspector (Roof → shape) and look at it in 3D.
-
-| | |
-|---|---|
-| **Issue** | A gambrel (barn) roof kind. |
-| **Reproduce** | Live site: a building's inspector, Roof → shape → gambrel, then 3D. |
-| **Check** | The roof has the two-slope barn shape. |
-
-**Next action / closure evidence:** Requested 2026-10-29 for Bardwell House (house and barn both have gambrel roofs; decided with the user: a real roof kind rather than an approximation). `LevelSpec.roof` gains `'gambrel'`: the gable's builder takes a cross-section, so a gambrel shares the ridge direction, repeat count, turn, ruin holes and the roof-high collider; its steep lower slope covers 36 % of each half-span and climbs 65 % of `roofRise` (`GAMBREL_KNEE`). Editor Roof → shape lists it; the assistant's `set_roof` accepts it (schema, prompt, normalisation). Older builds read an unknown roof as a vault. Covered by `site-model.spec.ts` (knee point, steeper lower slope, collider to the ridge, starts at the wall top) and `ai-commands.spec.ts` (set_roof gambrel; unknown shapes refused). A 3D screenshot of a gambrel house and barn was reviewed by the agent.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#206](https://github.com/voidbrain/openbando/pull/206) (all CI jobs green); request 2026-10-29 |
-| Opened | 2026-10-29 |
-| Verification | Unit · 2026-10-29 · roof geometry, collider and AI cases passed locally; 3D screenshot reviewed; live-site check · Pending |
-| Reviewed | 2026-10-29 |
-
-</details>
-
----
-
 ### F-023
 
 | Signal | ID | Priority | Status | Item |
@@ -359,17 +269,11 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟡 | F-021 | 🔹 P3 | Implemented | Move the take-off pad in the editor |
+| 🔴 | F-021 | 🔹 P3 | Open | Move the take-off pad in the editor |
 
-🧑 **→ Human action required: Yes**<br />On the live site after merge: in 2 · Model 2D, drag the take-off pad with Select, and right-click the ground: Move the take-off pad here.
+💻 **→ Human action required: No**<br />Fix the five pad problems below, in order, with tests; then ask for a new live check.
 
-| | |
-|---|---|
-| **Issue** | The take-off pad can be moved in the editor. |
-| **Reproduce** | Live site, 2 · Model 2D: drag the pad with Select; right-click the ground. |
-| **Check** | The pad follows the drag; Move the take-off pad here puts it under the click. |
-
-**Next action / closure evidence:** Requested 2026-10-29: the take-off pad (where flights start, `droneStart`, drawn as the last pad) could not be selected or moved in the editor; a never-called `SiteService.setTakeoffAt` moved the start without the drawn pad. Now `moveTakeoff` (core) moves the last pad and the drone start together, keeping their offset (older bandos' road pads stay). In 2D the pad has a red outline; Select picks it (the inspector shows x / z in metres) and drags it in one undo step; its right-click menu has "Move to coordinates…", and the ground's right-click menu has "Move the take-off pad here". `setTakeoffAt` removed. Covered by a `layers.spec.ts` case and `e2e/takeoff-pad.e2e.ts` (drag, ground menu: the pad lands under the click, export has pad and start together). Not done: moving it in the 3D editor view.
+**Next action / closure evidence:** Reopened 2026-10-30 (owner, live site, with two screenshots): (1) in 3D the selection box is much bigger than the pad and the pad cannot be dragged; (2) in 2D a drag leaves a trail of pad copies; (3) the inspector shows no 3D preview of the pad; (4) selecting the pad sometimes leaves the previous object in the inspector's preview; (5) the two x / z fields are verbose. Cause of (1), found: the code takes the last pad as the take-off pad and assumes it stands at `droneStart`, but in Playground (pad at −14, 0; start at −30, 128) and Villetta (pad at 0, 0; start at 40, −50) it does not, and Chiari e Forti has no pad: the box spans a slab and the far start marker. Plan: (1) the take-off pad is the pad under `droneStart`, or none (then the start marker alone is the take-off spot); `moveTakeoff`, the 3D pick and box, the 2D drawing and the take-off height use that one source; (2) reproduce the trail (not seen in Chromium or WebKit headless; maybe a Safari repaint of the moved SVG rect); (3) and (4) the inspector preview gets a pad target and follows the pick; (5) a compact position readout with a Move to coordinates action instead of two fields. History: Requested 2026-10-29: the take-off pad (where flights start, `droneStart`, drawn as the last pad) could not be selected or moved in the editor; a never-called `SiteService.setTakeoffAt` moved the start without the drawn pad. Now `moveTakeoff` (core) moves the last pad and the drone start together, keeping their offset (older bandos' road pads stay). In 2D the pad has a red outline; Select picks it (the inspector shows x / z in metres) and drags it in one undo step; its right-click menu has "Move to coordinates…", and the ground's right-click menu has "Move the take-off pad here". `setTakeoffAt` removed. Covered by a `layers.spec.ts` case and `e2e/takeoff-pad.e2e.ts` (drag, ground menu: the pad lands under the click, export has pad and start together). Not done: moving it in the 3D editor view.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -379,7 +283,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 | PR / evidence | [#210](https://github.com/voidbrain/openbando/pull/210) (replaces [#207](https://github.com/voidbrain/openbando/pull/207): green CI, then a backlog conflict with #206); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Unit/browser · 2026-10-29 · `layers.spec.ts` and `takeoff-pad.e2e.ts` passed locally; live-site check · Pending |
-| Reviewed | 2026-10-29 |
+| Reviewed | 2026-10-30 |
 
 </details>
 

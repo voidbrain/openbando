@@ -16,6 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { SiteService } from '../../services/site.service';
 import { StudioService } from '../../services/studio.service';
 import { ToastService } from '../../services/toast.service';
+import { TourService } from '../../services/tour.service';
 import { Panel } from '../panel/panel';
 import { BandoEditor } from './bando-editor';
 
@@ -31,7 +32,7 @@ import { BandoEditor } from './bando-editor';
     <app-panel id="studio">
       @if (studio.view() === 'list') {
         <div class="row">
-          <button class="btn primary" (click)="studio.create()" data-tour="new-bando">＋ New bando</button>
+          <button class="btn primary" (click)="newBando($event)" data-tour="new-bando">＋ New bando</button>
           <label class="btn">Import<input type="file" accept=".json,application/json" hidden (change)="importFile($event)" /></label>
           <span class="grow"></span>
           <button class="btn" (click)="backupAll()" [disabled]="!site.bandos().length" title="Save every bando and your own blocks in one file (keep it somewhere safe: the browser can lose what it stores)">Back up all</button>
@@ -51,7 +52,7 @@ import { BandoEditor } from './bando-editor';
         <div class="list">
           @for (b of site.bandos(); track b.id) {
             <div class="card" [class.active]="b.id === site.active().id">
-              <button class="title" (click)="studio.open(b.id)" [title]="'Show ' + b.name + ' in 3D'">
+              <button class="title" (click)="show($event, b.id)" [title]="'Show ' + b.name + ' in 3D'">
                 <b>{{ b.name }}</b>
                 @if (b.id === site.active().id) { <span class="badge">active</span> }
                 <span class="dim small mono">{{ b.buildings }} buildings · {{ b.privacy === 'hidden' ? 'place hidden' : b.origin.lat.toFixed(4) + ', ' + b.origin.lon.toFixed(4) }}</span>
@@ -59,12 +60,12 @@ import { BandoEditor } from './bando-editor';
               @if (newer(b); as ex) {
                 <div class="small upd">
                   A newer release of “{{ ex.name }}” is out.
-                  <button class="btn" (click)="openExample(ex)">Open a fresh copy</button>
+                  <button class="btn" (click)="openExample($event, ex)">Open a fresh copy</button>
                 </div>
               }
               <div class="acts">
-                <button class="btn primary" (click)="fly(b.id)">Fly</button>
-                <button class="btn" (click)="studio.edit(b.id)" [title]="b.privacy === 'hidden' ? 'Edit the model (its place is hidden, so there is no map area)' : 'Change the area on the map and regenerate'">{{ b.privacy === 'hidden' ? 'Edit' : 'Edit area' }}</button>
+                <button class="btn primary" (click)="fly($event, b.id)">Fly</button>
+                <button class="btn" (click)="edit($event, b.id)" [title]="b.privacy === 'hidden' ? 'Edit the model (its place is hidden, so there is no map area)' : 'Change the area on the map and regenerate'">{{ b.privacy === 'hidden' ? 'Edit' : 'Edit area' }}</button>
                 <button class="btn" (click)="rename(b.id, b.name)">Rename</button>
                 <button class="btn" (click)="duplicate(b.id)">Duplicate</button>
                 @if (b.privacy === 'hidden') {
@@ -93,7 +94,7 @@ import { BandoEditor } from './bando-editor';
               </div>
               @if (e.about) { <div class="dim small about">{{ e.about }}</div> }
               <div class="acts">
-                <button class="btn" (click)="openExample(e)" [attr.data-tour]="'example-' + e.file.replace('bandos/', '').replace('.json', '')" [disabled]="opening() === e.file" [title]="'Add a copy of ' + e.name + ' to your bandos and open it'">{{ opening() === e.file ? 'Opening…' : 'Open a copy' }}</button>
+                <button class="btn" (click)="openExample($event, e)" [attr.data-tour]="'example-' + e.file.replace('bandos/', '').replace('.json', '')" [disabled]="opening() === e.file" [title]="'Add a copy of ' + e.name + ' to your bandos and open it'">{{ opening() === e.file ? 'Opening…' : 'Open a copy' }}</button>
               </div>
             </div>
           }
@@ -198,7 +199,29 @@ export class StudioPanel {
   protected readonly site = inject(SiteService);
   private readonly placer = inject(PanelPlacer);
   private readonly view = inject(ViewStore);
-  protected fly(id: string): void {
+  private readonly tour = inject(TourService);
+  /**
+   * The pilot (a real click, not the guide's) opens another bando while a guide or the Welcome showcase plays: the guide
+   * ends first, with its replay and video, and leaves the pilot where they went (the showcase kept playing Villetta's
+   * flight over the bando they chose).
+   */
+  private async leaveTour(e: Event): Promise<void> {
+    if (e.isTrusted) await this.tour.leaveForNavigation();
+  }
+  protected async newBando(e: Event): Promise<void> {
+    await this.leaveTour(e);
+    this.studio.create();
+  }
+  protected async show(e: Event, id: string): Promise<void> {
+    await this.leaveTour(e);
+    this.studio.open(id);
+  }
+  protected async edit(e: Event, id: string): Promise<void> {
+    await this.leaveTour(e);
+    this.studio.edit(id);
+  }
+  protected async fly(e: Event, id: string): Promise<void> {
+    await this.leaveTour(e);
     this.studio.open(id);
     this.view.setMainSource('3d');
     this.layout.setVisible('studio', false);
@@ -240,7 +263,8 @@ export class StudioPanel {
     });
   }
 
-  protected async openExample(e: ExampleBando): Promise<void> {
+  protected async openExample(ev: Event, e: ExampleBando): Promise<void> {
+    await this.leaveTour(ev);
     this.opening.set(e.file);
     await this.examples.open(e);
     this.opening.set(null);
