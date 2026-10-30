@@ -68,6 +68,8 @@ for (const file of published) {
 // "this PR" in a line already on the default branch is a placeholder its PR left behind: once merged, a record names
 // the PR (#N) instead, or nobody knows which change it meant and the record waits for a closure no one reconciles.
 const mainBacklog = new Set((git('show', `origin/${branch}:docs/BACKLOG.md`) ?? '').split('\n'));
-const stale = text.split('\n').filter(line => /\bthis PR\b/i.test(line) && mainBacklog.has(line));
+// a quoted mention ("this PR", `this PR`) talks about the placeholder, it is not one
+const placeholder = /(?<!["“`'])\bthis PR\b(?!["”`'])/i;
+const stale = text.split('\n').filter(line => placeholder.test(line) && mainBacklog.has(line));
 assert(!stale.length, `docs/BACKLOG.md: ${stale.length} line(s) already on ${branch} still say "this PR": name the merged PR instead (BACKLOG-RULES, Review procedure 7). First: "${stale[0]?.slice(0, 100)}"`);
 console.log(`${ids.size} backlog records passed: summary, visible actions, metadata, dates, cues and table widths${published.length ? `; ${published.length} archive file(s) keep every line they have on ${branch}` : ''}.`);
