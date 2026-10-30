@@ -11,6 +11,8 @@ export type PreviewTarget =
   | { kind: 'tree'; t: TreeSpec }
   | { kind: 'fence'; w: WallSpec }
   | { kind: 'structure'; s: StructureSpec }
+  /** The take-off pad, or the start marker when no pad is under the drone's start: a slab of its size and colour. */
+  | { kind: 'pad'; w: number; d: number; color: string }
   /** One floor of a building being edited: that floor opaque, every other floor and the roof ghosted. */
   | { kind: 'floor'; b: BuildingSpec; li: number }
   | { kind: 'part'; b: BuildingSpec; li: number; part: PartHighlight };
@@ -134,6 +136,7 @@ export function buildPreviewGroup(target: PreviewTarget): THREE.Group {
   }
   else if (target.kind === 'tree') root.add(treeGroup(target.t));
   else if (target.kind === 'structure') root.add(buildStructure({ ...target.s, x: 0, z: 0, rotDeg: 0 }).object);
+  else if (target.kind === 'pad') root.add(marker(target.w, 0.16, target.d, target.color, 0, 0.08, 0));
   else if (target.kind === 'fence') {
     const w = target.w;
     const len = Math.hypot(w.b.x - w.a.x, w.b.z - w.a.z);

@@ -4,7 +4,7 @@
 
 The element-level part of the impact map ([impact-map.md](impact-map.md), from the harness, lists what must follow a change). Every control the templates show, with its label, its `data-tour` mark, the guide steps that show it as a tip on hover and the guide steps whose clips use it (F-032). Generated; CI fails when this page differs from the code.
 
-**407 controls** · 9 with a tip on hover · 116 with a title · 18 shown in a clip · 32 whose name the script cannot read (a bound expression; axe checks the real names)
+**406 controls** · 9 with a tip on hover · 116 with a title · 18 shown in a clip · 32 whose name the script cannot read (a bound expression; axe checks the real names)
 
 ## Tips per file
 
@@ -12,7 +12,7 @@ What the panels' "?" (tips on hover) covers: a guide step's tip, the browser's o
 
 | File | Controls | Tip on hover | Title | Neither |
 |---|---|---|---|---|
-| src/app/ui/studio/bando-editor.html | 184 | 7 | 46 | 135 |
+| src/app/ui/studio/bando-editor.html | 183 | 7 | 46 | 134 |
 | src/app/ui/panels/racing-controls.ts | 29 | 0 | 0 | 29 |
 | src/app/ui/studio/elements-box.ts | 20 | 0 | 1 | 19 |
 | src/app/ui/studio/assistant-box.ts | 17 | 0 | 4 | 13 |
@@ -39,7 +39,7 @@ What the panels' "?" (tips on hover) covers: a guide step's tip, the browser's o
 | src/app/ui/studio/element-preview.ts | 4 | 0 | 4 | 0 |
 | src/app/ui/studio/pick-menu.ts | 1 | 0 | 1 | 0 |
 | src/app/ui/widgets/camera-compass.ts | 1 | 0 | 1 | 0 |
-| **all** | 407 | 9 | 116 | 286 |
+| **all** | 406 | 9 | 116 | 285 |
 
 ### src/app/ui/float-box.ts
 
@@ -307,6 +307,7 @@ What the panels' "?" (tips on hover) covers: a guide step's tip, the browser's o
 | Add a floor on top (a copy of the last one; the roof moves up) | button | add-floor | yes |  | adjust |
 | Add basement wall | button |  |  |  |  |
 | arch ratio | input |  |  |  |  |
+| at (x, z) m | input |  |  |  |  |
 | auto-align | input |  |  |  |  |
 | Back to a plain rectangle over the bounding box | button |  | yes |  |  |
 | basement m | input |  |  |  |  |
@@ -458,8 +459,6 @@ What the panels' "?" (tips on hover) covers: a guide step's tip, the browser's o
 | width m | input |  |  |  |  |
 | width m | input |  |  |  |  |
 | width m | input |  |  |  |  |
-| x (east) m | input |  |  |  |  |
-| z (south) m | input |  |  |  |  |
 
 ### src/app/ui/studio/blocks-box.ts
 

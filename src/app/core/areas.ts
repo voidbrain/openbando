@@ -1,4 +1,4 @@
-import type { SiteSpec, ZoneSpec } from './site-spec';
+import { takeoffPadIndex, type SiteSpec, type ZoneSpec } from './site-spec';
 
 /**
  * Several map areas generated as one bando. The data is fetched once for the rectangle that covers them all
@@ -48,7 +48,7 @@ export function insideArea(a: ZoneSpec, origin: { lat: number; lon: number }, x:
 export function keepInsideAreas(spec: SiteSpec, areas: readonly ZoneSpec[], margin = 6): void {
   const o = spec.origin;
   const keep = (x: number, z: number): boolean => areas.some((a) => insideArea(a, o, x, z, margin));
-  const start = spec.pads[spec.pads.length - 1]; // the take-off pad is always kept
+  const start = spec.pads[takeoffPadIndex(spec)]; // the take-off pad is always kept
   spec.buildings = spec.buildings.filter((b) => keep(b.pos.x, b.pos.z));
   spec.trees = spec.trees.filter((t) => keep(t.x, t.z));
   spec.structures = (spec.structures ?? []).filter((s) => keep(s.x, s.z));

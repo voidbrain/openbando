@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { digWater, insertPoint, stripFrames, layerShape, nearestEdge, removePoint, levelRoad, levelRoads, orderedRoads, padsToRoads, pathLength, roadLine, roadRadius, nearestOnPath, sanitizeLayers, simplifyPath, waterLevel } from './layers';
 import { siteGround } from './site-ground';
-import { emptySpec, moveTakeoff, sanitizeSpec } from './site-spec';
+import { emptySpec, moveTakeoff, sanitizeSpec, takeoffPadIndex } from './site-spec';
 import { applyStroke, emptyGrid, heightAt } from './terrain';
 
 const sq = (cx: number, cz: number, h: number) => [
@@ -212,5 +212,34 @@ describe('rounded road corners (B-036)', () => {
     const inner = { x: mid.x - 1, z: mid.z + 1 };
     expect(nearestOnPath(corner.pts, inner.x, inner.z).d).toBeGreaterThan(2);
     expect(Math.abs(heightAt(g, inner.x, inner.z) - heightAt(g, mid.x, mid.z))).toBeLessThan(0.25);
+  });
+});
+
+describe('which pad is the take-off pad (F-021)', () => {
+  it('is the pad under the drone\'s start, not simply the last one; none when the start is off every pad', () => {
+    const s = emptySpec();
+    s.pads = [{ x: 0, z: 0, w: 6, d: 6 }, { x: -14, z: 0, w: 12, d: 12 }]; // the last pad is a slab elsewhere (Playground)
+    s.droneStart = { x: 1, z: 2 };
+    expect(takeoffPadIndex(s)).toBe(0);
+    s.droneStart = { x: -30, z: 128 };
+    expect(takeoffPadIndex(s)).toBe(-1);
+    // a turned pad: its rectangle, not its bounding box
+    s.pads = [{ x: 0, z: 0, w: 10, d: 2, rotDeg: 90 }];
+    s.droneStart = { x: 0, z: 4 };
+    expect(takeoffPadIndex(s)).toBe(0);
+    s.droneStart = { x: 4, z: 0 };
+    expect(takeoffPadIndex(s)).toBe(-1);
+  });
+
+  it('moves only the start when no pad is under it, and the pad under it otherwise', () => {
+    const s = emptySpec();
+    s.pads = [{ x: -14, z: 0, w: 12, d: 12 }];
+    s.droneStart = { x: -30, z: 128 };
+    moveTakeoff(s, { x: 0, z: 100 });
+    expect(s.droneStart).toEqual({ x: 0, z: 100 });
+    expect(s.pads[0]).toMatchObject({ x: -14, z: 0 }); // the slab stays
+    s.droneStart = { x: -12, z: 1 };
+    moveTakeoff(s, { x: 8, z: 21 });
+    expect(s.pads[0]).toMatchObject({ x: 6, z: 20 }); // the pad under the start moves with it
   });
 });

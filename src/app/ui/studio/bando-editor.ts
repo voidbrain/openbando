@@ -9,7 +9,7 @@ import * as L from 'leaflet';
 import { contains, edgesOf, isRectilinear, type Pt, type Rect } from '../../core/footprint';
 import { buildingsOverlap, stairsFor, columnGrid, columnRow, convertBuilding, duplicateColumn, duplicateColumns, fillModule, mergeBuildings, overlapsOthers, repeatOpening } from '../../core/building-ops';
 import { addOpening, insideBuilding, listOpenings, moveOpening, outlineOf, previewOpening, patchOpening, removeOpening, reshapeBuilding, resetToRect, resizeOpening, type OpenSeg } from '../../core/openings';
-import { ROOF_KINDS, cloneSpec, uid, type BuildingSpec, type LevelSpec, type LocationInfo, type SiteSpec, type StructureKind, type StructureSpec, moveTakeoff } from '../../core/site-spec';
+import { ROOF_KINDS, START_MARKER, cloneSpec, uid, type BuildingSpec, type LevelSpec, type LocationInfo, type SiteSpec, type StructureKind, type StructureSpec, moveTakeoff, takeoffPadIndex } from '../../core/site-spec';
 import { autoAlign, magnetAngle } from '../../core/align';
 import { columnsInLine, pointsInside, treeZones } from '../../core/elements';
 import { FENCES, fenceDef, newFence, setFenceMaterial, type FenceMaterial } from '../../core/fences';
@@ -558,6 +558,10 @@ export class BandoEditor {
     const p = this.pick();
     const bd = this.b();
     const li = Math.min(this.level(), (bd?.levels.length ?? 1) - 1);
+    if (p?.t === 'pad') {
+      const r = this.takeoffRect(); // before the building check: a selected building must not stay in view (F-021)
+      return { kind: 'pad', w: r.w, d: r.d, color: r.color };
+    }
     if (p?.t === 'tree') {
       const t = this.tree();
       return t ? { kind: 'tree', t } : null;
@@ -1524,6 +1528,23 @@ export class BandoEditor {
     this.drag.set({ t: 'pad', dx: st.x - p.x, dz: st.z - p.z });
   }
 
+  /** The take-off spot as one field: "x, z" in metres (F-021: two fields were verbose). */
+  protected readonly padAt = computed(() => `${this.ed.draft().droneStart.x}, ${this.ed.draft().droneStart.z}`);
+  protected setPadAt(e: Event): void {
+    const el = e.target as HTMLInputElement;
+    const n = el.value.split(/[,;\s]+/).filter(Boolean).map(Number);
+    if (n.length === 2 && n.every(Number.isFinite)) this.moveTakeoffTo({ x: n[0]!, z: n[1]! });
+    else this.toast.show('Write the position as x, z in metres, e.g. 12.5, -8.');
+    el.value = this.padAt(); // a refused value goes back to the current one
+  }
+  /** Which pad is the take-off pad (-1: none, the start marker is the take-off spot). */
+  protected readonly takeoffIdx = computed(() => takeoffPadIndex(this.ed.draft()));
+  /** What the plan draws, picks and drags as the take-off pad: that pad, or the start marker. */
+  protected readonly takeoffRect = computed(() => {
+    const d = this.ed.draft(), p = d.pads[this.takeoffIdx()];
+    return p ? { x: p.x, z: p.z, w: p.w, d: p.d, rotDeg: p.rotDeg ?? 0, color: p.color ?? '#888' }
+      : { x: d.droneStart.x, z: d.droneStart.z, w: START_MARKER.size, d: START_MARKER.size, rotDeg: 0, color: START_MARKER.color };
+  });
   /** Where the pad can stand inside the building under it (upper floors, a flat roof); empty on open ground. */
   protected readonly padChoices = computed(() => takeoffChoices(this.ed.draft()));
   protected readonly padOn = computed(() => {

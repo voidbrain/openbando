@@ -34,6 +34,7 @@ describe('map areas', () => {
     spec.trees = [{ x: 0, z: -100, h: 8, r: 2, kind: 'd' }, { x: 0, z: 0, h: 8, r: 2, kind: 'd' }, { x: 0, z: 100, h: 8, r: 2, kind: 'd' }];
     spec.buildings = [{ id: 'gap', name: '', pos: { x: 0, z: 0 }, rotDeg: 0, length: 10, width: 10, levels: [] }];
     spec.pads = [{ x: 0, z: 0, w: 6, d: 6 }];
+    spec.droneStart = { x: 0, z: 0 }; // the take-off pad is the one under the start (F-021)
     keepInsideAreas(spec, [a, b]);
     expect(spec.trees.map((t) => t.z)).toEqual([-100, 100]);
     expect(spec.buildings).toHaveLength(0);

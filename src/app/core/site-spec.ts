@@ -408,12 +408,30 @@ export function uid(prefix = 'site'): string {
   return `${prefix}-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e6).toString(36)}`;
 }
 
+/** The start marker (where the drone takes off when no pad is under it): its side in metres and colour, in 2D and 3D. */
+export const START_MARKER = { size: 4, color: '#e8c65a' } as const;
+
 /**
- * Move the take-off pad (the last pad; older bandos keep their roads as the pads before it) and the drone's start to
- * `to`, together: the pad keeps its offset from the start. One mutation for `SiteEditor.commitSite` or a gesture.
+ * The take-off pad: the last pad with the drone's start on it (inside its turned rectangle, half a metre of slack), or
+ * -1 when the drone starts off every pad; then the start marker alone is the take-off spot. Not simply the last pad:
+ * in several examples the last pad is a slab far from the start (F-021).
+ */
+export function takeoffPadIndex(s: Pick<SiteSpec, 'pads' | 'droneStart'>): number {
+  const { x, z } = s.droneStart;
+  for (let i = s.pads.length - 1; i >= 0; i--) {
+    const p = s.pads[i]!, a = ((p.rotDeg ?? 0) * Math.PI) / 180;
+    const u = (x - p.x) * Math.cos(a) + (z - p.z) * Math.sin(a), v = -(x - p.x) * Math.sin(a) + (z - p.z) * Math.cos(a);
+    if (Math.abs(u) <= p.w / 2 + 0.5 && Math.abs(v) <= p.d / 2 + 0.5) return i;
+  }
+  return -1;
+}
+
+/**
+ * Move the take-off spot to `to`: the drone's start and, when it stands on one, the take-off pad with it (keeping its
+ * offset from the start). One mutation for `SiteEditor.commitSite` or a gesture.
  */
 export function moveTakeoff(s: SiteSpec, to: Vec2): void {
-  const pad = s.pads[s.pads.length - 1];
+  const pad = s.pads[takeoffPadIndex(s)];
   if (pad) {
     pad.x += to.x - s.droneStart.x;
     pad.z += to.z - s.droneStart.z;
