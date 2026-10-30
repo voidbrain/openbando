@@ -202,6 +202,29 @@ describe('services', () => {
       vi.restoreAllMocks();
     });
 
+    it('starts a newly loaded video once and pauses it where the replay is (B-040: Safari kept the old picture)', async () => {
+      await load();
+      const p = TestBed.inject(PlaybackService);
+      const v = TestBed.inject(VideoService);
+      let vt = 0, plays = 0, pauses = 0;
+      Object.defineProperty(v.element, 'readyState', { get: () => 4 });
+      Object.defineProperty(v.element, 'paused', { get: () => true });
+      Object.defineProperty(v.element, 'currentTime', { get: () => vt, set: (t: number) => (vt = t) });
+      v.element.play = () => { plays++; return Promise.resolve(); };
+      v.element.pause = () => { pauses++; };
+      v.loaded.set(true);
+      v.setOffset(0.5);
+      p.seekTo(2);
+      v.element.dispatchEvent(new Event('loadeddata'));
+      await new Promise((r) => setTimeout(r, 0));
+      expect(plays).toBe(1);
+      expect(pauses).toBeGreaterThanOrEqual(1);
+      expect(vt).toBeCloseTo(2.5, 6); // paused again where the replay is
+      v.element.dispatchEvent(new Event('loadeddata'));
+      await new Promise((r) => setTimeout(r, 0));
+      expect(plays).toBe(1); // once per loaded video
+    });
+
     it('holds the playhead while paused and follows the flight while playing', async () => {
       await load();
       const p = TestBed.inject(PlaybackService);
