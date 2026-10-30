@@ -93,4 +93,9 @@ describe('inspector 3D preview', () => {
     const f = buildPreviewGroup({ kind: 'fence', w: { a: { x: 0, z: 0 }, b: { x: 10, z: 0 }, height: 2.2, thick: 0.3 } });
     expect(new THREE.Box3().setFromObject(f).getSize(new THREE.Vector3()).x).toBeCloseTo(10, 1);
   });
+  it('shows the take-off pad (or the start marker) at its size (F-021)', () => {
+    const box = new THREE.Box3().setFromObject(buildPreviewGroup({ kind: 'pad', w: 12, d: 6, color: '#a9aaa0' }));
+    expect(box.max.x - box.min.x).toBeCloseTo(12, 3);
+    expect(box.max.z - box.min.z).toBeCloseTo(6, 3);
+  });
 });

@@ -142,3 +142,68 @@ test('the take-off pad can be dragged in the 3D view', async ({page}) => {
   expect(spec.pads.at(-1)).toMatchObject({x: spec.droneStart.x, z: spec.droneStart.z});
   expect(errors).toEqual([]);
 });
+
+/** The drone starts off every pad, as in Playground and Villetta: the start marker is the take-off spot (F-021). */
+test('a start with no pad under it: the marker is picked and dragged, the slab stays', async ({page}) => {
+  test.setTimeout(180_000);
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  await page.goto('/');
+  await page.getByRole('button', {name: 'Open the bandos', exact: true}).click();
+  const fixture = {
+    version: 1, id: 'start', name: 'Start off pad', createdAt: 0, privacy: 'hidden',
+    origin: {lat: 0, lon: 0}, bearingDeg: 0, genScale: 1, extent: 60, seed: 1, trees: [],
+    pads: [{x: -20, z: 0, w: 12, d: 12, color: '#a9aaa0'}], droneStart: {x: 20, z: 10},
+    buildings: [{id: 'b', name: 'Shed', pos: {x: 0, z: -30}, rotDeg: 0, length: 8, width: 6,
+      levels: [{baseY: 0, height: 4, sides: {n: true, s: true, e: true, w: true}, doors: {}, partitions: [], roof: 'flat', roofRise: 0}]}],
+  };
+  const studio = page.locator('app-studio-panel');
+  await studio.locator('input[type=file]').first().setInputFiles({name: 'start.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture))});
+  const card = studio.locator('.card').filter({hasText: fixture.name});
+  await card.getByRole('button', {name: 'Edit', exact: true}).click();
+  const bar = page.locator('app-bando-editor > .bar');
+  const pad = page.locator('app-bando-editor [data-pk="pad"]');
+  const shed = page.locator('[data-pk="building:b"]').first();
+  await expect(pad).toBeVisible();
+  // in 2D the take-off shape is the 4 m marker at the start, not the far slab
+  const a = (await pad.boundingBox())!, s = (await shed.boundingBox())!;
+  const metre = s.width / 8;
+  expect(a.width / metre).toBeLessThan(8); // the 4 m marker, not the 12 m slab
+  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2 + 10 * metre, {steps: 6});
+  await page.mouse.up();
+  const exported = async (): Promise<{droneStart: {x: number; z: number}; pads: {x: number; z: number}[]}> => {
+    await bar.getByRole('button', {name: 'Save', exact: true}).click();
+    await bar.getByRole('button', {name: '← Bandos', exact: true}).click();
+    const downloading = page.waitForEvent('download');
+    await card.getByRole('button', {name: 'Export', exact: true}).click();
+    const spec = JSON.parse((await readFile((await (await downloading).path())!)).toString());
+    await card.getByRole('button', {name: 'Edit', exact: true}).click();
+    return spec;
+  };
+  let spec = await exported();
+  expect(spec.droneStart.z).toBeGreaterThan(17);
+  expect(spec.pads[0]).toMatchObject({x: -20, z: 0}); // the slab stays
+  // in 3D the selection is the marker, small, and its handle drags it
+  await pad.click();
+  await page.locator('[data-tour="view-3d"]').click();
+  const canvas = page.locator('app-site-view canvas');
+  await expect(canvas).toBeVisible();
+  const hover = () => canvas.evaluate((el: HTMLCanvasElement) => {
+    const r = el.getBoundingClientRect();
+    for (let y = 8; y < r.height; y += 8) for (let x = 8; x < r.width; x += 8) {
+      el.dispatchEvent(new PointerEvent('pointermove', {clientX: r.left + x, clientY: r.top + y, bubbles: true}));
+      if (el.style.cursor === 'move') return {x: r.left + x, y: r.top + y};
+    }
+    return null;
+  });
+  await expect.poll(hover, {timeout: 15_000}).not.toBeNull();
+  const from = (await hover())!;
+  await page.mouse.move(from.x, from.y);
+  await page.mouse.down();
+  try { await page.mouse.move(from.x - 120, from.y, {steps: 8}); } finally { await page.mouse.up(); }
+  const before = spec.droneStart;
+  spec = await exported();
+  expect(Math.hypot(spec.droneStart.x - before.x, spec.droneStart.z - before.z)).toBeGreaterThan(2);
+  expect(spec.pads[0]).toMatchObject({x: -20, z: 0});
+});

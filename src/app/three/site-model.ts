@@ -10,7 +10,7 @@ import { NO_SLABS, ROOFLESS, roofCells, roofRuns, ruinRandom, wallPieces, wallTo
 import * as THREE from 'three';
 import { mergeUnit } from './merge';
 import { satelliteTexture } from './satellite-ground';
-import { type BuildingSpec, type LevelSpec, type RoadSpec, type SiteSpec, type SurfaceSpec, type TreeSpec, type UndergroundSpec, type WallSpec, createRandom, fixturesInSite } from '../core/site-spec';
+import { type BuildingSpec, type LevelSpec, type RoadSpec, type SiteSpec, type SurfaceSpec, type TreeSpec, type UndergroundSpec, type WallSpec, createRandom, fixturesInSite, START_MARKER, takeoffPadIndex } from '../core/site-spec';
 import { SiteCollider, type SolidBox, type StandingSurface, type TreeCylinder } from '../core/sim/collider';
 import { standingLevels, takeoffHeight } from '../core/takeoff-place';
 import { FLUSH_INSET, flushWalls } from '../core/flush-walls';
@@ -86,7 +86,7 @@ export class TreeField {
 /** Draw order of the ground (first) and of the meadow patches (after it, one step per patch). */
 const GROUND_ORDER = -2000;
 const DECAL_ORDER = -1000;
-/** The take-off pad (the last pad) and its start marker: the editor's 3D view selects and drags them. */
+/** The take-off pad (`takeoffPadIndex`) and the start marker: the editor's 3D view selects and drags them. */
 const TAKEOFF_PICK = { kind: 'pad' } as const;
 
 const material = (color: string, o: THREE.MeshStandardMaterialParameters = {}): THREE.MeshStandardMaterial =>
@@ -996,9 +996,10 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     // around the grid the ground carries on at the height of its edge, out to the site's extent
     const outer = spec.extent * 1.1;
     if (outer > Math.min(-g.x0, -g.z0)) group.add(skirtMesh(g, outer, material(spec.groundColor)));
-    const lift = takeoffHeight(spec); // the take-off pad (the last pad) may stand on a floor or a flat roof
+    const lift = takeoffHeight(spec); // the take-off pad may stand on a floor or a flat roof
+    const takeoff = takeoffPadIndex(spec);
     for (const [i, pd] of spec.pads.entries()) {
-      if (lift > 0 && i === spec.pads.length - 1) {
+      if (lift > 0 && i === takeoff) {
         const o = new THREE.Mesh(new THREE.BoxGeometry(pd.w, 0.16, pd.d), material(pd.color ?? '#a9aaa0'));
         o.position.set(pd.x, ground.start + lift - 0.06, pd.z);
         o.rotation.y = (-(pd.rotDeg ?? 0) * Math.PI) / 180;
@@ -1006,12 +1007,12 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
         group.add(o);
       } else {
         const o = drapedPad(ground, pd.x, pd.z, pd.w, pd.d, pd.rotDeg ?? 0, material(pd.color ?? '#a9aaa0'));
-        if (i === spec.pads.length - 1) o.userData['pick'] = TAKEOFF_PICK;
+        if (i === takeoff) o.userData['pick'] = TAKEOFF_PICK;
         group.add(o);
       }
     }
     for (const [i, r] of orderedRoads(spec.roads ?? []).entries()) {const m=roadMesh(ground,r,1+i);m.userData['pick']={kind:'road',i:spec.roads!.indexOf(r)};group.add(m);}
-    const start = new THREE.Mesh(new THREE.BoxGeometry(4, 0.04, 4), material('#e8c65a'));
+    const start = new THREE.Mesh(new THREE.BoxGeometry(START_MARKER.size, 0.04, START_MARKER.size), material(START_MARKER.color));
     start.position.set(spec.droneStart.x, ground.start + takeoffHeight(spec) + 0.2, spec.droneStart.z);
     start.receiveShadow = true;
     start.userData['pick'] = TAKEOFF_PICK;
@@ -1036,13 +1037,14 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
 
     // ---- pads / roads / take-off pad
     let order = DECAL_ORDER + 300;
+    const takeoff = takeoffPadIndex(spec);
     for (const [i, pd] of spec.pads.entries()) {
       const o = new THREE.Mesh(new THREE.BoxGeometry(pd.w, 0.16, pd.d), material(pd.color ?? '#a9aaa0'));
-      o.position.set(pd.x, 0.08 + (i === spec.pads.length - 1 ? takeoffHeight(spec) : 0), pd.z);
+      o.position.set(pd.x, 0.08 + (i === takeoff ? takeoffHeight(spec) : 0), pd.z);
       o.rotation.y = (-(pd.rotDeg ?? 0) * Math.PI) / 180;
       o.receiveShadow = true;
       o.renderOrder = order++;
-      if (i === spec.pads.length - 1) o.userData['pick'] = TAKEOFF_PICK;
+      if (i === takeoff) o.userData['pick'] = TAKEOFF_PICK;
       group.add(o);
     }
     // flat ground: surfaces and roads are decals drawn after the meadow patches
@@ -1053,7 +1055,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
       group.add(m);
     }
     for (const r of orderedRoads(spec.roads ?? [])) {const m=roadMesh(ground,r,order++);m.userData['pick']={kind:'road',i:spec.roads!.indexOf(r)};group.add(m);}
-    const start = new THREE.Mesh(new THREE.BoxGeometry(4, 0.04, 4), material('#e8c65a'));
+    const start = new THREE.Mesh(new THREE.BoxGeometry(START_MARKER.size, 0.04, START_MARKER.size), material(START_MARKER.color));
     start.position.set(spec.droneStart.x, takeoffHeight(spec) + 0.2, spec.droneStart.z);
     start.receiveShadow = true;
     start.userData['pick'] = TAKEOFF_PICK;
