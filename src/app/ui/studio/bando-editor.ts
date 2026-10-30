@@ -1539,6 +1539,8 @@ export class BandoEditor {
   }
   /** Which pad is the take-off pad (-1: none, the start marker is the take-off spot). */
   protected readonly takeoffIdx = computed(() => takeoffPadIndex(this.ed.draft()));
+  /** A real take-off pad, or one standing on a floor or roof, is drawn over the buildings; a bare start marker under them. */
+  protected readonly takeoffOnTop = computed(() => this.takeoffIdx() >= 0 || !!this.ed.draft().takeoffOn);
   /** What the plan draws, picks and drags as the take-off pad: that pad, or the start marker. */
   protected readonly takeoffRect = computed(() => {
     const d = this.ed.draft(), p = d.pads[this.takeoffIdx()];
