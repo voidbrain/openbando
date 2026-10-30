@@ -3,7 +3,7 @@
     "path": "~/Projects/project-harness",
     "repo": "https://github.com/voidbrain/project-harness"
   },
-  "version": "1.16.0",
+  "version": "1.17.0",
   "stacks": [
     "core",
     "angular"
@@ -15,7 +15,9 @@
     "tools/ci-status.mjs": "core/tools/ci-status.mjs",
     "tools/check-conventions.mjs": "angular/tools/check-conventions.mjs",
     "tools/impact-map.mjs": "core/tools/impact-map.mjs",
-    "tools/coverage-table.mjs": "core/tools/coverage-table.mjs"
+    "tools/coverage-table.mjs": "core/tools/coverage-table.mjs",
+    "tools/merge-backlog.mjs": "core/tools/merge-backlog.mjs",
+    "tools/merge-when-green.mjs": "core/tools/merge-when-green.mjs"
   },
   "forked": {},
   "adapted": {

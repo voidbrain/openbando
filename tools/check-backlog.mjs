@@ -65,4 +65,9 @@ for (const file of published) {
   const record = was.slice(0, kept + 1).findLast(l => /^### [BF]-\d+$/.test(l))?.slice(4);
   assert(kept === was.length, `${file}: line ${kept + 1} on ${branch}${record ? ` (in ${record})` : ''} is changed or missing here: "${was[kept]?.slice(0, 80)}". Archives only grow; add a dated correction instead`);
 }
+// "this PR" in a line already on the default branch is a placeholder its PR left behind: once merged, a record names
+// the PR (#N) instead, or nobody knows which change it meant and the record waits for a closure no one reconciles.
+const mainBacklog = new Set((git('show', `origin/${branch}:docs/BACKLOG.md`) ?? '').split('\n'));
+const stale = text.split('\n').filter(line => /\bthis PR\b/i.test(line) && mainBacklog.has(line));
+assert(!stale.length, `docs/BACKLOG.md: ${stale.length} line(s) already on ${branch} still say "this PR": name the merged PR instead (BACKLOG-RULES, Review procedure 7). First: "${stale[0]?.slice(0, 100)}"`);
 console.log(`${ids.size} backlog records passed: summary, visible actions, metadata, dates, cues and table widths${published.length ? `; ${published.length} archive file(s) keep every line they have on ${branch}` : ''}.`);
