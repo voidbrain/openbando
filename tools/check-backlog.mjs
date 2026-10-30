@@ -1,4 +1,4 @@
-import {existsSync, readFileSync} from 'node:fs';
+import {existsSync, readFileSync, readdirSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
@@ -63,18 +63,35 @@ for (let i = 0; i < headings.length; i++) {
 }
 assert.equal((text.match(/<details>/g) ?? []).length, headings.length, 'Metadata details count');
 assert.equal((text.match(/<\/details>/g) ?? []).length, headings.length, 'Unbalanced metadata details');
-// Archives only grow: every line an archive has on the published default branch is still here, unchanged and in the
-// same order, so a rewrite that drops or edits history fails here instead of on review. New records may go anywhere; a
-// correction is a dated note added, never an edit. Skipped without git or a published branch.
-const published = git('ls-tree', '--name-only', `origin/${branch}`, 'docs/archive/')?.split('\n').filter(f => f.endsWith('.md')) ?? [];
+// Archives only grow: every line the archives have on the published default branch is still in one of them, unchanged,
+// so a rewrite that drops or edits history fails here instead of on review. A record may move from one archive file to
+// another (a file's own title and section headings may go with it); a correction is a dated note added, never an edit.
+// The folder's README describes it and is not evidence. Skipped without git or a published branch.
+const archiveDir = new URL('../docs/archive/', import.meta.url);
+const localArchives = existsSync(archiveDir) ? readdirSync(archiveDir).filter(f => f.endsWith('.md') && f !== 'README.md') : [];
+const have = new Map(); // line -> how many times the local archives hold it
+for (const f of localArchives) for (const line of readFileSync(new URL(f, archiveDir), 'utf8').split('\n')) have.set(line, (have.get(line) ?? 0) + 1);
+const published = git('ls-tree', '--name-only', `origin/${branch}`, 'docs/archive/')?.split('\n').filter(f => f.endsWith('.md') && !f.endsWith('/README.md')) ?? [];
 for (const file of published) {
-  const local = new URL(`../${file}`, import.meta.url);
-  assert(existsSync(local), `${file} is on ${branch} but missing here: archives are kept`);
   const was = (git('show', `origin/${branch}:${file}`) ?? '').split('\n');
-  let kept = 0; // the published lines found here in order: a greedy match finds them if any order-keeping match does
-  for (const line of readFileSync(local, 'utf8').split('\n')) if (line === was[kept]) kept++;
-  const record = was.slice(0, kept + 1).findLast(l => /^### [BF]-\d+$/.test(l))?.slice(4);
-  assert(kept === was.length, `${file}: line ${kept + 1} on ${branch}${record ? ` (in ${record})` : ''} is changed or missing here: "${was[kept]?.slice(0, 80)}". Archives only grow; add a dated correction instead`);
+  const left = new Map(have); // counted per published file: two files merged into one may share a line once
+  was.forEach((line, i) => {
+    if (!line.trim() || /^#{1,2} /.test(line)) return; // blank lines and file/section headings may change with a move
+    const n = left.get(line) ?? 0;
+    if (n) { left.set(line, n - 1); return; }
+    const record = was.slice(0, i + 1).findLast(l => /^### [BF]-\d+$/.test(l))?.slice(4);
+    assert.fail(`${file}: line ${i + 1} on ${branch}${record ? ` (in ${record})` : ''} is changed or missing from every archive here: "${line.slice(0, 80)}". Archives only grow; add a dated correction instead`);
+  });
+}
+// A year's archive (backlog-<year>.md) holds the records that closed that year: the last "closed <date>" of a record names it.
+for (const f of localArchives) {
+  const year = f.match(/^backlog-(\d{4})\.md$/)?.[1];
+  if (!year) continue;
+  const blocks = readFileSync(new URL(f, archiveDir), 'utf8').split(/^(?=### [BF]-\d+$)/m).slice(1);
+  for (const block of blocks) {
+    const closed = [...block.matchAll(/\bclosed (\d{4})-\d{2}-\d{2}/gi)].at(-1)?.[1];
+    assert(!closed || closed === year, `docs/archive/${f}: ${block.slice(4, block.indexOf('\n'))} closed in ${closed}; it belongs in backlog-${closed}.md`);
+  }
 }
 // "this PR" in a line already on the default branch is a placeholder its PR left behind: once merged, a record names
 // the PR (#N) instead, or nobody knows which change it meant and the record waits for a closure no one reconciles.
@@ -90,4 +107,4 @@ if (prNumber) {
   const added = text.split('\n').filter(line => placeholder.test(line) && !mainBacklog.has(line));
   assert(!added.length, `docs/BACKLOG.md: ${added.length} line(s) this branch adds say "this PR": write #${prNumber} instead (BACKLOG-RULES, Review procedure 7). First: "${added[0]?.slice(0, 100)}"`);
 }
-console.log(`${ids.size} backlog records passed: summary, visible actions, metadata, dates, cues and table widths${published.length ? `; ${published.length} archive file(s) keep every line they have on ${branch}` : ''}.`);
+console.log(`${ids.size} backlog records passed: summary, visible actions, metadata, dates, cues and table widths${published.length ? `; the archives keep every line their ${published.length} file(s) have on ${branch}` : ''}.`);
