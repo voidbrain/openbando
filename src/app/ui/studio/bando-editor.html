@@ -420,7 +420,7 @@
       [spec]="ed.draft()"
       [roofHidden]="!roofs3d()"
       [frameKey]="ed.draft().id"
-      [mode]="!debugMode() && tool() === 'select' ? 'select' : 'draw'"
+      [mode]="!debugMode() && tool() === 'select' && !pinMode() ? 'select' : 'draw'"
       [debugGround]="debugMode()"
       [selection]="sel3d()"
       [focus]="focus3d()"
