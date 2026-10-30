@@ -112,7 +112,7 @@
       ],
       "then": "re-record the guide clips whose step shows what changed (a browser workflow, not done by CI)",
       "run": "npm run clips",
-      "checked": "check:media (warns when what a clip shows changed since)",
+      "checked": "check:media (warns when what a clip shows changed since, and names the clips whose own controls changed)",
       "after": [
         "theme",
         "lockfile"
@@ -179,7 +179,7 @@
         "src/app/ui/**/*.ts",
         "src/app/core/tour.ts"
       ],
-      "then": "regenerate the element map (docs/agents/element-map.md)",
+      "then": "regenerate the element map (docs/agents/element-map.md) and each clip's sources (docs/guide/clip-sources.json)",
       "run": "node tools/build-element-map.mjs",
       "checked": "CI (element map matches the code)"
     },
@@ -299,7 +299,7 @@
         },
         {
           "file": "e2e/showcase.e2e.ts",
-          "what": "-0.69 \u00b1 0.15"
+          "what": "-0.69 ± 0.15"
         }
       ],
       "kept": "the showcase test (a real Auto-sync scan finds the same offset)"
@@ -352,7 +352,7 @@
         },
         {
           "file": "src/app/ui/studio/bando-editor.html",
-          "what": "Roof \u2192 shape options"
+          "what": "Roof → shape options"
         }
       ],
       "kept": "one source: ROOF_KINDS types the spec and the AI command and feeds AI_SCHEMA and the editor menu; ai-commands.spec.ts checks the schema, set_roof and the prompt prose (F-037)"
