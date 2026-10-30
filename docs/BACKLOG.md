@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `69d6014` (merged #236), with every CI job of #162–#236 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `ee9a3df` (merged #239), with every CI job of #162–#239 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -625,78 +625,6 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ---
 
-### F-028
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-028 | 🔶 P2 | Implemented | Impact map: what must follow when something changes, reminded on every PR |
-
-💻 **→ Human action required: No**<br />Done with this PR; the checks the rows name as missing are F-026, F-029, F-030 and F-031.
-
-**Next action / closure evidence:** Requested 2026-10-29: the BACKLOG-RULES consistency rule ("for every modification, check README, AGENTS…") names no derived things, so updates depend on memory (today `check:i18n` missed fence labels written in TypeScript). Plan (decided with the user): a harness template feature, an impact-map file where each row says which files trigger it, what must follow, the command and what checks it; `check-freshness` reads it and lists, on every PR, "this branch changes X: update Y" (a warning, never blocking); AGENTS and BACKLOG-RULES point to it. Rows here: tour → guide pages; UI shown by a clip or film → the clip or film; user-facing text → Italian; controls → their tips; keys → Help panel; spec fields and AI commands → AI schema and prompt; example builder → examples and catalogue; tokens and components → design-system guides; features → README and area notes. The automatic checks are F-029, F-030, F-031 and F-026. Done 2026-10-29: harness 1.11.0 (template #14) and nine rows in `.harness.json` here (guide pages, clips and films, texts and tips in templates, texts in TypeScript data, Help panel keys, spec and AI commands, example bandos, catalogue, design system); each names what checks it, or "nothing yet" with the record that will.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#216](https://github.com/voidbrain/openbando/pull/216) (CI green); template [#14](https://github.com/voidbrain/project-harness/pull/14) (v1.11.0); request 2026-10-29 |
-| Opened | 2026-10-29 |
-| Verification | Script · 2026-10-29 · `check:freshness` on this branch: harness files listed, no impact row triggered (the branch touches none of their files); template `test:tools` 19/19 |
-| Reviewed | 2026-10-29 |
-
-</details>
-
----
-
-### F-029
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-029 | 🔹 P3 | Implemented | CI fails when the guide pages differ from their source |
-
-💻 **→ Human action required: No**<br />Close when this PR merges on a green CI: the check then runs on every PR.
-
-**Next action / closure evidence:** Requested 2026-10-29 (part of F-028): the guide pages are generated from the tour source, and nothing checks they were regenerated. Done 2026-10-29: CI step "Guide pages match the tour" runs `node tools/build-guide.mjs` and fails on any difference in `docs/guide` (the committed pages were current); the impact row now names it.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | This PR; request 2026-10-29 |
-| Opened | 2026-10-29 |
-| Verification | CI · 2026-10-29 · the step passes on current main; it fails on a tour change that is not regenerated (diff) |
-| Reviewed | 2026-10-29 |
-
-</details>
-
----
-
-### F-030
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-030 | 🔹 P3 | Implemented | `check:i18n` also reads texts in TypeScript data |
-
-💻 **→ Human action required: No**<br />Close when this PR merges on a green CI: the check then runs on every PR.
-
-**Next action / closure evidence:** Requested 2026-10-29 (part of F-028). Found the same day: fence hints such as "Boards on posts" have no Italian, and the check passed because it reads only templates. Done 2026-10-29: `check:i18n` also reads `label` and `hint` in TypeScript data (comments left out); it found 43 texts without Italian (fence hints, tree and brush hints, context-menu labels, AI model descriptions, Railway, Greenhouse…), all translated now; model names stay English (`keep-english.txt`). The impact row now names it.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | This PR; request 2026-10-29 |
-| Opened | 2026-10-29 |
-| Verification | Script · 2026-10-29 · `check:i18n` 841 texts, 0 missing (43 missing before the translations) |
-| Reviewed | 2026-10-29 |
-
-</details>
-
----
-
 ### F-031
 
 | Signal | ID | Priority | Status | Item |
@@ -745,37 +673,13 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ---
 
-### F-032
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-032 | 🔶 P2 | Implemented | Element and impact map, generated from the code |
-
-💻 **→ Human action required: No**<br />Close when this PR merges on a green CI. The tips check itself waits on the rework decision in F-026.
-
-**Next action / closure evidence:** Requested 2026-10-29 (decided with the user: element level, generated by a script). Step 1 (this PR): `tools/build-element-map.mjs` (`npm run element-map`) writes `docs/agents/element-map.md`: every control the templates show (406) with its label, `data-tour` mark, the guide steps that show it as a tip on hover (9 controls) and the guide steps whose clips use it (18); CI fails when the page differs from the code. The readable impact table is the harness's `docs/agents/impact-map.md` (1.12.0 and later, F-033), not this page: a first version of this PR had it here too, removed so there is one place. Missing rows added (the user noticed the promised full table and rows had been dropped): README and area notes, panels ↔ Views and guide steps, the element map itself. Lesson recorded in the harness: plans given to the user become records at once (template release after this). Step 2 (2026-10-30, [#235](https://github.com/voidbrain/openbando/pull/235)): the builder also writes `docs/guide/clip-sources.json` (each guide clip's component files: the files of the controls its step acts on, with their siblings), checked by the same CI step; `check:media` names the clips whose own controls changed, besides the set-wide warning, which stays because a clip shows more than its controls. 8 of the 14 clips map to controls; the other 6 act on nothing the templates mark, so they rely on the set-wide warning. Step 3 (2026-10-30, [#236](https://github.com/voidbrain/openbando/pull/236)): the element map has a Keys table, every global key the app handles (`ShortcutsService`, the flight keys in `core/radio/radio-input.ts`) and whether the Help panel names it; the builder fails (and so CI) when one is missing. It found Esc (cancel a pin) missing from Help, now added with its Italian. The editor's own keys are left out: they are named in its hints and titles where they apply. Step 4 (2026-10-30, [#237](https://github.com/voidbrain/openbando/pull/237)): a Design-system guides table, each guide with the files and CSS classes its `Source:` line names; the builder fails when a guide has no Source line or names a file or class the code no longer has (tried: a renamed class fails it). CameraCompass had no Source line and ViewsPanel's was inline: fixed. The element-map impact row now also watches the guides and the two key files (step 3 had missed them); the design-system README says every guide ends with a Source line. Step 5 (2026-10-30, this PR): a Tips per file table (controls, with a tip on hover, with a title, with neither: 407, 9, 116, 286), the inventory F-026 asked for; the check that fails when a control has no tip depends on the rework F-026 must agree first, so it moves there.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#221](https://github.com/voidbrain/openbando/pull/221) (step 1); [#235](https://github.com/voidbrain/openbando/pull/235) (step 2); [#236](https://github.com/voidbrain/openbando/pull/236) (step 3); [#237](https://github.com/voidbrain/openbando/pull/237) (step 4); this PR (step 5); request 2026-10-29 |
-| Opened | 2026-10-29 |
-| Verification | Script · 2026-10-29 · page generated: 406 controls, 9 with a tip, 116 with a title, 18 in clips, 32 names in bound expressions; CI step added; Script · 2026-10-30 · clip-sources.json written for 8 clips, check:media named 6 clips whose controls changed; Script · 2026-10-30 · Keys table: 19 keys, the builder failed on Esc before it was added to Help; Script · 2026-10-30 · 24 guides resolved, a renamed class made the builder fail; Script · 2026-10-30 · Tips per file table written |
-| Reviewed | 2026-10-30 |
-
-</details>
-
----
-
 ### F-034
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
 | 🟡 | F-034 | 🔹 P3 | Implemented | Merge only when every check passes, CodeQL included |
 
-💻 **→ Human action required: No**<br />Verify on the next PR that GitHub lists CodeQL as required and blocks the merge while it fails.
+💻 **→ Human action required: No**<br />Close the first time a failing CodeQL run is seen blocking a merge (or a test PR shows it).
 
 **Next action / closure evidence:** Found 2026-10-30: the required checks (ruleset "protect main") did not include CodeQL, and the agent's merge watcher waited only for the required ones, so a PR could merge with an open code-scanning alert (#221 had four: incomplete sanitization in two build tools, fixed in that PR). Decided 2026-10-30 (user): option (c), CodeQL made a required check of "protect main" through the API (required now: check, e2e (1)–(4), race-browser, CodeQL), so GitHub blocks the merge whoever merges; AGENTS names it (a project line). The watcher, a session script, stops on any failing check too.
 
@@ -784,9 +688,9 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Field | Value |
 |---|---|
-| PR / evidence | Ruleset 25780506 updated 2026-10-30; this PR (AGENTS); found on [#221](https://github.com/voidbrain/openbando/pull/221) |
+| PR / evidence | Ruleset 25780506 updated 2026-10-30; [#223](https://github.com/voidbrain/openbando/pull/223) (AGENTS); found on [#221](https://github.com/voidbrain/openbando/pull/221) |
 | Opened | 2026-10-30 |
-| Verification | Settings · 2026-10-30 · the ruleset lists CodeQL among the required checks (API); on a PR · Pending |
+| Verification | Settings · 2026-10-30 · the ruleset lists CodeQL among the required checks (API); PR · 2026-10-30 · [#238](https://github.com/voidbrain/openbando/pull/238) lists CodeQL among its checks and merged only after it passed; blocking while it fails · not yet seen |
 | Reviewed | 2026-10-30 |
 
 </details>
