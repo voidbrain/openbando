@@ -460,7 +460,6 @@ export const IT: Readonly<Record<string, string>> = {
   'Generate the model first': 'Genera prima il modello',
   'Drag to turn the frame (shift = steps of 15°). Only what is inside the turned frame is used.': 'Trascina per ruotare la cornice (shift = passi di 15°). Si usa solo ciò che è dentro la cornice ruotata.',
   'Turn the frame back to north-up': 'Riporta la cornice con il nord in alto',
-  'Map north': 'Nord mappa',
   'North is up': 'Il nord è in alto',
   'Move the map to frame the area first.': 'Sposta prima la mappa per inquadrare l’area.',
   'That area is already added: move the map to frame another one.': 'Quell’area è già aggiunta: sposta la mappa per inquadrarne un’altra.',
