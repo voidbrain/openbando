@@ -4,7 +4,7 @@ import { drapeRoad } from './road-drape';
 import { cutRect, edgesOf, isRectilinear, slabs } from '../core/footprint';
 import { buildStructure } from './structures';
 import { RAIL_PLANKS, RAIL_PLANK_H, fenceDef, hedgeLumps, postsAlong, wireSag, type FenceDef } from '../core/fences';
-import { WATER_COLOR, insidePolygon, orderedRoads, roadDef, stripFrames, surfaceDef } from '../core/layers';
+import { WATER_COLOR, insidePolygon, orderedRoads, roadDef, roadLine, stripFrames, surfaceDef } from '../core/layers';
 import { tunnelAxis, tunnelOpeningBottom, tunnelSection, volumeSolids } from '../core/underground';
 import { NO_SLABS, ROOFLESS, roofCells, roofRuns, ruinRandom, wallPieces, wallTop } from '../core/ruin';
 import * as THREE from 'three';
@@ -722,7 +722,7 @@ function roadMesh(ground: SiteGround, r: RoadSpec, order: number): THREE.Mesh {
   const half = r.width / 2;
   const step = Math.min(1, ground.grid?.cell ?? 1);
   const across = Math.max(1, Math.ceil(r.width / step));
-  const frames = stripFrames(r.pts, step);
+  const frames = stripFrames(roadLine(r), step);
   for (const f of frames) for (let j = 0; j <= across; j++) {
     const side = (-half + (r.width * j) / across) * f.s;
     const x = f.x + f.nx * side, z = f.z + f.nz * side;

@@ -118,9 +118,9 @@
       }
       @for (r of ed.draft().roads ?? []; track $index) {
         @if (layers.isPicked('road', $index)) {
-          <polyline [attr.points]="polyPts(r.pts)" fill="none" stroke="#ffd166" [attr.stroke-width]="r.width + 2 / ppm()" stroke-linecap="round" stroke-linejoin="round" pointer-events="none" />
+          <polyline [attr.points]="polyPts(roadLine(r))" fill="none" stroke="#ffd166" [attr.stroke-width]="r.width + 2 / ppm()" stroke-linecap="round" stroke-linejoin="round" pointer-events="none" />
         }
-        <polyline class="hit" [class.out]="indoor()" [attr.points]="polyPts(r.pts)" fill="none" [attr.stroke]="layers.roadColor(r)" [attr.stroke-width]="r.width" [attr.stroke-dasharray]="r.kind === 'rail' ? r.width * 0.6 + ' ' + r.width * 0.3 : null" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" [attr.data-pk]="'road:' + $index" (pointerdown)="layers.down($event, 'road', $index)" />
+        <polyline class="hit" [class.out]="indoor()" [attr.points]="polyPts(roadLine(r))" fill="none" [attr.stroke]="layers.roadColor(r)" [attr.stroke-width]="r.width" [attr.stroke-dasharray]="r.kind === 'rail' ? r.width * 0.6 + ' ' + r.width * 0.3 : null" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" [attr.data-pk]="'road:' + $index" (pointerdown)="layers.down($event, 'road', $index)" />
       }
       @if (layers.editPts(); as ep) {
         <!-- the selected road / surface / water point by point: drag a point, Alt-click removes it, double-click the line adds one -->

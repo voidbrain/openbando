@@ -111,6 +111,7 @@ Detailed rules and lessons for each part of the app, moved from AGENTS.md so tha
 ### Road overlap rules
 
 - `orderedRoads` / `roadPriority` in `core/layers.ts` define railway > road > track > path, with stable same-class ties. Both `levelRoads` and the scene builder use this order. Each terrain vertex is written once from an untouched grid; overlapping core strips choose the higher class, shoulders blend from the original height.
+- Road corners are rounded (B-036): `roadLine` (core/layers.ts) replaces each corner of the centre line with a curve tangent to both segments, `roadRadius` wide (1.5 × the width, at least 3 m), using at most half of either segment, so dense map lines barely change. The 3D strip (`stripFrames(roadLine(r))`), the levelling (`levelRoads`) and the plan's road and highlight all draw this line, never `r.pts` directly; the points the pilot drags stay at the corners. It is memoised per point list and width.
 - Road meshes sample across their width at <=1 m spacing, use explicit draw order and `depthWrite: false`. On terrain keep `depthTest: true` so hills and buildings hide them; flat sites retain the existing decal depth-test policy. Never fix road-road flicker by disabling terrain occlusion or by accumulating arbitrary height offsets.
 
 ### Terrain and editor regression rules

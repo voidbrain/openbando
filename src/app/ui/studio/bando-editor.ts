@@ -14,7 +14,7 @@ import { autoAlign, magnetAngle } from '../../core/align';
 import { columnsInLine, pointsInside, treeZones } from '../../core/elements';
 import { FENCES, fenceDef, newFence, setFenceMaterial, type FenceMaterial } from '../../core/fences';
 import { areaCorners } from '../../core/areas';
-import { roadDef, surfaceDef } from '../../core/layers';
+import { roadDef, roadLine, surfaceDef } from '../../core/layers';
 import { blockCategory } from '../../core/catalog';
 import { siteGround } from '../../core/site-ground';
 import { setRingWall } from '../../core/basement-rings';
@@ -356,6 +356,8 @@ export class BandoEditor {
   /** The ground the editor shows (contours, the height under the pointer): the draft's terrain, same cache as the 3D model. */
   private readonly ground = computed(() => siteGround(this.ed.draft()));
   protected readonly polyPts = polyPts;
+  /** A road as drawn: its centre line with rounded corners (the points stay where they are, to drag). */
+  protected readonly roadLine = roadLine;
 
   protected readonly scatterMode = signal<ScatterMode>('pen');
   protected readonly scatterSpacing = signal(5);
