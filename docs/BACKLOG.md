@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `07249ed` (merged #255), with every CI job of #162–#255 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `82e46b2` (merged #256), with every CI job of #162–#256 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -169,11 +169,17 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟠 | B-040 | 🔶 P2 | Investigate | Dragging the timeline sometimes does not move the video |
+| 🟡 | B-040 | 🔶 P2 | Implemented | Dragging the timeline sometimes does not move the video |
 
-💻 **→ Human action required: No**<br />Reproduce a timeline drag that leaves the video where it was, find the cause, fix it with a test across timeline and video.
+🧑 **→ Human action required: Yes**<br />Drag the timeline again on the live site (since this PR) and say whether the video still sticks.
 
-**Next action / closure evidence:** Reported 2026-10-30 by the owner, replaying the Villetta demo flight with its video (Auto-sync offset −0.69 s). A related case was fixed before: a timeline click undone while the video played (the seek-with-a-playing-video case in `services.spec.ts`). To check: a drag (many seeks in a row) while playing and while paused, at the speeds used (0.25×), and a drag that ends where the video is still seeking.
+| | |
+|---|---|
+| **Issue** | After timeline drags, paused, the video kept its old frame until a jump to the start and Play. |
+| **Reproduce** | Live site, Villetta demo flight with its video, paused: drag the Timeline chart back and forth several times, fast, in the middle of the flight. |
+| **Check** | The video frame follows every drag; if it ever sticks, it catches up within about a second by itself. |
+
+**Next action / closure evidence:** Candidate fix 2026-10-30 (this PR). The owner's details: the Timeline chart, paused, the old frame stays, mid-video; only a seek to the start and Play unstuck it. Not reproduced in Chromium or WebKit headless (the video followed every drag within 0.1 s). Likely cause: the browser dropped a seek after fast drags; the video then reported the target time while showing the old frame, and both guards (`currentTime` already at the target in the timeline seek; the target unchanged in the frame sync) skipped asking again. Now every app seek goes through `seekVideo`, pending until `seeked`; while paused a seek pending for over a second is issued again, and the timeline seek no longer trusts `currentTime` while one is pending. `services.spec.ts` fakes a stalled seek (fails without the fix); `timeline-video.e2e.ts` checks drags keep the video in step with the real demo files. History: Reported 2026-10-30 by the owner, replaying the Villetta demo flight with its video (Auto-sync offset −0.69 s). A related case was fixed before: a timeline click undone while the video played (the seek-with-a-playing-video case in `services.spec.ts`). To check: a drag (many seeks in a row) while playing and while paused, at the speeds used (0.25×), and a drag that ends where the video is still seeking.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -182,7 +188,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 |---|---|
 | PR / evidence | Report 2026-10-30 |
 | Opened | 2026-10-30 |
-| Verification | Not reproduced yet |
+| Verification | Unit · 2026-10-30 · the stalled-seek case passes (fails without the fix); Browser · 2026-10-30 · `timeline-video.e2e.ts` passed locally; the real stall not reproduced, owner's check · Pending |
 | Reviewed | 2026-10-30 |
 
 </details>
