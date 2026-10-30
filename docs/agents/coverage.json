@@ -1,15 +1,15 @@
 {
  "src/app/core/": {
-  "lines": 93.8,
+  "lines": 93.9,
   "statements": 90.9,
-  "branches": 81.9,
-  "functions": 89.9
+  "branches": 82,
+  "functions": 90
  },
  "src/app/three/": {
   "lines": 69.6,
   "statements": 70.4,
-  "branches": 60.1,
-  "functions": 68.2
+  "branches": 60.2,
+  "functions": 68.4
  },
  "src/app/services/": {
   "lines": 39.8,
@@ -30,9 +30,9 @@
   "functions": 0.7
  },
  "all": {
-  "lines": 53.9,
-  "statements": 54,
-  "branches": 48.1,
-  "functions": 50.4
+  "lines": 54,
+  "statements": 54.1,
+  "branches": 48.2,
+  "functions": 50.6
  }
 }

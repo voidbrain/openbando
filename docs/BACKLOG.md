@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `60a4917` (merged #228), with every CI job of #162–#229 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `bab7265` (merged #230), with every CI job of #162–#230 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -361,20 +361,20 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | B-035 | 🔶 P2 | Open | Two buildings flush against each other flicker where their walls meet |
+| 🟡 | B-035 | 🔶 P2 | Implemented | Two buildings flush against each other flicker where their walls meet |
 
-💻 **→ Human action required: No**<br />Draw one wall where two buildings' sides coincide (the magnet snaps buildings flush, so any pilot can make this), and test it.
+💻 **→ Human action required: No**<br />Close when this PR merges on a green CI; a look on the live site (two buildings snapped flush, seen through a window) is welcome but not required.
 
-**Next action / closure evidence:** Found 2026-10-29 (user screenshot of Bardwell House: the dark wall flickering behind the windows). Each side wall is a 0.5 m box centred on the building's edge, so two buildings snapped flush put two identical boxes in one place, and their faces fight in the depth buffer (z-fighting), visible through windows and doors. Bardwell House is fixed in the example (release 4: the wing has no wall on the shared side). General plan: when the site is built, find sides of two buildings that lie on the same line with opposite faces and overlapping spans, and build that stretch once (or inset one of them), keeping both colliders correct; cover it with a model test (two flush buildings: no coincident wall faces) and a screenshot.
+**Next action / closure evidence:** Found 2026-10-29 (user screenshot of Bardwell House: the dark wall flickering behind the windows). Each side wall is a 0.5 m box centred on the building's edge, so two buildings snapped flush put two identical boxes in one place, and their faces fight in the depth buffer (z-fighting), visible through windows and doors. Bardwell House is fixed in the example (release 4: the wing has no wall on the shared side). General plan: when the site is built, find sides of two buildings that lie on the same line with opposite faces and overlapping spans, and build that stretch once (or inset one of them), keeping both colliders correct; cover it with a model test (two flush buildings: no coincident wall faces) and a screenshot. Done 2026-10-30 (this PR): `core/flush-walls.ts` `flushWalls` finds wall edges of two buildings on one line (site coordinates, any rotation, rectangles and shaped buildings, more than 10 cm shared); the later building's wall there is built `FLUSH_INSET` (3 cm) thinner on each face, so it sits inside the other and only one face shows. Colliders keep (almost) the same boxes. `flush-walls.spec.ts` covers the pairs; `site-model.spec.ts` checks two flush buildings draw no two wall boxes in one place (it fails with the inset at 0). Not done: a screenshot test (the WebGL e2e cannot see depth fighting reliably).
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Report 2026-10-29; Bardwell House worked around in this PR |
+| PR / evidence | This PR; report 2026-10-29; Bardwell House worked around earlier (release 4 of the example) |
 | Opened | 2026-10-29 |
-| Verification | Not implemented |
+| Verification | Unit · 2026-10-30 · flush-walls and site-model tests passed (the model test fails without the fix) |
 | Reviewed | 2026-10-29 |
 
 </details>
@@ -399,30 +399,6 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 | PR / evidence | Report 2026-10-29; B-033 ([#215](https://github.com/voidbrain/openbando/pull/215)) fixed the gaps only |
 | Opened | 2026-10-30 |
 | Verification | Not implemented |
-| Reviewed | 2026-10-30 |
-
-</details>
-
----
-
-### B-037
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-037 | 🔶 P2 | Implemented | The camera can go below the terrain |
-
-💻 **→ Human action required: No**<br />Close when this PR merges on a green CI (race-browser runs the editor close-up case); a look on the live site (orbit over a hill, chase on a slope, a tunnel) is welcome but not required.
-
-**Next action / closure evidence:** Reported 2026-10-30. Cause: the orbit keeps its angle above the point it looks at, not above the ground under the camera, so a hill between them (or a pan over a hill) puts the camera inside it; the chase camera sits 2.5 m over and 6 m behind the drone, inside a slope behind; the editor's 3D view has the same orbit limits. A first fix (PR #228, 2026-10-30) lifted every orbit, chase and editor camera to 1.5 m above the terrain surface under it: CI failed the close-up case in `editor-regressions.e2e.ts` (two clicks 0.17 m apart instead of under 0.1 m: the zoomed-in editor camera was lifted), and the same rule would wrongly lift cameras in basements (the indoor view of −1 is below ground on purpose) and in tunnels. The fix was taken out of #228. Reworked 2026-10-30 (this PR): `keepAbove` (three/camera-rig.ts) lifts the orbit and chase cameras and the editor's 3D view to `SiteCollider.groundAt` under them with the camera's height (terrain, floors, a tunnel or basement floor when inside one) plus `CAMERA_CLEARANCE` 0.3 m, still aimed at the target; a target under the terrain (a drone in a tunnel or basement) is left alone, and the editor's indoor and basement views are not lifted. The Welcome films' chase shots may differ slightly: re-recording them is F-031.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | Report 2026-10-30; first fix withdrawn from [#228](https://github.com/voidbrain/openbando/pull/228) after CI (race-browser, editor-regressions close-up); reworked in this PR |
-| Opened | 2026-10-30 |
-| Verification | Unit · 2026-10-30 · camera-rig tests (hill, slope, close-up, tunnel) passed; Browser · 2026-10-30 · `editor-regressions.e2e.ts` passed locally (11/11, close-up included) |
 | Reviewed | 2026-10-30 |
 
 </details>
