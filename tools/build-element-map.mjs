@@ -3,10 +3,12 @@
  * The element map: every control the templates show (buttons, inputs, selects, picture menus), with its label, its
  * `data-tour` mark, the guide steps that show it as a tip on hover and the guide steps (clips) that use it. Generated
  * from the code, so it cannot fall behind: CI rebuilds it and fails when the committed page differs (F-032, F-026).
- * Run: node tools/build-element-map.mjs   (writes docs/agents/element-map.md; --json prints the data instead)
+ * It also writes docs/guide/clip-sources.json: for each guide clip, the component files of the controls it uses (with
+ * their .html / .scss / .ts siblings), so tools/check-media.mjs can name the clips whose own controls changed.
+ * Run: node tools/build-element-map.mjs   (writes both; --json prints the data instead)
  */
 import { buildSync } from 'esbuild';
-import { readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
@@ -96,4 +98,11 @@ for (const file of [...new Set(rows.map((r) => r.file))]) {
   md += '\n';
 }
 writeFileSync(join(root, 'docs/agents/element-map.md'), md);
-console.log(`docs/agents/element-map.md: ${n} controls, ${withTip} with a tip, ${withTitle} with a title, ${inClips} in clips, ${noName} unnamed`);
+
+// each clip's component files: the file of every control it uses, and that component's other files (same stem)
+const siblings = (f) => ['.html', '.scss', '.ts'].map((x) => f.replace(/\.(html|scss|ts)$/, x)).filter((g) => existsSync(join(root, g)));
+const sources = {};
+for (const r of rows) for (const c of r.clips) sources[c] = [...new Set([...(sources[c] ?? []), ...siblings(r.file)])].sort();
+const clipSources = Object.fromEntries(Object.keys(sources).sort().filter((c) => existsSync(join(root, `docs/guide/clips/${c}.webm`))).map((c) => [c, sources[c]])); // showcase steps have no clip
+writeFileSync(join(root, 'docs/guide/clip-sources.json'), `${JSON.stringify({ about: 'Written by tools/build-element-map.mjs: the component files of the controls each guide clip uses (F-032 step 2). tools/check-media.mjs names the clips whose files changed since they were recorded.', clips: clipSources }, null, 2)}\n`);
+console.log(`docs/agents/element-map.md: ${n} controls, ${withTip} with a tip, ${withTitle} with a title, ${inClips} in clips, ${noName} unnamed; docs/guide/clip-sources.json: ${Object.keys(clipSources).length} clips`);

@@ -1,5 +1,5 @@
 {
-  "about": "Recordings made in a browser (CI cannot redo them): the commit each set was recorded at and the source files it shows. tools/check-media.mjs lists what changed since; npm run clips / films stamp the set again (F-031).",
+  "about": "Recordings made in a browser (CI cannot redo them): the commit each set was recorded at and the source files it shows. tools/check-media.mjs lists what changed since; npm run clips / films stamp the set again (F-031). A set with perFile also names the recordings whose own controls changed (F-032 step 2).",
   "sets": [
     {
       "name": "Guide clips",
@@ -14,7 +14,8 @@
         "src/app/ui/**/*.ts",
         "src/styles.scss",
         "e2e/clips.record.ts"
-      ]
+      ],
+      "perFile": "docs/guide/clip-sources.json"
     },
     {
       "name": "Welcome films",

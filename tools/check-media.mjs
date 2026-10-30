@@ -36,4 +36,14 @@ for (const set of media.sets) {
     : null;
   if (msg) console.log(github ? `::warning title=Recordings::${msg}` : `! ${msg}`);
   else console.log(`${set.name}: nothing they show changed since ${set.recordedAt}.`);
+  // per recording, when the set names its sources (clip-sources.json): the ones whose own controls changed, for sure.
+  // The warning above stays: a clip shows more than its controls (the panel around them, the 3D view, the styles).
+  if (!set.perFile || !hit.length) continue;
+  const per = JSON.parse(readFileSync(new URL(`../${set.perFile}`, import.meta.url), 'utf8')).clips;
+  const changedSet = new Set(changed.split('\n'));
+  const sure = Object.entries(per).map(([id, fs]) => [id, fs.filter((f) => changedSet.has(f))]).filter(([, fs]) => fs.length);
+  if (!sure.length) continue;
+  const list = sure.map(([id, fs]) => `${id} (${fs.map((f) => f.split('/').pop()).join(', ')})`).join('; ');
+  const one = `${set.name}: these show controls whose component changed: ${list}.`;
+  console.log(github ? `::warning title=Recordings::${one}` : `! ${one}`);
 }

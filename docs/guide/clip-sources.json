@@ -1,0 +1,44 @@
+{
+  "about": "Written by tools/build-element-map.mjs: the component files of the controls each guide clip uses (F-032 step 2). tools/check-media.mjs names the clips whose files changed since they were recorded.",
+  "clips": {
+    "adjust": [
+      "src/app/ui/studio/bando-editor.html",
+      "src/app/ui/studio/bando-editor.scss",
+      "src/app/ui/studio/bando-editor.ts"
+    ],
+    "ai": [
+      "src/app/ui/studio/assistant-box.ts",
+      "src/app/ui/studio/bando-editor.html",
+      "src/app/ui/studio/bando-editor.scss",
+      "src/app/ui/studio/bando-editor.ts"
+    ],
+    "fly-checklist": [
+      "src/app/ui/panels/fly-panel.ts"
+    ],
+    "generate": [
+      "src/app/ui/studio/bando-editor.html",
+      "src/app/ui/studio/bando-editor.scss",
+      "src/app/ui/studio/bando-editor.ts"
+    ],
+    "library": [
+      "src/app/ui/studio/bando-editor.html",
+      "src/app/ui/studio/bando-editor.scss",
+      "src/app/ui/studio/bando-editor.ts",
+      "src/app/ui/studio/blocks-box.ts"
+    ],
+    "look-3d": [
+      "src/app/ui/studio/bando-editor.html",
+      "src/app/ui/studio/bando-editor.scss",
+      "src/app/ui/studio/bando-editor.ts"
+    ],
+    "place": [
+      "src/app/ui/studio/bando-editor.html",
+      "src/app/ui/studio/bando-editor.scss",
+      "src/app/ui/studio/bando-editor.ts",
+      "src/app/ui/studio/studio-panel.ts"
+    ],
+    "sync": [
+      "src/app/ui/panels/video-panel.ts"
+    ]
+  }
+}
