@@ -526,8 +526,9 @@ describe('Villetta measured frame and ladder', () => {
     expect(ribs[1]!.position.x - ribs[0]!.position.x).toBeCloseTo(4.61);
     expect(ribs.at(-1)!.position.x).toBeCloseTo(b.length / 2);
     const path = (ribs[0]!.geometry as THREE.TubeGeometry).parameters.path;
-    expect(path.getPoint(0.5).y).toBeCloseTo(9.3);
-    expect(path.getPoint(0.25).y).toBeCloseTo(9.3 * 0.75, 1);
+    const crown = 20.289 / 2 * 1.1; // ratio 1.1 (the owner, 2026-10-30; was 9.3 m estimated from below)
+    expect(path.getPoint(0.5).y).toBeCloseTo(crown, 1);
+    expect(path.getPoint(0.25).y).toBeCloseTo(crown * 0.75, 1);
     expect(ribs.every((r) => r.scale.y === ribs[0]!.scale.y)).toBe(true); // bare steel is not randomly torn down
   });
   it('keeps the blue cage open and starts it 2 m above the floor', () => {

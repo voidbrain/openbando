@@ -166,9 +166,10 @@ describe('Villetta survey refinements', () => {
     expect(v.walls).toHaveLength(12);
     expect(v.walls!.slice(9, 12).every(w => w.height === 6.2)).toBe(true);
   });
-  it('keeps the greenhouse footprint but uses the measured crown and rib pitch', () => {
+  it('keeps the greenhouse footprint but uses the estimated crown and the measured rib pitch', () => {
     expect(greenhouse.width).toBeCloseTo(20.289);
-    expect(greenhouse.width / 2 * greenhouse.levels[0]!.vaultK!).toBeCloseTo(9.3);
+    // crown 11.2 m (ratio 1.1, the owner 2026-10-30): the 9.3 m of the survey was estimated from below and looked too low
+    expect(greenhouse.width / 2 * greenhouse.levels[0]!.vaultK!).toBeCloseTo(11.16, 1);
     expect(greenhouse.ribSpacing).toBe(4.61);
     expect(greenhouse.glass).toBe(false);
     expect(greenhouse.archShape).toBe('parabola');

@@ -127,7 +127,7 @@ Detailed rules and lessons for each part of the app, moved from AGENTS.md so tha
 - Speed-trail colours never change racing drone identity colours or name-label colours. Labels are drawn as plain canvas text.
 - Mascot sources and exports must agree with `timeline.json`; index 16 is the held cross-legged confused pose. The loop starts with no drone. Use the approved pixel-art concrete-and-brick wordmark in Welcome and README; follow `docs/mascot/wordmark-style-guide.md`. Keep colour approval (true orange versus red-orange) and multi-angle terrain/browser verification pending until actually reviewed.
 
-- Villetta uses `BuildingSpec.archShape = 'parabola'`; absent retains the original elliptical greenhouse. Crown height and rib pitch remain measured values; do not overwrite pilots’ saved copies.
+- Villetta uses `BuildingSpec.archShape = 'parabola'`; absent retains the original elliptical greenhouse. Rib pitch is a measured value; the crown is 11.2 m (ratio 1.1, release 13: the owner, 2026-10-30, found the surveyed 9.3 m, estimated from below, too low against the video). Do not overwrite pilots’ saved copies.
 - Road vertices sample the rendered terrain triangles and use polygon offset; cut coplanar basement-ceiling triangles without treating them as outside fragments. Confirm terrain seams visually before closing the bugs.
 - The mascot pokes the grounded drone twice (pose 17), retracting his hand between pokes (pose 18), then sits for takeoff. Keep canvas and GIF placement in step.
 

@@ -1,6 +1,6 @@
 {
  "about": "The Villetta main store shared without its place: no map and no map data, its real ground travels inside. Open a copy, edit it, load your flights: they start on the take-off pad, and pins and the compass fit them.",
- "release": 12,
+ "release": 13,
  "version": 1,
  "id": "example-villetta-no-place",
  "name": "Bando Villetta",
@@ -1531,7 +1531,7 @@
      "partitions": [],
      "roof": "vault",
      "roofRise": 9.3,
-     "vaultK": 0.9167529203016412
+     "vaultK": 1.1
     }
    ],
    "ribSpacing": 4.61,
