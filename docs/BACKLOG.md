@@ -580,7 +580,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#263](https://github.com/voidbrain/openbando/pull/263) (prototypes); branch `feat/align-automatically` (full run, not merged); request 2026-10-30 |
+| PR / evidence | [#263](https://github.com/voidbrain/openbando/pull/263) (prototypes); branch `feat/align-automatically` (full run, not merged); [#266](https://github.com/voidbrain/openbando/pull/266) (findings, steps); request 2026-10-30 |
 | Opened | 2026-10-30 |
 | Verification | Prototype · 2026-10-30 · geometric and visual probes on the demo flight; full run on the whole flight: no usable shift (numbers above) |
 | Reviewed | 2026-10-30 |
