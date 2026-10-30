@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `f0c9fd3` (merged #217), with every CI job of #162–#217 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `80205b9` (merged #221), with every CI job of #162–#222 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -381,6 +381,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
+### B-036
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | B-036 | 🔶 P2 | Open | Road curves are angular: a sharp corner at every map point |
+
+💻 **→ Human action required: No**<br />Smooth the road's centre line into curves (rounded corners with a turn radius that suits the road's width), drawn and levelled the same way, with a unit test and a screenshot.
+
+**Next action / closure evidence:** Reported 2026-10-29 ("roads curves are not very good", with a screenshot). B-033 fixed the wedge-shaped gaps at the bends; the road still turns in straight pieces with a corner at each point of the map's line. The rounding has to be applied where the ground under the road is levelled too (`levelRoad`), or the road and the levelled strip part at the corners. Split from B-033 on 2026-10-30 at the user's request.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Report 2026-10-29; B-033 ([#215](https://github.com/voidbrain/openbando/pull/215)) fixed the gaps only |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
 ### B-037
 
 | Signal | ID | Priority | Status | Item |
@@ -581,20 +605,20 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟡 | F-024 | 🔹 P3 | Implemented | Take-off pad indoors, on an upper floor or on a flat roof |
+| 🔴 | F-024 | 🔹 P3 | Open | Take-off pad indoors, on an upper floor or on a flat roof |
 
-🧑 **→ Human action required: Yes**<br />On the live site after merge: put the pad inside a building with a flat roof, choose "stands on: roof" (or an upper floor), Fly, and take off from there.
+💻 **→ Human action required: No**<br />Implement after F-021: a take-off height for the pad (ground, a floor of the building under it, or its flat roof), with the drone starting there.
 
-**Next action / closure evidence:** Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof. Done 2026-10-30 (this PR): `SiteSpec.takeoffOn` (`{ building, level }`, absent = ground, older bandos unchanged); `core/takeoff-place.ts`: `standingLevels` (upper floors, a flat roof; none for open shells or deep ruins) is the one source for the inspector's "stands on" menu, `takeoffHeight` and the model's standing surfaces; the collider's `groundAt` returns a floor or flat roof under the drone, so it rests, takes off and lands there; a roof stands `ROOF_CLEARANCE` (0.15 m, the collider margin) above its box, or every move from the pad would be a collision; the pad and the start marker are drawn at that height and the simulator starts there; in the 2D plan the take-off pad is now drawn over the buildings (it could not be picked inside one). Covered by `takeoff-place.spec.ts` (choices and heights, a vanished floor falls back to the ground, old specs, a drone resting on a roof stays clear of it and takes off) and `takeoff-pad.e2e.ts` (the menu offers ground / floor L1 / roof, the export keeps it). Not done: holes in floors (a stairwell) still count as floor; a drone flying up from below still passes through upper slabs (they are not solid); dragging the pad in 3D (F-035).
+**Next action / closure evidence:** Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR; request 2026-10-29 |
+| PR / evidence | Request 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Unit/browser · 2026-10-30 · `takeoff-place.spec.ts` and `takeoff-pad.e2e.ts` passed locally; flying from a roof on the live site · Pending |
+| Verification | Not implemented |
 | Reviewed | 2026-10-29 |
 
 </details>
@@ -812,6 +836,54 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 | Opened | 2026-10-29 |
 | Verification | Script · 2026-10-29 · page generated: 406 controls, 9 with a tip, 116 with a title, 18 in clips, 32 names in bound expressions; CI step added |
 | Reviewed | 2026-10-29 |
+
+</details>
+
+---
+
+### F-034
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | F-034 | 🔹 P3 | Implemented | Merge only when every check passes, CodeQL included |
+
+💻 **→ Human action required: No**<br />Verify on the next PR that GitHub lists CodeQL as required and blocks the merge while it fails.
+
+**Next action / closure evidence:** Found 2026-10-30: the required checks (ruleset "protect main") did not include CodeQL, and the agent's merge watcher waited only for the required ones, so a PR could merge with an open code-scanning alert (#221 had four: incomplete sanitization in two build tools, fixed in that PR). Decided 2026-10-30 (user): option (c), CodeQL made a required check of "protect main" through the API (required now: check, e2e (1)–(4), race-browser, CodeQL), so GitHub blocks the merge whoever merges; AGENTS names it (a project line). The watcher, a session script, stops on any failing check too.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Ruleset 25780506 updated 2026-10-30; this PR (AGENTS); found on [#221](https://github.com/voidbrain/openbando/pull/221) |
+| Opened | 2026-10-30 |
+| Verification | Settings · 2026-10-30 · the ruleset lists CodeQL among the required checks (API); on a PR · Pending |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
+### F-035
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-035 | 🔹 P3 | Open | Drag the take-off pad in the editor's 3D view |
+
+💻 **→ Human action required: No**<br />Make the take-off pad pickable and draggable in the 3D view as it is in the 2D plan (with `moveTakeoff`), with a browser test; do it with F-024 (the pad on floors and roofs), which needs 3D placement anyway.
+
+**Next action / closure evidence:** Split from F-021 on 2026-10-30 at the user's request: F-021 moves the pad in the 2D plan (select, drag, right-click menus) but not in the 3D view.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | F-021 ([#210](https://github.com/voidbrain/openbando/pull/210)) did the 2D plan only |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
 
 </details>
 
