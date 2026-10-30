@@ -28,7 +28,7 @@ stay in the browser (IndexedDB); videos and logs are read from your disk and nev
 - **Take-off pad**: select and drag it in the plan, or right-click the ground: Move the take-off pad here; inside a building it can stand on an upper floor or a flat roof, and the drone takes off and lands there.
 - **Bandos** (the map and model editor): create a site from OpenStreetMap, then edit it.
   1. *Area*: search a place, pan the map, drag the dashed frame's edges to set the area (metres, independent of the window
-     size). **Generate** pulls buildings, trees, roads, greenhouses, towers, bridges, steps and cranes from OpenStreetMap.
+     size); zoom in to refine it (the frame stays in view and the area shrinks with the zoom). **Generate** pulls buildings, trees, roads, greenhouses, towers, bridges, steps and cranes from OpenStreetMap.
   2. *Model*: the 3D model's plan is drawn over the map (street / satellite / hidden, adjustable opacity) in its real position.
      Move, resize, rotate and reshape buildings (cut notches, add wings, merge), plant trees, draw fences, place structures.
      **Edit indoors** takes the roof off and edits one floor at a time: interior walls, doors and windows (open or closed),
