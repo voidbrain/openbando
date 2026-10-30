@@ -83,4 +83,13 @@ describe('main-page and editor picking', () => {
       ),
     ).toBeNull();
   });
+  it('picks the take-off pad (the last pad), not another pad, in the merged view (F-035)', () => {
+    const s = emptySpec();
+    s.pads = [{ x: 20, z: 0, w: 6, d: 6 }, { x: -20, z: 0, w: 6, d: 6 }];
+    s.droneStart = { x: -20, z: 0 };
+    const model = buildSiteFromSpec(s, { merge: true });
+    const down = (x: number) => new THREE.Raycaster(new THREE.Vector3(x, 20, 1.5), new THREE.Vector3(0, -1, 0));
+    expect(pickModel(down(-20), model, s)).toEqual({ kind: 'pad' });
+    expect(pickModel(down(20), model, s)).toBeNull();
+  });
 });

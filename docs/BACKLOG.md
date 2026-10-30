@@ -869,20 +869,20 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-035 | 🔹 P3 | Open | Drag the take-off pad in the editor's 3D view |
+| 🟡 | F-035 | 🔹 P3 | Implemented | Drag the take-off pad in the editor's 3D view |
 
-💻 **→ Human action required: No**<br />Make the take-off pad pickable and draggable in the 3D view as it is in the 2D plan (with `moveTakeoff`), with a browser test; do it with F-024 (the pad on floors and roofs), which needs 3D placement anyway.
+💻 **→ Human action required: No**<br />Close when this PR merges on a green CI (the e2e drags the pad in 3D); a look on the live site with a real mouse is welcome.
 
-**Next action / closure evidence:** Split from F-021 on 2026-10-30 at the user's request: F-021 moves the pad in the 2D plan (select, drag, right-click menus) but not in the 3D view.
+**Next action / closure evidence:** Split from F-021 on 2026-10-30 at the user's request: F-021 moves the pad in the 2D plan (select, drag, right-click menus) but not in the 3D view. Done 2026-10-30 (this PR): the take-off pad and its start marker are pickable in the 3D view (`{ kind: 'pad' }`, the last pad only); a click selects it (the inspector shows the pad), and the selected pad has one move handle that drags it through the plan's `pad` gesture (`moveTakeoff`, one undo step). `e2e/takeoff-pad.e2e.ts` drags it in 3D and checks the export; `site-pick.spec.ts` checks that only the take-off pad is picked.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | F-021 ([#210](https://github.com/voidbrain/openbando/pull/210)) did the 2D plan only |
+| PR / evidence | This PR; F-021 ([#210](https://github.com/voidbrain/openbando/pull/210)) did the 2D plan only |
 | Opened | 2026-10-30 |
-| Verification | Not implemented |
+| Verification | Unit · 2026-10-30 · pad pick test passed; Browser · 2026-10-30 · `takeoff-pad.e2e.ts` (3 tests, the 3D drag included) passed locally |
 | Reviewed | 2026-10-30 |
 
 </details>

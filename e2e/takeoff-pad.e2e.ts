@@ -91,3 +91,54 @@ test('the take-off pad can stand on a flat roof', async ({page}) => {
   const spec = JSON.parse((await readFile((await (await downloading).path())!)).toString()) as SiteSpec;
   expect(spec.takeoffOn).toEqual({building: 'h', level: 2});
 });
+
+/** In the 3D view the selected take-off pad has a move handle; dragging it moves pad and start together (F-035). */
+test('the take-off pad can be dragged in the 3D view', async ({page}) => {
+  test.setTimeout(180_000);
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  await page.goto('/');
+  await page.getByRole('button', {name: 'Open the bandos', exact: true}).click();
+  const fixture = {
+    version: 1, id: 'pad3d', name: 'Pad in 3D', createdAt: 0, privacy: 'hidden',
+    origin: {lat: 0, lon: 0}, bearingDeg: 0, genScale: 1, extent: 60, seed: 1, trees: [],
+    pads: [{x: 0, z: 0, w: 8, d: 8, color: '#a9aaa0'}], droneStart: {x: 0, z: 0},
+    buildings: [{id: 'b', name: 'Shed', pos: {x: 30, z: 0}, rotDeg: 0, length: 8, width: 6,
+      levels: [{baseY: 0, height: 4, sides: {n: true, s: true, e: true, w: true}, doors: {}, partitions: [], roof: 'flat', roofRise: 0}]}],
+  };
+  const studio = page.locator('app-studio-panel');
+  await studio.locator('input[type=file]').first().setInputFiles({name: 'pad3d.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture))});
+  const card = studio.locator('.card').filter({hasText: fixture.name});
+  await card.getByRole('button', {name: 'Edit', exact: true}).click();
+  const bar = page.locator('app-bando-editor > .bar');
+  await page.locator('app-bando-editor [data-pk="pad"]').click();
+  await expect(page.locator('[data-tour="inspector"]')).toContainText('Take-off pad');
+  await page.locator('[data-tour="view-3d"]').click();
+  const canvas = page.locator('app-site-view canvas');
+  await expect(canvas).toBeVisible();
+
+  // the move handle shows a "move" cursor under the pointer
+  const hover = () => canvas.evaluate((el: HTMLCanvasElement) => {
+    const r = el.getBoundingClientRect();
+    for (let y = 8; y < r.height; y += 8) for (let x = 8; x < r.width; x += 8) {
+      el.dispatchEvent(new PointerEvent('pointermove', {clientX: r.left + x, clientY: r.top + y, bubbles: true}));
+      if (el.style.cursor === 'move') return {x: r.left + x, y: r.top + y};
+    }
+    return null;
+  });
+  await expect.poll(hover, {timeout: 15_000}).not.toBeNull();
+  const from = (await hover())!;
+  await page.mouse.move(from.x, from.y);
+  await page.mouse.down();
+  try { await page.mouse.move(from.x + 120, from.y, {steps: 8}); } finally { await page.mouse.up(); }
+
+  await bar.getByRole('button', {name: 'Save', exact: true}).click();
+  await bar.getByRole('button', {name: '← Bandos', exact: true}).click();
+  const downloading = page.waitForEvent('download');
+  await card.getByRole('button', {name: 'Export', exact: true}).click();
+  const spec = JSON.parse((await readFile((await (await downloading).path())!)).toString()) as SiteSpec;
+  expect(Math.hypot(spec.droneStart.x, spec.droneStart.z)).toBeGreaterThan(2);
+  expect(spec.pads.at(-1)).toMatchObject({x: spec.droneStart.x, z: spec.droneStart.z});
+  expect(errors).toEqual([]);
+});

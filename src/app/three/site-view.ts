@@ -343,7 +343,7 @@ export class SiteViewRenderer {
     } else {
       this.model.group.traverse((o) => {
         const p = indoorSourcePick((o.userData['pick'] as SitePick | undefined) ?? null, this.indoorFloor);
-        if (p && p.kind === sel.kind && (('id' in p && 'id' in sel && p.id === sel.id && (!('li' in p) || ('li' in sel && p.li === sel.li && p.i === sel.i))) || ('i' in p && 'i' in sel && !('id' in p) && p.i === sel.i))) b.expandByObject(o);
+        if (p && p.kind === sel.kind && (p.kind === 'pad' || ('id' in p && 'id' in sel && p.id === sel.id && (!('li' in p) || ('li' in sel && p.li === sel.li && p.i === sel.i))) || ('i' in p && 'i' in sel && !('id' in p) && p.i === sel.i))) b.expandByObject(o);
       });
     }
     if (b.isEmpty()) return;
@@ -353,22 +353,31 @@ export class SiteViewRenderer {
       const basementId = this.indoorFloor?.li === -1 ? this.indoorFloor.id : null;
       const id = basementId ?? (sel.kind === 'building' && !this.indoorFloor ? sel.id : null);
       const building = id ? this.spec.buildings.find(item => item.id === id) : undefined;
-      if (building) {
-        this.handles = new THREE.Group();
+      if (sel.kind === 'pad' && !this.indoorFloor) {
+        // one move handle over the take-off pad: dragged like a building's, it moves the pad on the ground
+        const c = b.getCenter(new THREE.Vector3());
+        this.addHandles([{ kind: 'move', sx: 0, sz: 0, x: c.x, y: b.max.y + 0.5, z: c.z }], 0.8);
+      } else if (building) {
         const size = Math.max(0.6, Math.min(2, Math.max(building.length, building.width) * 0.035));
         const items = basementId ? basementHandles(building, siteGround(this.spec).building.get(building.id) ?? 0)
           : buildingHandles(building, this.model.ground.building.get(building.id) ?? 0);
-        for (const handle of items) {
-          const geometry = handle.kind === 'basementVertex' ? new THREE.SphereGeometry(size * 0.6, 12, 8) : new THREE.BoxGeometry(size, size, size);
-          const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: handle.kind === 'move' ? 0x38d6ff : 0xffd166, depthTest: false }));
-          mesh.position.set(handle.x, handle.y, handle.z);
-          mesh.renderOrder = 20;
-          mesh.userData['handle'] = handle;
-          this.handles.add(mesh);
-        }
-        this.scene.add(this.handles);
+        this.addHandles(items, size);
       }
     }
+  }
+
+  /** Draggable handle cubes (spheres for basement vertices), drawn over everything; the move handle is cyan. */
+  private addHandles(items: readonly BuildingHandle[], size: number): void {
+    this.handles = new THREE.Group();
+    for (const handle of items) {
+      const geometry = handle.kind === 'basementVertex' ? new THREE.SphereGeometry(size * 0.6, 12, 8) : new THREE.BoxGeometry(size, size, size);
+      const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: handle.kind === 'move' ? 0x38d6ff : 0xffd166, depthTest: false }));
+      mesh.position.set(handle.x, handle.y, handle.z);
+      mesh.renderOrder = 20;
+      mesh.userData['handle'] = handle;
+      this.handles.add(mesh);
+    }
+    this.scene.add(this.handles);
   }
 
   setPaths(flights: Flight[], speedMax: number): void {
