@@ -312,7 +312,8 @@ export class VideoService {
     this.primed = true;
     this.priming = true;
     const v = this.element;
-    void v.play().catch(() => undefined).finally(() => {
+    // `play()` returns a promise in browsers (not in every test DOM): wrap it either way
+    void Promise.resolve(v.play() as Promise<void> | undefined).catch(() => undefined).finally(() => {
       this.priming = false;
       if (this.transport.playing()) return;
       v.pause();
