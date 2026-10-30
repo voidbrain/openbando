@@ -6,6 +6,41 @@ The element-level part of the impact map ([impact-map.md](impact-map.md), from t
 
 **407 controls** · 9 with a tip on hover · 116 with a title · 18 shown in a clip · 32 whose name the script cannot read (a bound expression; axe checks the real names)
 
+## Tips per file
+
+What the panels' "?" (tips on hover) covers: a guide step's tip, the browser's own `title`, or neither (F-026, inventory before the rework).
+
+| File | Controls | Tip on hover | Title | Neither |
+|---|---|---|---|---|
+| src/app/ui/studio/bando-editor.html | 184 | 7 | 46 | 135 |
+| src/app/ui/panels/racing-controls.ts | 29 | 0 | 0 | 29 |
+| src/app/ui/studio/elements-box.ts | 20 | 0 | 1 | 19 |
+| src/app/ui/studio/assistant-box.ts | 17 | 0 | 4 | 13 |
+| src/app/ui/studio/blocks-box.ts | 20 | 0 | 7 | 13 |
+| src/app/ui/panels/video-panel.ts | 17 | 1 | 4 | 12 |
+| src/app/ui/studio/studio-panel.ts | 19 | 1 | 7 | 11 |
+| src/app/ui/panels/render-panel.ts | 8 | 0 | 0 | 8 |
+| src/app/ui/panels/radio-panel.ts | 7 | 0 | 0 | 7 |
+| src/app/ui/panels/timeline-panel.ts | 10 | 0 | 3 | 7 |
+| src/app/ui/panels/welcome-panel.ts | 5 | 0 | 0 | 5 |
+| src/app/ui/panels/guide-panel.ts | 5 | 0 | 1 | 4 |
+| src/app/ui/panels/simulator-panel.ts | 7 | 0 | 3 | 4 |
+| src/app/ui/panels/views-panel.ts | 16 | 0 | 12 | 4 |
+| src/app/ui/panels/flights-panel.ts | 3 | 0 | 0 | 3 |
+| src/app/ui/panels/live-panel.ts | 3 | 0 | 0 | 3 |
+| src/app/ui/studio/site-view.ts | 4 | 0 | 1 | 3 |
+| src/app/ui/panels/fly-panel.ts | 5 | 0 | 3 | 2 |
+| src/app/ui/tour-overlay.ts | 5 | 0 | 3 | 2 |
+| src/app/ui/panels/features-panel.ts | 1 | 0 | 0 | 1 |
+| src/app/ui/version-badge.ts | 3 | 0 | 2 | 1 |
+| src/app/ui/float-box.ts | 2 | 0 | 2 | 0 |
+| src/app/ui/panel/panel.ts | 4 | 0 | 4 | 0 |
+| src/app/ui/panels/path-panel.ts | 7 | 0 | 7 | 0 |
+| src/app/ui/studio/element-preview.ts | 4 | 0 | 4 | 0 |
+| src/app/ui/studio/pick-menu.ts | 1 | 0 | 1 | 0 |
+| src/app/ui/widgets/camera-compass.ts | 1 | 0 | 1 | 0 |
+| **all** | 407 | 9 | 116 | 286 |
+
 ### src/app/ui/float-box.ts
 
 | Control | Element | Mark | Title | Tip (guide step) | In clips |
