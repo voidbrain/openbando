@@ -14,6 +14,8 @@ import { scanRate } from '../core/sync/features';
 
 const SYNC_KEY_PREFIX = 'abando-sync:';
 const MIN_RESTART_INTERVAL_MS = 400;
+/** A seek the video has not finished after this long is issued again (B-040: a stalled seek froze the frame). */
+const SEEK_STALL_MS = 1000;
 
 /**
  * The flight video (a local file, nothing is uploaded) kept in sync with the replay: a fixed offset
@@ -52,6 +54,8 @@ export class VideoService {
   private objectUrl: string | null = null;
   private fileKey = '';
   private lastPlayAttempt = 0;
+  /** When the app last asked the video to seek and the video has not said `seeked` since; 0 when none is pending. */
+  private seekIssuedAt = 0;
   private lastSeekTarget = -1;
   /** A seek of the video alone (manual sync): the replay must not follow it. */
   private ownSeek = false;
@@ -74,13 +78,15 @@ export class VideoService {
     this.playback.onSeek((t) => {
       if (this.suspended || !this.loaded() || this.element.readyState < 1) return;
       const target = Math.max(0, t + this.offset());
-      if (Math.abs(this.element.currentTime - target) < 0.05) return;
+      // while a seek is pending `currentTime` reports its target, not the frame shown: never skip on it then
+      if (!this.seekIssuedAt && Math.abs(this.element.currentTime - target) < 0.05) return;
       this.ownSeek = true; // not a seek of the video alone: the replay is already there
-      this.element.currentTime = target;
+      this.seekVideo(target);
       this.lastSeekTarget = target;
     });
     // Seeking the video's own bar while paused moves the replay with it.
     this.element.addEventListener('seeked', () => {
+      this.seekIssuedAt = 0;
       if (this.ownSeek) {
         this.ownSeek = false;
         return;
@@ -133,7 +139,7 @@ export class VideoService {
     if (this.transport.playing()) this.playback.pause();
     const v = this.element;
     this.ownSeek = true;
-    v.currentTime = Math.max(0, Math.min((v.duration || 1e9) - 0.001, v.currentTime + seconds));
+    this.seekVideo(Math.max(0, Math.min((v.duration || 1e9) - 0.001, v.currentTime + seconds)));
   }
 
   /** "The video shows the replay's current moment right now": derive the offset from the video's position. */
@@ -214,7 +220,7 @@ export class VideoService {
   applySync(offset: number, description: string, from: number): void {
     this.setOffset(offset);
     this.playback.seekTo(from);
-    this.element.currentTime = Math.max(0, this.playback.time + offset);
+    this.seekVideo(Math.max(0, this.playback.time + offset));
     this.status.set(`offset ${offset.toFixed(2)} s · ${description}`);
     this.toast.show(`Auto-synced: offset ${offset.toFixed(2)} s`);
   }
@@ -234,7 +240,7 @@ export class VideoService {
         resolve();
       };
       v.addEventListener('seeked', finish);
-      v.currentTime = target;
+      this.seekVideo(target);
       setTimeout(finish, 1500);
     });
     if (typeof v.requestVideoFrameCallback === 'function') {
@@ -283,10 +289,19 @@ export class VideoService {
     } else {
       if (!v.paused) v.pause();
       if (Math.abs(target - this.lastSeekTarget) > (this.transport.playing() ? 0.15 : 0.001)) {
-        v.currentTime = Math.max(0, target);
+        this.seekVideo(Math.max(0, target));
         this.lastSeekTarget = target;
+      } else if (this.seekIssuedAt && performance.now() - this.seekIssuedAt > SEEK_STALL_MS) {
+        // the browser dropped the seek (seen after fast timeline drags): the frame stayed old and nothing asked again
+        this.seekVideo(Math.max(0, target));
       }
     }
+  }
+
+  /** Seek the video and remember it is pending until `seeked`, so a stalled seek is noticed and issued again. */
+  private seekVideo(t: number): void {
+    this.seekIssuedAt = performance.now();
+    this.element.currentTime = t;
   }
 
   private createElement(): HTMLVideoElement {
