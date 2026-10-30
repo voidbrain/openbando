@@ -35,6 +35,20 @@ export interface PlaceOptions {
   calRotDeg: number;
   /** FPV up-tilt in degrees; 0 for GPS-only replays (their orientation has no real camera angle to correct). */
   fpvTiltDeg: number;
+  /** Ground height under a point, in scene units (terrain included); absent = flat ground at 0. */
+  groundAt?: (x: number, z: number) => number;
+}
+
+/** How far above the ground under it a camera stays (scene units): it never goes into a hill or below the terrain. */
+export const CAMERA_CLEARANCE = 1.5;
+
+/** Lift a camera that is below the ground under it (plus the clearance), keeping it aimed at `look`. Returns whether it moved. */
+export function keepAbove(c: THREE.Camera, groundAt: ((x: number, z: number) => number) | undefined, look: { x: number; y: number; z: number }): boolean {
+  const min = (groundAt ? groundAt(c.position.x, c.position.z) : 0) + CAMERA_CLEARANCE;
+  if (c.position.y >= min) return false;
+  c.position.y = min;
+  c.lookAt(look.x, look.y, look.z);
+  return true;
 }
 
 const tiltQ = new THREE.Quaternion();
@@ -55,6 +69,7 @@ export function placeCamera(c: THREE.PerspectiveCamera, view: CameraView, st: Or
   if (view === 'orbit') {
     c.position.set(st.tg.x + st.rad * Math.sin(st.ph) * Math.sin(st.th), st.tg.y + st.rad * Math.cos(st.ph), st.tg.z + st.rad * Math.sin(st.ph) * Math.cos(st.th));
     c.lookAt(st.tg);
+    keepAbove(c, o.groundAt, st.tg); // a hill between the target and the camera: over it, not inside it
   } else if (view === 'top') {
     const a = (o.calRotDeg * Math.PI) / 180;
     c.up.set(Math.sin(a), 0, -Math.cos(a)); // straight down, true north up
@@ -71,6 +86,7 @@ export function placeCamera(c: THREE.PerspectiveCamera, view: CameraView, st: Or
     const want = new THREE.Vector3(f.p.x + Math.sin(yaw) * 6, f.p.y + 2.5, f.p.z + Math.cos(yaw) * 6);
     c.position.lerp(want, 1 - Math.exp(-dt * 5));
     c.lookAt(f.p.x, f.p.y + 0.5, f.p.z);
+    keepAbove(c, o.groundAt, { x: f.p.x, y: f.p.y + 0.5, z: f.p.z }); // behind the drone may be a slope
   }
 }
 

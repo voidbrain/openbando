@@ -11,6 +11,7 @@ import {pickModel,type SitePick} from './site-pick';
 import { floorPoint, indoorFloorHeight, indoorSourcePick, indoorViewSpec, type IndoorFloor } from './indoor-view';
 import { basementHandles, buildingHandles, type BuildingHandle } from './building-handles';
 import { siteGround } from '../core/site-ground';
+import { keepAbove } from './camera-rig';
 
 /** A gesture preview on the ground: a line through `pts`, closed into a ring for an area. */
 export interface DrawLine { pts: readonly { x: number; z: number }[]; closed?: boolean; color: string; height?: number }
@@ -390,6 +391,8 @@ export class SiteViewRenderer {
     const cp = Math.cos(this.pitch);
     this.camera.position.set(this.target.x + this.dist * cp * Math.sin(this.yaw), this.target.y + this.dist * Math.sin(this.pitch), this.target.z + this.dist * cp * Math.cos(this.yaw));
     this.camera.lookAt(this.target);
+    const ground = this.model?.ground;
+    keepAbove(this.camera, ground?.grid ? (x, z) => ground.at(x, z) : undefined, this.target); // never inside a hill
     this.paths.setProgress();
     this.renderer.render(this.scene, this.camera);
   };
