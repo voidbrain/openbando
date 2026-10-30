@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `d5f7708` (merged #227), with every CI job of #162–#227 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `60a4917` (merged #228), with every CI job of #162–#229 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -409,20 +409,20 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | B-037 | 🔶 P2 | Open | The camera can go below the terrain |
+| 🟡 | B-037 | 🔶 P2 | Implemented | The camera can go below the terrain |
 
-💻 **→ Human action required: No**<br />Rework the fix: lift a camera only above the ground the drone itself uses (`SiteCollider.groundAt` with the camera's height, which knows tunnels and basements), with a small clearance (about 0.3 m), and not in the editor's indoor and basement views; then rerun `editor-regressions.e2e.ts` (the close-up case) and the camera-rig tests.
+💻 **→ Human action required: No**<br />Close when this PR merges on a green CI (race-browser runs the editor close-up case); a look on the live site (orbit over a hill, chase on a slope, a tunnel) is welcome but not required.
 
-**Next action / closure evidence:** Reported 2026-10-30. Cause: the orbit keeps its angle above the point it looks at, not above the ground under the camera, so a hill between them (or a pan over a hill) puts the camera inside it; the chase camera sits 2.5 m over and 6 m behind the drone, inside a slope behind; the editor's 3D view has the same orbit limits. A first fix (PR #228, 2026-10-30) lifted every orbit, chase and editor camera to 1.5 m above the terrain surface under it: CI failed the close-up case in `editor-regressions.e2e.ts` (two clicks 0.17 m apart instead of under 0.1 m: the zoomed-in editor camera was lifted), and the same rule would wrongly lift cameras in basements (the indoor view of −1 is below ground on purpose) and in tunnels. The fix was taken out of #228; the plan above replaces it.
+**Next action / closure evidence:** Reported 2026-10-30. Cause: the orbit keeps its angle above the point it looks at, not above the ground under the camera, so a hill between them (or a pan over a hill) puts the camera inside it; the chase camera sits 2.5 m over and 6 m behind the drone, inside a slope behind; the editor's 3D view has the same orbit limits. A first fix (PR #228, 2026-10-30) lifted every orbit, chase and editor camera to 1.5 m above the terrain surface under it: CI failed the close-up case in `editor-regressions.e2e.ts` (two clicks 0.17 m apart instead of under 0.1 m: the zoomed-in editor camera was lifted), and the same rule would wrongly lift cameras in basements (the indoor view of −1 is below ground on purpose) and in tunnels. The fix was taken out of #228. Reworked 2026-10-30 (this PR): `keepAbove` (three/camera-rig.ts) lifts the orbit and chase cameras and the editor's 3D view to `SiteCollider.groundAt` under them with the camera's height (terrain, floors, a tunnel or basement floor when inside one) plus `CAMERA_CLEARANCE` 0.3 m, still aimed at the target; a target under the terrain (a drone in a tunnel or basement) is left alone, and the editor's indoor and basement views are not lifted. The Welcome films' chase shots may differ slightly: re-recording them is F-031.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Report 2026-10-30; first fix withdrawn from [#228](https://github.com/voidbrain/openbando/pull/228) after CI (race-browser, editor-regressions close-up) |
+| PR / evidence | Report 2026-10-30; first fix withdrawn from [#228](https://github.com/voidbrain/openbando/pull/228) after CI (race-browser, editor-regressions close-up); reworked in this PR |
 | Opened | 2026-10-30 |
-| Verification | Not implemented |
+| Verification | Unit · 2026-10-30 · camera-rig tests (hill, slope, close-up, tunnel) passed; Browser · 2026-10-30 · `editor-regressions.e2e.ts` passed locally (11/11, close-up included) |
 | Reviewed | 2026-10-30 |
 
 </details>
@@ -883,54 +883,6 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 | PR / evidence | This PR; F-021 ([#210](https://github.com/voidbrain/openbando/pull/210)) did the 2D plan only |
 | Opened | 2026-10-30 |
 | Verification | Unit · 2026-10-30 · pad pick test passed; Browser · 2026-10-30 · `takeoff-pad.e2e.ts` (3 tests, the 3D drag included) passed locally |
-| Reviewed | 2026-10-30 |
-
-</details>
-
----
-
-### F-036
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-036 | 🔹 P3 | Implemented | Fence materials: one list, not three |
-
-💻 **→ Human action required: No**<br />Close when this PR merges on a green CI: the tests keep the list single.
-
-**Next action / closure evidence:** Found 2026-10-30 while listing the value couplings (F-033): the same list is written by hand in `core/fences.ts` (`FenceMaterial`), `core/site-spec.ts` (`WallSpec.material`) and the editor's icon map, and nothing keeps them equal. Closes when one source feeds the others (or a test fails when they differ) and the coupling in `.harness.json` says so. Done 2026-10-30 (this PR): `FENCE_MATERIALS` (core/fences.ts) is the one list; `FenceMaterial` and `WallSpec.material` derive from it, `FENCE_ICON` is typed by it; `fences.spec.ts` checks the menu offers exactly that list.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | This PR; found in [#224](https://github.com/voidbrain/openbando/pull/224) (F-033) |
-| Opened | 2026-10-30 |
-| Verification | Unit · 2026-10-30 · the one-list tests passed |
-| Reviewed | 2026-10-30 |
-
-</details>
-
----
-
-### F-037
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-037 | 🔹 P3 | Implemented | Roof kinds: one list, not four |
-
-💻 **→ Human action required: No**<br />Close when this PR merges on a green CI: the tests keep the list single.
-
-**Next action / closure evidence:** Found 2026-10-30 while listing the value couplings (F-033): the same list is written by hand in `core/site-spec.ts`, `core/ai-commands.ts`, `core/ai-prompt.ts` and the editor template, and nothing keeps them equal. Closes when one source feeds the others (or a test fails when they differ) and the coupling in `.harness.json` says so. Done 2026-10-30 (this PR): `ROOF_KINDS` (core/site-spec.ts) is the one list; `LevelSpec.roof`, the AI command type and its check, `AI_SCHEMA` and the editor's Roof → shape menu read it; `ai-commands.spec.ts` checks the schema, `set_roof` for each kind, and that the prompt's prose (which cannot read the list) mentions each.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | This PR; found in [#224](https://github.com/voidbrain/openbando/pull/224) (F-033) |
-| Opened | 2026-10-30 |
-| Verification | Unit · 2026-10-30 · the one-list tests passed |
 | Reviewed | 2026-10-30 |
 
 </details>

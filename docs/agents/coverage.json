@@ -6,16 +6,16 @@
   "functions": 89.9
  },
  "src/app/three/": {
-  "lines": 69.2,
-  "statements": 70.1,
-  "branches": 59.7,
-  "functions": 68.1
+  "lines": 69.5,
+  "statements": 70.3,
+  "branches": 60,
+  "functions": 68
  },
  "src/app/services/": {
   "lines": 39.8,
   "statements": 38.7,
   "branches": 34,
-  "functions": 40.2
+  "functions": 40.1
  },
  "src/app/state/": {
   "lines": 90.3,
@@ -30,9 +30,9 @@
   "functions": 0.7
  },
  "all": {
-  "lines": 53.8,
-  "statements": 53.9,
-  "branches": 48,
+  "lines": 53.9,
+  "statements": 54,
+  "branches": 48.1,
   "functions": 50.4
  }
 }
