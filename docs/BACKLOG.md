@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `82e46b2` (merged #256), with every CI job of #162–#256 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 29 October 2026 against main `a598a23` (merged #258), with every CI job of #162–#258 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -195,6 +195,36 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 | PR / evidence | Report 2026-10-30 |
 | Opened | 2026-10-30 |
 | Verification | Unit · 2026-10-30 · the stalled-seek case passes (fails without the fix); Browser · 2026-10-30 · `timeline-video.e2e.ts` passed locally; the real stall not reproduced, owner's check · Pending |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
+### B-041
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-041 | 🔶 P2 | Implemented | A pin armed while the Bandos editor showed its 3D view did nothing |
+
+🧑 **→ Human action required: Yes**<br />Pin start (or a moment) with the editor in 3D on the live site (since this PR).
+
+| | |
+|---|---|
+| **Issue** | With the Bandos editor open in 3D, Pin start / end / this moment from the Path panel armed, but a click in the editor's 3D view selected things instead of pinning. |
+| **Reproduce** | Live site: a bando in the editor, 3D; load a flight; Path panel → Pin start (replay at its start) or Pin this moment; click the ground in the editor's 3D view. |
+| **Check** | The path moves (toast "Start placed" or "Pinned at …"); on the editor's plan it already worked. |
+
+**Next action / closure evidence:** Reported 2026-10-30 by the owner ("tried path pin start on studio and main 3D model, seems to do nothing"). Checked in the browser: on the main 3D view and on the editor's plan Pin start works (the start moves, toast "Start placed"); in the editor's 3D view the view stayed in its select mode, so the click picked instead of reporting the ground point. Now an armed pin puts the editor's 3D view in its ground mode. The editor's hint also had no text for Pin this moment (it said "where the flight ended"): fixed. `moment-pins.e2e.ts` pins the start on the editor's plan and a moment in its 3D view (the 3D part fails without the fix). Note for the owner's questions: Pin start moves the flight's path (where the log's first fix lands), it does not sync the video; Move the take-off pad moves the bando's take-off spot, and on a bando without its place a flight is put on the pad only when it is first loaded, so moving the pad afterwards leaves a loaded flight where it was.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | This PR; report 2026-10-30 |
+| Opened | 2026-10-30 |
+| Verification | Browser · 2026-10-30 · `moment-pins.e2e.ts` 2/2 locally (the editor 3D part fails without the fix); Pin start on the main 3D view checked |
 | Reviewed | 2026-10-30 |
 
 </details>

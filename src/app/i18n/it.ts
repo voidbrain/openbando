@@ -235,6 +235,7 @@ export const IT: Readonly<Record<string, string>> = {
   'Pin start': 'Fissa partenza',
   'Pin end': 'Fissa arrivo',
   'Pin this moment': 'Fissa questo momento',
+  'Click where the drone is at this moment (the video shows it). Esc cancels.': 'Fai clic dove si trova il drone in questo momento (lo mostra il video). Esc annulla.',
   'Pin this moment: stop where the video shows clearly where the drone is, then click the ground there; the path around this moment moves there (GPS drift)': 'Fissa questo momento: fermati dove il video mostra chiaramente dove si trova il drone, poi fai clic sul terreno in quel punto; il percorso intorno a questo momento si sposta lì (deriva del GPS)',
   'Click the ground where the drone is at this moment (the video shows it) — in any 3D view or panel. Esc cancels.': 'Fai clic sul terreno dove si trova il drone in questo momento (lo mostra il video), in qualsiasi vista 3D o pannello. Esc annulla.',
   'Pinned at {0}: the path around this moment moves there, blending to the next pin.': 'Fissato a {0}: il percorso intorno a questo momento si sposta lì, sfumando verso il punto fissato successivo.',
