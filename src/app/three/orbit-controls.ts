@@ -16,6 +16,8 @@ export interface ControlTarget {
    * main view goes to an orbit about the drone, from the same place). After it, the gesture carries on as usual.
    */
   takeOver?(): void;
+  /** A press the surface must leave alone (it starts dragging the Adjust position control, F-040). */
+  blocked?(): boolean;
 }
 
 interface Pointer {
@@ -37,6 +39,7 @@ export function attachOrbitControls(el: HTMLElement, target: ControlTarget): () 
   const interactive = (): boolean => target.view() === 'orbit' || target.view() === 'top';
 
   const down = (e: PointerEvent): void => {
+    if (target.blocked?.()) return;
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, button: e.button, shift: e.shiftKey });
     try {
       el.setPointerCapture(e.pointerId);
