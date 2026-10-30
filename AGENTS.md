@@ -98,7 +98,12 @@ The app is **OpenBando** (tagline "Build, Fly, Share."). The repository is `void
 ### Checks before you finish
 
 `main` is protected: a PR merges only when `check`, `e2e (1)`–`e2e (4)`, `race-browser` and `CodeQL` pass (ruleset "protect main"; a CodeQL alert is fixed, not waited out). <!-- project -->
-Open every PR against `main`, never on another PR's branch (merging it would not reach `main`). Once a PR's CI is green the owner may merge it at any moment: push no new work to it, open a new PR. Exception: a green PR that conflicts with `main` cannot merge, so it may get a push that only resolves the conflict; its checks run again before it can merge.
+Open every PR against `main`, never on another PR's branch (merging it would not reach `main`). Once a PR's CI is green the owner may merge it at any moment: push no new work to it, open a new PR. Exception: a green PR that conflicts with `main` cannot merge, so it may get a push that only resolves the conflict; its checks run again before it can merge. A conflict in `docs/BACKLOG.md` is resolved record by record with `node tools/merge-backlog.mjs`, never by keeping one side's record (that silently drops the other side's edits).
+
+**What the agent does on its own, and what it asks first.**
+- On its own: branch from `main`, commit, push its branches, open PRs against `main`, resolve conflicts on its own PRs, merge its own PR once every check on it has passed and GitHub can merge it (`node tools/merge-when-green.mjs <PR>…` waits for that and stops on any failing check or conflict), delete merged branches, reconcile and close backlog records.
+- Asks first: a decision or check a record marks 🧑; repository settings (branch protection, required checks, secrets) and dismissing a code-scanning alert; rewriting published history or force-pushing; deleting what it did not create; a harness change it cannot place as project or template ("Changing a harness file").
+- Never: merge with a failing or pending check, or bypass the branch protection. A project narrows this list with a project line.
 
 ```bash
 npm run check:freshness                   # first, at session start: backlog behind main, merged branches, audit age
@@ -121,7 +126,7 @@ npm run check:conventions                 # Angular conventions above, core/ imp
 
 ### Code coverage
 
-`docs/agents/coverage.md` shows, per folder, how much of the code the unit tests run (lines, statements, branches, functions) and the files no test runs; `npm run coverage` (or the stack's coverage run, then `node tools/coverage-table.mjs --write`) refreshes it and its baseline. CI prints the current table and warns, never fails, when a folder drops more than `coverage.drop` points. Coverage says what ran, not that the behaviour is checked: a table to find untested parts, never a number to hit. Refresh the baseline in the PR that changes coverage on purpose (code removed, tests added) and in audits.
+`docs/agents/coverage.md` shows, per folder, how much of the code the unit tests run (lines, statements, branches, functions) and the files no test runs; `npm run coverage` (or the stack's coverage run, then `node tools/coverage-table.mjs --write`) refreshes it and its baseline. CI prints the current table and warns, never fails, when a folder drops more than `coverage.drop` points. Coverage says what ran, not that the behaviour is checked: a table to find untested parts, never a number to hit. The committed page and baseline change only in a PR that changes coverage on purpose (code removed, tests added for it) and in audits, never as a side effect of other work: CI prints the live table on every PR anyway, and parallel PRs that each rewrite the page conflict.
 
 ### Changing a harness file
 
