@@ -4,7 +4,7 @@
 
 The element-level part of the impact map ([impact-map.md](impact-map.md), from the harness, lists what must follow a change). Every control the templates show, with its label, its `data-tour` mark, the guide steps that show it as a tip on hover and the guide steps whose clips use it (F-032). Generated; CI fails when this page differs from the code.
 
-**406 controls** · 9 with a tip on hover · 116 with a title · 18 shown in a clip · 32 whose name the script cannot read (a bound expression; axe checks the real names)
+**407 controls** · 9 with a tip on hover · 116 with a title · 18 shown in a clip · 32 whose name the script cannot read (a bound expression; axe checks the real names)
 
 ### src/app/ui/float-box.ts
 
@@ -390,6 +390,7 @@ The element-level part of the impact map ([impact-map.md](impact-map.md), from t
 | sill (bottom) | input |  |  |  |  |
 | size | input |  |  |  |  |
 | Stairs or a ramp | menu |  |  |  |  |
+| stands on | select |  |  |  |  |
 | style | select |  |  |  |  |
 | Surface | menu |  |  |  |  |
 | Take the roof off and edit one floor of the selected building: walls, doors, windows, voids, columns, stairs | button |  | yes |  |  |
