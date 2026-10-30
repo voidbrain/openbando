@@ -11,6 +11,13 @@ for (const line of text.split('\n')) {
   width ??= cells(line).length;
   assert.equal(cells(line).length, width, `Table width: ${line}`);
 }
+const root = fileURLToPath(new URL('..', import.meta.url));
+const git = (...args) => { try { return execFileSync('git', ['-C', root, ...args], {encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore']}); } catch { return null; } };
+let stamp = {};
+try { stamp = JSON.parse(readFileSync(new URL('../.harness.json', import.meta.url), 'utf8')); } catch { /* no stamp: defaults */ }
+const branch = stamp.defaultBranch ?? git('symbolic-ref', '--short', 'refs/remotes/origin/HEAD')?.trim().replace(/^origin\//, '') ?? 'main';
+const mainText = git('show', `origin/${branch}:docs/BACKLOG.md`) ?? '';
+const onMain = new Set([...mainText.matchAll(/^### [BF]-\d+\n[\s\S]*?^---\n/gm)].map(m => m[0]));
 // docs/BACKLOG-RULES.md is the procedure this enforces; an empty ledger is valid.
 const headings = [...text.matchAll(/^### ([BF]-\d+)$/gm)];
 const ids = new Set();
@@ -33,6 +40,15 @@ for (let i = 0; i < headings.length; i++) {
   const human = [...block.matchAll(/^(🧑|💻) \*\*→ Human action required: (Yes|No)\*\*<br \/>.+/gm)];
   assert.equal(human.length, 1, `${id}: missing visible human action/cue`);
   assert.equal(human[0][1], human[0][2] === 'Yes' ? '🧑' : '💻', `${id}: human-action cue mismatch`);
+  // a record waiting for a person says, right under its human-action line, what the issue is, how to get to it and
+  // what to check or decide (BACKLOG-RULES). Required on records this branch adds or changes; older ones as touched.
+  const whole = text.slice(headings[i].index).match(/^### [BF]-\d+\n[\s\S]*?^---\n/m)?.[0];
+  if (human[0][2] === 'Yes' && !onMain.has(whole)) {
+    const after = block.slice(block.indexOf(human[0][0]) + human[0][0].length).split('\n').slice(1, 7);
+    const rows = after.slice(3).map(cells);
+    assert(after[0] === '' && after[1] === '| | |' && after[2] === '|---|---|' && ['**Issue**', '**Reproduce**', '**Check**'].every((k, r) => rows[r]?.[0] === k && rows[r]?.[1]),
+      `${id}: a record waiting for a person needs, under its human-action line, the table | **Issue** | … |, | **Reproduce** | … |, | **Check** | … | (BACKLOG-RULES)`);
+  }
   const detail = block.match(/<details>\s*<summary>[^<]+<\/summary>([\s\S]*?)<\/details>/);
   assert(detail, `${id}: missing/broken metadata details`);
   assert(block.indexOf('**Next action') < block.indexOf('<details>'), `${id}: next action hidden in details`);
@@ -50,11 +66,6 @@ assert.equal((text.match(/<\/details>/g) ?? []).length, headings.length, 'Unbala
 // Archives only grow: every line an archive has on the published default branch is still here, unchanged and in the
 // same order, so a rewrite that drops or edits history fails here instead of on review. New records may go anywhere; a
 // correction is a dated note added, never an edit. Skipped without git or a published branch.
-const root = fileURLToPath(new URL('..', import.meta.url));
-const git = (...args) => { try { return execFileSync('git', ['-C', root, ...args], {encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore']}); } catch { return null; } };
-let stamp = {};
-try { stamp = JSON.parse(readFileSync(new URL('../.harness.json', import.meta.url), 'utf8')); } catch { /* no stamp: defaults */ }
-const branch = stamp.defaultBranch ?? git('symbolic-ref', '--short', 'refs/remotes/origin/HEAD')?.trim().replace(/^origin\//, '') ?? 'main';
 const published = git('ls-tree', '--name-only', `origin/${branch}`, 'docs/archive/')?.split('\n').filter(f => f.endsWith('.md')) ?? [];
 for (const file of published) {
   const local = new URL(`../${file}`, import.meta.url);
@@ -67,7 +78,7 @@ for (const file of published) {
 }
 // "this PR" in a line already on the default branch is a placeholder its PR left behind: once merged, a record names
 // the PR (#N) instead, or nobody knows which change it meant and the record waits for a closure no one reconciles.
-const mainBacklog = new Set((git('show', `origin/${branch}:docs/BACKLOG.md`) ?? '').split('\n'));
+const mainBacklog = new Set(mainText.split('\n'));
 // a quoted mention ("this PR", `this PR`) talks about the placeholder, it is not one
 const placeholder = /(?<!["“`'])\bthis PR\b(?!["”`'])/i;
 const stale = text.split('\n').filter(line => placeholder.test(line) && mainBacklog.has(line));
