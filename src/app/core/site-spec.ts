@@ -317,6 +317,8 @@ export interface SiteSpec {
   extent: number;
   /** Take-off pad position in site metres (scaled with the model). */
   droneStart: Vec2;
+  /** The take-off pad stands on a floor of a building (`level` = its index) or on its flat roof (`level` = levels.length) instead of the ground. Absent = the ground (older bandos). */
+  takeoffOn?: { building: string; level: number };
   /** Roads, tracks, paths and railways laid on the ground (older bandos have their roads as rotated `pads`). */
   roads?: RoadSpec[];
   /** Ground materials (grass, asphalt, gravel ...) inside outlines. */
@@ -508,6 +510,7 @@ export function sanitizeSpec(raw: unknown): SiteSpec | null {
     seed: typeof s.seed === 'number' ? s.seed : 7,
     extent: typeof s.extent === 'number' ? s.extent : 500,
     droneStart: s.droneStart && typeof s.droneStart.x === 'number' ? s.droneStart : { x: 0, z: 0 },
+    takeoffOn: s.takeoffOn && typeof s.takeoffOn.building === 'string' && Number.isInteger(s.takeoffOn.level) && s.takeoffOn.level > 0 ? { building: s.takeoffOn.building, level: s.takeoffOn.level } : undefined,
     terrain: sanitizeTerrain(s.terrain),
     ...sanitizeLayers(s),
     calibCorners: s.calibCorners ?? { p1: { x: -100, z: -100 }, p2: { x: 100, z: 100 } },

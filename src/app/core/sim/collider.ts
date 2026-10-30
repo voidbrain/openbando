@@ -9,6 +9,13 @@ export type SolidBox = readonly [number, number, number, number, number, number,
 /** Vertical tree trunk/crown: [x, z, radius, topHeight, baseHeight (default 0)]. */
 export type TreeCylinder = readonly [number, number, number, number, number?];
 
+/** A floor or flat roof the drone can stand on (unscaled): its outline and its top. Roofs vanish with the roofs. */
+export interface StandingSurface {
+  pts: readonly { x: number; z: number }[];
+  top: number;
+  roof: boolean;
+}
+
 /** Anything the drone can bump into. Implemented by {@link SiteCollider}; tests can supply a fake. */
 export interface CollisionWorld {
   hit(p: Vec3): boolean;
@@ -39,6 +46,8 @@ export class SiteCollider implements CollisionWorld {
     /** Underground volumes (unscaled): inside one, the floor is its own, not the terrain above. */
     readonly underground: readonly UndergroundSpec[] = [],
     readonly ceilingTiles: readonly { box: SolidBox; volume: UndergroundSpec }[] = [],
+    /** Upper floors and flat roofs: above one, it is the ground (a drone stands on it, takes off and lands there). */
+    readonly standing: readonly StandingSurface[] = [],
   ) {}
 
   waterAt(x: number, z: number): number | null {
@@ -53,7 +62,13 @@ export class SiteCollider implements CollisionWorld {
       const f = floorUnder(this.underground, x / k, z / k, y / k);
       if (f !== null) return f * k;
     }
-    return heightAt(this.ground, x / k, z / k) * k;
+    let g = heightAt(this.ground, x / k, z / k);
+    // a floor or flat roof under the drone (at most a few centimetres above it: it is resting there) is its ground
+    if (y !== undefined) for (const s of this.standing) {
+      if (s.roof && this.roofHidden) continue;
+      if (s.top > g && s.top <= y / k + 0.05 && insidePolygon(s.pts, x / k, z / k)) g = s.top;
+    }
+    return g * k;
   }
 
   hit(p: Vec3): boolean {

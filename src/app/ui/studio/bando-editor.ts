@@ -55,6 +55,7 @@ import { MeasureTool } from './editor/measure-tool';
 import { BlockTool } from './editor/block-tool';
 import { ToolbarDock } from './editor/toolbar-dock';
 import { TerrainTool } from './editor/terrain-tool';
+import { takeoffChoices } from '../../core/takeoff-place';
 import { UndergroundTool } from './editor/underground-tool';
 
 type CtxItem = { label: string; act?: () => void; danger?: boolean; disabled?: boolean; sep?: boolean; head?: boolean };
@@ -1480,6 +1481,22 @@ export class BandoEditor {
     const p = this.toWorld(e), st = this.ed.draft().droneStart;
     this.pick.set({ t: 'pad' });
     this.drag.set({ t: 'pad', dx: st.x - p.x, dz: st.z - p.z });
+  }
+
+  /** Where the pad can stand inside the building under it (upper floors, a flat roof); empty on open ground. */
+  protected readonly padChoices = computed(() => takeoffChoices(this.ed.draft()));
+  protected readonly padOn = computed(() => {
+    const on = this.ed.draft().takeoffOn;
+    return on && this.padChoices().some((c) => c.building === on.building && c.level === on.level) ? `${on.building}:${on.level}` : '';
+  });
+  /** Stand the pad on the ground ('') or on a floor / roof of the building under it ("building:level"). */
+  protected setPadOn(e: Event): void {
+    const v = selectedFrom(e);
+    const c = this.padChoices().find((x) => `${x.building}:${x.level}` === v);
+    this.ed.commitSite((s) => {
+      if (c) s.takeoffOn = { building: c.building, level: c.level };
+      else delete s.takeoffOn;
+    });
   }
 
   /** Move the take-off pad and the drone's start (one undo step). */

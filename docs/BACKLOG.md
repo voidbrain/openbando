@@ -381,6 +381,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
+### B-037
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | B-037 | 🔶 P2 | Open | The camera can go below the terrain |
+
+💻 **→ Human action required: No**<br />Keep the orbit (and editor) camera above the ground under it, terrain included, with a test; check the other cameras (chase, top) the same way.
+
+**Next action / closure evidence:** Reported 2026-10-30: the camera does not know the terrain's height, so it can be moved below the ground. To find: which cameras (main orbit, editor 3D view) clamp to a flat ground at y = 0 instead of the height grid, then keep them a little above `groundAt` under them.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Report 2026-10-30 |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
 ## Features and limitations
 
 ### F-001
@@ -557,20 +581,20 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🔴 | F-024 | 🔹 P3 | Open | Take-off pad indoors, on an upper floor or on a flat roof |
+| 🟡 | F-024 | 🔹 P3 | Implemented | Take-off pad indoors, on an upper floor or on a flat roof |
 
-💻 **→ Human action required: No**<br />Implement after F-021: a take-off height for the pad (ground, a floor of the building under it, or its flat roof), with the drone starting there.
+🧑 **→ Human action required: Yes**<br />On the live site after merge: put the pad inside a building with a flat roof, choose "stands on: roof" (or an upper floor), Fly, and take off from there.
 
-**Next action / closure evidence:** Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof.
+**Next action / closure evidence:** Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof. Done 2026-10-30 (this PR): `SiteSpec.takeoffOn` (`{ building, level }`, absent = ground, older bandos unchanged); `core/takeoff-place.ts`: `standingLevels` (upper floors, a flat roof; none for open shells or deep ruins) is the one source for the inspector's "stands on" menu, `takeoffHeight` and the model's standing surfaces; the collider's `groundAt` returns a floor or flat roof under the drone, so it rests, takes off and lands there; a roof stands `ROOF_CLEARANCE` (0.15 m, the collider margin) above its box, or every move from the pad would be a collision; the pad and the start marker are drawn at that height and the simulator starts there; in the 2D plan the take-off pad is now drawn over the buildings (it could not be picked inside one). Covered by `takeoff-place.spec.ts` (choices and heights, a vanished floor falls back to the ground, old specs, a drone resting on a roof stays clear of it and takes off) and `takeoff-pad.e2e.ts` (the menu offers ground / floor L1 / roof, the export keeps it). Not done: holes in floors (a stairwell) still count as floor; a drone flying up from below still passes through upper slabs (they are not solid); dragging the pad in 3D (F-035).
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | Request 2026-10-29 |
+| PR / evidence | This PR; request 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Not implemented |
+| Verification | Unit/browser · 2026-10-30 · `takeoff-place.spec.ts` and `takeoff-pad.e2e.ts` passed locally; flying from a roof on the live site · Pending |
 | Reviewed | 2026-10-29 |
 
 </details>
