@@ -207,7 +207,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 |:---:|---|---|---|---|
 | 🟡 | B-041 | 🔶 P2 | Implemented | A pin armed while the Bandos editor showed its 3D view did nothing |
 
-🧑 **→ Human action required: Yes**<br />Pin start (or a moment) with the editor in 3D on the live site (since this PR).
+🧑 **→ Human action required: Yes**<br />Pin start (or a moment) with the editor in 3D on the live site (since #259).
 
 | | |
 |---|---|
@@ -222,7 +222,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | This PR; report 2026-10-30 |
+| PR / evidence | [#259](https://github.com/voidbrain/openbando/pull/259); report 2026-10-30 |
 | Opened | 2026-10-30 |
 | Verification | Browser · 2026-10-30 · `moment-pins.e2e.ts` 2/2 locally (the editor 3D part fails without the fix); Pin start on the main 3D view checked |
 | Reviewed | 2026-10-30 |
