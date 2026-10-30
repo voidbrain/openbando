@@ -25,6 +25,7 @@ stay in the browser (IndexedDB); videos and logs are read from your disk and nev
 - **Flights**: load blackbox / telemetry logs, replay them in several camera views (orbit, top, chase, FPV), with instruments
   (speed, attitude, compass, timeline, radio sticks). The path is coloured by speed; the part already flown is dimmed.
 - **Simulator**: fly the same site with a physics model and a radio / gamepad; collisions use the real model.
+- **Take-off pad**: select and drag it in the plan, or right-click the ground: Move the take-off pad here; inside a building it can stand on an upper floor or a flat roof, and the drone takes off and lands there.
 - **Bandos** (the map and model editor): create a site from OpenStreetMap, then edit it.
   1. *Area*: search a place, pan the map, drag the dashed frame's edges to set the area (metres, independent of the window
      size). **Generate** pulls buildings, trees, roads, greenhouses, towers, bridges, steps and cranes from OpenStreetMap.

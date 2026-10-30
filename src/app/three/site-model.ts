@@ -11,8 +11,9 @@ import * as THREE from 'three';
 import { mergeUnit } from './merge';
 import { satelliteTexture } from './satellite-ground';
 import { type BuildingSpec, type LevelSpec, type RoadSpec, type SiteSpec, type SurfaceSpec, type TreeSpec, type UndergroundSpec, type WallSpec, createRandom, fixturesInSite } from '../core/site-spec';
-import { SiteCollider, type SolidBox, type TreeCylinder } from '../core/sim/collider';
-import { siteGround, type SiteGround } from '../core/site-ground';
+import { SiteCollider, type SolidBox, type StandingSurface, type TreeCylinder } from '../core/sim/collider';
+import { standingLevels, takeoffHeight } from '../core/takeoff-place';
+import { siteGround, siteOutline, type SiteGround } from '../core/site-ground';
 import { heightColor, heightRange, meshHeightAt, type HeightGrid } from '../core/terrain';
 
 export type TreeKind = 'd' | 'c';
@@ -989,10 +990,18 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     // around the grid the ground carries on at the height of its edge, out to the site's extent
     const outer = spec.extent * 1.1;
     if (outer > Math.min(-g.x0, -g.z0)) group.add(skirtMesh(g, outer, material(spec.groundColor)));
-    for (const pd of spec.pads) group.add(drapedPad(ground, pd.x, pd.z, pd.w, pd.d, pd.rotDeg ?? 0, material(pd.color ?? '#a9aaa0')));
+    const lift = takeoffHeight(spec); // the take-off pad (the last pad) may stand on a floor or a flat roof
+    for (const [i, pd] of spec.pads.entries()) {
+      if (lift > 0 && i === spec.pads.length - 1) {
+        const o = new THREE.Mesh(new THREE.BoxGeometry(pd.w, 0.16, pd.d), material(pd.color ?? '#a9aaa0'));
+        o.position.set(pd.x, ground.start + lift - 0.06, pd.z);
+        o.rotation.y = (-(pd.rotDeg ?? 0) * Math.PI) / 180;
+        group.add(o);
+      } else group.add(drapedPad(ground, pd.x, pd.z, pd.w, pd.d, pd.rotDeg ?? 0, material(pd.color ?? '#a9aaa0')));
+    }
     for (const [i, r] of orderedRoads(spec.roads ?? []).entries()) {const m=roadMesh(ground,r,1+i);m.userData['pick']={kind:'road',i:spec.roads!.indexOf(r)};group.add(m);}
     const start = new THREE.Mesh(new THREE.BoxGeometry(4, 0.04, 4), material('#e8c65a'));
-    start.position.set(spec.droneStart.x, ground.start + 0.2, spec.droneStart.z);
+    start.position.set(spec.droneStart.x, ground.start + takeoffHeight(spec) + 0.2, spec.droneStart.z);
     start.receiveShadow = true;
     group.add(start);
   } else if (!opts.bare) {
@@ -1015,9 +1024,9 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
 
     // ---- pads / roads / take-off pad
     let order = DECAL_ORDER + 300;
-    for (const pd of spec.pads) {
+    for (const [i, pd] of spec.pads.entries()) {
       const o = new THREE.Mesh(new THREE.BoxGeometry(pd.w, 0.16, pd.d), material(pd.color ?? '#a9aaa0'));
-      o.position.set(pd.x, 0.08, pd.z);
+      o.position.set(pd.x, 0.08 + (i === spec.pads.length - 1 ? takeoffHeight(spec) : 0), pd.z);
       o.rotation.y = (-(pd.rotDeg ?? 0) * Math.PI) / 180;
       o.receiveShadow = true;
       o.renderOrder = order++;
@@ -1032,7 +1041,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     }
     for (const r of orderedRoads(spec.roads ?? [])) {const m=roadMesh(ground,r,order++);m.userData['pick']={kind:'road',i:spec.roads!.indexOf(r)};group.add(m);}
     const start = new THREE.Mesh(new THREE.BoxGeometry(4, 0.04, 4), material('#e8c65a'));
-    start.position.set(spec.droneStart.x, 0.2, spec.droneStart.z);
+    start.position.set(spec.droneStart.x, takeoffHeight(spec) + 0.2, spec.droneStart.z);
     start.receiveShadow = true;
     group.add(start);
   }
@@ -1059,7 +1068,8 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
       if (v.shape === 'box' ? box[2] >= v.ceiling - 1e-6 && box[3] <= v.ceiling + v.wall + 1e-6 : box[3] >= tunnelOpeningBottom(v)) ceilingTiles.push({ box, volume: v });
   }
 
-  // ---- buildings
+  // ---- buildings (and the floors and flat roofs a drone can stand on: one source with the take-off menu)
+  const standing: StandingSurface[] = [];
   for (const b of spec.buildings) {
     const inner = new THREE.Group();
     inner.userData['pick'] = { kind: 'building', id: b.id }; // what a click on it in the 3D editor selects
@@ -1110,6 +1120,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     roof.attach(localRoof);
     units.push(inner, localRoof);
     liftSolids(solids, firstSolid, by);
+    if (!opts.bare) for (const lv of standingLevels(b)) standing.push({ pts: siteOutline(b), top: by + lv.height, roof: lv.roof });
   }
 
   // ---- free-standing walls / fences
@@ -1208,7 +1219,7 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
 
   if (opts.merge) mergeUnits(units, occluders);
 
-  const collider = new SiteCollider(solids, treeSolids, ground.grid, opts.bare ? [] : (spec.waters ?? []).map((w, i) => ({ pts: w.pts, level: ground.grid ? (ground.water[i] ?? 0) : 0.03 })), opts.bare ? [] : ground.vols, ceilingTiles);
+  const collider = new SiteCollider(solids, treeSolids, ground.grid, opts.bare ? [] : (spec.waters ?? []).map((w, i) => ({ pts: w.pts, level: ground.grid ? (ground.water[i] ?? 0) : 0.03 })), opts.bare ? [] : ground.vols, ceilingTiles, standing);
   return {
     group,
     roof,

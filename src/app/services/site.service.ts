@@ -10,6 +10,7 @@ import type { BuildingSpec, LocationInfo, SiteSpec, StructureSpec, TreeSpec, Vec
 import { keepInsideAreas } from '../core/areas';
 import { emptySpec, uid } from '../core/site-spec';
 import { setActiveGround, setAutoAlign, setHiddenSite, setTakeoff } from '../core/takeoff';
+import { takeoffHeight } from '../core/takeoff-place';
 import { decodeHeights, shareCopy, type Privacy } from '../core/share';
 import { emptyGrid, getTerrainBase } from '../core/terrain';
 import { cacheBase } from './elevation.service';
@@ -497,7 +498,7 @@ export class SiteService {
     setSiteOrigin(spec.origin);
     setHiddenSite(spec.privacy === 'hidden');
     const ground = siteGround(spec);
-    setTakeoff({ ...spec.droneStart, y: ground.start });
+    setTakeoff({ ...spec.droneStart, y: ground.start + takeoffHeight(spec) }); // on the ground, a floor or a flat roof
     setAutoAlign(!!spec.privacy && !spec.calibration);
     this.scene.startFixed.set(!!spec.privacy); // no real place: flights start on the take-off pad, which stays put
     if (ground.grid !== this.groundGrid) {

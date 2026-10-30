@@ -405,6 +405,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
+### B-037
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | B-037 | 🔶 P2 | Open | The camera can go below the terrain |
+
+💻 **→ Human action required: No**<br />Keep the orbit (and editor) camera above the ground under it, terrain included, with a test; check the other cameras (chase, top) the same way.
+
+**Next action / closure evidence:** Reported 2026-10-30: the camera does not know the terrain's height, so it can be moved below the ground. To find: which cameras (main orbit, editor 3D view) clamp to a flat ground at y = 0 instead of the height grid, then keep them a little above `groundAt` under them.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Report 2026-10-30 |
+| Opened | 2026-10-30 |
+| Verification | Not implemented |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
 ## Features and limitations
 
 ### F-001

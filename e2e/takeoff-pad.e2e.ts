@@ -58,3 +58,36 @@ test('the take-off pad can be selected, dragged and moved from the ground menu',
   expect(spec.droneStart.z).toBeLessThan(-3);
   expect(spec.pads.at(-1)).toMatchObject({x: spec.droneStart.x, z: spec.droneStart.z});
 });
+
+/** Inside a building the pad can stand on an upper floor or a flat roof (F-024): the inspector offers them, the export keeps it. */
+test('the take-off pad can stand on a flat roof', async ({page}) => {
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  await page.goto('/');
+  await page.getByRole('button', {name: 'Open the bandos', exact: true}).click();
+  const lv = (baseY: number, roof: string) => ({baseY, height: 3, sides: {n: true, s: true, e: true, w: true}, doors: {}, partitions: [], roof, roofRise: 0});
+  const fixture = {
+    version: 1, id: 'roofpad', name: 'Roof pad', createdAt: 0, privacy: 'hidden', origin: {lat: 0, lon: 0}, bearingDeg: 0, genScale: 1, extent: 60, seed: 1, trees: [],
+    pads: [{x: 0, z: 0, w: 4, d: 4}], droneStart: {x: 0, z: 0},
+    buildings: [{id: 'h', name: 'Block', pos: {x: 0, z: 0}, rotDeg: 0, length: 14, width: 10, levels: [lv(0, 'none'), lv(3, 'flat')]}],
+  };
+  const studio = page.locator('app-studio-panel');
+  await studio.locator('input[type=file]').first().setInputFiles({name: 'roof.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture))});
+  const card = studio.locator('.card').filter({hasText: fixture.name});
+  await card.getByRole('button', {name: 'Edit', exact: true}).click();
+  // select the pad through its own menu (it lies inside the building)
+  const pad = page.locator('app-bando-editor [data-pk="pad"]');
+  await pad.click({button: 'right', force: true});
+  await page.keyboard.press('Escape');
+  const inspector = page.locator('[data-tour="inspector"]');
+  await expect(inspector).toContainText('Take-off pad');
+  const standsOn = inspector.getByLabel('stands on');
+  await expect(standsOn.locator('option')).toHaveText(['ground', 'floor L1', 'roof']);
+  await standsOn.selectOption({label: 'roof'});
+  const bar = page.locator('app-bando-editor > .bar');
+  await bar.getByRole('button', {name: 'Save', exact: true}).click();
+  await bar.getByRole('button', {name: '← Bandos', exact: true}).click();
+  const downloading = page.waitForEvent('download');
+  await card.getByRole('button', {name: 'Export', exact: true}).click();
+  const spec = JSON.parse((await readFile((await (await downloading).path())!)).toString()) as SiteSpec;
+  expect(spec.takeoffOn).toEqual({building: 'h', level: 2});
+});
