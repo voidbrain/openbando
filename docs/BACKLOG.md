@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 29 October 2026 against main `6a1d05b` (merged #262), with every CI job of #162–#262 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026-10-28.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 30 October 2026 against main `13e8341` (merged #263), with every CI job of #162–#263 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -165,6 +165,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 | PR / evidence | Report 2026-10-30 |
 | Opened | 2026-10-30 |
 | Verification | Unit · 2026-10-30 · the stalled-seek case passes (fails without the fix); Browser · 2026-10-30 · `timeline-video.e2e.ts` passed locally; the real stall not reproduced, owner's check · Pending |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
+### B-042
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-042 | 🔶 P2 | Implemented | During the showcase, a panel the pilot opened from Views was closed again by its next step |
+
+💻 **→ Human action required: No**<br />Once #267 is merged with a green CI, close on that run (the e2e covers it).
+
+**Next action / closure evidence:** Found 2026-10-30 when the B-039 showcase e2e failed twice on #264 (a docs-only PR): the pilot opened Bandos from Views during the showcase replay; the showcase's next step rearranged the panels, closing Bandos (and once covering Views with the video panel), so the example to open was hidden. Decided by the owner 2026-10-30: a pilot's own click in Views stops the showcase. A real click on a panel toggle in Views now ends a playing guide or showcase through `leaveForNavigation()` (as opening a bando does: replay stopped, the pilot keeps the layout), then shows or hides the panel. The showcase e2e now checks that: the caption bar goes, the replay stays paused, the Bandos panel stays open, and an example then opens (passed 3 times locally). Area note added (Welcome and showcase sequencing). What follows (impact map): no clip, film or guide step changes (the guide's own clicks are not trusted, so they never end it), the element map is unchanged, no new text.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#267](https://github.com/voidbrain/openbando/pull/267); found on [#264](https://github.com/voidbrain/openbando/pull/264)'s CI (e2e (4), both attempts) |
+| Opened | 2026-10-30 |
+| Verification | Browser · 2026-10-30 · showcase e2e (Views click during the replay) passed 3 times locally |
 | Reviewed | 2026-10-30 |
 
 </details>
@@ -552,7 +576,7 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 |---|---|
 | PR / evidence | Request 2026-10-30 |
 | Opened | 2026-10-30 |
-| Verification | Unit + Browser · 2026-10-30 · height pins, keyboard adjust e2e passed locally (the mouse drag is the owner's check) |
+| Verification | Unit + Browser · 2026-10-30 · height pins, keyboard adjust e2e passed locally (the mouse drag is the owner's check); the keyboard e2e read the replay time before the seek reached the caption and failed on #264's CI, fixed in [#265](https://github.com/voidbrain/openbando/pull/265) (test only) |
 | Reviewed | 2026-10-30 |
 
 </details>
@@ -625,4 +649,6 @@ Villetta release 13 (2026-10-30, the owner): the greenhouse crown is 11.2 m (rat
 
 The "Map north" panel removed (2026-10-30, the owner: the compass widget is on the main view and in the editor's 3D view): the panel, its drawing (`core/drawing/compass.ts`, its `cameraUpAngle` moved to `camera-compass.ts`) and its test go; old saved layouts drop it. What follows, by the impact map: Views lists panels from `PANELS` (gone there); no guide step, README line or clip source names it (guide pages and element map unchanged); the clips that show the Views list show its old row until they are re-recorded (F-031); coverage table refreshed (code removed).
 
-Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
+Harness template 1.20.0 (2026-10-30, decided with the owner: records closed on 29 and 30 October had been appended to the 28 October archive; template [#37](https://github.com/voidbrain/project-harness/pull/37)): one archive per year. The 27 and 28 October files moved into [backlog-2026.md](archive/backlog-2026.md): the earlier tables under a heading of their own, every record under its closing day (5 on 28, 11 on 29, 27 on 30 October), nothing dropped (`check:backlog` counts every published line across the archives). `check-backlog` copied, BACKLOG-RULES archive paragraph reconciled, `version` 1.20.0.
+
+Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.

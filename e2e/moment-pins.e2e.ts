@@ -106,6 +106,7 @@ test('Adjust position moves the drone at this moment, height included, from the 
   const scrub = page.locator('app-timeline-panel .scrub'); const s = (await scrub.boundingBox())!;
   await page.mouse.click(s.x + s.width * 0.3, s.y + s.height / 2);
   const caption = page.locator('app-timeline-panel .mono').first();
+  await expect(caption).not.toHaveText(/^0:00\.0/); // the seek has reached the caption: read the moment after it
   const at = (await caption.textContent())!.split('/')[0];
   await adjust.click();
   await expect(page.getByRole('button', {name: 'Done adjusting', exact: true})).toBeVisible();

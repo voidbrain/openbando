@@ -1,6 +1,7 @@
 import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { CAMERA_VIEWS, SceneService } from '../../services/scene.service';
 import { ToastService } from '../../services/toast.service';
+import { TourService } from '../../services/tour.service';
 import { LayoutStore, uiResets } from '../../state/layout.store';
 import { ViewStore } from '../../state/view.store';
 import type { CameraView, MainSource } from '../../core/models';
@@ -184,7 +185,7 @@ const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'cam
 
       <div class="sec quick list">
         @for (p of quick; track p.id) {
-          <button class="vis" [attr.data-panel]="p.id" [class.on]="layout.panels()[p.id].visible" (click)="layout.toggle(p.id)" [attr.aria-pressed]="layout.panels()[p.id].visible" [title]="(layout.panels()[p.id].visible ? 'Hide ' : 'Show ') + p.title">
+          <button class="vis" [attr.data-panel]="p.id" [class.on]="layout.panels()[p.id].visible" (click)="togglePanel($event, p.id)" [attr.aria-pressed]="layout.panels()[p.id].visible" [title]="(layout.panels()[p.id].visible ? 'Hide ' : 'Show ') + p.title">
             <app-tool-icon [name]="layout.panels()[p.id].visible ? 'eye' : 'eyeOff'" /><span>{{ short(p) }}</span>
           </button>
         }
@@ -245,7 +246,7 @@ const CAMERA_ICON: Record<CameraView, string> = { orbit: 'camOrbit', chase: 'cam
               @if (s.title) { <div class="sub">{{ s.title }}</div> }
               <div class="list">
                 @for (p of s.panels; track p.id) {
-                  <button class="vis" [attr.data-panel]="p.id" [class.on]="layout.panels()[p.id].visible" (click)="layout.toggle(p.id)" [attr.aria-pressed]="layout.panels()[p.id].visible" [title]="(layout.panels()[p.id].visible ? 'Hide ' : 'Show ') + p.title">
+                  <button class="vis" [attr.data-panel]="p.id" [class.on]="layout.panels()[p.id].visible" (click)="togglePanel($event, p.id)" [attr.aria-pressed]="layout.panels()[p.id].visible" [title]="(layout.panels()[p.id].visible ? 'Hide ' : 'Show ') + p.title">
                     <app-tool-icon [name]="layout.panels()[p.id].visible ? 'eye' : 'eyeOff'" /><span>{{ short(p) }}</span>
                   </button>
                 }
@@ -262,6 +263,7 @@ export class ViewsPanel {
   protected readonly layout = inject(LayoutStore);
   protected readonly scene = inject(SceneService);
   private readonly toast = inject(ToastService);
+  private readonly tour = inject(TourService);
   protected readonly cameras = CAMERA_VIEWS;
   protected readonly quick = QUICK.map((id) => PANELS.find((p) => p.id === id)!);
   protected readonly camIcon = CAMERA_ICON;
@@ -282,6 +284,15 @@ export class ViewsPanel {
   protected readonly followHint = computed(() =>
     this.orbitLike() ? 'Follow the drone (Orbit & Top; panning stops it, double-click recentres)' : 'Follow the replay (Chase & FPV)',
   );
+  /**
+   * Show or hide a panel. The pilot's own click (not the guide's) while a guide or the Welcome showcase plays ends it first,
+   * as opening a bando does: otherwise its next step rearranges the panels and closes the one the pilot just opened.
+   */
+  protected async togglePanel(e: Event, id: PanelId): Promise<void> {
+    if (e.isTrusted) await this.tour.leaveForNavigation();
+    this.layout.toggle(id);
+  }
+
   protected toggleFollow(): void {
     if (this.orbitLike()) this.view.toggleOrbitFollow();
     else this.view.toggleReplayFollow();
