@@ -171,6 +171,36 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
+### B-041
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-041 | 🔶 P2 | Implemented | A pin armed while the Bandos editor showed its 3D view did nothing |
+
+🧑 **→ Human action required: Yes**<br />Pin start (or a moment) with the editor in 3D on the live site (since #259).
+
+| | |
+|---|---|
+| **Issue** | With the Bandos editor open in 3D, Pin start / end / this moment from the Path panel armed, but a click in the editor's 3D view selected things instead of pinning. |
+| **Reproduce** | Live site: a bando in the editor, 3D; load a flight; Path panel → Pin start (replay at its start) or Pin this moment; click the ground in the editor's 3D view. |
+| **Check** | The path moves (toast "Start placed" or "Pinned at …"); on the editor's plan it already worked. |
+
+**Next action / closure evidence:** Reported 2026-10-30 by the owner ("tried path pin start on studio and main 3D model, seems to do nothing"). Checked in the browser: on the main 3D view and on the editor's plan Pin start works (the start moves, toast "Start placed"); in the editor's 3D view the view stayed in its select mode, so the click picked instead of reporting the ground point. Now an armed pin puts the editor's 3D view in its ground mode. The editor's hint also had no text for Pin this moment (it said "where the flight ended"): fixed. `moment-pins.e2e.ts` pins the start on the editor's plan and a moment in its 3D view (the 3D part fails without the fix). Note for the owner's questions: Pin start moves the flight's path (where the log's first fix lands), it does not sync the video; Move the take-off pad moves the bando's take-off spot, and on a bando without its place a flight is put on the pad only when it is first loaded, so moving the pad afterwards leaves a loaded flight where it was.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#259](https://github.com/voidbrain/openbando/pull/259); report 2026-10-30 |
+| Opened | 2026-10-30 |
+| Verification | Browser · 2026-10-30 · `moment-pins.e2e.ts` 2/2 locally (the editor 3D part fails without the fix); Pin start on the main 3D view checked |
+| Reviewed | 2026-10-30 |
+
+</details>
+
+---
+
 ## Features and limitations
 
 ### F-001
@@ -532,5 +562,7 @@ Harness templates 1.19.0 and 1.19.1 (2026-10-30, decided with the owner after a 
 Villetta release 12 (2026-10-30, the owner's photo): a deciduous tree at the greenhouse's south-west corner, 7 m with a 3.2 m crown, placed 4 m out on the corner's diagonal; copies are offered the update. The Welcome films and the clips that show Villetta follow it (F-031).
 
 Villetta release 13 (2026-10-30, the owner): the greenhouse crown is 11.2 m (ratio 1.1) instead of the 9.3 m estimated from below; the two tests that held the old value now hold this one, with the reason.
+
+The "Map north" panel removed (2026-10-30, the owner: the compass widget is on the main view and in the editor's 3D view): the panel, its drawing (`core/drawing/compass.ts`, its `cameraUpAngle` moved to `camera-compass.ts`) and its test go; old saved layouts drop it. What follows, by the impact map: Views lists panels from `PANELS` (gone there); no guide step, README line or clip source names it (guide pages and element map unchanged); the clips that show the Views list show its old row until they are re-recorded (F-031); coverage table refreshed (code removed).
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026-10-28.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.

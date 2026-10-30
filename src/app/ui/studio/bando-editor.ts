@@ -733,6 +733,7 @@ export class BandoEditor {
     if (this.mode() === 'area' && !this.canGenerate() && !this.studio.busy()) return 'Search a place (or drag the map to it), then frame the area and Generate.';
     if (this.mode() === 'area') return 'Pan and zoom the map to place the area, drag the frame\'s edges and corners to size it, then Generate.';
     const t = this.tool();
+    if (this.pinMode() === 'm') return 'Click where the drone is at this moment (the video shows it). Esc cancels.';
     if (this.pinMode()) return 'Click the map where the flight ' + (this.pinMode() === 's' ? 'started' : 'ended') + '. Esc cancels.';
     const arm = this.blocks.armed();
     if (arm) return `Click the map to place “${arm.block.name}” (again for another one). Esc stops.`;
