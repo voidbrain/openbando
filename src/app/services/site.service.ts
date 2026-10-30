@@ -9,7 +9,7 @@ import { bounds, edgesOf, recentre, rectilinear, type Pt } from '../core/footpri
 import type { BuildingSpec, LocationInfo, SiteSpec, StructureSpec, TreeSpec, Vec2, WallOpening, ZoneSpec } from '../core/site-spec';
 import { keepInsideAreas } from '../core/areas';
 import { emptySpec, uid } from '../core/site-spec';
-import { setActiveGround, setAutoAlign, setHiddenSite, setTakeoff } from '../core/takeoff';
+import { setActiveGround, setActiveSiteId, setAutoAlign, setHiddenSite, setTakeoff } from '../core/takeoff';
 import { takeoffHeight } from '../core/takeoff-place';
 import { decodeHeights, shareCopy, type Privacy } from '../core/share';
 import { emptyGrid, getTerrainBase } from '../core/terrain';
@@ -497,6 +497,7 @@ export class SiteService {
     if (remember) writeStoredId(spec.id);
     setSiteOrigin(spec.origin);
     setHiddenSite(spec.privacy === 'hidden');
+    setActiveSiteId(spec.id);
     const ground = siteGround(spec);
     setTakeoff({ ...spec.droneStart, y: ground.start + takeoffHeight(spec) }); // on the ground, a floor or a flat roof
     setAutoAlign(!!spec.privacy && !spec.calibration);

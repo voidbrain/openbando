@@ -4,7 +4,7 @@
 
 The element-level part of the impact map ([impact-map.md](impact-map.md), from the harness, lists what must follow a change). Every control the templates show, with its label, its `data-tour` mark, the guide steps that show it as a tip on hover and the guide steps whose clips use it (F-032). Generated; CI fails when this page differs from the code.
 
-**406 controls** · 9 with a tip on hover · 116 with a title · 18 shown in a clip · 32 whose name the script cannot read (a bound expression; axe checks the real names)
+**408 controls** · 9 with a tip on hover · 118 with a title · 18 shown in a clip · 32 whose name the script cannot read (a bound expression; axe checks the real names)
 
 ## Tips per file
 
@@ -35,11 +35,11 @@ What the panels' "?" (tips on hover) covers: a guide step's tip, the browser's o
 | src/app/ui/version-badge.ts | 3 | 0 | 2 | 1 |
 | src/app/ui/float-box.ts | 2 | 0 | 2 | 0 |
 | src/app/ui/panel/panel.ts | 4 | 0 | 4 | 0 |
-| src/app/ui/panels/path-panel.ts | 7 | 0 | 7 | 0 |
+| src/app/ui/panels/path-panel.ts | 9 | 0 | 9 | 0 |
 | src/app/ui/studio/element-preview.ts | 4 | 0 | 4 | 0 |
 | src/app/ui/studio/pick-menu.ts | 1 | 0 | 1 | 0 |
 | src/app/ui/widgets/camera-compass.ts | 1 | 0 | 1 | 0 |
-| **all** | 406 | 9 | 116 | 285 |
+| **all** | 408 | 9 | 118 | 285 |
 
 ### src/app/ui/float-box.ts
 
@@ -107,6 +107,8 @@ What the panels' "?" (tips on hover) covers: a guide step's tip, the browser's o
 | Fit the path in the view | button |  | yes |  |  |
 | Pin end | button |  | yes |  |  |
 | Pin start | button |  | yes |  |  |
+| Pin this moment | button |  | yes |  |  |
+| Remove the pins at moments | button |  | yes |  |  |
 | start | input |  | yes |  |  |
 | start x m | input |  | yes |  |  |
 | z m | input |  | yes |  |  |

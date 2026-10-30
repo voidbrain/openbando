@@ -1,7 +1,8 @@
 import { Injectable, effect, inject, signal, untracked } from '@angular/core';
 import { findFlips, findLiftoff } from '../core/flight/analysis';
 import { createFlight, flightStats, maxSpeed, prepareFlight } from '../core/flight/flight';
-import { activeGround, autoAlignFlights, hiddenSite, setAutoAlign, takeoffSpot } from '../core/takeoff';
+import { activeGround, activeSiteId, autoAlignFlights, hiddenSite, setAutoAlign, takeoffSpot } from '../core/takeoff';
+import { sanitizePins, type MomentPin } from '../core/flight/moment-pins';
 import { alignShift } from '../core/share';
 import { parseLogFile } from './log-parse';
 import { Vec3 } from '../core/math3d';
@@ -9,6 +10,7 @@ import type { Calibration, Flight, GeoSample, Telemetry } from '../core/models';
 import { CalibrationStore } from '../state/calibration.store';
 import { FlightStore } from '../state/flight.store';
 import { ToastService } from './toast.service';
+import { StorageService } from './storage.service';
 
 /** Where the camera should look after a flight is loaded. */
 export interface FrameRequest {
@@ -27,6 +29,7 @@ export class FlightService {
   private readonly store = inject(FlightStore);
   private readonly calibration = inject(CalibrationStore);
   private readonly toast = inject(ToastService);
+  private readonly storage = inject(StorageService);
   private readonly byId = new Map<string, Flight>();
   /** Colour-scale maximum over all flights, m/s. */
   speedMax = 1;
@@ -81,6 +84,12 @@ export class FlightService {
       this.calibration.setReference({ lat: pts[0].lat, lon: pts[0].lon });
       prepareFlight(f, this.calibration.calibration(), activeGround() ?? undefined);
     }
+    // the pilot's pins at moments for this log on this bando (B-017)
+    const saved = !opts.live ? this.storage.readRaw(this.pinsKey(f)) : null;
+    if (saved) {
+      try { f.pins = sanitizePins(JSON.parse(saved)); } catch { f.pins = []; }
+      if (f.pins.length) prepareFlight(f, this.calibration.calibration(), activeGround() ?? undefined);
+    }
     this.byId.set(f.id, f);
     this.store.add({ id: f.id, name: f.name, live: f.live, stats: this.describe(f) });
     this.updateSpeedMax();
@@ -97,6 +106,19 @@ export class FlightService {
     this.byId.clear();
     this.store.clear();
     this.speedMax = 1;
+  }
+
+  /** Set a flight's pins at moments (B-017), keep them for this log on this bando, and redraw its path. */
+  setPins(f: Flight, pins: MomentPin[]): void {
+    f.pins = pins;
+    const key = this.pinsKey(f);
+    if (pins.length) this.storage.write(key, pins);
+    else this.storage.remove(key);
+    this.refresh(f);
+  }
+
+  private pinsKey(f: Flight): string {
+    return `abando-pins:${activeSiteId()}|${f.name}|${f.pts.length}`;
   }
 
   /** Flight data was changed in place (live fixes appended): reproject it and refresh the views. */

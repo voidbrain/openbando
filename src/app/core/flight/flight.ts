@@ -1,6 +1,7 @@
 import { Vec3 } from '../math3d';
 import { toLocal } from '../geo';
 import type { Calibration, Flight, GeoSample, Telemetry } from '../models';
+import { pinOffset } from './moment-pins';
 
 let counter = 0;
 
@@ -34,16 +35,24 @@ export function prepareFlight(f: Flight, cal: Calibration, groundAt?: (x: number
     return;
   }
   const minAlt = f.pts.reduce((m, p) => Math.min(m, p.alt), Infinity);
+  // the model position of a fix: the calibration, then the pilot's pins at moments (GPS drift, B-017)
+  const pins = f.pins ?? [];
+  const at = (p: GeoSample): [number, number] => {
+    const [x, z] = toLocal(p.lat, p.lon, cal);
+    if (!pins.length) return [x, z];
+    const o = pinOffset(pins, p.t - first.t);
+    return [x + o.dx, z + o.dz];
+  };
   if (groundAt) {
-    const [x0, z0] = toLocal(first.lat, first.lon, cal);
+    const [x0, z0] = at(first);
     const y0 = groundAt(x0, z0) - first.alt + 0.3;
     f.loc = f.pts.map((p) => {
-      const [x, z] = toLocal(p.lat, p.lon, cal);
+      const [x, z] = at(p);
       return new Vec3(x, Math.max(groundAt(x, z) + 0.2, y0 + p.alt), z);
     });
   } else {
     f.loc = f.pts.map((p) => {
-      const [x, z] = toLocal(p.lat, p.lon, cal);
+      const [x, z] = at(p);
       return new Vec3(x, Math.max(0.2, p.alt - minAlt + 0.3), z);
     });
   }
@@ -55,6 +64,17 @@ export function prepareFlight(f: Flight, cal: Calibration, groundAt?: (x: number
     return dt > 0 ? (f.loc[j] as Vec3).distanceTo(f.loc[k] as Vec3) / dt : 0;
   });
   f.dur = (f.pts[f.pts.length - 1] as GeoSample).t - first.t;
+}
+
+/** Where the path puts the drone at replay time `t` (seconds from the first fix), interpolated between fixes. */
+export function positionAt(f: Flight, t: number): Vec3 | null {
+  const first = f.pts[0];
+  if (!first || !f.loc.length) return null;
+  const T = t + first.t;
+  let i = f.pts.findIndex((p) => p.t >= T);
+  if (i <= 0) return (i === 0 ? f.loc[0]! : f.loc.at(-1)!).clone();
+  const a = f.pts[i - 1]!, b = f.pts[i]!, u = (T - a.t) / Math.max(1e-6, b.t - a.t);
+  return f.loc[i - 1]!.clone().lerp(f.loc[i]!, u);
 }
 
 export interface FlightStats {

@@ -36,7 +36,7 @@ stay in the browser (IndexedDB); videos and logs are read from your disk and nev
      floor above). While placing, a ghost shows where the thing will go, on a grid in the building's own axes, with guides to
      other columns (same line, equal spacing, rhythm) and distances to walls and neighbours. Only the tools that make sense
      are shown: outdoor tools while outdoors, floor tools while editing a floor. The palette groups related tools Photoshop-style (hold or use the corner mark for the others) and a right click offers what can be done with whatever is under the pointer. 2D / 3D switch (3D: click to select, draw and place on the ground, roofs on / off), compass, chained measures with angle arcs (select, move, delete), the flight path with start / end markers,
-     flight-path start / end pins, floating inspector with a 3D preview of the selection.
+     flight-path start / end pins and pins at moments (to correct GPS drift where the video shows the drone), floating inspector with a 3D preview of the selection.
 - **Vegetation**: the Trees tools place broadleaf, conifer, hedge and bramble with a click or a brush; the lasso fills an area. Each hedge or bramble remains an editable living wall, and one undo removes a whole brush stroke.
 - **Terrain**: the real ground (AWS Terrain Tiles) under every bando, sculpted by holding the mouse (left raises, right
   lowers) or with brushes (raise, lower, smooth, flatten, hill, crater, ramp, with construction lines); roads, surfaces and water (drawn as an outline or along a canal's centre line); tunnels and basements.
