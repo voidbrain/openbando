@@ -59,6 +59,8 @@ import { APP_COMMIT, APP_VERSION } from '../version';
       pointer-events: none;
     }
     .ver {
+      pointer-events: auto; /* its title (the commit) shows on hover and the text can be copied */
+      user-select: text;
       font: 600 11px monospace;
       color: var(--badge-ink);
       background: var(--badge);

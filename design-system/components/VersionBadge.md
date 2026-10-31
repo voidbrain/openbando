@@ -4,7 +4,9 @@ VersionBadge shows the build number bottom-left, above everything (`z-badge`), w
 
 ## Use
 
-- The number: `badge` type style, `badge-ink` on `badge`, `radius`. The commit sha is its `title`. No pointer events.
+- The number: `badge` type style, `badge-ink` on `badge`, `radius`. The commit sha is its `title`: the number takes the
+  pointer (so the title shows and the text can be selected and copied); the rest of the badge row lets it through to the
+  view below.
 - The flag: a small round button on the same `badge` background, showing the current language's flag. It opens a menu
   above it (`panel-solid`, `line` border, `radius-menu`, `shadow-menu`) of flags and language names, written in their
   own language and never translated (`translate="no"`). The current one has an `accent` border. Esc or a click
@@ -16,6 +18,7 @@ VersionBadge shows the build number bottom-left, above everything (`z-badge`), w
 
 ## Consumer provides
 
-Nothing: the deploy workflow bumps the number; `I18nService` holds the language.
+Nothing: the deploy workflow writes `src/app/version.ts` before building (`1.` + the workflow's run number, and the
+short commit sha; `dev` locally); `I18nService` holds the language.
 
 Source: `src/app/ui/version-badge.ts`.
