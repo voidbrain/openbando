@@ -13,6 +13,17 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 // the framework, so a folder may allow them and stay unit-testable. None: no framework-free layer.
 const stamp = join(root, '.harness.json');
 const PURE_DIRS = (existsSync(stamp) ? JSON.parse(readFileSync(stamp, 'utf8')).conventions?.pureDirs : undefined) ?? [];
+// Version-specific defaults must not reject explicit settings on older supported projects.
+const packageFile = join(root, 'package.json');
+const pkg = existsSync(packageFile) ? JSON.parse(readFileSync(packageFile, 'utf8')) : {};
+const installedCore = join(root, 'node_modules/@angular/core/package.json');
+const angularVersion = existsSync(installedCore)
+  ? JSON.parse(readFileSync(installedCore, 'utf8')).version
+  : (pkg.dependencies?.['@angular/core'] ?? pkg.devDependencies?.['@angular/core']);
+// An uninstalled version range may cross a default-changing release. Do not guess from it.
+const angularMajor = existsSync(installedCore) || /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(angularVersion ?? '')
+  ? Number(String(angularVersion).split('.')[0]) : null;
+if (!angularMajor) console.warn('Angular default checks skipped: install locked dependencies to determine the workspace version. Other convention checks still run.');
 const ts = createRequire(join(root, 'package.json'))('typescript');
 const walk = (dir, out = []) => {
   if (!existsSync(dir)) return out;
@@ -34,8 +45,8 @@ const report = (file, index, message) => {
 };
 
 const RULES = [
-  [/standalone:\s*true/g, 'standalone: true is the default'],
-  [/ChangeDetectionStrategy\.OnPush/g, 'OnPush is the default'],
+  ...(angularMajor >= 20 ? [[/standalone:\s*true/g, 'standalone: true is the default']] : []),
+  ...(angularMajor >= 22 ? [[/ChangeDetectionStrategy\.OnPush/g, 'OnPush is the default']] : []),
   [/@(HostBinding|HostListener)\(/g, 'use the host object of the decorator'],
   [/@(Input|Output)\(/g, 'use input() / output()'],
   [/\b(ngClass|ngStyle|CommonModule)\b/g, 'use class / style bindings and import only what the template uses'],

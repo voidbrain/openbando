@@ -47,7 +47,7 @@ for (;;) {
     failedAt.delete(pr);
     if (p.mergeable === 'CONFLICTING') { console.log(`#${pr}: conflicts with the default branch`); process.exit(2); }
     if (!p.isDraft && p.mergeable === 'MERGEABLE' && checks.length && checks.every((c) => outcome(c) === 'pass')) {
-      try { gh('pr', 'merge', pr, '--merge', '--delete-branch'); console.log(`#${pr}: merged`); continue; } catch { /* not yet: retry */ }
+      try { gh('pr', 'merge', pr, '--merge', '--delete-branch', '--match-head-commit', p.headRefOid); console.log(`#${pr}: merged`); continue; } catch { /* not yet: retry */ }
     }
     left.push(pr);
   }

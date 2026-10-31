@@ -20,6 +20,10 @@ Reject an active record during review if its Issue, next action or closure crite
 
 Apply single responsibility and dependency inversion to architecture and delivery: a reusable master/template/library owns generic contracts and behaviour; derived projects depend on those contracts through their own adapters or configuration. A master must not import derived-project implementation, require its private state or deployment, or make its release, acceptance or closure wait for downstream adoption. Required regression tests use repository-owned fixtures and contract tests. An already completed consumer trial may be cited as evidence; it never becomes a pending downstream release gate. Product-specific requirements stay in the product repository.
 
+### Solution coordinators
+
+An optional solution repository owns architecture/contracts, compatibility, coordination and end-to-end integration acceptance. It may legitimately depend on its component releases; this is composition, not a reusable master depending on derived consumers. Components retain their own implementation records and close them on their own acceptance. The coordinator's next action can be defining a contract or running integration checks, never doing a foreign repository's implementation under its own ID. Use the [solution profile](agents/solution-profile.md) and qualified `Components` links. Generated dashboards are read-only snapshots, preserve source ownership/revisions and report missing sources as unknown; never edit copied statuses or average completion percentages. A generic harness release uses its own fixtures and never waits for a real coordinator to adopt it.
+
 ## When to update and review
 
 - A plan or promise given to the user (steps, a table to build, a later fix) is recorded at once: a new record or the next action of an existing one, in the same change as the reply that makes it. A plan that lives only in the conversation is forgotten.
@@ -41,6 +45,12 @@ Apply single responsibility and dependency inversion to architecture and deliver
 7. Validate table structure, markers, links and dates before publishing. Add the actual follow-up PR link, and reconcile again when its checks finish or it merges: a PR's records name it by number: write "this PR" only until the PR exists, then replace it with `#N` and push at once (on the PR's CI run `check-backlog` fails on a placeholder the branch adds, and on any already on the default branch, where it would fail every other PR), and a record that said "close when this PR merges" is verified and closed in that reconcile. A conflict in the backlog is merged record by record (`node tools/merge-backlog.mjs`).
 
 Staleness prompts review, not a status change by itself. During a full review, flag unresolved dependencies, outdated PR placeholders, missing next actions, old pending claims and long-held Verified records. Keep the last honest evidence date if no new check ran; Reviewed may advance only after actually reviewing the row. Do not reset Opened or fabricate implementation/verification dates to make a record look current.
+
+## Procedures and tracked outcomes
+
+Record agreed outcomes and unresolved work when accepted, before implementation. Routine required steps (reading relevant code/rules, running applicable checks and reviewing ownership) belong to the procedure, not a separate bug/feature each time. Put an item's required acceptance checks in its Check recap/details; a failed check or deferred required action updates that item with the blocker, evidence and next action. A separately owned outcome gets its own record; never duplicate the same work as checklist IDs.
+
+Mandatory means applicable steps must be completed or an actual blocker recorded; it does not turn optional integrations into prerequisites. Capability assessment at setup or relevant workflow changes can conclude that existing tools suffice. MCP/skill recommendation and installation remain conditional on useful missing capability and authorization. An impact map covers actual derived outputs; a separate conflict map is warranted by meaningful unresolved rule/interface conflicts, not required as an empty artifact for every project. See APPLY.md in the template repository for the application trigger matrix.
 
 ## Record and evidence requirements
 
