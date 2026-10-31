@@ -717,7 +717,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Owner request 2026-10-31; branch `fix/compact-backlog-info`; project PR pending creation |
+| PR / evidence | Owner request 2026-10-31; branch `fix/compact-backlog-info`; [#272](https://github.com/voidbrain/openbando/pull/272) |
 | Opened | 2026-10-31 |
 | Verification | Documentation/tooling · 2026-10-31 · backlog checks pass; 29 template fixtures pass; publishing and CI pending |
 | Reviewed | 2026-10-31 |
@@ -751,7 +751,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Owner request 2026-10-31; branch `fix/compact-backlog-info`; project PR pending creation |
+| PR / evidence | Owner request 2026-10-31; branch `fix/compact-backlog-info`; [#272](https://github.com/voidbrain/openbando/pull/272) |
 | Opened | 2026-10-31 |
 | Verification | Unit/integration · 2026-10-31 · 597 tests pass; build, type checks, i18n, contrast and conventions pass. Browser/accessibility · Pending (Playwright browser download returned invalid archives); publishing and CI pending |
 | Reviewed | 2026-10-31 |
