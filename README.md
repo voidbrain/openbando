@@ -35,7 +35,7 @@ stay in the browser (IndexedDB); videos and logs are read from your disk and nev
      voids (water on the ground floor), columns (duplicate, row, fill the floor), stairs and ramps (with the stairwell cut in the
      floor above). While placing, a ghost shows where the thing will go, on a grid in the building's own axes, with guides to
      other columns (same line, equal spacing, rhythm) and distances to walls and neighbours. Only the tools that make sense
-     are shown: outdoor tools while outdoors, floor tools while editing a floor. The palette groups related tools Photoshop-style (hold or use the corner mark for the others) and a right click offers what can be done with whatever is under the pointer. 2D / 3D switch (3D: click to select, draw and place on the ground, roofs on / off), compass, chained measures with angle arcs (select, move, delete), the flight path with start / end markers,
+     are shown: outdoor tools while outdoors, floor tools while editing a floor. Every tool has its own visible palette button, grouped in two-column sections. A right click on the 2D plan offers actions for the element or ground under the pointer; the equivalent 3D context menu remains F-042. 2D / 3D switch (3D: click to select, draw and place on the ground, roofs on / off), compass, chained measures with angle arcs (select, move, delete), the flight path with start / end markers,
      flight-path start / end pins and pins at moments (to correct GPS drift where the video shows the drone), floating inspector with a 3D preview of the selection.
 - **Vegetation**: the Trees tools place broadleaf, conifer, hedge and bramble with a click or a brush; the lasso fills an area. Each hedge or bramble remains an editable living wall, and one undo removes a whole brush stroke.
 - **Terrain**: the real ground (AWS Terrain Tiles) under every bando, sculpted by holding the mouse (left raises, right
@@ -153,7 +153,7 @@ No further configuration is required — the workflow uses the built-in
 
 ### How it works
 
-- Runs the reusable CI checks (catalogue, generated examples, unit tests, race relay, Italian translations, backlog layout, shared contrast, AGENTS conventions and unused exports, strict types and production build) before publishing; on pull requests it also warns, without blocking, when the backlog is behind `main`, merged branches are left over or declared audit areas are missing/stale (`npm run check:freshness`). Required maintenance evidence and invalid audit metadata fail; overdue-area enforcement remains off until the full product baseline is reviewed. Browser e2e runs on pull requests; deployment calls the fast checks without browser e2e. `main` is protected (ruleset "protect main"): a pull request merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` pass; force pushes and deleting `main` are refused. The guide timeout correction passed all PR #124 browser shards; the backlog records current verification and remaining checks. The production build uses
+- Runs the reusable CI checks (catalogue, generated examples, unit tests, race relay, Italian translations, backlog layout, shared contrast, AGENTS conventions and unused exports, strict types and production build) before publishing; on pull requests it also warns, without blocking, when the backlog is behind `main`, merged branches are left over or declared audit areas are missing/stale (`npm run check:freshness`). Required maintenance evidence and invalid audit metadata fail; the seven-day area freshness gate is enabled following the full product baseline review. Browser e2e runs on pull requests; deployment calls the fast checks without browser e2e. `main` is protected (ruleset "protect main"): a pull request merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` plus `CodeQL` pass; force pushes and deleting `main` are refused. The guide timeout correction passed all PR #124 browser shards; the backlog records current verification and remaining checks. The production build uses
   `"baseHref": "/openbando/"` set in `angular.json` so asset URLs
   resolve correctly under the project-page subpath.
 - Adds a `.nojekyll` file so GitHub Pages does **not** process the bundle
@@ -180,7 +180,7 @@ of GitHub Actions.
 
 ## Known limits
 
-- Rectilinear footprints only (no diagonal walls); shaped buildings have flat roofs.
+- Above-ground building footprints are rectilinear; shaped buildings have flat roofs. Basements support diagonal outlines, courtyard holes and separate pieces; pieces have no vertex editing, openings or floor items.
 - Curved bridges become one straight deck; bell / observation towers are not imported.
 - The AI does not check for overlapping buildings.
 - Satellite tiles come from Esri World Imagery; check its terms before any bulk or automated use.
@@ -199,7 +199,7 @@ For more information on using the Angular CLI, including detailed command refere
 
 ### Villetta survey model
 
-The place-hidden Villetta example now includes the measured façade widths and panel heights, 8 m store roof crowns, a 9.30 m parabolic greenhouse with 4.61 m rib spacing, and the tall annex with a first-floor walkway around its central void. The blue ladder uses the reusable open-cage library block. Open a fresh example copy for release 11 (including the estimated 0.35 m raised greenhouse floor); edited copies remain yours. Measurements and photo interpretations are recorded in the [archived working plan](docs/archive/working-plan/working-plan-2026-10-27.md); open checks are in the [backlog](docs/BACKLOG.md).
+The place-hidden Villetta example now includes the measured façade widths and panel heights, 8 m store roof crowns, an approximately 11.2 m parabolic greenhouse crown above its floor with 4.61 m rib spacing, and the tall annex with a first-floor walkway around its central void. The blue ladder uses the reusable open-cage library block. Open a fresh example copy for release 13 (including the estimated 0.35 m raised greenhouse floor); edited copies remain yours. Measurements and photo interpretations are recorded in the [archived working plan](docs/archive/working-plan/working-plan-2026-10-27.md); open checks are in the [backlog](docs/BACKLOG.md).
 
 ### Pixel mascot
 
@@ -237,7 +237,7 @@ Basement vertex edits preserve each perimeter wall’s visibility, including dia
 
 On the −1 floor the **Courtyard** tool drags a courtyard into the basement: the ground stays there, walls go around it, and the drone cannot land on a basement floor inside it. The inspector lists courtyards with Delete; edits to the outline or the floor that would break a courtyard are refused. The **Basement piece** tool adds a separate piece of basement beside it (its own walls, floor and terrain cut, shown with the basement in −1); pieces are listed with Delete too, and each courtyard or piece has a switch per wall.
 
-The [28 October follow-up audit](docs/audits/2026-10-28.md) records current CI evidence, remaining implementation limits and documentation/clip freshness. Guide clips and Welcome films were re-recorded on 29 October against the current UI (F-011).
+The [28 October follow-up audit](docs/audits/2026-10-28.md) preserves its CI evidence and implementation limits. The [31 October full audit](docs/audits/2026-10-31-full-openbando.md) reviews all eight areas at main `3f7b844` plus its documented fixes. Guide clips and Welcome films have changed sources since their last recordings; re-recording and visual acceptance remain F-031.
 
 Backlog maintenance follows [Backlog rules](docs/BACKLOG-RULES.md): evidence-based status updates, PR/CI reconciliation, stale-item review and closure/archiving. Current work remains in [the backlog](docs/BACKLOG.md).
 
@@ -279,4 +279,6 @@ The optional [apply-harness entry point](https://github.com/voidbrain/project-ha
 
 The [maintenance procedure](docs/agents/maintenance.md) requires timed reconciliation and a current reviewed receipt bound to the governing files. PR checks and a daily read-only workflow validate it; they do not repair code or rewrite rules unattended. Raw numeric observations stay ignored locally. `reconcile:preview` lists proposed changes before writes, without applying them.
 
-Follow the [audit procedure](docs/agents/audit.md) for dated reports and full/scoped manifests with evidence, limits, findings and owned follow-up. Existing reports remain unchanged. A recent harness-only review does not certify all product areas; the baseline review is tracked separately. Coverage stays warning-only: test changed behavior and risky joins, without requiring every PR to raise a global percentage.
+Follow the [audit procedure](docs/agents/audit.md) for dated reports and full/scoped manifests with evidence, limits, findings and owned follow-up. Existing reports remain unchanged. A recent harness-only review does not certify all product areas; the [full baseline review](docs/audits/2026-10-31-full-openbando.md) records product findings separately from harness adoption. Coverage stays warning-only: test changed behavior and risky joins, without requiring every PR to raise a global percentage.
+
+The audit pins the Angular builder’s transitive Vite to 8.3.5 via an npm override to remove known development-server advisories. Keep the lockfile reproducible; reassess the override when a compatible builder patch supplies that version without unrelated peer-dependency changes.

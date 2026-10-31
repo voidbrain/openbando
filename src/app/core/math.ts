@@ -3,7 +3,6 @@ export const DEG = 180 / Math.PI;
 export const RAD = Math.PI / 180;
 
 export const clamp = (v: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, v));
-export const lerp = (a: number, b: number, t: number): number => a + (b - a) * t;
 
 /** Wrap an angle to [-PI, PI). */
 export const wrapPi = (a: number): number => ((((a + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) - Math.PI;
@@ -23,12 +22,6 @@ export function lowerBound(a: ArrayLike<number>, x: number): number {
     else hi = m;
   }
   return lo;
-}
-
-export function median(values: readonly number[]): number {
-  if (!values.length) return 0;
-  const s = [...values].sort((a, b) => a - b);
-  return s[s.length >> 1] as number;
 }
 
 export function formatClock(t: number): string {

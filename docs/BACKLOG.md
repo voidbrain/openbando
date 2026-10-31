@@ -1,6 +1,8 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
+
+Current work ledger, reviewed 31 October 2026 against main `3f7b844`. [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -32,7 +34,7 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 | PR / evidence | — |
 | Opened | 2026-10-27 |
 | Verification | Pending — see PR/evidence for partial automated coverage |
-| Reviewed | 2026-10-27 |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -66,7 +68,7 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 | PR / evidence | [#112](https://github.com/voidbrain/openbando/pull/112) (report and arch label; alignment remains open); [#114](https://github.com/voidbrain/openbando/pull/114) (raised greenhouse; visual review pending); [#113](https://github.com/voidbrain/openbando/pull/113) (spatial investigation) |
 | Opened | 2026-10-27 |
 | Verification | Pending; Unit + Browser · 2026-10-30 · pin offsets, pinned moment and restore, workflow e2e passed locally; owner's check with the demo flight · Pending |
-| Reviewed | 2026-10-30 |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -100,7 +102,7 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 | PR / evidence | [#113](https://github.com/voidbrain/openbando/pull/113) (investigation); [#115](https://github.com/voidbrain/openbando/pull/115) (merged projection fix); [#118](https://github.com/voidbrain/openbando/pull/118) (merged live-first correction; real-flight verification pending) |
 | Opened | 2026-10-27 |
 | Verification | Unit/integration · 2026-10-27 · regression tests in #118; Human + Real-device · Pending |
-| Reviewed | 2026-10-27 |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -134,7 +136,7 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 | PR / evidence | [#201](https://github.com/voidbrain/openbando/pull/201) (all CI jobs green, no retries); report 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Unit/browser · 2026-10-29 · unit suite, `new-bando.e2e.ts` and the guide steps passed locally and in #201's CI; live-site check · Pending |
-| Reviewed | 2026-10-29 |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -146,9 +148,9 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 
 | Signal | Priority | Status | Effort | Complete |
 |:---:|---|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🟡 Medium | ~50% |
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
 
-💻 **→ Human action required: No**<br />Next: make Pin start / end work while another pin mode was armed, and make the pin modes cancel each other.
+💻 **→ Human action required: No**<br />Inspect the fix’s browser/security CI; no human-only acceptance is required.
 
 | | |
 |---|---|
@@ -159,15 +161,15 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** The owner 2026-10-31, on the live site: it still fails. Clicking Pin start or Pin end does nothing; if Adjust position or Pin this moment was selected before, they stay selected. So the pin modes do not cancel each other, and one left armed seems to block the others. Next: reproduce it in a browser case (Adjust position or Pin this moment, then Pin start, then a click on the ground), make each pin button end the others, and check Pin start / end alone in the main 3D view, the editor's plan and its 3D view. Reported 2026-10-30 by the owner ("tried path pin start on studio and main 3D model, seems to do nothing"). Checked in the browser: on the main 3D view and on the editor's plan Pin start works (the start moves, toast "Start placed"); in the editor's 3D view the view stayed in its select mode, so the click picked instead of reporting the ground point. Now an armed pin puts the editor's 3D view in its ground mode. The editor's hint also had no text for Pin this moment (it said "where the flight ended"): fixed. `moment-pins.e2e.ts` pins the start on the editor's plan and a moment in its 3D view (the 3D part fails without the fix). Note for the owner's questions: Pin start moves the flight's path (where the log's first fix lands), it does not sync the video; Move the take-off pad moves the bando's take-off spot, and on a bando without its place a flight is put on the pad only when it is first loaded, so moving the pad afterwards leaves a loaded flight where it was.
+**Next action / closure evidence:** Arming Pin start/end/moment now cancels an unfinished Adjust position preview before pin selection; the reverse transition already cancels pins. The added moment-pins browser case checks Adjust position → Pin start mutual exclusion before the existing plan/Studio 3D placement checks. Run the new PR’s browser suite and verify each view before closure. Historical owner failure on 31 October remains valid evidence against the prior implementation (#259); it is not acceptance of this fix.
 
-**Estimates:** Medium remaining effort; ~50% complete. Prior view fixes exist; the owner reports a remaining mode conflict across views. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Small remaining effort; ~90% complete. Fix and local checks pass; current CI remains.
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#259](https://github.com/voidbrain/openbando/pull/259); report 2026-10-30 |
+| PR / evidence | Full audit fix; [#276](https://github.com/voidbrain/openbando/pull/276); [#259](https://github.com/voidbrain/openbando/pull/259); report 2026-10-30 |
 | Opened | 2026-10-30 |
-| Verification | Browser · 2026-10-30 · `moment-pins.e2e.ts` 2/2 locally (the editor 3D part fails without the fix); Pin start on the main 3D view checked; Human · 2026-10-31 · the owner: fails (Pin start / end do nothing; earlier modes stay selected) |
+| Verification | Unit/static · 2026-10-31 · full suite/build pass; new browser mode-transition assertion · Pending |
 | Reviewed | 2026-10-31 |
 
 </details>
@@ -180,9 +182,9 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 
 | Signal | Priority | Status | Effort | Complete |
 |:---:|---|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🟢 Small | ~0% |
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
 
-💻 **→ Human action required: No**<br />Next: find where the 3D camera collides with buildings and obstacles and limit it to the ground.
+💻 **→ Human action required: No**<br />Inspect the fix’s browser/security CI; no human-only acceptance is required.
 
 | | |
 |---|---|
@@ -193,15 +195,15 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** The owner 2026-10-31: obstacles should not stop the camera but let it pass through; the ground can stop it. Next: find which views clamp the camera against the model (orbit in the main 3D view, the editor's 3D view), keep only the ground limit, and cover it with a unit case on the camera rig; ask the owner which view if both behave correctly.
+**Next action / closure evidence:** The camera callbacks reused aircraft groundAt, which includes building standing floors/roofs. Both main and Studio now use cameraGroundAt (terrain and underground floors only); aircraft groundAt is unchanged. A regression uses a real SiteCollider to check that a camera above a roof is not lifted and a camera below terrain still is. Run the current PR’s browser/security CI before closure.
 
-**Estimates:** Small remaining effort; ~0% complete. A new camera constraint request; no implementation recorded. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Small remaining effort; ~90% complete. Fix and local checks pass; current CI remains.
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 |
+| PR / evidence | Full audit fix; [#276](https://github.com/voidbrain/openbando/pull/276); [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 |
 | Opened | 2026-10-31 |
-| Verification | Pending |
+| Verification | Unit/integration · 2026-10-31 · camera regression and full 602-test suite pass; current browser/security CI · Pending |
 | Reviewed | 2026-10-31 |
 
 </details>
@@ -244,6 +246,176 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 
 ## Features and limitations
 
+### B-047
+
+**A new video/log pair inherits the previous pair’s sync offset**
+
+| Signal | Priority | Status | Effort | Complete |
+|:---:|---|---|---|---|
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
+
+💻 **→ Human action required: No**<br />Inspect the fix’s CI and close after green merge.
+
+| | |
+|---|---|
+| **Issue** | Selecting an unsaved pair reset synced but retained its predecessor’s offset and diagnostics. |
+| **Reproduce** | Restore an offset of 12.5 s for pair A, select new video or flight B without a saved sync. |
+| **Check** | B has zero offset and unsynced state; A still restores its own finite saved offset; corrupt nonfinite offsets are ignored. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Inspect the fix’s CI and close after green merge. Unit/integration · 2026-10-31 · original fails 0 versus 12.5; regression and full suite pass; browser/security CI · Pending
+
+**Estimates:** Small remaining effort; ~90% complete. Estimate is not verification.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
+| Opened | 2026-10-31 |
+| Verification | Unit/integration · 2026-10-31 · original fails 0 versus 12.5; regression and full suite pass; browser/security CI · Pending |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
+### B-048
+
+**Legacy library migration discards recovery data before durable save**
+
+| Signal | Priority | Status | Effort | Complete |
+|:---:|---|---|---|---|
+| 🟡 | 🔺 P1 | Implemented | 🟢 Small | ~90% |
+
+💻 **→ Human action required: No**<br />Inspect the durable-commit regressions and CI; close after green merge.
+
+| | |
+|---|---|
+| **Issue** | Quota or IndexedDB write failure left only a memory copy after deleting legacy sources. |
+| **Reproduce** | Migrate legacy entries while localStorage rejects writes or an IndexedDB transaction fails; restart. |
+| **Check** | Sources survive failed saves/retry; successful IDB commit clears recovery data only afterwards; error plus abort counts once. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Inspect the durable-commit regressions and CI; close after green merge. Unit/integration · 2026-10-31 · quota regression fails before fix; quota retry and IDB commit/error/abort checks pass; full suite passes; CI · Pending
+
+**Estimates:** Small remaining effort; ~90% complete. Estimate is not verification.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
+| Opened | 2026-10-31 |
+| Verification | Unit/integration · 2026-10-31 · quota regression fails before fix; quota retry and IDB commit/error/abort checks pass; full suite passes; CI · Pending |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
+### B-049
+
+**Angular builder’s transitive Vite has published security advisories**
+
+| Signal | Priority | Status | Effort | Complete |
+|:---:|---|---|---|---|
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
+
+💻 **→ Human action required: No**<br />Verify browser/build CI for the targeted Vite 8.3.5 override, then close. Revisit the override when a compatible builder patch supplies the fixed dependency.
+
+| | |
+|---|---|
+| **Issue** | Locked builder used Vite 8.3.2 with six npm advisories, including high-severity entries in development tooling. |
+| **Reproduce** | Run npm audit on the baseline lockfile and inspect the nested builder dependency. |
+| **Check** | Reproducible npm ci and app/browser/build checks with patched Vite; npm audit reports zero advisories. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Verify browser/build CI for the targeted Vite 8.3.5 override, then close. Revisit the override when a compatible builder patch supplies the fixed dependency. Dependency audit · 2026-10-31 · baseline 2 affected package entries/6 advisories; patched lockfile npm audit zero, clean npm ci and build pass; browser/security CI · Pending
+
+**Estimates:** Small remaining effort; ~90% complete. Estimate is not verification.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
+| Opened | 2026-10-31 |
+| Verification | Dependency audit · 2026-10-31 · baseline 2 affected package entries/6 advisories; patched lockfile npm audit zero, clean npm ci and build pass; browser/security CI · Pending |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
+### B-050
+
+**Investigate delayed AI replies against a changed editor draft**
+
+| Signal | Priority | Status | Effort | Complete |
+|:---:|---|---|---|---|
+| 🟠 | 🔶 P2 | Investigate | 🟢 Small | ~0% |
+
+💻 **→ Human action required: No**<br />Write the deferred-completion regression to confirm or refute the stale-response hypothesis; fix only if reproduced.
+
+| | |
+|---|---|
+| **Issue** | Source captures the initial spec for AI context but commits commands to the current draft after awaiting a response; no draft-generation guard is apparent. This is a hypothesis, not a reproduced defect. |
+| **Reproduce** | Hold an AI completion, switch or edit the bando, then release the deferred reply in a service test. |
+| **Check** | A stale reply cannot modify another bando or silently overwrite intervening edits; unchanged-draft responses still apply through undo. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Write the deferred-completion regression to confirm or refute the stale-response hypothesis; fix only if reproduced. Source review · 2026-10-31 · async boundary identified; reproduction and fix not established
+
+**Estimates:** Small remaining effort; ~0% complete. Estimate is not verification.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
+| Opened | 2026-10-31 |
+| Verification | Source review · 2026-10-31 · async boundary identified; reproduction and fix not established |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
+### B-051
+
+**Investigate an Auto-sync result after changing its video/log pair**
+
+| Signal | Priority | Status | Effort | Complete |
+|:---:|---|---|---|---|
+| 🟠 | 🔶 P2 | Investigate | 🟢 Small | ~0% |
+
+💻 **→ Human action required: No**<br />Add a deferred-scan service/browser test to confirm or refute stale pair application; keep separate from the fixed saved-offset leak B-047.
+
+| | |
+|---|---|
+| **Issue** | Auto-sync captures its initial flight/video but later applySync uses current selection; a pair-generation guard is not apparent. UI entry paths need a deferred-scan test. |
+| **Reproduce** | Hold an Auto-sync scan, load a different video or select another flight, then release the scan. |
+| **Check** | Old work cannot store an offset or diagnostics on the new pair; cancellation cleans decoding resources and busy state. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Add a deferred-scan service/browser test to confirm or refute stale pair application; keep separate from the fixed saved-offset leak B-047. Source review · 2026-10-31 · async boundary identified; reproduction and fix not established
+
+**Estimates:** Small remaining effort; ~0% complete. Estimate is not verification.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
+| Opened | 2026-10-31 |
+| Verification | Source review · 2026-10-31 · async boundary identified; reproduction and fix not established |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
 ### F-001
 
 **Cut/Wing for diagonal basement outlines**
@@ -272,7 +444,7 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 | PR / evidence | [#101](https://github.com/voidbrain/openbando/pull/101) (context); [#117](https://github.com/voidbrain/openbando/pull/117) (merged to former feature branch); [#121](https://github.com/voidbrain/openbando/pull/121) (recovery targeting main) |
 | Opened | 2026-10-27 |
 | Verification | Unit/integration · 2026-10-28 · 504 tests passed locally; Browser/accessibility + Human · Pending |
-| Reviewed | 2026-10-28 |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -306,7 +478,7 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 | PR / evidence | — |
 | Opened | 2026-10-27 |
 | Verification | Real-device · Pending |
-| Reviewed | 2026-10-27 |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -408,7 +580,7 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 | PR / evidence | Request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Not started |
-| Reviewed | 2026-10-29 |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -442,7 +614,7 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 | PR / evidence | [#238](https://github.com/voidbrain/openbando/pull/238) (inventory); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Inventory · 2026-10-30 · Tips per file table (element map) |
-| Reviewed | 2026-10-30 |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -476,7 +648,7 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 | PR / evidence | [#220](https://github.com/voidbrain/openbando/pull/220); request 2026-10-29 |
 | Opened | 2026-10-29 |
 | Verification | Script · 2026-10-29 · `check:media` lists 12 / 15 changed files; `--stamp` writes the current commit (tried and restored); re-recording · Pending |
-| Reviewed | 2026-10-29 |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -501,7 +673,7 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Restored 2026-10-30: [#224](https://github.com/voidbrain/openbando/pull/224) set this record Implemented, and a later backlog conflict resolution put the old version back (the agent's merge helper kept main's record; fixed to merge record by record). Requested 2026-10-29: the user asked which dependencies a file trigger misses (a mascot animation synced with the Welcome films, a film that records an example bando, a theme colour that changes everything visual) and asked for a readable list of content dependencies and value couplings, plus what lies outside the repository if useful to people. Template rules already released: 1.12.0 (chains, the map page, plans become records) and 1.13.0 (inputs, wide-reach settings, couplings, audits look outside). Recorded here at once because a plan given in the conversation is otherwise forgotten (BACKLOG-RULES). Done 2026-10-30 ([#224](https://github.com/voidbrain/openbando/pull/224), harness 1.15.0): 17 rows with ids, inputs and chains (block → catalogue → examples; Chiari e Forti, Bando Villetta and the demo flight → clips → guide pages, films; theme → art, design system, clips, films; library upgrades → clips, films), 6 value couplings (film length, `DEMO_OFFSET`, theme tokens, fence materials, roof kinds, structure kinds), 8 outside sources, links to the element map, the guide and the design system. A dry run gives the user's examples: a block → catalogue, examples; Chiari e Forti → clips, guide, films; `styles.scss` → theme, art, design system, clips, guide, films and the token coupling; the tour service → the film-length and demo-offset couplings. The two couplings nothing keeps equal have their own records (F-036, F-037).
+**Next action / closure evidence:** Restored 2026-10-30: [#224](https://github.com/voidbrain/openbando/pull/224) set this record Implemented, and a later backlog conflict resolution put the old version back (the agent's merge helper kept main's record; fixed to merge record by record). Requested 2026-10-29: the user asked which dependencies a file trigger misses (a mascot animation synced with the Welcome films, a film that records an example bando, a theme colour that changes everything visual) and asked for a readable list of content dependencies and value couplings, plus what lies outside the repository if useful to people. Template rules already released: 1.12.0 (chains, the map page, plans become records) and 1.13.0 (inputs, wide-reach settings, couplings, audits look outside). Recorded here at once because a plan given in the conversation is otherwise forgotten (BACKLOG-RULES). Done 2026-10-30 ([#224](https://github.com/voidbrain/openbando/pull/224), harness 1.15.0): 18 rows with ids, inputs and chains (block → catalogue → examples; Chiari e Forti, Bando Villetta and the demo flight → clips → guide pages, films; theme → art, design system, clips, films; library upgrades → clips, films), 6 value couplings (film length, `DEMO_OFFSET`, theme tokens, fence materials, roof kinds, structure kinds), 8 outside sources, links to the element map, the guide and the design system. A dry run gives the user's examples: a block → catalogue, examples; Chiari e Forti → clips, guide, films; `styles.scss` → theme, art, design system, clips, guide, films and the token coupling; the tour service → the film-length and demo-offset couplings. The two couplings nothing keeps equal have their own records (F-036, F-037).
 
 **Estimates:** Small remaining effort; ~90% complete. The generated map and dry runs exist; the requested owner review remains. Estimated 2026-10-31; not acceptance evidence.
 
@@ -509,8 +681,8 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 |---|---|
 | PR / evidence | [#224](https://github.com/voidbrain/openbando/pull/224) (steps 2–4; all CI jobs green after the CodeQL fix of 1.15.1); template [#16](https://github.com/voidbrain/project-harness/pull/16), [#18](https://github.com/voidbrain/project-harness/pull/18), [#20](https://github.com/voidbrain/project-harness/pull/20), [#22](https://github.com/voidbrain/project-harness/pull/22), [#24](https://github.com/voidbrain/project-harness/pull/24); request 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Script · 2026-10-30 · page generated (17 rows, 6 couplings, 8 outside); chains and couplings dry-run on four changes; user's reading · Pending |
-| Reviewed | 2026-10-30 |
+| Verification | Script · 2026-10-30 · page generated (18 rows, 6 couplings, 8 outside); chains and couplings dry-run on four changes; user's reading · Pending |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -522,9 +694,9 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 
 | Signal | Priority | Status | Effort | Complete |
 |:---:|---|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🔴 Large | ~10% |
+| 🟣 | ◻️ P3 | Blocked | 🔴 Large | ~10% |
 
-💻 **→ Human action required: No**<br />Next steps, in order: (1) template release: optional browser and combined coverage in `coverage-table.mjs`; (2) template, every stack with Playwright: an optional coverage fixture and merge script; (3) reconcile here, the e2e shards collect and a CI job merges.
+💻 **→ Human action required: No**<br />Waiting for an upstream published browser-coverage contract; then wire OpenBando’s collection and CI.
 
 | | |
 |---|---|
@@ -535,16 +707,16 @@ Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BA
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Split from F-038 (step 3) on 2026-10-30: the unit coverage table shows `ui/` at under 1 % of lines, though its panels and editors are tested in the browser (Playwright). Until browser coverage is counted, the table says so above the numbers. Plan (2026-10-30, the user: a template thing, optional, since any project can have Playwright): (1) template `core/tools/coverage-table.mjs` reads two optional summaries besides the unit one, `coverage.browser` and `coverage.combined` in `.harness.json`; with them the table shows unit, browser and combined lines per folder, and the drop warning follows the combined numbers; without them nothing changes. (2) Template, optional for a project with Playwright: a test fixture that collects V8 coverage in Chromium when `COVERAGE=1`, and a script that turns it into the standard summary through the source maps and merges it with the unit coverage (`monocart-coverage-reports`, one dev dependency). (3) Here: the e2e tests take the fixture, each e2e shard uploads its raw coverage, a CI job after the shards merges them and prints the table (a warning, never a failure), and the baseline is refreshed.
+**Next action / closure evidence:** Blocked on published optional browser/combined coverage support tracked by [project-harness F-032, PR #59](https://github.com/voidbrain/project-harness/pull/59). After its compatible release, reconcile the helper here, integrate the OpenBando Playwright fixture, upload per-shard artifacts, merge them in CI and refresh the optional summary. The template owns generic contracts, collectors and its own acceptance; this record owns only OpenBando integration. No release exists yet. Historical plan split from F-038 on 30 October; the former foreign implementation steps have been moved to their owner.
 
-**Estimates:** Large remaining effort; ~10% complete. The integration plan exists; template options, collection, conversion and CI integration remain. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Large remaining effort; ~10% complete. Integration waits for the named upstream contract, not a human check.
 
 | Field | Value |
 |---|---|
 | PR / evidence | Split from F-038, 2026-10-30 |
 | Opened | 2026-10-30 |
 | Verification | Not implemented |
-| Reviewed | 2026-10-30 |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -618,7 +790,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 | PR / evidence | [#263](https://github.com/voidbrain/openbando/pull/263) (prototypes); branch `feat/align-automatically` (full run, not merged); [#266](https://github.com/voidbrain/openbando/pull/266) (findings, steps); request 2026-10-30 |
 | Opened | 2026-10-30 |
 | Verification | Prototype · 2026-10-30 · geometric and visual probes on the demo flight; full run on the whole flight: no usable shift (numbers above) |
-| Reviewed | 2026-10-30 |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -694,39 +866,6 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 
 
-### F-046
-
-**Reconcile OpenBando with published harness releases (current: v3.1.1)**
-
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
-
-💻 **→ Human action required: No**<br />Inspect this reconciliation PR’s CI and close after its merged checks pass.
-
-| | |
-|---|---|
-| **Issue** | The prior v2.2.2 adoption passed merged #274 CI; the requested v3.1.1 adoption adds input-bound maintenance, timed reconciliation, scope-aware dated audits and hardened merge/coverage checks. |
-| **Reproduce** | Compare published v2.2.2 with v3.1.1 at 7a81b930; run read-only preview, copied parity, maintenance/audit, backlog and existing app checks. Preserve project-specific rules and dated history. |
-| **Check** | All copied files match published v3.1.1; project rules/history/privacy survive; startup/PR/daily checks enforce current maintenance evidence; audit scope is honest, coverage remains warning-only, and app/browser/security checks remain enabled. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Prior v2.2.2 adoption (#274) is verified by CI run 41222711890: check, all four browser shards and race-browser passed. This request extends the same reconciliation outcome to published v3.1.1 (7a81b930c5cbd689b8db9d4c74f9dd42ec1e7031). Preview/copy helpers, required maintenance policy/receipt, dated audit guide/manifests and shared instructions are reconciled while preserving product rules. Inspect the new PR’s actual checks and close only after green merge. No server/skill installation, consumer gate or product-human acceptance is inferred. F-047 separately owns establishing full product audit coverage. Historical v2.2.2 baseline: 0764a362; original untagged 2.0.1 base 9c3abc6.
-
-**Estimates:** Small remaining effort; ~90% complete. Source comparison, baseline 597 tests and implementation exist; current adoption validation/CI and merge remain. Estimated 2026-10-31; not acceptance evidence.
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#275](https://github.com/voidbrain/openbando/pull/275); [#274](https://github.com/voidbrain/openbando/pull/274); [template v3.1.1](https://github.com/voidbrain/project-harness/tree/v3.1.1); [new scoped review](audits/2026-10-31-harness-v3.1.1.md); [prior scoped audit](audits/2026-10-31-harness.md) |
-| Opened | 2026-10-31 |
-| Verification | Automated/source review · 2026-10-31 · #274 run 41222711890 green; v3.1.1 local validation · 597 app tests, 72 source fixtures, 3 relay tests, build/types/conventions/i18n/contrast, copied parity, metadata and receipt checks passed; current PR CI · Pending |
-| Reviewed | 2026-10-31 |
-
-</details>
-
----
 
 ### F-047
 
@@ -734,9 +873,9 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 | Signal | Priority | Status | Effort | Complete |
 |:---:|---|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🟡 Medium | ~0% |
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
 
-💻 **→ Human action required: No**<br />Review current product areas, reuse valid dated evidence explicitly and write a full report/manifest with limits and owned findings.
+💻 **→ Human action required: No**<br />Check the full audit PR’s CI and merge; product findings retain their separate acceptance.
 
 | | |
 |---|---|
@@ -747,15 +886,15 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Perform a separately scoped full product review against current main; trace code/logic/test/privacy joins and current CI, then report findings and residual human/device checks without claiming those passed. Reuse earlier reports only by naming the scope/revision and why evidence remains valid. This independent product review does not block harness adoption or require downstream changes. Overdue-area enforcement stays off until an actual baseline is established.
+**Next action / closure evidence:** All eight areas reviewed at main 3f7b844 plus the documented working-tree fixes. The dated full report/manifest classifies confirmed defects, outstanding agreed work, async-operation hypotheses and report-only proposals. Local checks pass; the audit PR’s own browser/security CI remains pending. Close this audit outcome after its green merge independently of product human/device checks. Seven-day area freshness enforcement is now enabled; historical reports remain unchanged.
 
-**Estimates:** Medium effort; ~0% complete. New procedure is adopted, but a comprehensive product review is outside the current harness reconciliation. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Small remaining effort; ~90% complete. Review/report/tracking done; CI and merge remain.
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#275](https://github.com/voidbrain/openbando/pull/275); [Scoped adoption review](audits/2026-10-31-harness-v3.1.1.md); [audit procedure](agents/audit.md) |
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md); [#275](https://github.com/voidbrain/openbando/pull/275); [Scoped adoption review](audits/2026-10-31-harness-v3.1.1.md); [audit procedure](agents/audit.md) |
 | Opened | 2026-10-31 |
-| Verification | Full product baseline · Pending |
+| Verification | Documentation/source review · 2026-10-31 · all eight areas reviewed, 602 tests/build/types pass; current browser/security CI · Pending |
 | Reviewed | 2026-10-31 |
 
 </details>
@@ -811,6 +950,8 @@ Harness template 1.20.1 (2026-10-31, the owner's find; template [#38](https://gi
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
 
 ## Reconciliation history
+
+2026-10-31: full review against main `3f7b844` (#275). CI [41245176140](https://github.com/voidbrain/openbando/actions/runs/41245176140) and all CodeQL checks passed; F-046 verified, closed and archived. Audit fixes and new browser assertions have their own pending CI. Every active record was reviewed without advancing human/device acceptance.
 
 2026-10-31: reviewed main `23273a3` (#274). Run 41222711890 passed check, all four browser shards and race-browser; prior v2.2.2 acceptance is established. The requested v3.1.1 adoption extends F-046 with its own current PR checks; F-047 separately owns full product audit coverage. Earlier pending-CI notes below describe their original review baseline.
 

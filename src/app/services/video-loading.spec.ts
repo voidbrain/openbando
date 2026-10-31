@@ -32,3 +32,29 @@ it('restores offsets quietly for showcase loads without hiding normal restore no
   video.load(file);
   expect(toast.message()).toContain('Restored saved sync');
 });
+
+it('keeps sync offsets scoped to the selected video and flight, restoring only the matching pair', () => {
+  const flights = TestBed.inject(FlightService), video = TestBed.inject(VideoService);
+  const points = [{lat: 1, lon: 1, alt: 0, t: 0}];
+  flights.add('first-log', points); TestBed.tick();
+  const first = new File(['first'], 'first.mp4');
+  video.load(first); video.setOffset(12.5);
+  video.load(new File(['second'], 'second.mp4'));
+  expect(video.synced()).toBe(false);
+  expect(video.offset()).toBe(0);
+  video.load(first);
+  expect(video.offset()).toBe(12.5);
+  flights.add('second-log', points); TestBed.tick();
+  expect(video.synced()).toBe(false);
+  expect(video.offset()).toBe(0);
+});
+
+it('rejects a non-finite saved offset instead of marking the video synced', () => {
+  const video = TestBed.inject(VideoService);
+  TestBed.inject(FlightService).add('log', [{lat: 1, lon: 1, alt: 0, t: 0}]); TestBed.tick();
+  const file = new File(['video'], 'corrupt.mp4');
+  localStorage.setItem(`abando-sync:${file.name}:${file.size}|log`, 'Infinity');
+  video.load(file);
+  expect(video.synced()).toBe(false);
+  expect(video.offset()).toBe(0);
+});
