@@ -719,7 +719,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#274](https://github.com/voidbrain/openbando/pull/274); [template v3.1.1](https://github.com/voidbrain/project-harness/tree/v3.1.1); [new scoped review](audits/2026-10-31-harness-v3.1.1.md); [prior scoped audit](audits/2026-10-31-harness.md) |
+| PR / evidence | [#275](https://github.com/voidbrain/openbando/pull/275); [#274](https://github.com/voidbrain/openbando/pull/274); [template v3.1.1](https://github.com/voidbrain/project-harness/tree/v3.1.1); [new scoped review](audits/2026-10-31-harness-v3.1.1.md); [prior scoped audit](audits/2026-10-31-harness.md) |
 | Opened | 2026-10-31 |
 | Verification | Automated/source review · 2026-10-31 · #274 run 41222711890 green; v3.1.1 local validation · 597 app tests, 72 source fixtures, 3 relay tests, build/types/conventions/i18n/contrast, copied parity, metadata and receipt checks passed; current PR CI · Pending |
 | Reviewed | 2026-10-31 |
@@ -753,7 +753,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [Scoped adoption review](audits/2026-10-31-harness-v3.1.1.md); [audit procedure](agents/audit.md) |
+| PR / evidence | [#275](https://github.com/voidbrain/openbando/pull/275); [Scoped adoption review](audits/2026-10-31-harness-v3.1.1.md); [audit procedure](agents/audit.md) |
 | Opened | 2026-10-31 |
 | Verification | Full product baseline · Pending |
 | Reviewed | 2026-10-31 |
@@ -764,7 +764,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 ## Other changes
 
-2026-10-31: scoped v3.1.1 adoption review is [dated here](audits/2026-10-31-harness-v3.1.1.md). F-046 retains #274’s completed v2.2.2 CI evidence and owns current adoption acceptance; F-047 independently tracks full product audit coverage. Product human/device records, approved artwork/media and historical reports remain unchanged.
+2026-10-31: [#275](https://github.com/voidbrain/openbando/pull/275) adopts v3.1.1; its scoped review is [dated here](audits/2026-10-31-harness-v3.1.1.md). F-046 retains #274’s completed v2.2.2 CI evidence and owns current adoption acceptance; F-047 independently tracks full product audit coverage. Product human/device records, approved artwork/media and historical reports remain unchanged.
 
 Harness ownership clarification ([#273](https://github.com/voidbrain/openbando/pull/273), 2.0.1 source): adopted the merged [template #40](https://github.com/voidbrain/project-harness/pull/40), `9c3abc6`, into BACKLOG-RULES and AGENTS. Ownership review rejects foreign Issue/next-action/closure work, including hidden details; masters use owned fixtures/contracts and never wait for derived implementation, deployment or adoption. This project owns only its own reconciliation. Template release tags remain upstream maintenance, not an active OpenBando task. Estimate policy and the 2.0.0 layout are unchanged.
 
