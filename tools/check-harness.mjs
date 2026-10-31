@@ -3,10 +3,10 @@
 // GitHub warnings. The template is a local clone (HARNESS_HOME, else template.path in .harness.json; the Angular CI
 // workflow clones it); without one the check is skipped. --merge three-way merges every forked file the template
 // changed since its base, writes the result (with conflict markers if any) and moves the base of the clean ones forward.
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, realpathSync, lstatSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { homedir, tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve, relative, isAbsolute, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const github = process.argv.includes('--github');
@@ -25,6 +25,23 @@ if (!existsSync(stampFile)) done('No .harness.json: this project was not applied
 let stamp;
 try { stamp = JSON.parse(readFileSync(stampFile, 'utf8')); }
 catch (e) { warn(`.harness.json is not valid JSON (${e.message}): fix it; template check skipped.`); done(); }
+// Preflight all mapped destinations before reading or merging any of them. Config is data,
+// not authorization to touch a sibling checkout or Git metadata.
+const safe = (path) => {
+  if (typeof path !== 'string' || !path || isAbsolute(path) || path.split(/[\\/]/).some(p => p === '..' || p.toLowerCase() === '.git')) throw Error('Unsafe project path');
+  const full = resolve(root, path);
+  let ancestor = full;
+  while (!existsSync(ancestor) && ancestor !== resolve(root)) {
+    try { if (lstatSync(ancestor).isSymbolicLink()) throw Error('Unsafe project path: dangling symlink'); } catch(e) { if (e.code !== 'ENOENT') throw e; }
+    ancestor = dirname(ancestor);
+  }
+  const rel = relative(realpathSync(root), realpathSync(ancestor));
+  if (rel === '..' || /^\.\.[/\\]/.test(rel) || isAbsolute(rel) || rel.split(/[\\/]/).some(p => p.toLowerCase() === '.git')) throw Error('Unsafe project path: escapes checkout');
+  return full;
+};
+try {
+  for (const path of ['.harness.json', ...Object.keys(stamp.copied ?? {}), ...Object.keys(stamp.forked ?? {}), ...Object.keys(stamp.adapted ?? {})]) safe(path);
+} catch(e) { warn(e.message + '; no project files merged.'); done(); }
 const home = (process.env.HARNESS_HOME ?? stamp.template?.path ?? '~/Projects/project-harness').replace(/^~(?=\/|$)/, homedir());
 if (!existsSync(join(home, 'VERSION'))) {
   // a CI run without a clone (no clone step, or the clone failed) skips quietly; locally a missing clone is something to fix
@@ -51,7 +68,7 @@ if (!latest) { warn(`The template at ${home} has no release tags (vX.Y.Z): tag a
 if (!tags.includes(base)) { warn(`.harness.json names version ${base}, which the template at ${home} has no tag for (latest v${latest}): set it to the release this project was last reconciled with, or tag the release if it is pending.`); done(); }
 
 const at = (version, path) => git('show', `v${version}:${path}`);
-const mine = (path) => (existsSync(join(root, path)) ? readFileSync(join(root, path), 'utf8') : null);
+const mine = (path) => (existsSync(safe(path)) ? readFileSync(safe(path), 'utf8') : null);
 const list = (value) => (Array.isArray(value) ? value : [value]);
 const diff = (path) => `git -C ${home} diff v${base} v${latest} -- ${path}`;
 const behind = tags.indexOf(base) > 0;
@@ -87,7 +104,7 @@ for (const [path, fork] of Object.entries(stamp.forked ?? {})) {
   const result = threeWay(here, was, now);
   const how = `git -C ${home} diff v${fork.base} v${latest} -- ${fork.from}`;
   if (merge) {
-    writeFileSync(join(root, path), result.text);
+    writeFileSync(safe(path), result.text);
     if (result.conflicts) warn(`${path}: merged template v${latest} with ${result.conflicts} conflict(s); resolve the markers, then set its "base" to "${latest}".`);
     else { fork.base = latest; rebased = true; console.log(`${path}: merged template v${latest} cleanly; its fork base is now ${latest}.`); }
   } else if (result.conflicts) warn(`${path}: forked, and template v${latest} changed it: CONFLICT in ${result.conflicts} place(s); run node tools/check-harness.mjs --merge and resolve the markers (${how}).`);

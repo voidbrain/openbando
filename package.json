@@ -24,7 +24,11 @@
     "check:freshness": "node tools/check-freshness.mjs",
     "check:conventions": "node tools/check-conventions.mjs",
     "check:integrations": "node tools/mcp.mjs check",
-    "mcp:recommend": "node tools/mcp.mjs recommend"
+    "mcp:recommend": "node tools/mcp.mjs recommend",
+    "reconcile:preview": "node tools/reconcile-preview.mjs",
+    "friction": "node tools/friction.mjs",
+    "check:maintenance": "node tools/maintenance.mjs check",
+    "check:audits": "node tools/check-audits.mjs"
   },
   "private": true,
   "packageManager": "npm@11.17.0",
