@@ -21,3 +21,7 @@ Source: `src/app/ui/panel/panel.ts`.
 Chrome uses the shared indigo/purple surface tokens. Keep status colours unchanged and pair lime active fills with `accent-ink`; do not reintroduce literal green control backgrounds.
 
 Views keeps Bandos editor, Flights, Timeline and Video as direct controls. Telemetry, Simulator and Tools start folded unless the pilot saved another preference; Reset restores these folds. Camera groups appear with the 3D main source. Camera Options uses a native details disclosure closed by default. See ViewsPanel.md.
+
+Bandos → Examples keeps each description in an info tooltip beside the example name, rather than a separate text row. The small circular “i” control uses existing tokens, a visible focus ring and a 24px target. Hover or keyboard focus reveals the description; tap opens it. Escape, focus leaving the button or the pointer leaving the tooltip dismisses it. The tooltip can be hovered and wraps within the card.
+
+Source: `src/app/ui/studio/studio-panel.ts`.
