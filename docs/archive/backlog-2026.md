@@ -1140,7 +1140,7 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 
 💻 **→ Human action required: No**<br />None: closed.
 
-**Next action / closure evidence:** Verified and closed 2026-10-31 on the owner's check on the live site ("F-027 ok": the post-and-rail fence looks right). Drawing a fence only by dragging is B-043. Requested 2026-10-29 for the library (Bardwell House has one). New fence material `rail`: posts every 2.4 m, three planks (`RAIL_PLANKS`) nailed to their face with open gaps between them, white by default, each plank following the ground; solid for the drone like the other fences. Material menu entry with its own icon and Italian. Covered by `site-model.spec.ts` (6 posts and 3 planks on a 12 m fence, solid). Bardwell House's drive fence is `rail` ([#217](https://github.com/voidbrain/openbando/pull/217), release 3 of the example).
+**Next action / closure evidence:** Verified and closed 2026-10-31 on the owner's check on the live site ("F-027 ok": the post-and-rail fence looks right). Click A, preview, click B for every line tool is F-043. Requested 2026-10-29 for the library (Bardwell House has one). New fence material `rail`: posts every 2.4 m, three planks (`RAIL_PLANKS`) nailed to their face with open gaps between them, white by default, each plank following the ground; solid for the drone like the other fences. Material menu entry with its own icon and Italian. Covered by `site-model.spec.ts` (6 posts and 3 planks on a 12 m fence, solid). Bardwell House's drive fence is `rail` ([#217](https://github.com/voidbrain/openbando/pull/217), release 3 of the example).
 
 <details>
 <summary>PR history, dates and verification</summary>

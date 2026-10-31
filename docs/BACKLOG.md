@@ -21,30 +21,6 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ## Bugs and reliability
 
-### B-043
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🔴 | B-043 | 🔹 P3 | Open | A fence draws only by dragging; other line tools take a click, a preview, a second click |
-
-💻 **→ Human action required: No**<br />Next: let the fence tool draw by click A (preview follows the pointer) and click B, as the other line tools do; keep the drag.
-
-**Next action / closure evidence:** The owner 2026-10-31, checking F-027: "it works only on drag, aren't other segment elements also click A (preview) click B?" Next: check which line tools (walls, roads, fences, partitions…) take two clicks, make the fence do the same with the live preview, and add a browser case for click–click.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 |
-| Opened | 2026-10-31 |
-| Verification | Pending |
-| Reviewed | 2026-10-31 |
-
-</details>
-
----
-
 ### B-044
 
 | Signal | ID | Priority | Status | Item |
@@ -240,6 +216,30 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 ---
 
 ## Features and limitations
+
+### F-043
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-043 | 🔹 P3 | Open | Line tools also draw by click A, live preview, click B (keeping the drag) |
+
+💻 **→ Human action required: No**<br />Next: let Fence, Wall, Road, Water (line), Tunnel and Bridge draw by two clicks with a live preview, as Measure does; a press-drag-release still works.
+
+**Next action / closure evidence:** Requested 2026-10-31 by the owner, checking F-027 ("it works only on drag, aren't other segment elements also click A (preview) click B?"). Checked in the code (`bando-editor.ts`, the tool list and the pointer-up handlers): only Measure takes clicks (a chain, with a live preview); Fence, interior Wall, Road, Water in line mode, Tunnel and Bridge draw by press–drag–release with a live preview, and a click shorter than 0.5 m is dropped; Surface and Water outlines are drawn by hand. So the fence is not the odd one: the request is click–click for every line tool. Plan: a press released within a few pixels starts a line at A, the preview follows the pointer, the next click ends it at B (Esc or a right-click cancels); a longer drag still draws as today; one shared handler for all the line tools; the hints and their Italian updated; a browser case per tool (click–click and drag), and the guide steps whose clips show drawing checked (impact map). Chaining (B of one fence is A of the next, as in Measure) is a question for the owner when it is built. Made a project rule by the owner (2026-10-31): Editor area notes, "Tool palette": every line tool takes click A, live preview, click B, and every drag previews live.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); request 2026-10-31 |
+| Opened | 2026-10-31 |
+| Verification | Pending |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
 
 ### F-042
 
