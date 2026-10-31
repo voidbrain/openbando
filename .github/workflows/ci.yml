@@ -34,6 +34,12 @@ jobs:
       - name: Optional integration recommendation metadata
         run: npm run check:integrations
 
+      - name: Required maintenance evidence
+        run: npm run check:maintenance
+
+      - name: Scope-aware audit evidence
+        run: npm run check:audits -- --github
+
       - name: Build the block catalogue
         run: node tools/build-catalog.mjs
 
@@ -63,7 +69,7 @@ jobs:
         # every source file is included, so a file no test runs shows at 0 % instead of being left out
         run: npx ng test --watch=false --coverage --coverage-reporters=json-summary --coverage-include='src/**/*.ts' --coverage-exclude='**/*.spec.ts'
 
-      - name: Code coverage table (warnings only, never blocks)
+      - name: Code coverage table (warnings; optional enforcement)
         run: node tools/coverage-table.mjs --check --github
 
       - name: Race relay integration
@@ -84,7 +90,7 @@ jobs:
               echo "::warning title=Harness template::Could not clone $repo: template release check skipped."
           fi
 
-      - name: Backlog freshness and template release (warnings only, never blocks)
+      - name: Freshness, template release and required review evidence
         env:
           HARNESS_HOME: ${{ runner.temp }}/project-harness
         run: npm run check:freshness -- --github

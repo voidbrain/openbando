@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 31 October 2026 against main `84c93de`. [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 31 October 2026 against main `23273a3`. [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -696,7 +696,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 ### F-046
 
-**Reconcile OpenBando with published harness v2.2.2**
+**Reconcile OpenBando with published harness releases (current: v3.1.1)**
 
 | Signal | Priority | Status | Effort | Complete |
 |:---:|---|---|---|---|
@@ -706,22 +706,56 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 | | |
 |---|---|
-| **Issue** | OpenBando's 2.0.1 stamp predates published v2.2.2 guidance/helpers and names no published base tag; its ESLint provenance also lists a missing file. |
-| **Reproduce** | Compare .harness.json and its copied/adapted paths with project-harness tag v2.2.2, using recorded 2.0.1 source commit 9c3abc6 as the prior baseline. Run the harness, backlog, conventions and optional integration metadata checks. |
-| **Check** | All copied files match the tag; project rules, archives and independent acceptance survive; scripts/CI validate optional metadata without installing tools or requiring a coordinator; rules, README, area notes and provenance agree. |
+| **Issue** | The prior v2.2.2 adoption passed merged #274 CI; the requested v3.1.1 adoption adds input-bound maintenance, timed reconciliation, scope-aware dated audits and hardened merge/coverage checks. |
+| **Reproduce** | Compare published v2.2.2 with v3.1.1 at 7a81b930; run read-only preview, copied parity, maintenance/audit, backlog and existing app checks. Preserve project-specific rules and dated history. |
+| **Check** | All copied files match published v3.1.1; project rules/history/privacy survive; startup/PR/daily checks enforce current maintenance evidence; audit scope is honest, coverage remains warning-only, and app/browser/security checks remain enabled. |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Reconciled to published v2.2.2 (0764a362d3c81d828ff6f1bf936e3a2782f19339). Updated byte-identical helpers, optional MCP/catalogue and shared guides, version-aware conventions, head-bound merge, instructions, rules, CI/scripts and provenance. No servers, skills or solution roles installed/configured. Added audit/archive guidance; removed the nonexistent ESLint config from adapted provenance rather than inventing a lint setup. Inspect the merged reconciliation PR's green checks and close; product human/device records are unchanged.
+**Next action / closure evidence:** Prior v2.2.2 adoption (#274) is verified by CI run 41222711890: check, all four browser shards and race-browser passed. This request extends the same reconciliation outcome to published v3.1.1 (7a81b930c5cbd689b8db9d4c74f9dd42ec1e7031). Preview/copy helpers, required maintenance policy/receipt, dated audit guide/manifests and shared instructions are reconciled while preserving product rules. Inspect the new PR’s actual checks and close only after green merge. No server/skill installation, consumer gate or product-human acceptance is inferred. F-047 separately owns establishing full product audit coverage. Historical v2.2.2 baseline: 0764a362; original untagged 2.0.1 base 9c3abc6.
 
-**Estimates:** Small remaining effort; ~90% complete. Source comparison and local checks completed; this PR's CI and merge reconciliation remain. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Small remaining effort; ~90% complete. Source comparison, baseline 597 tests and implementation exist; current adoption validation/CI and merge remain. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#274](https://github.com/voidbrain/openbando/pull/274); [template v2.2.2](https://github.com/voidbrain/project-harness/tree/v2.2.2); [scoped audit](audits/2026-10-31-harness.md) |
+| PR / evidence | [#274](https://github.com/voidbrain/openbando/pull/274); [template v3.1.1](https://github.com/voidbrain/project-harness/tree/v3.1.1); [new scoped review](audits/2026-10-31-harness-v3.1.1.md); [prior scoped audit](audits/2026-10-31-harness.md) |
 | Opened | 2026-10-31 |
-| Verification | Documentation + tool validation · 2026-10-31 · release source, copied-file parity, rule/ownership review and local validation; reconciliation PR CI · Pending |
+| Verification | Automated/source review · 2026-10-31 · #274 run 41222711890 green; v3.1.1 local validation · 597 app tests, 72 source fixtures, 3 relay tests, build/types/conventions/i18n/contrast, copied parity, metadata and receipt checks passed; current PR CI · Pending |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
+### F-047
+
+**Establish explicit full product audit coverage under the adopted procedure**
+
+| Signal | Priority | Status | Effort | Complete |
+|:---:|---|---|---|---|
+| 🔴 | 🔶 P2 | Open | 🟡 Medium | ~0% |
+
+💻 **→ Human action required: No**<br />Review current product areas, reuse valid dated evidence explicitly and write a full report/manifest with limits and owned findings.
+
+| | |
+|---|---|
+| **Issue** | Existing narrative audits are preserved but do not automatically certify machine-readable full coverage; a harness-only review leaves product areas unclassified. |
+| **Reproduce** | Run check:audits after this adoption: scoped harness evidence cannot refresh code, logic, tests or security product review. |
+| **Check** | All eight areas have an evidence-backed review result at a named baseline, with real limits, defect/hypothesis/proposal classification and owning records; no stale narrative is silently promoted. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Perform a separately scoped full product review against current main; trace code/logic/test/privacy joins and current CI, then report findings and residual human/device checks without claiming those passed. Reuse earlier reports only by naming the scope/revision and why evidence remains valid. This independent product review does not block harness adoption or require downstream changes. Overdue-area enforcement stays off until an actual baseline is established.
+
+**Estimates:** Medium effort; ~0% complete. New procedure is adopted, but a comprehensive product review is outside the current harness reconciliation. Estimated 2026-10-31; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [Scoped adoption review](audits/2026-10-31-harness-v3.1.1.md); [audit procedure](agents/audit.md) |
+| Opened | 2026-10-31 |
+| Verification | Full product baseline · Pending |
 | Reviewed | 2026-10-31 |
 
 </details>
@@ -729,6 +763,8 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 ---
 
 ## Other changes
+
+2026-10-31: scoped v3.1.1 adoption review is [dated here](audits/2026-10-31-harness-v3.1.1.md). F-046 retains #274’s completed v2.2.2 CI evidence and owns current adoption acceptance; F-047 independently tracks full product audit coverage. Product human/device records, approved artwork/media and historical reports remain unchanged.
 
 Harness ownership clarification ([#273](https://github.com/voidbrain/openbando/pull/273), 2.0.1 source): adopted the merged [template #40](https://github.com/voidbrain/project-harness/pull/40), `9c3abc6`, into BACKLOG-RULES and AGENTS. Ownership review rejects foreign Issue/next-action/closure work, including hidden details; masters use owned fixtures/contracts and never wait for derived implementation, deployment or adoption. This project owns only its own reconciliation. Template release tags remain upstream maintenance, not an active OpenBando task. Estimate policy and the 2.0.0 layout are unchanged.
 
@@ -775,6 +811,8 @@ Harness template 1.20.1 (2026-10-31, the owner's find; template [#38](https://gi
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
 
 ## Reconciliation history
+
+2026-10-31: reviewed main `23273a3` (#274). Run 41222711890 passed check, all four browser shards and race-browser; prior v2.2.2 acceptance is established. The requested v3.1.1 adoption extends F-046 with its own current PR checks; F-047 separately owns full product audit coverage. Earlier pending-CI notes below describe their original review baseline.
 
 2026-10-31: reviewed through `84c93de` (#273), with #272/#273 runs/jobs read through the authenticated GitHub connector because `gh` is unavailable here. [#272 CI](https://github.com/voidbrain/openbando/actions/runs/41196898791) and [#273 CI](https://github.com/voidbrain/openbando/actions/runs/41198496665): check, all four browser shards and race-browser green. Existing F-044/F-045 closures remain; no human/device record was advanced. F-046 owns current v2.2.2 adoption and its pending CI.
 

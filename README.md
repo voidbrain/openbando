@@ -153,7 +153,7 @@ No further configuration is required — the workflow uses the built-in
 
 ### How it works
 
-- Runs the reusable CI checks (catalogue, generated examples, unit tests, race relay, Italian translations, backlog layout, shared contrast, AGENTS conventions and unused exports, strict types and production build) before publishing; on pull requests it also warns, without blocking, when the backlog is behind `main`, merged branches are left over or the last audit is more than 7 days old (`npm run check:freshness`). Browser e2e runs on pull requests; deployment calls the fast checks without browser e2e. `main` is protected (ruleset "protect main"): a pull request merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` pass; force pushes and deleting `main` are refused. The guide timeout correction passed all PR #124 browser shards; the backlog records current verification and remaining checks. The production build uses
+- Runs the reusable CI checks (catalogue, generated examples, unit tests, race relay, Italian translations, backlog layout, shared contrast, AGENTS conventions and unused exports, strict types and production build) before publishing; on pull requests it also warns, without blocking, when the backlog is behind `main`, merged branches are left over or declared audit areas are missing/stale (`npm run check:freshness`). Required maintenance evidence and invalid audit metadata fail; overdue-area enforcement remains off until the full product baseline is reviewed. Browser e2e runs on pull requests; deployment calls the fast checks without browser e2e. `main` is protected (ruleset "protect main"): a pull request merges only when `check`, `e2e (1)`–`e2e (4)` and `race-browser` pass; force pushes and deleting `main` are refused. The guide timeout correction passed all PR #124 browser shards; the backlog records current verification and remaining checks. The production build uses
   `"baseHref": "/openbando/"` set in `angular.json` so asset URLs
   resolve correctly under the project-page subpath.
 - Adds a `.nojekyll` file so GitHub Pages does **not** process the bundle
@@ -261,7 +261,7 @@ Bandos → Examples shows each description from the info control beside its titl
 
 ## Harness and capability assessment
 
-OpenBando follows [project-harness v2.2.2](https://github.com/voidbrain/project-harness/tree/v2.2.2), recorded in `.harness.json`. Read [AGENTS](AGENTS.md), [area notes](docs/agents/areas.md) and [backlog rules](docs/BACKLOG-RULES.md). Setup and relevant workflow changes assess the code, existing tools and useful gaps; routine steps belong in the procedure, while unresolved outcomes belong in the backlog.
+OpenBando follows [project-harness v3.1.1](https://github.com/voidbrain/project-harness/tree/v3.1.1), recorded in `.harness.json`. Read [AGENTS](AGENTS.md), [area notes](docs/agents/areas.md) and [backlog rules](docs/BACKLOG-RULES.md). Setup and relevant workflow changes assess the code, existing tools and useful gaps; routine steps belong in the procedure, while unresolved outcomes belong in the backlog.
 
 ### MCP recommendations
 
@@ -273,4 +273,10 @@ OpenBando remains an independent repository. [Solution profile guidance](docs/ag
 
 ### Shared skills
 
-The optional [apply-harness entry point](https://github.com/voidbrain/project-harness/blob/v2.2.2/skills/apply-harness/SKILL.md) delegates to the template procedure. No personal/client installation is required or performed; see [skill guidance](docs/agents/skills.md).
+The optional [apply-harness entry point](https://github.com/voidbrain/project-harness/blob/v3.1.1/skills/apply-harness/SKILL.md) delegates to the template procedure. No personal/client installation is required or performed; see [skill guidance](docs/agents/skills.md).
+
+### Maintenance and dated audits
+
+The [maintenance procedure](docs/agents/maintenance.md) requires timed reconciliation and a current reviewed receipt bound to the governing files. PR checks and a daily read-only workflow validate it; they do not repair code or rewrite rules unattended. Raw numeric observations stay ignored locally. `reconcile:preview` lists proposed changes before writes, without applying them.
+
+Follow the [audit procedure](docs/agents/audit.md) for dated reports and full/scoped manifests with evidence, limits, findings and owned follow-up. Existing reports remain unchanged. A recent harness-only review does not certify all product areas; the baseline review is tracked separately. Coverage stays warning-only: test changed behavior and risky joins, without requiring every PR to raise a global percentage.

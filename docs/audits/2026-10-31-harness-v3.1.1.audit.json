@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "kind": "scoped",
+  "reviewed": "2026-10-31T21:44:14.287Z",
+  "baseline": "23273a307727ddf79dc93f021a01e5edd697ebab",
+  "report": "docs/audits/2026-10-31-harness-v3.1.1.md",
+  "areas": {
+    "documentation": {
+      "result": "checked",
+      "evidence": "See dated reconciliation report source, boundaries and validation tables.",
+      "limits": "Affected instructions/guides only; historical reports and product media remain unchanged."
+    },
+    "harness": {
+      "result": "checked",
+      "evidence": "See dated reconciliation report source, boundaries and validation tables.",
+      "limits": "Published helper adoption and policy boundaries; no independent proof of semantic completeness."
+    },
+    "delivery": {
+      "result": "checked",
+      "evidence": "See dated reconciliation report source, boundaries and validation tables.",
+      "limits": "Previous #274 CI inspected and local checks run; new PR/browser/security CI pending."
+    },
+    "backlog": {
+      "result": "checked",
+      "evidence": "See dated reconciliation report source, boundaries and validation tables.",
+      "limits": "Affected reconciliation and missing audit-baseline records only; no product human/device acceptance inferred."
+    }
+  }
+}
