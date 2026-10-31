@@ -258,3 +258,19 @@ The tour caption shows a circular remaining-time indicator. Welcome uses one ren
 Welcome links stop the running tour and clear its overlays before opening their destination; Stop still returns to Welcome. Tour outlines follow resized/moved targets. Views promotes Flights, Timeline, Video and the Bandos editor, with other groups folded by default and camera Options closed. Camera controls are shown for the 3D main page. Existing fold preferences are preserved.
 
 Bandos → Examples shows each description from the info control beside its title (hover, keyboard focus or tap).
+
+## Harness and capability assessment
+
+OpenBando follows [project-harness v2.2.2](https://github.com/voidbrain/project-harness/tree/v2.2.2), recorded in `.harness.json`. Read [AGENTS](AGENTS.md), [area notes](docs/agents/areas.md) and [backlog rules](docs/BACKLOG-RULES.md). Setup and relevant workflow changes assess the code, existing tools and useful gaps; routine steps belong in the procedure, while unresolved outcomes belong in the backlog.
+
+### MCP recommendations
+
+`npm run check:integrations` validates optional metadata; `npm run mcp:recommend` prints saved selections and stack candidates. No servers are selected or installed by this reconciliation. This session already has GitHub connector access; browser behaviour is checked by the existing Playwright CI. See [MCP guidance](docs/agents/mcp.md) before selecting, configuring or installing another tool. Metadata/config output does not establish a live connection.
+
+### Solution profiles
+
+OpenBando remains an independent repository. [Solution profile guidance](docs/agents/solution-profile.md) is available, but no coordinator, component role, manifest or dashboard has been configured. That requires an actual multi-repository requirement and its own authorized adoption.
+
+### Shared skills
+
+The optional [apply-harness entry point](https://github.com/voidbrain/project-harness/blob/v2.2.2/skills/apply-harness/SKILL.md) delegates to the template procedure. No personal/client installation is required or performed; see [skill guidance](docs/agents/skills.md).

@@ -314,3 +314,11 @@ The design system owns UI rules ([design-system/README.md](../../design-system/R
   regression matrix of the example bandos (load, build, collide, export / import round trip) on top of
   `core/examples.spec.ts`. (3) Maintainability: keep splitting `bando-editor.ts` into tools under `ui/studio/editor/`
   (terrain, layers, underground, measure, blocks and the host are split already).
+
+## Harness capabilities and reconciliation
+
+- `.harness.json` owns OpenBando’s template version, copied/adapted provenance, impact rows and optional integration selections. Copy helpers byte-for-byte from the published tag; generic fixes belong upstream.
+- Capability assessment reads actual project code/tooling first. GitHub connector access can replace unavailable `gh` for evidence reads; name the actual source. Existing Playwright CI remains the browser acceptance path; a tool listing is not proof of a browser connection.
+- MCP recommendations: `tools/mcp.mjs` and its catalogue are copied. Validate metadata with `npm run check:integrations`; recommendations/configuration are optional and never imply installation or connectivity. See [MCP guidance](mcp.md).
+- Solution context: no role is selected here. Consult [solution guidance](solution-profile.md) only for actual coordination work; components retain their own acceptance and missing optional coordinator access does not block independent work.
+- Shared skills: the canonical apply-harness skill stays in the template at the reviewed tag; follow [skills guidance](skills.md) before client registration or adding another skill. No personal installations were changed.

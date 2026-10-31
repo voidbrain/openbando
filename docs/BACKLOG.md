@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Active bugs and features. Reviewed 31 October 2026 against main `b8bcc08`. [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 31 October 2026 against main `84c93de`. [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -694,6 +694,40 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 
 
+### F-046
+
+**Reconcile OpenBando with published harness v2.2.2**
+
+| Signal | Priority | Status | Effort | Complete |
+|:---:|---|---|---|---|
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
+
+💻 **→ Human action required: No**<br />Inspect this reconciliation PR’s CI and close after its merged checks pass.
+
+| | |
+|---|---|
+| **Issue** | OpenBando's 2.0.1 stamp predates published v2.2.2 guidance/helpers and names no published base tag; its ESLint provenance also lists a missing file. |
+| **Reproduce** | Compare .harness.json and its copied/adapted paths with project-harness tag v2.2.2, using recorded 2.0.1 source commit 9c3abc6 as the prior baseline. Run the harness, backlog, conventions and optional integration metadata checks. |
+| **Check** | All copied files match the tag; project rules, archives and independent acceptance survive; scripts/CI validate optional metadata without installing tools or requiring a coordinator; rules, README, area notes and provenance agree. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Reconciled to published v2.2.2 (0764a362d3c81d828ff6f1bf936e3a2782f19339). Updated byte-identical helpers, optional MCP/catalogue and shared guides, version-aware conventions, head-bound merge, instructions, rules, CI/scripts and provenance. No servers, skills or solution roles installed/configured. Added audit/archive guidance; removed the nonexistent ESLint config from adapted provenance rather than inventing a lint setup. Inspect the merged reconciliation PR's green checks and close; product human/device records are unchanged.
+
+**Estimates:** Small remaining effort; ~90% complete. Source comparison and local checks completed; this PR's CI and merge reconciliation remain. Estimated 2026-10-31; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | this PR; [template v2.2.2](https://github.com/voidbrain/project-harness/tree/v2.2.2); [scoped audit](audits/2026-10-31-harness.md) |
+| Opened | 2026-10-31 |
+| Verification | Documentation + tool validation · 2026-10-31 · release source, copied-file parity, rule/ownership review and local validation; reconciliation PR CI · Pending |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
 ## Other changes
 
 Harness ownership clarification ([#273](https://github.com/voidbrain/openbando/pull/273), 2.0.1 source): adopted the merged [template #40](https://github.com/voidbrain/project-harness/pull/40), `9c3abc6`, into BACKLOG-RULES and AGENTS. Ownership review rejects foreign Issue/next-action/closure work, including hidden details; masters use owned fixtures/contracts and never wait for derived implementation, deployment or adoption. This project owns only its own reconciliation. Template release tags remain upstream maintenance, not an active OpenBando task. Estimate policy and the 2.0.0 layout are unchanged.
@@ -741,6 +775,9 @@ Harness template 1.20.1 (2026-10-31, the owner's find; template [#38](https://gi
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
 
 ## Reconciliation history
+
+2026-10-31: reviewed through `84c93de` (#273), with #272/#273 runs/jobs read through the authenticated GitHub connector because `gh` is unavailable here. [#272 CI](https://github.com/voidbrain/openbando/actions/runs/41196898791) and [#273 CI](https://github.com/voidbrain/openbando/actions/runs/41198496665): check, all four browser shards and race-browser green. Existing F-044/F-045 closures remain; no human/device record was advanced. F-046 owns current v2.2.2 adoption and its pending CI.
+
 
 2026-10-31: reviewed through `b8bcc08` (#272). [CI 41196898791](https://github.com/voidbrain/openbando/actions/runs/41196898791): check, all four browser shards and race-browser green; CodeQL green. Tooltip interactions/axe passed. Shard 4 had one showcase-panel test that passed on retry. F-044/F-045 closed and archived; outstanding human checks on other records were not advanced.
 

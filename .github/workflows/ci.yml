@@ -31,6 +31,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Optional integration recommendation metadata
+        run: npm run check:integrations
+
       - name: Build the block catalogue
         run: node tools/build-catalog.mjs
 

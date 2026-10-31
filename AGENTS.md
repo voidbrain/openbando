@@ -17,6 +17,8 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use `NgOptimizedImage` for all static images.
   - `NgOptimizedImage` does not work for inline base64 images.
 
+The convention checker reads the installed workspace version (standalone defaults at v20+, OnPush at v22+). Install locked dependencies before CI checks; a version range alone cannot establish defaults. It complements types, accessibility and browser checks.
+
 ## Accessibility Requirements
 
 - It MUST pass all AXE checks.
@@ -116,6 +118,7 @@ npm run check:i18n                        # every UI text has its Italian
 npm run check:contrast                    # shared text/surface pairs and token consistency
 npm run check:backlog                     # active record layout and lifecycle cues
 npm run check:conventions                 # Angular conventions above, core/ imports, unused exports
+npm run check:integrations                # optional recommendation metadata, not live connections
 ```
 
 - `npm run e2e` (Playwright, also a CI job): every guide step plays alone in a headless browser without errors, and the first visit, the editor with the library and a running guide step pass axe (WCAG 2.1 A / AA). Locate panels by `app-panel[data-id=…]` or by role: component hosts have no box of their own. Software WebGL is slow there: keep the long timeouts. <!-- project -->
@@ -189,6 +192,18 @@ Before changing an area, read its section in [docs/agents/areas.md](docs/agents/
 - Never commit secrets, tokens or personal data. Test data is neutral and invented.
 - Villetta's and Bardwell House's places are private: their coordinates, addresses, map data and survey points are not in the repository. Never add them (tests, tour, tools, docs, commit messages). Hidden bandos never reveal geographic coordinates (see "Sharing and privacy"). <!-- project -->
 
+### Capability assessment
+
+At setup and relevant stack/workflow changes, understand the project and assess existing capabilities and useful gaps. At session start, inspect `.harness.json` for selected integrations and solution context. Existing tools may suffice; assessment does not require installing an integration.
+
+### MCP recommendations
+
+Read [MCP guidance](docs/agents/mcp.md) when configured/relevant. Discover actual host tools before installing duplicates; a recommendation or generated config is not a working connection. Research fresh candidates only when the workflow needs them, following trusted sources and existing authorization. Missing optional connections do not block independent work.
+
+### Solution context
+
+Read available [solution context](docs/agents/solution-profile.md) when configured/relevant; missing coordinator access does not block independent component work. A solution coordinator owns contracts, compatibility and integration acceptance in its own backlog; components own implementation and their independent acceptance. Link records using repository-qualified IDs and derive dashboards from source ledgers without copying editable statuses or averaging completion. A reusable master never waits for downstream adoption. Only the coordinator writes its dashboard; source revisions, unavailable inputs and dirty snapshots remain explicit.
+
 ## Work tracking
 
 - Keep single responsibility and dependency inversion across repository boundaries: reusable masters define contracts; derived projects supply their adapters/configuration. A master never depends on derived implementation, deployment or adoption for its release or acceptance. Each backlog owns only its repository’s work; reject foreign next actions and closure conditions (BACKLOG-RULES, Ownership rejection and dependency direction).
@@ -199,10 +214,14 @@ Before changing an area, read its section in [docs/agents/areas.md](docs/agents/
 - the newest audit in `docs/audits/` is older than `freshness.auditDays` in `.harness.json` (7 by default): audit what changed since (docs, tests, guides and clips, design system, accessibility, privacy such as GPS metadata in images, and what the outputs rely on outside the repository: dependency upgrades, the CI browser and machine, external services and data, the `outside` list of `.harness.json`) and write `docs/audits/<date>.md`; <!-- project -->
 - the harness template has a newer release (`.harness.json` names the one this project is on), or its clone is missing, behind or unreachable: pull it first (`git -C ~/Projects/project-harness pull --ff-only --tags`), reconcile it as `~/Projects/project-harness/APPLY.md` ("Reconciling") says, then move `version` forward. `check-backlog`, `check-freshness`, `check-harness`, `ci-status` and `check-conventions` are copies of the template: never edit them here unless one is listed under `forked`; their settings are in `.harness.json` (`core/` imports, the CI workflow, the Auto-sync log note). A generic improvement goes into the template as a new release. <!-- project -->
 
-CI prints the same as warnings on every PR (it never blocks), so a person reviewing a PR sees it too. <!-- project --> `ci:status` needs a logged-in `gh`; if it is not, say so instead of skipping the step.
+CI prints the same as warnings on every PR (it never blocks), so a person reviewing a PR sees it too. <!-- project --> `ci:status` needs a logged-in `gh`; if unavailable, inspect the same runs/jobs through an authenticated connector/API and name that evidence source. If neither is available, record the missing evidence; never claim the CLI ran.
 
 - [docs/BACKLOG.md](docs/BACKLOG.md) is the source of truth for status; [docs/BACKLOG-RULES.md](docs/BACKLOG-RULES.md) is the procedure (statuses, human-action cues, record layout, CI reconciliation, closure and archives, documentation ownership and the consistency check every PR records). Update the affected records in the same PR as the change, and run `npm run check:backlog`.
 - Keep a confirmed bug, a candidate fix awaiting review, an unimplemented feature and a completed check distinct. A merge is not verification, and a passing unit test is not a verified visual, pointer or device fix. A green CI run establishes the checks it named, not the absence of bugs; keep real-device, pointer/visual and untested tool combinations explicit. Archives (`docs/archive/`: closed backlog records, the old working plan, finished plans) and audits (`docs/audits/`) are dated evidence, not current status; the current audit is the newest file in `docs/audits/`. <!-- project -->
 - A change to a harness file follows "Changing a harness file" above: this project only, every project (the template first), or ask.
 - A plan or promise given to the user (steps, a table to build, a later fix) becomes backlog records in the same change, and the reply names them. Nothing promised lives only in the conversation.
 - Generated guide text changes in `tools/build-guide.mjs` or the tour source, then `node tools/build-guide.mjs`. That is not re-recording: `npm run clips` and `npm run films` are separate browser/media workflows (F-011). <!-- project -->
+
+### Optional shared skills
+
+When a workflow needs an additional skill, read [skill guidance](docs/agents/skills.md). Discover existing capabilities first; review source, dependencies and project-rule compatibility before use. Shared skills are optional entry points and do not replace project rules or grant installation permissions.

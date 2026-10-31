@@ -14,3 +14,7 @@ public/demo/
 # macOS folder metadata
 .DS_Store
 /coverage
+
+# Harness: shared agents/commands are versioned; only client-local state is ignored.
+.claude/settings.local.json
+.claude/worktrees/

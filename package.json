@@ -22,7 +22,9 @@
     "check:backlog": "node tools/check-backlog.mjs",
     "ci:status": "node tools/ci-status.mjs",
     "check:freshness": "node tools/check-freshness.mjs",
-    "check:conventions": "node tools/check-conventions.mjs"
+    "check:conventions": "node tools/check-conventions.mjs",
+    "check:integrations": "node tools/mcp.mjs check",
+    "mcp:recommend": "node tools/mcp.mjs recommend"
   },
   "private": true,
   "packageManager": "npm@11.17.0",
