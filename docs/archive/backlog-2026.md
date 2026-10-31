@@ -1081,3 +1081,101 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 | Reviewed | 2026-10-30 |
 
 </details>
+
+## Closed 2026-10-31
+
+### B-040
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔵 | B-040 | ◻️ P2 | Closed | Dragging the timeline sometimes does not move the video |
+
+💻 **→ Human action required: No**<br />None: closed.
+
+**Next action / closure evidence:** Verified and closed 2026-10-31 on the owner's check on the live site ("b-40 is solved"). A different stuck-video report stays open as B-045. 2026-10-30, the owner (after the first fix): it fails when, after Auto-sync, the timeline is clicked without pressing Play first. In Chromium and WebKit headless the video's time follows those clicks (within 0.04 s), so the time is right and the picture is not: Safari does not redraw a video that never played after a paused seek. Second fix ([#260](https://github.com/voidbrain/openbando/pull/260)): a newly loaded video is started once, muted, and paused again where the replay is (`VideoService.prime`; invisible, the replay reads the video's clock only while playing); a unit test checks it starts once per video and ends paused at the replay's time; the video e2e (timeline drags, the showcase, the Fly checklist) pass. History: Candidate fix 2026-10-30 ([#257](https://github.com/voidbrain/openbando/pull/257)). The owner's details: the Timeline chart, paused, the old frame stays, mid-video; only a seek to the start and Play unstuck it. Not reproduced in Chromium or WebKit headless (the video followed every drag within 0.1 s). Likely cause: the browser dropped a seek after fast drags; the video then reported the target time while showing the old frame, and both guards (`currentTime` already at the target in the timeline seek; the target unchanged in the frame sync) skipped asking again. Now every app seek goes through `seekVideo`, pending until `seeked`; while paused a seek pending for over a second is issued again, and the timeline seek no longer trusts `currentTime` while one is pending. `services.spec.ts` fakes a stalled seek (fails without the fix); `timeline-video.e2e.ts` checks drags keep the video in step with the real demo files. History: Reported 2026-10-30 by the owner, replaying the Villetta demo flight with its video (Auto-sync offset −0.69 s). A related case was fixed before: a timeline click undone while the video played (the seek-with-a-playing-video case in `services.spec.ts`). To check: a drag (many seeks in a row) while playing and while paused, at the speeds used (0.25×), and a drag that ends where the video is still seeking.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | Report 2026-10-30 |
+| Opened | 2026-10-30 |
+| Verification | Unit · 2026-10-30 · the stalled-seek case passes (fails without the fix); Browser · 2026-10-30 · `timeline-video.e2e.ts` passed locally; the real stall not reproduced, owner's check · Pending; Human · 2026-10-31 · the owner: solved |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
+### F-023
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔵 | F-023 | ◻️ P3 | Closed | Bardwell House example, place hidden |
+
+💻 **→ Human action required: No**<br />None: closed.
+
+**Next action / closure evidence:** Verified and closed 2026-10-31 on the owner's check on the live site ("F-023 seems fine"). Requested 2026-10-29 with the generated bando (private coordinates, never committed), two top views and two oblique photos. Decided with the user: a gambrel roof kind (F-022), the map's "concrete" over the west fields dropped, the real ground baked in. The input is the app's own place-hidden export (`tools/examples/data/bardwell-house.hidden.json`: embedded relative heights, origin 0, 0, no coordinates, terrain key or map names, checked before commit); `npm run examples` builds `library/bandos/bardwell-house-no-place.json` with the refinements measured on the photos (≈ 8 cm a pixel, scaled on the generated house and barn; the store's place agrees within ~2 m between the two top views): gambrel house and flat-roofed wing, gambrel barn, store, three sheds, patio and stepped brick wall, the drive's wooden fence, a camper and a car; duplicate trees removed. The FPV simulators' models of the place are game assets and were not used. Covered by `examples.spec.ts` (listed, hidden, origin 0, 0, no coordinates or names, embedded ground, gambrel roofs, store and sheds, no map surface over the fields). AGENTS' privacy rule names the place as private. Not checked: shapes and heights against the real place beyond the photos (porch, dormers, the wing's exact depth are estimates). Release 2 (user review 2026-10-29, with two more photos): the house turned a quarter (gambrel ends east and west, the flat-roofed wing south), the second drive from the lane to the front of the house under three big trees, the take-off pad in front of the house, the hedge along the south side and the south end of the east side, roads and trees cut to the area of the real heights (the map's roads ran hundreds of metres out) and the grass around ending 5 m past it; trees on a road removed. Release 3 ([#217](https://github.com/voidbrain/openbando/pull/217)): the drive's fence is the white post-and-rail fence (F-027). Release 4 ([#218](https://github.com/voidbrain/openbando/pull/218), user report with a screenshot): the dark wall flickered behind the windows of the house and its wing: the wing's north wall and the main block's south wall stood in one place (z-fighting); the wing has no north wall now (B-035 tracks the general case).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#209](https://github.com/voidbrain/openbando/pull/209) (all CI jobs green), after [#206](https://github.com/voidbrain/openbando/pull/206) (the gambrel roof); [#214](https://github.com/voidbrain/openbando/pull/214) release 2 (all CI jobs green); request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Unit/visual · 2026-10-29 · `examples.spec.ts` passed locally; 2D plan compared with the top views and a 3D view reviewed by the agent; pilot's comparison · Pending; Human · 2026-10-31 · the owner: the model matches |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
+### F-027
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔵 | F-027 | ◻️ P3 | Closed | Post-and-rail fence (white, three planks) |
+
+💻 **→ Human action required: No**<br />None: closed.
+
+**Next action / closure evidence:** Verified and closed 2026-10-31 on the owner's check on the live site ("F-027 ok": the post-and-rail fence looks right). Drawing a fence only by dragging is B-043. Requested 2026-10-29 for the library (Bardwell House has one). New fence material `rail`: posts every 2.4 m, three planks (`RAIL_PLANKS`) nailed to their face with open gaps between them, white by default, each plank following the ground; solid for the drone like the other fences. Material menu entry with its own icon and Italian. Covered by `site-model.spec.ts` (6 posts and 3 planks on a 12 m fence, solid). Bardwell House's drive fence is `rail` ([#217](https://github.com/voidbrain/openbando/pull/217), release 3 of the example).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#215](https://github.com/voidbrain/openbando/pull/215) (all CI jobs green); request 2026-10-29 |
+| Opened | 2026-10-29 |
+| Verification | Unit · 2026-10-29 · rail case passed; 3D screenshot reviewed; live-site look · Pending; Human · 2026-10-31 · the owner: looks right |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
+### B-042
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔵 | B-042 | ◻️ P2 | Closed | During the showcase, a panel the pilot opened from Views was closed again by its next step |
+
+💻 **→ Human action required: No**<br />None: closed.
+
+**Next action / closure evidence:** Verified and closed 2026-10-31: [#267](https://github.com/voidbrain/openbando/pull/267) merged with every CI job green ([run 41137304890](https://github.com/voidbrain/openbando/actions/runs/41137304890)), the showcase e2e included; #264 and #266 then passed with it. Found 2026-10-30 when the B-039 showcase e2e failed twice on #264 (a docs-only PR): the pilot opened Bandos from Views during the showcase replay; the showcase's next step rearranged the panels, closing Bandos (and once covering Views with the video panel), so the example to open was hidden. Decided by the owner 2026-10-30: a pilot's own click in Views stops the showcase. A real click on a panel toggle in Views now ends a playing guide or showcase through `leaveForNavigation()` (as opening a bando does: replay stopped, the pilot keeps the layout), then shows or hides the panel. The showcase e2e now checks that: the caption bar goes, the replay stays paused, the Bandos panel stays open, and an example then opens (passed 3 times locally). Area note added (Welcome and showcase sequencing). What follows (impact map): no clip, film or guide step changes (the guide's own clicks are not trusted, so they never end it), the element map is unchanged, no new text.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#267](https://github.com/voidbrain/openbando/pull/267); found on [#264](https://github.com/voidbrain/openbando/pull/264)'s CI (e2e (4), both attempts) |
+| Opened | 2026-10-30 |
+| Verification | Browser · 2026-10-30 · showcase e2e (Views click during the replay) passed 3 times locally; Browser · 2026-10-31 · [#267 CI](https://github.com/voidbrain/openbando/actions/runs/41137304890) passed |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
