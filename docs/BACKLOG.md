@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 31 October 2026 against main `5fee126` (merged #266), with every CI job of #162–#267 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 31 October 2026 against main `73cb194` (merged #268), with every CI job of #162–#268 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -325,9 +325,6 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
-User-accepted fixes are preserved in the dated archives rather than repeated here. New findings reuse an existing ID when they concern the same behavior.
-
-
 ### F-021
 
 | Signal | ID | Priority | Status | Item |
@@ -612,5 +609,7 @@ Villetta release 13 (2026-10-30, the owner): the greenhouse crown is 11.2 m (rat
 The "Map north" panel removed (2026-10-30, the owner: the compass widget is on the main view and in the editor's 3D view): the panel, its drawing (`core/drawing/compass.ts`, its `cameraUpAngle` moved to `camera-compass.ts`) and its test go; old saved layouts drop it. What follows, by the impact map: Views lists panels from `PANELS` (gone there); no guide step, README line or clip source names it (guide pages and element map unchanged); the clips that show the Views list show its old row until they are re-recorded (F-031); coverage table refreshed (code removed).
 
 Harness template 1.20.0 (2026-10-30, decided with the owner: records closed on 29 and 30 October had been appended to the 28 October archive; template [#37](https://github.com/voidbrain/project-harness/pull/37)): one archive per year. The 27 and 28 October files moved into [backlog-2026.md](archive/backlog-2026.md): the earlier tables under a heading of their own, every record under its closing day (5 on 28, 11 on 29, 27 on 30 October), nothing dropped (`check:backlog` counts every published line across the archives). `check-backlog` copied, BACKLOG-RULES archive paragraph reconciled, `version` 1.20.0.
+
+Harness template 1.20.1 (2026-10-31, the owner's find; template [#38](https://github.com/voidbrain/project-harness/pull/38)): a loose paragraph between F-009 and F-021, left from the old table layout (the note under the bugs table, 28 October), was the only place of the rule "a new finding about the same behaviour goes into its record"; next to "never reuse an ID" it read as a contradiction. The rule is now in BACKLOG-RULES beside the ID rule, the paragraph is gone, `version` 1.20.1.
 
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
