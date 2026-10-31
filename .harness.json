@@ -3,7 +3,7 @@
     "path": "~/Projects/project-harness",
     "repo": "https://github.com/voidbrain/project-harness"
   },
-  "version": "1.20.1",
+  "version": "2.0.0",
   "stacks": [
     "core",
     "angular"
@@ -54,7 +54,7 @@
       ]
     ]
   },
-  "note": "OpenBando is the reference implementation the template was extracted from (1.0.0); stamped at 1.1.1 on 2026-10-29.",
+  "note": "OpenBando is the reference implementation the template was extracted from (1.0.0); stamped at 1.1.1 on 2026-10-29. 2.0.0 applied at the owner\u2019s explicit request from merged project-harness#39 (da681770b0bc2ba34b911d6ed57d63fe10bdf049); upstream release tag pending.",
   "impact": [
     {
       "id": "lockfile",
@@ -304,7 +304,7 @@
         },
         {
           "file": "e2e/showcase.e2e.ts",
-          "what": "-0.69 ± 0.15"
+          "what": "-0.69 \u00b1 0.15"
         }
       ],
       "kept": "the showcase test (a real Auto-sync scan finds the same offset)"
@@ -357,7 +357,7 @@
         },
         {
           "file": "src/app/ui/studio/bando-editor.html",
-          "what": "Roof → shape options"
+          "what": "Roof \u2192 shape options"
         }
       ],
       "kept": "one source: ROOF_KINDS types the spec and the AI command and feeds AI_SCHEMA and the editor menu; ai-commands.spec.ts checks the schema, set_roof and the prompt prose (F-037)"

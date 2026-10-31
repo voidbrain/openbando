@@ -256,3 +256,5 @@ The **Fly checklist** walks the pilot through one of three routes: replay a reco
 The tour caption shows a circular remaining-time indicator. Welcome uses one rendered mascot loop with card films fitted across its thirds; it holds the final pose instead of beginning another search/run/sit before closing. Other guides show estimated timing, held while paused.
 
 Welcome links stop the running tour and clear its overlays before opening their destination; Stop still returns to Welcome. Tour outlines follow resized/moved targets. Views promotes Flights, Timeline, Video and the Bandos editor, with other groups folded by default and camera Options closed. Camera controls are shown for the 3D main page. Existing fold preferences are preserved.
+
+Bandos → Examples shows each description from the info control beside its title (hover, keyboard focus or tap).

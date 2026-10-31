@@ -17,7 +17,6 @@ let stamp = {};
 try { stamp = JSON.parse(readFileSync(new URL('../.harness.json', import.meta.url), 'utf8')); } catch { /* no stamp: defaults */ }
 const branch = stamp.defaultBranch ?? git('symbolic-ref', '--short', 'refs/remotes/origin/HEAD')?.trim().replace(/^origin\//, '') ?? 'main';
 const mainText = git('show', `origin/${branch}:docs/BACKLOG.md`) ?? '';
-const onMain = new Set([...mainText.matchAll(/^### [BF]-\d+\n[\s\S]*?^---\n/gm)].map(m => m[0]));
 // docs/BACKLOG-RULES.md is the procedure this enforces; an empty ledger is valid.
 const headings = [...text.matchAll(/^### ([BF]-\d+)$/gm)];
 const ids = new Set();
@@ -26,32 +25,33 @@ for (let i = 0; i < headings.length; i++) {
   const id = headings[i][1];
   assert(!ids.has(id), `Duplicate ${id}`); ids.add(id);
   const block = text.slice(headings[i].index, headings[i + 1]?.index ?? text.length);
-  const row = block.split('\n').find(line => line.startsWith('|') && cells(line)[1] === id);
+  const row = block.split('\n').find(line => line.startsWith('|') && Object.values(cues).includes(cells(line)[0]));
   assert(row, `${id}: missing summary`);
-  const [signal, summaryId, priority, status, item] = cells(row);
+  const [signal, priority, status, effort, complete] = cells(row);
   assert.equal(cells(row).length, 5, `${id}: summary needs five columns`);
-  assert.equal(summaryId, id); assert(item, `${id}: missing title`);
+  assert(/^\*\*[^\n]+\*\*$/m.test(block.slice(0, block.indexOf('|'))), `${id}: missing visible bold title`);
+  assert(['🟢 Small', '🟡 Medium', '🔴 Large'].includes(effort), `${id}: effort needs colour and word`);
+  assert(/^~(?:0|[1-9]0|100)%$/.test(complete), `${id}: completion needs ~N% in steps of 10`);
+  assert(complete !== '~100%' || ['Verified', 'Closed'].includes(status), `${id}: pending acceptance prevents 100%`);
   assert.equal(signal, cues[status], `${id}: status cue mismatch`);
   const level = priority.match(/P([123])$/)?.[1];
   assert(level, `${id}: missing priority`);
   const marker = ['Closed', 'Blocked'].includes(status) ? '◻️' : {1: '🔺', 2: '🔶', 3: '🔹'}[level];
   assert.equal(priority, `${marker} P${level}`, `${id}: priority cue mismatch`);
-  assert.equal((block.match(/^\*\*Next action \/ closure evidence:\*\* .+/gm) ?? []).length, 1, `${id}: next action must be visible exactly once`);
+  assert.equal((block.match(/^\*\*Next action \/ closure evidence:\*\* .+/gm) ?? []).length, 1, `${id}: next action must occur exactly once`);
   const human = [...block.matchAll(/^(🧑|💻) \*\*→ Human action required: (Yes|No)\*\*<br \/>.+/gm)];
   assert.equal(human.length, 1, `${id}: missing visible human action/cue`);
   assert.equal(human[0][1], human[0][2] === 'Yes' ? '🧑' : '💻', `${id}: human-action cue mismatch`);
-  // a record waiting for a person says, right under its human-action line, what the issue is, how to get to it and
-  // what to check or decide (BACKLOG-RULES). Required on records this branch adds or changes; older ones as touched.
-  const whole = text.slice(headings[i].index).match(/^### [BF]-\d+\n[\s\S]*?^---\n/m)?.[0];
-  if (human[0][2] === 'Yes' && !onMain.has(whole)) {
-    const after = block.slice(block.indexOf(human[0][0]) + human[0][0].length).split('\n').slice(1, 7);
-    const rows = after.slice(3).map(cells);
-    assert(after[0] === '' && after[1] === '| | |' && after[2] === '|---|---|' && ['**Issue**', '**Reproduce**', '**Check**'].every((k, r) => rows[r]?.[0] === k && rows[r]?.[1]),
-      `${id}: a record waiting for a person needs, under its human-action line, the table | **Issue** | … |, | **Reproduce** | … |, | **Check** | … | (BACKLOG-RULES)`);
-  }
+  const after = block.slice(block.indexOf(human[0][0]) + human[0][0].length).split('\n').slice(1, 7);
+  const rows = after.slice(3).map(cells);
+  assert(after[0] === '' && after[1] === '| | |' && after[2] === '|---|---|' && ['**Issue**', '**Reproduce**', '**Check**'].every((k, r) => rows[r]?.[0] === k && rows[r]?.[1]),
+    `${id}: every record needs the visible Issue / Reproduce / Check table`);
   const detail = block.match(/<details>\s*<summary>[^<]+<\/summary>([\s\S]*?)<\/details>/);
   assert(detail, `${id}: missing/broken metadata details`);
-  assert(block.indexOf('**Next action') < block.indexOf('<details>'), `${id}: next action hidden in details`);
+  assert(block.indexOf('**Next action') > block.indexOf('<details>') && block.indexOf('**Next action') < block.indexOf('</details>'), `${id}: next action must be inside details`);
+  assert(/\*\*Estimates:\*\* .+/.test(detail[1]), `${id}: explain effort and completion estimates in details`);
+  const visible = block.slice(0, block.indexOf('<details>'));
+  assert(['**Issue**', '**Reproduce**', '**Check**'].every(k => visible.includes(k)), `${id}: recap must stay visible`);
   assert(block.indexOf('**→ Human action') < block.indexOf('<details>'), `${id}: human action hidden in details`);
   assert(block.indexOf('**→ Human action') < block.indexOf('**Next action'), `${id}: human action must precede next action`);
   assert(/<\/details>\n\n---\n/.test(block), `${id}: end the record with a --- line after its details`);
@@ -107,4 +107,4 @@ if (prNumber) {
   const added = text.split('\n').filter(line => placeholder.test(line) && !mainBacklog.has(line));
   assert(!added.length, `docs/BACKLOG.md: ${added.length} line(s) this branch adds say "this PR": write #${prNumber} instead (BACKLOG-RULES, Review procedure 7). First: "${added[0]?.slice(0, 100)}"`);
 }
-console.log(`${ids.size} backlog records passed: summary, visible actions, metadata, dates, cues and table widths${published.length ? `; the archives keep every line their ${published.length} file(s) have on ${branch}` : ''}.`);
+console.log(`${ids.size} backlog records passed: signal, estimates, visible recap, collapsed actions, metadata, dates, cues and table widths${published.length ? `; the archives keep every line their ${published.length} file(s) have on ${branch}` : ''}.`);

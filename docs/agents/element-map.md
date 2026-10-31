@@ -4,7 +4,7 @@
 
 The element-level part of the impact map ([impact-map.md](impact-map.md), from the harness, lists what must follow a change). Every control the templates show, with its label, its `data-tour` mark, the guide steps that show it as a tip on hover and the guide steps whose clips use it (F-032). Generated; CI fails when this page differs from the code.
 
-**409 controls** · 9 with a tip on hover · 119 with a title · 18 shown in a clip · 32 whose name the script cannot read (a bound expression; axe checks the real names)
+**410 controls** · 9 with a tip on hover · 120 with a title · 18 shown in a clip · 32 whose name the script cannot read (a bound expression; axe checks the real names)
 
 ## Tips per file
 
@@ -18,7 +18,7 @@ What the panels' "?" (tips on hover) covers: a guide step's tip, the browser's o
 | src/app/ui/studio/assistant-box.ts | 17 | 0 | 4 | 13 |
 | src/app/ui/studio/blocks-box.ts | 20 | 0 | 7 | 13 |
 | src/app/ui/panels/video-panel.ts | 17 | 1 | 4 | 12 |
-| src/app/ui/studio/studio-panel.ts | 19 | 1 | 7 | 11 |
+| src/app/ui/studio/studio-panel.ts | 20 | 1 | 8 | 11 |
 | src/app/ui/panels/render-panel.ts | 8 | 0 | 0 | 8 |
 | src/app/ui/panels/radio-panel.ts | 7 | 0 | 0 | 7 |
 | src/app/ui/panels/timeline-panel.ts | 10 | 0 | 3 | 7 |
@@ -39,7 +39,7 @@ What the panels' "?" (tips on hover) covers: a guide step's tip, the browser's o
 | src/app/ui/studio/element-preview.ts | 4 | 0 | 4 | 0 |
 | src/app/ui/studio/pick-menu.ts | 1 | 0 | 1 | 0 |
 | src/app/ui/widgets/camera-compass.ts | 1 | 0 | 1 | 0 |
-| **all** | 409 | 9 | 119 | 285 |
+| **all** | 410 | 9 | 120 | 285 |
 
 ### src/app/ui/float-box.ts
 
@@ -543,6 +543,7 @@ What the panels' "?" (tips on hover) covers: a guide step's tip, the browser's o
 |---|---|---|---|---|---|
 | ← Bandos | button |  |  |  |  |
 | ＋ New bando | button | new-bando |  | place | place |
+| About this bando | button |  | yes |  |  |
 | Add a copy of  | button | example-* | yes |  | sc-bando |
 | Back up all | button |  |  |  |  |
 | Bando name | input |  |  |  |  |

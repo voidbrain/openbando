@@ -89,10 +89,24 @@ import { BandoEditor } from './bando-editor';
           @for (e of examples.list(); track e.file) {
             <div class="card ex">
               <div class="title static">
-                <b>{{ e.name }}</b>
+                <span class="example-name">
+                  <b>{{ e.name }}</b>
+                  @if (e.about) {
+                    <span class="example-info" (mouseenter)="exampleInfo.set(e.file)" (mouseleave)="exampleInfo.set(null)">
+                      <button class="btn info" aria-label="About this bando" title="About this bando"
+                        [attr.aria-describedby]="'example-info-' + e.file"
+                        [attr.aria-expanded]="exampleInfo() === e.file"
+                        (focus)="exampleInfo.set(e.file)"
+                        (click)="exampleInfo.set(e.file)"
+                        (blur)="exampleInfo.set(null)"
+                        (keydown.escape)="exampleInfo.set(null); $event.stopPropagation()">i</button>
+                      <span class="example-tooltip small" role="tooltip" [id]="'example-info-' + e.file"
+                        [class.shown]="exampleInfo() === e.file">{{ e.about }}</span>
+                    </span>
+                  }
+                </span>
                 <span class="dim small mono">{{ e.buildings }} buildings · {{ e.privacy === 'hidden' ? 'place hidden' : e.origin.lat.toFixed(4) + ', ' + e.origin.lon.toFixed(4) }}</span>
               </div>
-              @if (e.about) { <div class="dim small about">{{ e.about }}</div> }
               <div class="acts">
                 <button class="btn" (click)="openExample($event, e)" [attr.data-tour]="'example-' + e.file.replace('bandos/', '').replace('.json', '')" [disabled]="opening() === e.file" [title]="'Add a copy of ' + e.name + ' to your bandos and open it'">{{ opening() === e.file ? 'Opening…' : 'Open a copy' }}</button>
               </div>
@@ -185,8 +199,46 @@ import { BandoEditor } from './bando-editor';
     .title.static {
       cursor: default;
     }
-    .about {
-      padding: 0 0 6px;
+    .example-name {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+    .example-info {
+      display: inline-flex;
+    }
+    .card.ex {
+      position: relative;
+    }
+    .info {
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      font-family: var(--mono);
+      color: var(--dim);
+    }
+    .info:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .example-tooltip {
+      display: none;
+      position: absolute;
+      top: 28px;
+      left: var(--space-8);
+      right: var(--space-8);
+      z-index: 1;
+      padding: var(--space-8);
+      color: var(--text);
+      background: var(--panel-solid);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-control);
+      box-shadow: var(--shadow-box);
+      font-weight: normal;
+    }
+    .example-tooltip.shown {
+      display: block;
     }
     .empty {
       padding: 18px 8px;
@@ -195,6 +247,7 @@ import { BandoEditor } from './bando-editor';
   `,
 })
 export class StudioPanel {
+  protected readonly exampleInfo = signal<string | null>(null);
   protected readonly studio = inject(StudioService);
   protected readonly site = inject(SiteService);
   private readonly placer = inject(PanelPlacer);
