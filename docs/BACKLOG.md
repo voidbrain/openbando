@@ -167,7 +167,7 @@ Current work ledger, reviewed 31 October 2026 against main `3f7b844`. [Rules](BA
 
 | Field | Value |
 |---|---|
-| PR / evidence | Full audit fix; this PR; [#259](https://github.com/voidbrain/openbando/pull/259); report 2026-10-30 |
+| PR / evidence | Full audit fix; [#276](https://github.com/voidbrain/openbando/pull/276); [#259](https://github.com/voidbrain/openbando/pull/259); report 2026-10-30 |
 | Opened | 2026-10-30 |
 | Verification | Unit/static · 2026-10-31 · full suite/build pass; new browser mode-transition assertion · Pending |
 | Reviewed | 2026-10-31 |
@@ -201,7 +201,7 @@ Current work ledger, reviewed 31 October 2026 against main `3f7b844`. [Rules](BA
 
 | Field | Value |
 |---|---|
-| PR / evidence | Full audit fix; this PR; [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 |
+| PR / evidence | Full audit fix; [#276](https://github.com/voidbrain/openbando/pull/276); [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 |
 | Opened | 2026-10-31 |
 | Verification | Unit/integration · 2026-10-31 · camera regression and full 602-test suite pass; current browser/security CI · Pending |
 | Reviewed | 2026-10-31 |
@@ -271,7 +271,7 @@ Current work ledger, reviewed 31 October 2026 against main `3f7b844`. [Rules](BA
 
 | Field | Value |
 |---|---|
-| PR / evidence | this PR; [Full audit](audits/2026-10-31-full-openbando.md) |
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
 | Opened | 2026-10-31 |
 | Verification | Unit/integration · 2026-10-31 · original fails 0 versus 12.5; regression and full suite pass; browser/security CI · Pending |
 | Reviewed | 2026-10-31 |
@@ -305,7 +305,7 @@ Current work ledger, reviewed 31 October 2026 against main `3f7b844`. [Rules](BA
 
 | Field | Value |
 |---|---|
-| PR / evidence | this PR; [Full audit](audits/2026-10-31-full-openbando.md) |
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
 | Opened | 2026-10-31 |
 | Verification | Unit/integration · 2026-10-31 · quota regression fails before fix; quota retry and IDB commit/error/abort checks pass; full suite passes; CI · Pending |
 | Reviewed | 2026-10-31 |
@@ -339,7 +339,7 @@ Current work ledger, reviewed 31 October 2026 against main `3f7b844`. [Rules](BA
 
 | Field | Value |
 |---|---|
-| PR / evidence | this PR; [Full audit](audits/2026-10-31-full-openbando.md) |
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
 | Opened | 2026-10-31 |
 | Verification | Dependency audit · 2026-10-31 · baseline 2 affected package entries/6 advisories; patched lockfile npm audit zero, clean npm ci and build pass; browser/security CI · Pending |
 | Reviewed | 2026-10-31 |
@@ -373,7 +373,7 @@ Current work ledger, reviewed 31 October 2026 against main `3f7b844`. [Rules](BA
 
 | Field | Value |
 |---|---|
-| PR / evidence | this PR; [Full audit](audits/2026-10-31-full-openbando.md) |
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
 | Opened | 2026-10-31 |
 | Verification | Source review · 2026-10-31 · async boundary identified; reproduction and fix not established |
 | Reviewed | 2026-10-31 |
@@ -407,7 +407,7 @@ Current work ledger, reviewed 31 October 2026 against main `3f7b844`. [Rules](BA
 
 | Field | Value |
 |---|---|
-| PR / evidence | this PR; [Full audit](audits/2026-10-31-full-openbando.md) |
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
 | Opened | 2026-10-31 |
 | Verification | Source review · 2026-10-31 · async boundary identified; reproduction and fix not established |
 | Reviewed | 2026-10-31 |
@@ -892,7 +892,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 | Field | Value |
 |---|---|
-| PR / evidence | this PR; [Full audit](audits/2026-10-31-full-openbando.md); [#275](https://github.com/voidbrain/openbando/pull/275); [Scoped adoption review](audits/2026-10-31-harness-v3.1.1.md); [audit procedure](agents/audit.md) |
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md); [#275](https://github.com/voidbrain/openbando/pull/275); [Scoped adoption review](audits/2026-10-31-harness-v3.1.1.md); [audit procedure](agents/audit.md) |
 | Opened | 2026-10-31 |
 | Verification | Documentation/source review · 2026-10-31 · all eight areas reviewed, 602 tests/build/types pass; current browser/security CI · Pending |
 | Reviewed | 2026-10-31 |
