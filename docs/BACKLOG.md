@@ -36,7 +36,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Report 2026-10-31 |
+| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 |
 | Opened | 2026-10-31 |
 | Verification | Pending |
 | Reviewed | 2026-10-31 |
@@ -60,7 +60,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Report 2026-10-31 |
+| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 |
 | Opened | 2026-10-31 |
 | Verification | Pending |
 | Reviewed | 2026-10-31 |
@@ -84,7 +84,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Report 2026-10-31 (and 2026-10-30) |
+| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 (and 2026-10-30) |
 | Opened | 2026-10-31 |
 | Verification | Pending |
 | Reviewed | 2026-10-31 |
@@ -256,7 +256,7 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Request 2026-10-31 |
+| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Request 2026-10-31 |
 | Opened | 2026-10-31 |
 | Verification | Pending |
 | Reviewed | 2026-10-31 |
