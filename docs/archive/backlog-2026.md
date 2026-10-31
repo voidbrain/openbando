@@ -1179,3 +1179,27 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 </details>
 
 ---
+
+### B-046
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔵 | B-046 | ◻️ P3 | Closed | The version badge's number ignored the pointer: no commit on hover, no selecting it |
+
+💻 **→ Human action required: No**<br />None: closed.
+
+**Next action / closure evidence:** Verified and closed 2026-10-31: [#269](https://github.com/voidbrain/openbando/pull/269) merged with every CI job green ([run 41151599966](https://github.com/voidbrain/openbando/actions/runs/41151599966)), the badge e2e included. Reported 2026-10-31 by the owner: hovering "v1.280" shows no commit and the text cannot be selected; the inspector shows the main 3D canvas under the pointer. Cause: the badge row has `pointer-events: none` (so its corner does not block the view) and only the flag and Views buttons turned them back on; the design guideline even said "No pointer events" for the number, against its own "the commit sha is its `title`". Now the number takes the pointer and its text is selectable; the guideline says so, and says where the number comes from (the deploy workflow writes `src/app/version.ts`: `1.` + its run number, and the short sha). `a11y.e2e.ts` checks the element under the number's centre is the number (fails without the fix: the canvas).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#269](https://github.com/voidbrain/openbando/pull/269); report 2026-10-31 |
+| Opened | 2026-10-31 |
+| Verification | Browser · 2026-10-31 · the badge e2e passes, and fails without the fix; [#269 CI](https://github.com/voidbrain/openbando/actions/runs/41151599966) passed |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
