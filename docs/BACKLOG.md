@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Current work ledger, reviewed 30 October 2026 against main `13e8341` (merged #263), with every CI job of #162–#263 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
+Current work ledger, reviewed 31 October 2026 against main `5fee126` (merged #266), with every CI job of #162–#267 read (`npm run ci:status`). #154–#158 had merged with failing browser shards; their causes were fixed by #159 (Reset UI, countdown pause) and #162/#168 (Auto-sync, B-025). Closed items and their PR history are in [the archive](archive/backlog-2026.md). The [follow-up audit](audits/2026-10-28.md) records current CI evidence and documentation gaps; the [original audit](audits/2026-10-27.md) preserves its historical findings; the [archived working plan](archive/working-plan/working-plan-2026-10-27.md) preserves earlier requirements, survey measurements and decisions. IDs are stable: do not reuse them.
 
 ## How to use this file
 
@@ -21,24 +21,48 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ## Bugs and reliability
 
-### B-046
+### B-044
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟡 | B-046 | 🔹 P3 | Implemented | The version badge's number ignored the pointer: no commit on hover, no selecting it |
+| 🔴 | B-044 | 🔶 P2 | Open | Obstacles stop the 3D camera; it should pass through them, only the ground stops it |
 
-💻 **→ Human action required: No**<br />Close on #269's green CI (the e2e checks the number is under the pointer).
+💻 **→ Human action required: No**<br />Next: find where the 3D camera collides with buildings and obstacles and limit it to the ground.
 
-**Next action / closure evidence:** Reported 2026-10-31 by the owner: hovering "v1.280" shows no commit and the text cannot be selected; the inspector shows the main 3D canvas under the pointer. Cause: the badge row has `pointer-events: none` (so its corner does not block the view) and only the flag and Views buttons turned them back on; the design guideline even said "No pointer events" for the number, against its own "the commit sha is its `title`". Now the number takes the pointer and its text is selectable; the guideline says so, and says where the number comes from (the deploy workflow writes `src/app/version.ts`: `1.` + its run number, and the short sha). `a11y.e2e.ts` checks the element under the number's centre is the number (fails without the fix: the canvas).
+**Next action / closure evidence:** The owner 2026-10-31: obstacles should not stop the camera but let it pass through; the ground can stop it. Next: find which views clamp the camera against the model (orbit in the main 3D view, the editor's 3D view), keep only the ground limit, and cover it with a unit case on the camera rig; ask the owner which view if both behave correctly.
 
 <details>
 <summary>PR history, dates and verification</summary>
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#269](https://github.com/voidbrain/openbando/pull/269); report 2026-10-31 |
+| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 |
 | Opened | 2026-10-31 |
-| Verification | Browser · 2026-10-31 · the badge e2e passes, and fails without the fix |
+| Verification | Pending |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
+### B-045
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟠 | B-045 | 🔶 P2 | Investigate | After a timeline click the video can stay stuck on an old frame |
+
+💻 **→ Human action required: No**<br />Next: reproduce the stuck video after a timeline click (Safari and Chromium) and find the cause.
+
+**Next action / closure evidence:** The owner 2026-10-31: "there still is the timeline click-video-stuck problem; don't know if Safari, needs investigation" (B-040, the Safari repaint after Auto-sync, is solved). Earlier report 2026-10-30: Timeline panel, paused, an old frame in the middle of the video; to unlock it, ⏮ back to the first frame and Play, then the video follows again. Next: a browser case that clicks the timeline repeatedly while paused and playing and checks the video's time and that a new frame was presented (`requestVideoFrameCallback`), in Chromium and WebKit; then the fix.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 (and 2026-10-30) |
+| Opened | 2026-10-31 |
+| Verification | Pending |
 | Reviewed | 2026-10-31 |
 
 </details>
@@ -165,75 +189,17 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 ---
 
-### B-040
 
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-040 | 🔶 P2 | Implemented | Dragging the timeline sometimes does not move the video |
-
-🧑 **→ Human action required: Yes**<br />After Auto-sync, click the timeline without pressing Play, in Safari on the live site (since #260).
-
-| | |
-|---|---|
-| **Issue** | After Auto-sync, timeline clicks before any Play left the video's picture where it was (the owner, 2026-10-30); fast drags could too. |
-| **Reproduce** | Live site, Safari: load the Villetta demo flight and its video, Auto-sync, then click the Timeline chart in a few places without pressing Play; also drag it fast. |
-| **Check** | The video's picture moves to every place you click or drag to, from the first click. |
-
-**Next action / closure evidence:** 2026-10-30, the owner (after the first fix): it fails when, after Auto-sync, the timeline is clicked without pressing Play first. In Chromium and WebKit headless the video's time follows those clicks (within 0.04 s), so the time is right and the picture is not: Safari does not redraw a video that never played after a paused seek. Second fix ([#260](https://github.com/voidbrain/openbando/pull/260)): a newly loaded video is started once, muted, and paused again where the replay is (`VideoService.prime`; invisible, the replay reads the video's clock only while playing); a unit test checks it starts once per video and ends paused at the replay's time; the video e2e (timeline drags, the showcase, the Fly checklist) pass. History: Candidate fix 2026-10-30 ([#257](https://github.com/voidbrain/openbando/pull/257)). The owner's details: the Timeline chart, paused, the old frame stays, mid-video; only a seek to the start and Play unstuck it. Not reproduced in Chromium or WebKit headless (the video followed every drag within 0.1 s). Likely cause: the browser dropped a seek after fast drags; the video then reported the target time while showing the old frame, and both guards (`currentTime` already at the target in the timeline seek; the target unchanged in the frame sync) skipped asking again. Now every app seek goes through `seekVideo`, pending until `seeked`; while paused a seek pending for over a second is issued again, and the timeline seek no longer trusts `currentTime` while one is pending. `services.spec.ts` fakes a stalled seek (fails without the fix); `timeline-video.e2e.ts` checks drags keep the video in step with the real demo files. History: Reported 2026-10-30 by the owner, replaying the Villetta demo flight with its video (Auto-sync offset −0.69 s). A related case was fixed before: a timeline click undone while the video played (the seek-with-a-playing-video case in `services.spec.ts`). To check: a drag (many seeks in a row) while playing and while paused, at the speeds used (0.25×), and a drag that ends where the video is still seeking.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | Report 2026-10-30 |
-| Opened | 2026-10-30 |
-| Verification | Unit · 2026-10-30 · the stalled-seek case passes (fails without the fix); Browser · 2026-10-30 · `timeline-video.e2e.ts` passed locally; the real stall not reproduced, owner's check · Pending |
-| Reviewed | 2026-10-30 |
-
-</details>
-
----
-
-### B-042
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | B-042 | 🔶 P2 | Implemented | During the showcase, a panel the pilot opened from Views was closed again by its next step |
-
-💻 **→ Human action required: No**<br />Once #267 is merged with a green CI, close on that run (the e2e covers it).
-
-**Next action / closure evidence:** Found 2026-10-30 when the B-039 showcase e2e failed twice on #264 (a docs-only PR): the pilot opened Bandos from Views during the showcase replay; the showcase's next step rearranged the panels, closing Bandos (and once covering Views with the video panel), so the example to open was hidden. Decided by the owner 2026-10-30: a pilot's own click in Views stops the showcase. A real click on a panel toggle in Views now ends a playing guide or showcase through `leaveForNavigation()` (as opening a bando does: replay stopped, the pilot keeps the layout), then shows or hides the panel. The showcase e2e now checks that: the caption bar goes, the replay stays paused, the Bandos panel stays open, and an example then opens (passed 3 times locally). Area note added (Welcome and showcase sequencing). What follows (impact map): no clip, film or guide step changes (the guide's own clicks are not trusted, so they never end it), the element map is unchanged, no new text.
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#267](https://github.com/voidbrain/openbando/pull/267); found on [#264](https://github.com/voidbrain/openbando/pull/264)'s CI (e2e (4), both attempts) |
-| Opened | 2026-10-30 |
-| Verification | Browser · 2026-10-30 · showcase e2e (Views click during the replay) passed 3 times locally |
-| Reviewed | 2026-10-30 |
-
-</details>
-
----
 
 ### B-041
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟡 | B-041 | 🔶 P2 | Implemented | A pin armed while the Bandos editor showed its 3D view did nothing |
+| 🔴 | B-041 | 🔶 P2 | Open | A pin armed while the Bandos editor showed its 3D view did nothing |
 
-🧑 **→ Human action required: Yes**<br />Pin start (or a moment) with the editor in 3D on the live site (since #259).
+💻 **→ Human action required: No**<br />Next: make Pin start / end work while another pin mode was armed, and make the pin modes cancel each other.
 
-| | |
-|---|---|
-| **Issue** | With the Bandos editor open in 3D, Pin start / end / this moment from the Path panel armed, but a click in the editor's 3D view selected things instead of pinning. |
-| **Reproduce** | Live site: a bando in the editor, 3D; load a flight; Path panel → Pin start (replay at its start) or Pin this moment; click the ground in the editor's 3D view. |
-| **Check** | The path moves (toast "Start placed" or "Pinned at …"); on the editor's plan it already worked. |
-
-**Next action / closure evidence:** Reported 2026-10-30 by the owner ("tried path pin start on studio and main 3D model, seems to do nothing"). Checked in the browser: on the main 3D view and on the editor's plan Pin start works (the start moves, toast "Start placed"); in the editor's 3D view the view stayed in its select mode, so the click picked instead of reporting the ground point. Now an armed pin puts the editor's 3D view in its ground mode. The editor's hint also had no text for Pin this moment (it said "where the flight ended"): fixed. `moment-pins.e2e.ts` pins the start on the editor's plan and a moment in its 3D view (the 3D part fails without the fix). Note for the owner's questions: Pin start moves the flight's path (where the log's first fix lands), it does not sync the video; Move the take-off pad moves the bando's take-off spot, and on a bando without its place a flight is put on the pad only when it is first loaded, so moving the pad afterwards leaves a loaded flight where it was.
+**Next action / closure evidence:** The owner 2026-10-31, on the live site: it still fails. Clicking Pin start or Pin end does nothing; if Adjust position or Pin this moment was selected before, they stay selected. So the pin modes do not cancel each other, and one left armed seems to block the others. Next: reproduce it in a browser case (Adjust position or Pin this moment, then Pin start, then a click on the ground), make each pin button end the others, and check Pin start / end alone in the main 3D view, the editor's plan and its 3D view. Reported 2026-10-30 by the owner ("tried path pin start on studio and main 3D model, seems to do nothing"). Checked in the browser: on the main 3D view and on the editor's plan Pin start works (the start moves, toast "Start placed"); in the editor's 3D view the view stayed in its select mode, so the click picked instead of reporting the ground point. Now an armed pin puts the editor's 3D view in its ground mode. The editor's hint also had no text for Pin this moment (it said "where the flight ended"): fixed. `moment-pins.e2e.ts` pins the start on the editor's plan and a moment in its 3D view (the 3D part fails without the fix). Note for the owner's questions: Pin start moves the flight's path (where the log's first fix lands), it does not sync the video; Move the take-off pad moves the bando's take-off spot, and on a bando without its place a flight is put on the pad only when it is first loaded, so moving the pad afterwards leaves a loaded flight where it was.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -242,14 +208,86 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 |---|---|
 | PR / evidence | [#259](https://github.com/voidbrain/openbando/pull/259); report 2026-10-30 |
 | Opened | 2026-10-30 |
-| Verification | Browser · 2026-10-30 · `moment-pins.e2e.ts` 2/2 locally (the editor 3D part fails without the fix); Pin start on the main 3D view checked |
-| Reviewed | 2026-10-30 |
+| Verification | Browser · 2026-10-30 · `moment-pins.e2e.ts` 2/2 locally (the editor 3D part fails without the fix); Pin start on the main 3D view checked; Human · 2026-10-31 · the owner: fails (Pin start / end do nothing; earlier modes stay selected) |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
+### B-046
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🟡 | B-046 | 🔹 P3 | Implemented | The version badge's number ignored the pointer: no commit on hover, no selecting it |
+
+💻 **→ Human action required: No**<br />Close on #269's green CI (the e2e checks the number is under the pointer).
+
+**Next action / closure evidence:** Reported 2026-10-31 by the owner: hovering "v1.280" shows no commit and the text cannot be selected; the inspector shows the main 3D canvas under the pointer. Cause: the badge row has `pointer-events: none` (so its corner does not block the view) and only the flag and Views buttons turned them back on; the design guideline even said "No pointer events" for the number, against its own "the commit sha is its `title`". Now the number takes the pointer and its text is selectable; the guideline says so, and says where the number comes from (the deploy workflow writes `src/app/version.ts`: `1.` + its run number, and the short sha). `a11y.e2e.ts` checks the element under the number's centre is the number (fails without the fix: the canvas).
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#269](https://github.com/voidbrain/openbando/pull/269); report 2026-10-31 |
+| Opened | 2026-10-31 |
+| Verification | Browser · 2026-10-31 · the badge e2e passes, and fails without the fix |
+| Reviewed | 2026-10-31 |
 
 </details>
 
 ---
 
 ## Features and limitations
+
+### F-043
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-043 | 🔹 P3 | Open | Line tools also draw by click A, live preview, click B (keeping the drag) |
+
+💻 **→ Human action required: No**<br />Next: let Fence, Wall, Road, Water (line), Tunnel and Bridge draw by two clicks with a live preview, as Measure does; a press-drag-release still works.
+
+**Next action / closure evidence:** Requested 2026-10-31 by the owner, checking F-027 ("it works only on drag, aren't other segment elements also click A (preview) click B?"). Checked in the code (`bando-editor.ts`, the tool list and the pointer-up handlers): only Measure takes clicks (a chain, with a live preview); Fence, interior Wall, Road, Water in line mode, Tunnel and Bridge draw by press–drag–release with a live preview, and a click shorter than 0.5 m is dropped; Surface and Water outlines are drawn by hand. So the fence is not the odd one: the request is click–click for every line tool. Plan: a press released within a few pixels starts a line at A, the preview follows the pointer, the next click ends it at B (Esc or a right-click cancels); a longer drag still draws as today; one shared handler for all the line tools; the hints and their Italian updated; a browser case per tool (click–click and drag), and the guide steps whose clips show drawing checked (impact map). Chaining (B of one fence is A of the next, as in Measure) is a question for the owner when it is built. Made a project rule by the owner (2026-10-31): Editor area notes, "Tool palette": every line tool takes click A, live preview, click B, and every drag previews live.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); request 2026-10-31 |
+| Opened | 2026-10-31 |
+| Verification | Pending |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
+### F-042
+
+| Signal | ID | Priority | Status | Item |
+|:---:|---|---|---|---|
+| 🔴 | F-042 | 🔹 P3 | Open | Right-click in the editor's 3D view: the same context menu as on the plan |
+
+💻 **→ Human action required: No**<br />Next: open the plan's context menu on a right-click on any element (or the ground) in the 3D view.
+
+**Next action / closure evidence:** The owner 2026-10-31: a right-click on the ground (on every element) in 3D does nothing; it could open the contextual menu as in 2D. Next: reuse the plan's menu with the 3D pick (`userData.pick`, the ground point), a browser case for a building and the ground.
+
+<details>
+<summary>PR history, dates and verification</summary>
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Request 2026-10-31 |
+| Opened | 2026-10-31 |
+| Verification | Pending |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
 
 ### F-001
 
@@ -313,51 +351,16 @@ Each item has a compact summary, followed by its human-action line (icon first: 
 
 User-accepted fixes are preserved in the dated archives rather than repeated here. New findings reuse an existing ID when they concern the same behavior.
 
-### F-023
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-023 | 🔹 P3 | Implemented | Bardwell House example, place hidden |
-
-🧑 **→ Human action required: Yes**<br />On the live site after merge: Bandos → Examples → Bardwell House → Open a copy; compare the model with your photos and say what to correct.
-
-| | |
-|---|---|
-| **Issue** | The Bardwell House example, place hidden. |
-| **Reproduce** | Live site: Bandos → Examples → Bardwell House → Open a copy. |
-| **Check** | Compare with your photos and say what to correct. |
-
-**Next action / closure evidence:** Requested 2026-10-29 with the generated bando (private coordinates, never committed), two top views and two oblique photos. Decided with the user: a gambrel roof kind (F-022), the map's "concrete" over the west fields dropped, the real ground baked in. The input is the app's own place-hidden export (`tools/examples/data/bardwell-house.hidden.json`: embedded relative heights, origin 0, 0, no coordinates, terrain key or map names, checked before commit); `npm run examples` builds `library/bandos/bardwell-house-no-place.json` with the refinements measured on the photos (≈ 8 cm a pixel, scaled on the generated house and barn; the store's place agrees within ~2 m between the two top views): gambrel house and flat-roofed wing, gambrel barn, store, three sheds, patio and stepped brick wall, the drive's wooden fence, a camper and a car; duplicate trees removed. The FPV simulators' models of the place are game assets and were not used. Covered by `examples.spec.ts` (listed, hidden, origin 0, 0, no coordinates or names, embedded ground, gambrel roofs, store and sheds, no map surface over the fields). AGENTS' privacy rule names the place as private. Not checked: shapes and heights against the real place beyond the photos (porch, dormers, the wing's exact depth are estimates). Release 2 (user review 2026-10-29, with two more photos): the house turned a quarter (gambrel ends east and west, the flat-roofed wing south), the second drive from the lane to the front of the house under three big trees, the take-off pad in front of the house, the hedge along the south side and the south end of the east side, roads and trees cut to the area of the real heights (the map's roads ran hundreds of metres out) and the grass around ending 5 m past it; trees on a road removed. Release 3 ([#217](https://github.com/voidbrain/openbando/pull/217)): the drive's fence is the white post-and-rail fence (F-027). Release 4 ([#218](https://github.com/voidbrain/openbando/pull/218), user report with a screenshot): the dark wall flickered behind the windows of the house and its wing: the wing's north wall and the main block's south wall stood in one place (z-fighting); the wing has no north wall now (B-035 tracks the general case).
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#209](https://github.com/voidbrain/openbando/pull/209) (all CI jobs green), after [#206](https://github.com/voidbrain/openbando/pull/206) (the gambrel roof); [#214](https://github.com/voidbrain/openbando/pull/214) release 2 (all CI jobs green); request 2026-10-29 |
-| Opened | 2026-10-29 |
-| Verification | Unit/visual · 2026-10-29 · `examples.spec.ts` passed locally; 2D plan compared with the top views and a 3D view reviewed by the agent; pilot's comparison · Pending |
-| Reviewed | 2026-10-29 |
-
-</details>
-
----
 
 ### F-021
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟡 | F-021 | 🔹 P3 | Implemented | Move the take-off pad in the editor |
+| 🔴 | F-021 | 🔹 P3 | Open | Move the take-off pad in the editor |
 
-🧑 **→ Human action required: Yes**<br />Check the take-off pad again on the live site (since #254), and whether the 2D trail still shows in Safari.
+💻 **→ Human action required: No**<br />Next: three fixes from the owner's check (live preview in 3D, drag the pad itself, the pad on a raised building).
 
-| | |
-|---|---|
-| **Issue** | The take-off pad: 3D box too big and no drag, a 2D drag trail, no pad preview, a stale preview, two verbose fields. |
-| **Reproduce** | Live site, Playground (its start is off every pad) and Bardwell House (its start is on its pad): Edit, select the take-off pad in 2D and in 3D, drag it, look at the inspector. |
-| **Check** | The selection fits the pad (or the yellow start marker) and drags in 3D; the inspector previews the pad and has one "at (x, z)" field; in Safari, say whether dragging in 2D still leaves a trail. |
-
-**Next action / closure evidence:** Done 2026-10-30 ([#254](https://github.com/voidbrain/openbando/pull/254)): (1) `takeoffPadIndex` (core/site-spec.ts) is the one source: the pad under the start, or none, then the start marker (`START_MARKER`, 4 m, shared by 2D and 3D) is the take-off spot; `moveTakeoff`, the 3D pick and box, the 2D drawing (`takeoffRect`), the take-off height and area trimming read it; a new browser case (start off every pad) picks and drags the marker in 2D and 3D and keeps the slab where it is; (3) and (4) the inspector preview has a `pad` target, checked before the selected building (a screenshot of Playground shows the marker); (5) one `at (x, z) m` field with its Italian. A bare start marker is drawn under the buildings, a real pad over them: on the first CI run the marker covered the centre of buildings in three editor tests and took their click. (2) not reproduced: in Chromium and WebKit headless one pad element exists during a drag and no trail shows; left to the owner's Safari check. `areas.spec.ts` set up its take-off pad by the old rule (a pad away from the start): the fixture now puts the start on it. Reopened 2026-10-30 (owner, live site, with two screenshots): (1) in 3D the selection box is much bigger than the pad and the pad cannot be dragged; (2) in 2D a drag leaves a trail of pad copies; (3) the inspector shows no 3D preview of the pad; (4) selecting the pad sometimes leaves the previous object in the inspector's preview; (5) the two x / z fields are verbose. Cause of (1), found: the code takes the last pad as the take-off pad and assumes it stands at `droneStart`, but in Playground (pad at −14, 0; start at −30, 128) and Villetta (pad at 0, 0; start at 40, −50) it does not, and Chiari e Forti has no pad: the box spans a slab and the far start marker. Plan: (1) the take-off pad is the pad under `droneStart`, or none (then the start marker alone is the take-off spot); `moveTakeoff`, the 3D pick and box, the 2D drawing and the take-off height use that one source; (2) reproduce the trail (not seen in Chromium or WebKit headless; maybe a Safari repaint of the moved SVG rect); (3) and (4) the inspector preview gets a pad target and follows the pick; (5) a compact position readout with a Move to coordinates action instead of two fields. History: Requested 2026-10-29: the take-off pad (where flights start, `droneStart`, drawn as the last pad) could not be selected or moved in the editor; a never-called `SiteService.setTakeoffAt` moved the start without the drawn pad. Now `moveTakeoff` (core) moves the last pad and the drone start together, keeping their offset (older bandos' road pads stay). In 2D the pad has a red outline; Select picks it (the inspector shows x / z in metres) and drags it in one undo step; its right-click menu has "Move to coordinates…", and the ground's right-click menu has "Move the take-off pad here". `setTakeoffAt` removed. Covered by a `layers.spec.ts` case and `e2e/takeoff-pad.e2e.ts` (drag, ground menu: the pad lands under the click, export has pad and start together). Not done: moving it in the 3D editor view.
+**Next action / closure evidence:** The owner 2026-10-31, on the live site: it works, but (1) dragging in 3D shows no preview: the result appears only on release (the same issue other drags had; the rule: every drag previews its result live); (2) only the blue box on top of the pad can be grabbed: the pad itself should be what drags (and the box avoided); (3) dragging it onto the greenhouse, which stands above the ground, makes the pad disappear. Next: each one fixed with a browser case (the 3D drag previews; a press on the pad slab drags it; a drop on a raised building keeps it visible, on the ground or its roof as F-024 decides). Done 2026-10-30 ([#254](https://github.com/voidbrain/openbando/pull/254)): (1) `takeoffPadIndex` (core/site-spec.ts) is the one source: the pad under the start, or none, then the start marker (`START_MARKER`, 4 m, shared by 2D and 3D) is the take-off spot; `moveTakeoff`, the 3D pick and box, the 2D drawing (`takeoffRect`), the take-off height and area trimming read it; a new browser case (start off every pad) picks and drags the marker in 2D and 3D and keeps the slab where it is; (3) and (4) the inspector preview has a `pad` target, checked before the selected building (a screenshot of Playground shows the marker); (5) one `at (x, z) m` field with its Italian. A bare start marker is drawn under the buildings, a real pad over them: on the first CI run the marker covered the centre of buildings in three editor tests and took their click. (2) not reproduced: in Chromium and WebKit headless one pad element exists during a drag and no trail shows; left to the owner's Safari check. `areas.spec.ts` set up its take-off pad by the old rule (a pad away from the start): the fixture now puts the start on it. Reopened 2026-10-30 (owner, live site, with two screenshots): (1) in 3D the selection box is much bigger than the pad and the pad cannot be dragged; (2) in 2D a drag leaves a trail of pad copies; (3) the inspector shows no 3D preview of the pad; (4) selecting the pad sometimes leaves the previous object in the inspector's preview; (5) the two x / z fields are verbose. Cause of (1), found: the code takes the last pad as the take-off pad and assumes it stands at `droneStart`, but in Playground (pad at −14, 0; start at −30, 128) and Villetta (pad at 0, 0; start at 40, −50) it does not, and Chiari e Forti has no pad: the box spans a slab and the far start marker. Plan: (1) the take-off pad is the pad under `droneStart`, or none (then the start marker alone is the take-off spot); `moveTakeoff`, the 3D pick and box, the 2D drawing and the take-off height use that one source; (2) reproduce the trail (not seen in Chromium or WebKit headless; maybe a Safari repaint of the moved SVG rect); (3) and (4) the inspector preview gets a pad target and follows the pick; (5) a compact position readout with a Move to coordinates action instead of two fields. History: Requested 2026-10-29: the take-off pad (where flights start, `droneStart`, drawn as the last pad) could not be selected or moved in the editor; a never-called `SiteService.setTakeoffAt` moved the start without the drawn pad. Now `moveTakeoff` (core) moves the last pad and the drone start together, keeping their offset (older bandos' road pads stay). In 2D the pad has a red outline; Select picks it (the inspector shows x / z in metres) and drags it in one undo step; its right-click menu has "Move to coordinates…", and the ground's right-click menu has "Move the take-off pad here". `setTakeoffAt` removed. Covered by a `layers.spec.ts` case and `e2e/takeoff-pad.e2e.ts` (drag, ground menu: the pad lands under the click, export has pad and start together). Not done: moving it in the 3D editor view.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -366,8 +369,8 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 |---|---|
 | PR / evidence | [#210](https://github.com/voidbrain/openbando/pull/210) (replaces [#207](https://github.com/voidbrain/openbando/pull/207): green CI, then a backlog conflict with #206); request 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Unit/browser · 2026-10-29 · `layers.spec.ts` and `takeoff-pad.e2e.ts` passed locally; live-site check · Pending; Unit + Browser · 2026-10-30 · 591 unit (take-off pad choice, move off a pad, pad preview); `takeoff-pad.e2e.ts` 4/4 and `editor-regressions.e2e.ts` 11/11 locally; inspector screenshot on Playground |
-| Reviewed | 2026-10-30 |
+| Verification | Unit/browser · 2026-10-29 · `layers.spec.ts` and `takeoff-pad.e2e.ts` passed locally; live-site check · Pending; Unit + Browser · 2026-10-30 · 591 unit (take-off pad choice, move off a pad, pad preview); `takeoff-pad.e2e.ts` 4/4 and `editor-regressions.e2e.ts` 11/11 locally; inspector screenshot on Playground; Human · 2026-10-31 · the owner: works; no 3D preview, only the box drags, vanishes over the greenhouse |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -377,17 +380,11 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟡 | F-024 | 🔹 P3 | Implemented | Take-off pad indoors, on an upper floor or on a flat roof |
+| 🔴 | F-024 | 🔹 P3 | Open | Take-off pad indoors, on an upper floor or on a flat roof |
 
-🧑 **→ Human action required: Yes**<br />On the live site after merge: put the pad inside a building with a flat roof, choose "stands on: roof" (or an upper floor), Fly, and take off from there.
+💻 **→ Human action required: No**<br />Next: when the pad moves from indoors onto the roof, show the roof again (and the pad on it).
 
-| | |
-|---|---|
-| **Issue** | The take-off pad can stand on an upper floor or a flat roof. |
-| **Reproduce** | Live site: pad inside a flat-roofed building, inspector stands on: roof (or L1), Fly. |
-| **Check** | The drone starts on the roof (or floor) and takes off from there. |
-
-**Next action / closure evidence:** Restored 2026-10-30: this record was set Implemented in #225 and put back to Open by a later backlog conflict resolution (the agent's merge helper; fixed). Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof. Done 2026-10-30 ([#225](https://github.com/voidbrain/openbando/pull/225), every check green): `SiteSpec.takeoffOn` (`{ building, level }`, absent = ground, older bandos unchanged); `core/takeoff-place.ts`: `standingLevels` (upper floors, a flat roof; none for open shells or deep ruins) is the one source for the inspector's "stands on" menu, `takeoffHeight` and the model's standing surfaces; the collider's `groundAt` returns a floor or flat roof under the drone, so it rests, takes off and lands there; a roof stands `ROOF_CLEARANCE` (0.15 m, the collider margin) above its box, or every move from the pad would be a collision; the pad and the start marker are drawn at that height and the simulator starts there; in the 2D plan the take-off pad is now drawn over the buildings (it could not be picked inside one). Covered by `takeoff-place.spec.ts` (choices and heights, a vanished floor falls back to the ground, old specs, a drone resting on a roof stays clear of it and takes off) and `takeoff-pad.e2e.ts` (the menu offers ground / floor L1 / roof, the export keeps it). Not done: holes in floors (a stairwell) still count as floor; a drone flying up from below still passes through upper slabs (they are not solid); dragging the pad in 3D (F-035, since done in [#231](https://github.com/voidbrain/openbando/pull/231)).
+**Next action / closure evidence:** The owner 2026-10-31, on the live site: the pad indoors with the roof hidden; moved onto the roof, the view still shows the indoors, and the pad moves but cannot be seen. The roof should appear when the pad stands on it. Next: a pad set on the roof turns the hidden roof back on (or draws the pad over it), with a browser case. Restored 2026-10-30: this record was set Implemented in #225 and put back to Open by a later backlog conflict resolution (the agent's merge helper; fixed). Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof. Done 2026-10-30 ([#225](https://github.com/voidbrain/openbando/pull/225), every check green): `SiteSpec.takeoffOn` (`{ building, level }`, absent = ground, older bandos unchanged); `core/takeoff-place.ts`: `standingLevels` (upper floors, a flat roof; none for open shells or deep ruins) is the one source for the inspector's "stands on" menu, `takeoffHeight` and the model's standing surfaces; the collider's `groundAt` returns a floor or flat roof under the drone, so it rests, takes off and lands there; a roof stands `ROOF_CLEARANCE` (0.15 m, the collider margin) above its box, or every move from the pad would be a collision; the pad and the start marker are drawn at that height and the simulator starts there; in the 2D plan the take-off pad is now drawn over the buildings (it could not be picked inside one). Covered by `takeoff-place.spec.ts` (choices and heights, a vanished floor falls back to the ground, old specs, a drone resting on a roof stays clear of it and takes off) and `takeoff-pad.e2e.ts` (the menu offers ground / floor L1 / roof, the export keeps it). Not done: holes in floors (a stairwell) still count as floor; a drone flying up from below still passes through upper slabs (they are not solid); dragging the pad in 3D (F-035, since done in [#231](https://github.com/voidbrain/openbando/pull/231)).
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -396,8 +393,8 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 |---|---|
 | PR / evidence | [#225](https://github.com/voidbrain/openbando/pull/225); request 2026-10-29 |
 | Opened | 2026-10-29 |
-| Verification | Unit/browser · 2026-10-30 · `takeoff-place.spec.ts` and `takeoff-pad.e2e.ts` passed locally; [#225 CI](https://github.com/voidbrain/openbando/actions/runs/40977633280) passed; flying from a roof on the live site · Pending |
-| Reviewed | 2026-10-30 |
+| Verification | Unit/browser · 2026-10-30 · `takeoff-place.spec.ts` and `takeoff-pad.e2e.ts` passed locally; [#225 CI](https://github.com/voidbrain/openbando/actions/runs/40977633280) passed; flying from a roof on the live site · Pending; Human · 2026-10-31 · the owner: on the roof the pad is not visible, the roof stays hidden |
+| Reviewed | 2026-10-31 |
 
 </details>
 
@@ -463,35 +460,6 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 ---
 
-### F-027
-
-| Signal | ID | Priority | Status | Item |
-|:---:|---|---|---|---|
-| 🟡 | F-027 | 🔹 P3 | Implemented | Post-and-rail fence (white, three planks) |
-
-🧑 **→ Human action required: Yes**<br />On the live site after merge: draw a fence and pick Post-and-rail in its material menu; Bardwell House's drive fence uses it.
-
-| | |
-|---|---|
-| **Issue** | A white post-and-rail fence with three planks. |
-| **Reproduce** | Live site: draw a fence, pick Post-and-rail; Bardwell House's drive fence. |
-| **Check** | Three white planks between posts, following the ground. |
-
-**Next action / closure evidence:** Requested 2026-10-29 for the library (Bardwell House has one). New fence material `rail`: posts every 2.4 m, three planks (`RAIL_PLANKS`) nailed to their face with open gaps between them, white by default, each plank following the ground; solid for the drone like the other fences. Material menu entry with its own icon and Italian. Covered by `site-model.spec.ts` (6 posts and 3 planks on a 12 m fence, solid). Bardwell House's drive fence is `rail` ([#217](https://github.com/voidbrain/openbando/pull/217), release 3 of the example).
-
-<details>
-<summary>PR history, dates and verification</summary>
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#215](https://github.com/voidbrain/openbando/pull/215) (all CI jobs green); request 2026-10-29 |
-| Opened | 2026-10-29 |
-| Verification | Unit · 2026-10-29 · rail case passed; 3D screenshot reviewed; live-site look · Pending |
-| Reviewed | 2026-10-29 |
-
-</details>
-
----
 
 ### F-031
 
@@ -581,17 +549,11 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 
 | Signal | ID | Priority | Status | Item |
 |:---:|---|---|---|---|
-| 🟡 | F-040 | 🔶 P2 | Implemented | Adjust the replay drone's position in 3D, height included |
+| 🔴 | F-040 | 🔶 P2 | Open | Adjust the replay drone's position in 3D, height included |
 
-🧑 **→ Human action required: Yes**<br />Try Adjust position on the live site (since #262), mouse and keyboard.
+💻 **→ Human action required: No**<br />Next: find why a height set with Adjust position goes back to the wrong height about a metre later.
 
-| | |
-|---|---|
-| **Issue** | Pins moved the drone only across the ground, by a click; its height could not be corrected. |
-| **Reproduce** | Live site, a flight loaded, main 3D view: pause where the video shows the drone, Path panel → Adjust position (the four-arrow button). |
-| **Check** | Arrows and squares appear on the drone; dragging moves it, the path follows live, height included; arrow keys nudge it (Shift+↑↓ up and down) without seeking the replay; Enter keeps it as a pin, Esc puts it back. |
-
-**Next action / closure evidence:** Implemented 2026-10-30 ([#262](https://github.com/voidbrain/openbando/pull/262)): pins carry `dy` (blended like `dx`, `dz`; older saved pins read 0; the path never goes under the ground); Path panel → Adjust position puts a three.js TransformControls on the replay drone in the main 3D view (`three/adjust-gizmo.ts`); the orbit steps aside while the pointer is on it (`ControlTarget.blocked`); dragging previews the path live (`FlightService.previewPins`), Enter or the button again keeps one pin, Esc restores; arrow keys nudge 0.5 m (Shift+↑↓ vertical), captured so they do not seek the replay. The Path panel's pin buttons sit two to a row (the column had grown taller than the panel). Not done yet: the control in the editor's 3D view (Pin this moment works there). Tests: height in `moment-pins.spec.ts`; the keyboard path in `moment-pins.e2e.ts` (a pin, the replay not moved). History: Requested 2026-10-30 by the owner after trying Pin this moment (B-017): pins only move the drone across the ground, and its height still comes from the barometer and the ground under it. Plan: pins carry `dy` too (blended the same way, the take-off still at 0); "Adjust position" puts a move control (three axes and three planes, three.js TransformControls) on the replay drone in the main 3D view and the editor's 3D view; dragging moves the drone at this moment, Enter or a click elsewhere confirms (one pin), Esc cancels; arrow keys nudge it (Shift: vertical) for keyboard use. The automatic proposals of F-041 are pins of this kind, accepted or corrected with the same control.
+**Next action / closure evidence:** The owner 2026-10-31, on the live site: Adjust position works; at 0:28 (one of the marked moments) the height was corrected and held, but about a metre of flight later the path went back to the wrong height. Not yet known whether that is the pin's blend toward the next pin (or the implicit take-off anchor), a later pin with no height, or the clamp that keeps the path above the ground. Next: reproduce on the demo flight with one height pin at 0:28, plot `pinOffset` dy around it, fix and cover it in `moment-pins.spec.ts`. Implemented 2026-10-30 ([#262](https://github.com/voidbrain/openbando/pull/262)): pins carry `dy` (blended like `dx`, `dz`; older saved pins read 0; the path never goes under the ground); Path panel → Adjust position puts a three.js TransformControls on the replay drone in the main 3D view (`three/adjust-gizmo.ts`); the orbit steps aside while the pointer is on it (`ControlTarget.blocked`); dragging previews the path live (`FlightService.previewPins`), Enter or the button again keeps one pin, Esc restores; arrow keys nudge 0.5 m (Shift+↑↓ vertical), captured so they do not seek the replay. The Path panel's pin buttons sit two to a row (the column had grown taller than the panel). Not done yet: the control in the editor's 3D view (Pin this moment works there). Tests: height in `moment-pins.spec.ts`; the keyboard path in `moment-pins.e2e.ts` (a pin, the replay not moved). History: Requested 2026-10-30 by the owner after trying Pin this moment (B-017): pins only move the drone across the ground, and its height still comes from the barometer and the ground under it. Plan: pins carry `dy` too (blended the same way, the take-off still at 0); "Adjust position" puts a move control (three axes and three planes, three.js TransformControls) on the replay drone in the main 3D view and the editor's 3D view; dragging moves the drone at this moment, Enter or a click elsewhere confirms (one pin), Esc cancels; arrow keys nudge it (Shift: vertical) for keyboard use. The automatic proposals of F-041 are pins of this kind, accepted or corrected with the same control.
 
 <details>
 <summary>PR history, dates and verification</summary>
@@ -600,8 +562,8 @@ User-accepted fixes are preserved in the dated archives rather than repeated her
 |---|---|
 | PR / evidence | Request 2026-10-30 |
 | Opened | 2026-10-30 |
-| Verification | Unit + Browser · 2026-10-30 · height pins, keyboard adjust e2e passed locally (the mouse drag is the owner's check); the keyboard e2e read the replay time before the seek reached the caption and failed on #264's CI, fixed in [#265](https://github.com/voidbrain/openbando/pull/265) (test only) |
-| Reviewed | 2026-10-30 |
+| Verification | Unit + Browser · 2026-10-30 · height pins, keyboard adjust e2e passed locally (the mouse drag is the owner's check); the keyboard e2e read the replay time before the seek reached the caption and failed on #264's CI, fixed in [#265](https://github.com/voidbrain/openbando/pull/265) (test only); Human · 2026-10-31 · the owner: the height holds at the pin, then returns about a metre later |
+| Reviewed | 2026-10-31 |
 
 </details>
 
