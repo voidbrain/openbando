@@ -63,3 +63,14 @@ test('a guide step running (caption bar)', async ({ page }) => {
   expect(await axe(page)).toEqual([]);
   await expectInteractionContrast(page, 'app-tour-overlay .bar');
 });
+
+/** The version number takes the pointer (its title is the commit, its text can be copied); the 3D view under it does not. */
+test('the version badge number is under the pointer, not the canvas', async ({ page }) => {
+  await page.goto('/');
+  const ver = page.locator('app-version-badge .ver');
+  await expect(ver).toBeVisible();
+  const b = (await ver.boundingBox())!;
+  const hit = await page.evaluate(([x, y]) => document.elementFromPoint(x!, y!)?.className ?? '', [b.x + b.width / 2, b.y + b.height / 2]);
+  expect(hit).toContain('ver');
+  expect(await ver.evaluate((e) => getComputedStyle(e).userSelect)).toBe('text');
+});
