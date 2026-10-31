@@ -1203,3 +1203,71 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 </details>
 
 ---
+
+### F-044
+
+**Compact backlog records, mandatory recaps and maintained estimates**
+
+| Signal | Priority | Status | Effort | Complete |
+|:---:|---|---|---|---|
+| 🔵 | ◻️ P3 | Closed | 🟢 Small | ~100% |
+
+💻 **→ Human action required: No**<br />No action remains for this record’s acceptance criteria.
+
+| | |
+|---|---|
+| **Issue** | Some records omit the recap; long actions and introduction obscure active work. |
+| **Reproduce** | Open this ledger and run check:backlog, including agent-owned and unchanged records. |
+| **Check** | Every active record has visible title, signals, human cue and all three recap rows; details stay collapsed; estimates are reassessed on direct and collateral updates. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Verified and closed 2026-10-31: [#272](https://github.com/voidbrain/openbando/pull/272) merged with [CI 41196898791](https://github.com/voidbrain/openbando/actions/runs/41196898791) and CodeQL green. The example-info interaction/axe case passed on its first attempt. Shard 4’s separate showcase-panel case passed on retry (one flaky test); that is not evidence of field or device acceptance. Media rerecording remains in F-031. Historical implementation notes: Template 2.0.0 merged first in [project-harness #39](https://github.com/voidbrain/project-harness/pull/39), commit da681770b0bc2ba34b911d6ed57d63fe10bdf049, with [CI 41196190379](https://github.com/voidbrain/project-harness/actions/runs/41196190379) and all job steps green. User authorized template publication. The owner explicitly requested updating OpenBando before the upstream tag was available (2026-10-31): reconciled directly from that merged commit, with the untagged source noted in .harness.json; it is not a published release. Next: project CI, merge and close this documentation/tooling record on its green CI. The missing upstream tag is tracked in the template repository and does not block this authorized project update. No product status was advanced by formatting. All 20 prior records retain their actions and historical metadata; recaps and estimate rationale added. Introduction trimmed and guidance/history moved to the end.
+
+**Estimates:** Reassessed 2026-10-31 after merge and browser acceptance: no remaining work in this record, ~100% complete. Historical remaining-effort category Small retained for the archive.
+
+| Field | Value |
+|---|---|
+| PR / evidence | Owner request 2026-10-31; branch `fix/compact-backlog-info`; [#272](https://github.com/voidbrain/openbando/pull/272) |
+| Opened | 2026-10-31 |
+| Verification | Documentation + Unit/integration + Browser/accessibility · 2026-10-31 · [CI 41196898791](https://github.com/voidbrain/openbando/actions/runs/41196898791) and CodeQL green; 597 unit tests, tooltip interactions and axe passed. One showcase test recovered on retry. Closed 2026-10-31. |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---
+
+### F-045
+
+**Example descriptions in an info tooltip beside the bando title**
+
+| Signal | Priority | Status | Effort | Complete |
+|:---:|---|---|---|---|
+| 🔵 | ◻️ P3 | Closed | 🟢 Small | ~100% |
+
+💻 **→ Human action required: No**<br />No action remains for this record’s acceptance criteria.
+
+| | |
+|---|---|
+| **Issue** | Always-visible example descriptions make the Bandos list long. |
+| **Reproduce** | Bandos → Examples: hover or focus the i beside an example name; tap it and dismiss with Escape. |
+| **Check** | The description opens without a permanent text row, stays readable on hover, and is accessible from keyboard and touch. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Verified and closed 2026-10-31: [#272](https://github.com/voidbrain/openbando/pull/272) merged with [CI 41196898791](https://github.com/voidbrain/openbando/actions/runs/41196898791) and CodeQL green. The example-info interaction/axe case passed on its first attempt. Shard 4’s separate showcase-panel case passed on retry (one flaky test); that is not evidence of field or device acceptance. Media rerecording remains in F-031. Historical implementation notes: Implemented locally with existing tokens and Italian text. Browser regression includes hover, focus, Escape, click and axe. Local browser download returned invalid/truncated archives; browser acceptance awaits a working Playwright installation or project CI. The owner authorized applying the merged template commit directly (F-044); no template-tag dependency remains here. Media regeneration remains tracked under F-031.
+
+**Estimates:** Reassessed 2026-10-31 after merge and browser acceptance: no remaining work in this record, ~100% complete. Historical remaining-effort category Small retained for the archive.
+
+| Field | Value |
+|---|---|
+| PR / evidence | Owner request 2026-10-31; branch `fix/compact-backlog-info`; [#272](https://github.com/voidbrain/openbando/pull/272) |
+| Opened | 2026-10-31 |
+| Verification | Documentation + Unit/integration + Browser/accessibility · 2026-10-31 · [CI 41196898791](https://github.com/voidbrain/openbando/actions/runs/41196898791) and CodeQL green; 597 unit tests, tooltip interactions and axe passed. One showcase test recovered on retry. Closed 2026-10-31. |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---

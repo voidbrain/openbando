@@ -14,6 +14,12 @@ Each backlog owns the work of its own repository and nothing else (single respon
 
 Test: if a record's next action or closure condition can only happen in another repository, it is in the wrong backlog. Move that part to the backlog it belongs to and link it.
 
+### Ownership rejection and dependency direction
+
+Reject an active record during review if its Issue, next action or closure criteria assign work to a different repository. Split that work into the owning repository's backlog and retain only an upstream dependency link or dated evidence here. A downstream adoption reminder is still foreign work when hidden in details, labelled a follow-up or placed after the release step. Check all three places, not only the title. This is a semantic review requirement; the layout validator does not establish ownership.
+
+Apply single responsibility and dependency inversion to architecture and delivery: a reusable master/template/library owns generic contracts and behaviour; derived projects depend on those contracts through their own adapters or configuration. A master must not import derived-project implementation, require its private state or deployment, or make its release, acceptance or closure wait for downstream adoption. Required regression tests use repository-owned fixtures and contract tests. An already completed consumer trial may be cited as evidence; it never becomes a pending downstream release gate. Product-specific requirements stay in the product repository.
+
 ## When to update and review
 
 - A plan or promise given to the user (steps, a table to build, a later fix) is recorded at once: a new record or the next action of an existing one, in the same change as the reply that makes it. A plan that lives only in the conversation is forgotten.
@@ -26,7 +32,7 @@ Test: if a record's next action or closure condition can only happen in another 
 
 ## Review procedure
 
-1. Read current main and preserve the user's edits. Identify every item affected by the PR/change, including shared dependencies and maintenance records.
+1. Read current main and preserve the user's edits. Identify every item affected by the PR/change, including shared dependencies and maintenance records. Reject foreign-repository actions and downstream completion gates under Ownership rejection and dependency direction before publishing.
 2. Check the actual PR target, merged state, commit and CI jobs (`npm run ci:status -- <PR numbers>` lists each job, failed and retried tests, and PRs not based on main). Read failures or selected test results when needed. A merge is not verification; a green workflow only establishes checks it actually ran. Skipped jobs, mocked devices and captured screenshots do not establish the behavior they did not test.
 3. Compare acceptance requirements, status, next action and verification evidence. Remove obsolete present-tense pending claims after their checks pass; move relevant earlier failures to PR / evidence as labelled history. Record unresolved checks explicitly. If a requirement is ambiguous, investigate rather than invent acceptance or claim closure.
 4. Choose the supported state using the lifecycle legend. Implemented means required checks remain. Verified requires all recorded acceptance checks to pass with dated evidence; when every one of them is automated (the PR's own tests and CI, as for tooling and record changes), the merged PR's green CI run is that evidence: cite it. Close only a Verified record, or a cancelled or superseded one with its reason; a reconcile may verify and close in one edit, naming the run. When no action remains, record the resolution and close/archive; agents need no extra permission unless the item explicitly requires human acceptance. Failed checks return the item to Open/Investigate as appropriate; record a named blocker only when it actually prevents the next action.

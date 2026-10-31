@@ -191,6 +191,8 @@ Before changing an area, read its section in [docs/agents/areas.md](docs/agents/
 
 ## Work tracking
 
+- Keep single responsibility and dependency inversion across repository boundaries: reusable masters define contracts; derived projects supply their adapters/configuration. A master never depends on derived implementation, deployment or adoption for its release or acceptance. Each backlog owns only its repository’s work; reject foreign next actions and closure conditions (BACKLOG-RULES, Ownership rejection and dependency direction).
+
 **At the start of every session, before other work, run `npm run check:freshness`** and do what it lists, in the session's first PR:
 - the backlog is behind `main`: read the CI of the PRs merged since (`npm run ci:status -- <numbers>`) and review any commit it lists without a PR, update or close their records, archive closed ones, move the header to the current `main`;
 - merged branches are still on GitHub: delete them (and their local branches and worktrees);
