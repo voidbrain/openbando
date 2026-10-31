@@ -719,7 +719,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 | Field | Value |
 |---|---|
-| PR / evidence | this PR; [template v2.2.2](https://github.com/voidbrain/project-harness/tree/v2.2.2); [scoped audit](audits/2026-10-31-harness.md) |
+| PR / evidence | [#274](https://github.com/voidbrain/openbando/pull/274); [template v2.2.2](https://github.com/voidbrain/project-harness/tree/v2.2.2); [scoped audit](audits/2026-10-31-harness.md) |
 | Opened | 2026-10-31 |
 | Verification | Documentation + tool validation · 2026-10-31 · release source, copied-file parity, rule/ownership review and local validation; reconciliation PR CI · Pending |
 | Reviewed | 2026-10-31 |
