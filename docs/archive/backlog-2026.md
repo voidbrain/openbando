@@ -1229,7 +1229,7 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 
 | Field | Value |
 |---|---|
-| PR / evidence | Owner request 2026-10-31; branch `fix/compact-backlog-info`; [#272](https://github.com/voidbrain/openbando/pull/272) |
+| PR / evidence | Owner request 2026-10-31; branch `fix/compact-backlog-info`; [#272](https://github.com/voidbrain/openbando/pull/272); [#273](https://github.com/voidbrain/openbando/pull/273) (reconciliation) |
 | Opened | 2026-10-31 |
 | Verification | Documentation + Unit/integration + Browser/accessibility · 2026-10-31 · [CI 41196898791](https://github.com/voidbrain/openbando/actions/runs/41196898791) and CodeQL green; 597 unit tests, tooltip interactions and axe passed. One showcase test recovered on retry. Closed 2026-10-31. |
 | Reviewed | 2026-10-31 |
@@ -1263,7 +1263,7 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 
 | Field | Value |
 |---|---|
-| PR / evidence | Owner request 2026-10-31; branch `fix/compact-backlog-info`; [#272](https://github.com/voidbrain/openbando/pull/272) |
+| PR / evidence | Owner request 2026-10-31; branch `fix/compact-backlog-info`; [#272](https://github.com/voidbrain/openbando/pull/272); [#273](https://github.com/voidbrain/openbando/pull/273) (reconciliation) |
 | Opened | 2026-10-31 |
 | Verification | Documentation + Unit/integration + Browser/accessibility · 2026-10-31 · [CI 41196898791](https://github.com/voidbrain/openbando/actions/runs/41196898791) and CodeQL green; 597 unit tests, tooltip interactions and axe passed. One showcase test recovered on retry. Closed 2026-10-31. |
 | Reviewed | 2026-10-31 |
