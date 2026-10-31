@@ -1,6 +1,6 @@
 # OpenBando backlog
 
-Active bugs and features. Reviewed 31 October 2026 against main `5eb8b3d`. [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Active bugs and features. Reviewed 31 October 2026 against main `b8bcc08`. [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -692,75 +692,11 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 ---
 
-### F-044
 
-**Compact backlog records, mandatory recaps and maintained estimates**
-
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔹 P3 | Implemented | 🟢 Small | ~90% |
-
-💻 **→ Human action required: No**<br />Run this project’s CI, merge when green, then reconcile the record.
-
-| | |
-|---|---|
-| **Issue** | Some records omit the recap; long actions and introduction obscure active work. |
-| **Reproduce** | Open this ledger and run check:backlog, including agent-owned and unchanged records. |
-| **Check** | Every active record has visible title, signals, human cue and all three recap rows; details stay collapsed; estimates are reassessed on direct and collateral updates. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Template 2.0.0 merged first in [project-harness #39](https://github.com/voidbrain/project-harness/pull/39), commit da681770b0bc2ba34b911d6ed57d63fe10bdf049, with [CI 41196190379](https://github.com/voidbrain/project-harness/actions/runs/41196190379) and all job steps green. User authorized template publication. The owner explicitly requested updating OpenBando before the upstream tag was available (2026-10-31): reconciled directly from that merged commit, with the untagged source noted in .harness.json; it is not a published release. Next: project CI, merge and close this documentation/tooling record on its green CI. The missing upstream tag is tracked in the template repository and does not block this authorized project update. No product status was advanced by formatting. All 20 prior records retain their actions and historical metadata; recaps and estimate rationale added. Introduction trimmed and guidance/history moved to the end.
-
-**Estimates:** Small remaining effort; ~90% complete. Migration and 29 harness fixtures pass; template CI passed and #39 merged. Reassessed after that collateral update: ~90% remains valid because project browser verification and CI remain; upstream tagging is separate template work. Estimated 2026-10-31.
-
-| Field | Value |
-|---|---|
-| PR / evidence | Owner request 2026-10-31; branch `fix/compact-backlog-info`; [#272](https://github.com/voidbrain/openbando/pull/272) |
-| Opened | 2026-10-31 |
-| Verification | Documentation/tooling · 2026-10-31 · backlog checks pass; 29 template fixtures pass; publishing and CI pending |
-| Reviewed | 2026-10-31 |
-
-</details>
-
----
-
-### F-045
-
-**Example descriptions in an info tooltip beside the bando title**
-
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔹 P3 | Implemented | 🟢 Small | ~80% |
-
-💻 **→ Human action required: No**<br />Verify tooltip interactions and accessibility in browser CI, then merge when green.
-
-| | |
-|---|---|
-| **Issue** | Always-visible example descriptions make the Bandos list long. |
-| **Reproduce** | Bandos → Examples: hover or focus the i beside an example name; tap it and dismiss with Escape. |
-| **Check** | The description opens without a permanent text row, stays readable on hover, and is accessible from keyboard and touch. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Implemented locally with existing tokens and Italian text. Browser regression includes hover, focus, Escape, click and axe. Local browser download returned invalid/truncated archives; browser acceptance awaits a working Playwright installation or project CI. The owner authorized applying the merged template commit directly (F-044); no template-tag dependency remains here. Media regeneration remains tracked under F-031.
-
-**Estimates:** Small remaining effort; ~80% complete. Tooltip implementation, translation and regression case exist; browser verification and project CI remain. Estimated 2026-10-31.
-
-| Field | Value |
-|---|---|
-| PR / evidence | Owner request 2026-10-31; branch `fix/compact-backlog-info`; [#272](https://github.com/voidbrain/openbando/pull/272) |
-| Opened | 2026-10-31 |
-| Verification | Unit/integration · 2026-10-31 · 597 tests pass; build, type checks, i18n, contrast and conventions pass. Browser/accessibility · Pending (Playwright browser download returned invalid archives); publishing and CI pending |
-| Reviewed | 2026-10-31 |
-
-</details>
-
----
 
 ## Other changes
+
+Harness ownership clarification ([#273](https://github.com/voidbrain/openbando/pull/273), 2.0.1 source): adopted the merged [template #40](https://github.com/voidbrain/project-harness/pull/40), `9c3abc6`, into BACKLOG-RULES and AGENTS. Ownership review rejects foreign Issue/next-action/closure work, including hidden details; masters use owned fixtures/contracts and never wait for derived implementation, deployment or adoption. This project owns only its own reconciliation. Template release tags remain upstream maintenance, not an active OpenBando task. Estimate policy and the 2.0.0 layout are unchanged.
 
 Harness 2.0.0, 2026-10-31: applied the merged [template #39](https://github.com/voidbrain/project-harness/pull/39) at commit `da68177` on the owner’s explicit instruction, with its release tag still pending. Copied check-backlog, reconciled the rules and migrated every active record; F-044 tracks this project’s verification.
 
@@ -805,6 +741,8 @@ Harness template 1.20.1 (2026-10-31, the owner's find; template [#38](https://gi
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
 
 ## Reconciliation history
+
+2026-10-31: reviewed through `b8bcc08` (#272). [CI 41196898791](https://github.com/voidbrain/openbando/actions/runs/41196898791): check, all four browser shards and race-browser green; CodeQL green. Tooltip interactions/axe passed. Shard 4 had one showcase-panel test that passed on retry. F-044/F-045 closed and archived; outstanding human checks on other records were not advanced.
 
 2026-10-31: reviewed through `5eb8b3d` (#271). Its [CI 41154114412](https://github.com/voidbrain/openbando/actions/runs/41154114412) is green; B-046 remains closed in the existing archive. Historical reconciliation notes below are preserved.
 

@@ -3,7 +3,7 @@
     "path": "~/Projects/project-harness",
     "repo": "https://github.com/voidbrain/project-harness"
   },
-  "version": "2.0.0",
+  "version": "2.0.1",
   "stacks": [
     "core",
     "angular"
@@ -54,7 +54,7 @@
       ]
     ]
   },
-  "note": "OpenBando is the reference implementation the template was extracted from (1.0.0); stamped at 1.1.1 on 2026-10-29. 2.0.0 applied at the owner\u2019s explicit request from merged project-harness#39 (da681770b0bc2ba34b911d6ed57d63fe10bdf049); upstream release tag pending.",
+  "note": "OpenBando is the reference implementation the template was extracted from (1.0.0); stamped at 1.1.1 on 2026-10-29. 2.0.0 applied at the owner\u2019s explicit request from merged project-harness#39 (da681770b0bc2ba34b911d6ed57d63fe10bdf049); upstream release tag pending. Ownership rules reconciled from project-harness#40 (9c3abc6d0758feb445b00f82953e0a4fb2c663b1), merged before this project adopted them; upstream release tag pending.",
   "impact": [
     {
       "id": "lockfile",
