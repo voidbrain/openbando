@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-10-31T21:44:14.408Z",
+  "reviewed": "2026-10-31T22:36:06.490Z",
   "policy": "ab0b8d2e0da6287c39d61cc6994c2c35e15650a269ae8816a35feaa8e850ebe5",
   "inputs": {
-    "AGENTS.md": "fba8ef965a9fb621838dab1433f8fb80799aca2c42ab5f324e3f0fc04b2f4694",
+    "AGENTS.md": "ddb4d86fb8cf1874f710382fd1f3375fd8e341035b961768d10889c1b80a818b",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
     "docs/BACKLOG-RULES.md": "fec109fd07b5d03dbc7a04436c547a36285ff67862d6e94924e24cd8bc2ef378",
-    "docs/agents/areas.md": "41047c7ffb46759235d586fe6f0d4dff708c9a406470eea1006d141bf57bcb46",
+    "docs/agents/areas.md": "7d95d4ca293cdfc4056058d3bca93e7cc671e4df9b3809fe59603f4f6f1bf6c7",
     "docs/agents/audit.md": "5096d238385e277a833b0fa7f4d0b20a1d209a79c142b9a42e8a32f77bdc3311",
     "docs/agents/maintenance.md": "a7e93ce963ffab30b4592ee90bdd0e72d49ea1320f82df74f22c88f70899d899",
     "tools/check-audits.mjs": "0e9c655f6f343399880405075eba8009a569b03138c4347323da869fc7b11c93",
@@ -89,14 +89,20 @@
     },
     {
       "kind": "tool",
-      "disposition": "backlog",
-      "target": "F-047",
-      "evidence": "Full product audit scope remains unclassified; separately review evidence rather than promoting narrative reports or this scoped harness review."
+      "disposition": "implemented",
+      "target": "docs/audits/2026-10-31-full-openbando.md",
+      "evidence": "Full product audit at main 3f7b844: all eight areas reviewed, owned findings and limitations recorded; no human/device acceptance inferred."
     },
     {
       "kind": "none",
       "disposition": "no-change",
       "evidence": "Existing GitHub and Playwright capabilities suffice; no new skill/server/solution profile needed, and no extra coverage gate or policy reduction is justified."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": ".harness.json",
+      "evidence": "Enable seven-day area freshness after establishing an actual full baseline; coverage remains warning-only. Local friction aggregate is the earlier measured adoption/reconciliation phase, not a duration for this product audit."
     }
   ]
 }

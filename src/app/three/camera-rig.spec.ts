@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
+import { SiteCollider } from '../core/sim/collider';
 import { Quat, Vec3 } from '../core/math3d';
 import { CAMERA_CLEARANCE, createOrbitState, keepAbove, orbitFromCamera, orbitPan, placeCamera } from './camera-rig';
 
@@ -85,4 +86,17 @@ describe('the camera never goes into the ground (B-037)', () => {
     expect(keepAbove(cam, ground, { x: 10, y: 1, z: 0 })).toBe(true);
     expect(cam.position.y).toBeCloseTo(-4 + CAMERA_CLEARANCE, 6);
   });
+});
+
+
+it('lets the camera pass through a roof or floor while retaining the terrain limit (B-044)', () => {
+  const collider = new SiteCollider([], [], null, [], [], [], [{pts: [{x:-5,z:-5},{x:5,z:-5},{x:5,z:5},{x:-5,z:5}], top: 4, roof: true}]);
+  const camera = new THREE.PerspectiveCamera(); camera.position.set(0, 4.01, 0);
+  expect(collider.groundAt(0, 0, camera.position.y)).toBe(4); // the aircraft still stands there
+  const ground = (x: number, z: number, y?: number): number => collider.cameraGroundAt(x, z, y);
+  expect(keepAbove(camera, ground, {x:0,y:0,z:0})).toBe(false);
+  expect(camera.position.y).toBe(4.01);
+  camera.position.y = -0.1;
+  expect(keepAbove(camera, ground, {x:0,y:1,z:0})).toBe(true);
+  expect(camera.position.y).toBeCloseTo(CAMERA_CLEARANCE);
 });

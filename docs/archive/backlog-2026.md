@@ -1271,3 +1271,40 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 </details>
 
 ---
+
+
+## Closed 31 October 2026 — harness adoption reconciliation
+
+### F-046
+
+**Reconcile OpenBando with published harness releases (current: v3.1.1)**
+
+| Signal | Priority | Status | Effort | Complete |
+|:---:|---|---|---|---|
+| 🔵 | ◻️ P2 | Closed | 🟢 Small | 100% |
+
+💻 **→ Human action required: No**<br />None; published v3.1.1 adoption is verified and merged.
+
+| | |
+|---|---|
+| **Issue** | The prior v2.2.2 adoption passed merged #274 CI; the requested v3.1.1 adoption adds input-bound maintenance, timed reconciliation, scope-aware dated audits and hardened merge/coverage checks. |
+| **Reproduce** | Compare published v2.2.2 with v3.1.1 at 7a81b930; run read-only preview, copied parity, maintenance/audit, backlog and existing app checks. Preserve project-specific rules and dated history. |
+| **Check** | All copied files match published v3.1.1; project rules/history/privacy survive; startup/PR/daily checks enforce current maintenance evidence; audit scope is honest, coverage remains warning-only, and app/browser/security checks remain enabled. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Verified and closed 31 October 2026: #275 merged at 3f7b844; CI 41245176140 passed check, all four e2e shards and race-browser; all three CodeQL languages and aggregate check passed. Exact copied parity and the required receipt are verified. Product audit/human/device checks remain separate (F-047 and their owning IDs). Earlier pending statements below are labelled historical evidence, not current blockers.
+
+**Estimates:** Complete; 100%. No adoption action remains.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#275](https://github.com/voidbrain/openbando/pull/275); [#274](https://github.com/voidbrain/openbando/pull/274); [template v3.1.1](https://github.com/voidbrain/project-harness/tree/v3.1.1); [new scoped review](../audits/2026-10-31-harness-v3.1.1.md); [prior scoped audit](../audits/2026-10-31-harness.md) |
+| Opened | 2026-10-31 |
+| Verification | Automated/source review · 2026-10-31 · #275 CI 41245176140 and CodeQL all passed; merged 3f7b844; verified and closed |
+| Reviewed | 2026-10-31 |
+
+</details>
+
+---

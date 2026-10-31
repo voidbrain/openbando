@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "kind": "full",
+  "reviewed": "2026-10-31T22:36:26.924Z",
+  "baseline": "3f7b844e5305b4c3a399b07d2b2382697f03ec57",
+  "report": "docs/audits/2026-10-31-full-openbando.md",
+  "areas": {
+    "code": {
+      "result": "checked",
+      "evidence": "See full report: Results by area, findings, ledger review and validation; review includes the named baseline plus listed working-tree fixes.",
+      "limits": "Source/AST and targeted regression review, not proof of all dynamic use or zero defects."
+    },
+    "logic": {
+      "result": "checked",
+      "evidence": "See full report: Results by area, findings, ledger review and validation; review includes the named baseline plus listed working-tree fixes.",
+      "limits": "Representative state/data/geometry joins; outstanding agreed features and async hypotheses remain tracked."
+    },
+    "tests": {
+      "result": "checked",
+      "evidence": "See full report: Results by area, findings, ledger review and validation; review includes the named baseline plus listed working-tree fixes.",
+      "limits": "602 local unit tests and baseline CI inspected; this PR browser/security checks pending; no human/device acceptance."
+    },
+    "documentation": {
+      "result": "checked",
+      "evidence": "See full report: Results by area, findings, ledger review and validation; review includes the named baseline plus listed working-tree fixes.",
+      "limits": "Generated text/source comparison; existing clips/films remain stale under F-031."
+    },
+    "harness": {
+      "result": "checked",
+      "evidence": "See full report: Results by area, findings, ledger review and validation; review includes the named baseline plus listed working-tree fixes.",
+      "limits": "Published copied parity and project policy/ownership review; no automatic semantic proof or consumer gate."
+    },
+    "security": {
+      "result": "checked",
+      "evidence": "See full report: Results by area, findings, ledger review and validation; review includes the named baseline plus listed working-tree fixes.",
+      "limits": "Dependency/privacy/trust-boundary review; no penetration test or real-device certification."
+    },
+    "delivery": {
+      "result": "checked",
+      "evidence": "See full report: Results by area, findings, ledger review and validation; review includes the named baseline plus listed working-tree fixes.",
+      "limits": "Baseline PR CI and clean local lockfile/build; this PR CI/deployment require separate evidence."
+    },
+    "backlog": {
+      "result": "checked",
+      "evidence": "See full report: Results by area, findings, ledger review and validation; review includes the named baseline plus listed working-tree fixes.",
+      "limits": "All active records reviewed; pending human/device/feature/investigation work remains, not silently closed."
+    }
+  }
+}
