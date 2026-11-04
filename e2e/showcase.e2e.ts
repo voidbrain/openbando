@@ -179,15 +179,19 @@ test('the pilot opening a panel from Views during the showcase stops it and its 
   await page.goto('/?tour=showcase&lang=en');
   const bar = page.locator('app-tour-overlay .bar');
   const replayVideo = page.locator('app-video-panel video');
-  // wait for the replay: the showcase's flight and video are playing
-  await expect.poll(() => replayVideo.evaluate((v) => !(v as HTMLVideoElement).paused).catch(() => false), {timeout: 180_000}).toBe(true);
+  // wait for the replay itself (the timeline's Play is on), not only an unpaused video: loading primes the video with a
+  // short muted play, and a click then lands while the showcase is still arranging its panels
+  await expect(page.locator('app-timeline-panel [data-tour=play].on')).toBeVisible({timeout: 180_000});
+  await expect.poll(() => replayVideo.evaluate((v) => !(v as HTMLVideoElement).paused).catch(() => false), {timeout: 30_000}).toBe(true);
   await expect(bar).toBeVisible();
-  // the pilot opens Views, then the Bandos: the showcase ends there (its next step would close the panel again)
+  // the pilot opens Views, then the Bandos: the showcase ends there (its next step would close the panel again).
+  // Keyboard presses are trusted clicks too, and a panel the replay moves cannot intercept them.
   const menu = page.getByRole('button', {name: 'Open the Views panel', exact: true});
-  if (await menu.count()) await menu.click();
-  await page.locator('app-views-panel button.vis[data-panel=studio]').click();
+  if (await menu.count()) await menu.press('Enter');
+  await page.locator('app-views-panel button.vis[data-panel=studio]').press('Enter');
   await expect(bar).toBeHidden();
-  await expect.poll(() => replayVideo.evaluate((v) => (v as HTMLVideoElement).paused)).toBe(true);
+  // software WebGL in CI can hold a frame for seconds while the Bandos editor builds: allow it
+  await expect.poll(() => replayVideo.evaluate((v) => (v as HTMLVideoElement).paused), {timeout: 30_000}).toBe(true);
   // nothing restarts it or moves the panels: a moment later the replay is still paused and the Bandos still open
   await page.waitForTimeout(1500);
   expect(await replayVideo.evaluate((v) => (v as HTMLVideoElement).paused)).toBe(true);

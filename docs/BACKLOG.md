@@ -244,6 +244,40 @@ Current work ledger, reviewed 31 October 2026 against main `3f7b844`. [Rules](BA
 
 ---
 
+### B-052
+
+**The showcase "Views stops the replay" e2e check fails intermittently in CI**
+
+| Signal | Priority | Status | Effort | Complete |
+|:---:|---|---|---|---|
+| 🟡 | 🔺 P1 | Implemented | 🟢 Small | ~80% |
+
+💻 **→ Human action required: No**<br />Inspect the e2e (4) CI of the fix; close after green merge and a few later green runs.
+
+| | |
+|---|---|
+| **Issue** | `e2e/showcase.e2e.ts` "the pilot opening a panel from Views…" failed both attempts in CI (#273 first run, #276): the video stayed unpaused past 5 s, then on retry the video panel intercepted the Views click. |
+| **Reproduce** | CI shard e2e (4) on software WebGL; passes locally. |
+| **Check** | The test waits for the replay transport (timeline Play on), not an unpaused video that may only be priming; presses Views buttons by keyboard (trusted, not interceptable); allows 30 s for the pause. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** The test read an unpaused `<video>` as a playing replay, but loading primes the video with a short muted play, so the click could land during the load step while panels moved; ending the tour then left the priming play pending. Test-only change; app behaviour unchanged. Watch e2e (4) on #276 and later PRs before closure.
+
+**Estimates:** Small remaining effort; ~80% complete. Local repeat passes; CI remains.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); failing runs 41198464903, 41249038556 |
+| Opened | 2026-11-04 |
+| Verification | e2e local · 2026-11-04 · test passes 3/3 runs; CI e2e (4) · Pending |
+| Reviewed | 2026-11-04 |
+
+</details>
+
+---
+
 ## Features and limitations
 
 ### B-047
