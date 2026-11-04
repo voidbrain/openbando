@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 31 October 2026 against main `3f7b844`. [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 41841651036 passed). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -142,74 +142,6 @@ Current work ledger, reviewed 31 October 2026 against main `3f7b844`. [Rules](BA
 
 ---
 
-### B-041
-
-**A pin armed while the Bandos editor showed its 3D view did nothing**
-
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
-
-💻 **→ Human action required: No**<br />Inspect the fix’s browser/security CI; no human-only acceptance is required.
-
-| | |
-|---|---|
-| **Issue** | A pin armed while the Bandos editor showed its 3D view did nothing. |
-| **Reproduce** | Arm Adjust position or Pin this moment, then Pin start or Pin end and click the ground in each view. |
-| **Check** | Pin modes cancel each other; the selected start/end moves in the main 3D view, editor plan and editor 3D view. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Arming Pin start/end/moment now cancels an unfinished Adjust position preview before pin selection; the reverse transition already cancels pins. The added moment-pins browser case checks Adjust position → Pin start mutual exclusion before the existing plan/Studio 3D placement checks. Run the new PR’s browser suite and verify each view before closure. Historical owner failure on 31 October remains valid evidence against the prior implementation (#259); it is not acceptance of this fix.
-
-**Estimates:** Small remaining effort; ~90% complete. Fix and local checks pass; current CI remains.
-
-| Field | Value |
-|---|---|
-| PR / evidence | Full audit fix; [#276](https://github.com/voidbrain/openbando/pull/276); [#259](https://github.com/voidbrain/openbando/pull/259); report 2026-10-30 |
-| Opened | 2026-10-30 |
-| Verification | Unit/static · 2026-10-31 · full suite/build pass; new browser mode-transition assertion · Pending |
-| Reviewed | 2026-10-31 |
-
-</details>
-
----
-
-### B-044
-
-**Obstacles stop the 3D camera; it should pass through them, only the ground stops it**
-
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
-
-💻 **→ Human action required: No**<br />Inspect the fix’s browser/security CI; no human-only acceptance is required.
-
-| | |
-|---|---|
-| **Issue** | Obstacles stop the 3D camera; it should pass through them, only the ground stops it. |
-| **Reproduce** | Orbit around a building or obstacle in the main and editor 3D views. |
-| **Check** | The camera passes through model obstacles; the ground still limits it. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** The camera callbacks reused aircraft groundAt, which includes building standing floors/roofs. Both main and Studio now use cameraGroundAt (terrain and underground floors only); aircraft groundAt is unchanged. A regression uses a real SiteCollider to check that a camera above a roof is not lifted and a camera below terrain still is. Run the current PR’s browser/security CI before closure.
-
-**Estimates:** Small remaining effort; ~90% complete. Fix and local checks pass; current CI remains.
-
-| Field | Value |
-|---|---|
-| PR / evidence | Full audit fix; [#276](https://github.com/voidbrain/openbando/pull/276); [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 |
-| Opened | 2026-10-31 |
-| Verification | Unit/integration · 2026-10-31 · camera regression and full 602-test suite pass; current browser/security CI · Pending |
-| Reviewed | 2026-10-31 |
-
-</details>
-
----
-
 ### B-045
 
 **After a timeline click the video can stay stuck on an old frame**
@@ -279,108 +211,6 @@ Current work ledger, reviewed 31 October 2026 against main `3f7b844`. [Rules](BA
 ---
 
 ## Features and limitations
-
-### B-047
-
-**A new video/log pair inherits the previous pair’s sync offset**
-
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
-
-💻 **→ Human action required: No**<br />Inspect the fix’s CI and close after green merge.
-
-| | |
-|---|---|
-| **Issue** | Selecting an unsaved pair reset synced but retained its predecessor’s offset and diagnostics. |
-| **Reproduce** | Restore an offset of 12.5 s for pair A, select new video or flight B without a saved sync. |
-| **Check** | B has zero offset and unsynced state; A still restores its own finite saved offset; corrupt nonfinite offsets are ignored. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Inspect the fix’s CI and close after green merge. Unit/integration · 2026-10-31 · original fails 0 versus 12.5; regression and full suite pass; browser/security CI · Pending
-
-**Estimates:** Small remaining effort; ~90% complete. Estimate is not verification.
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
-| Opened | 2026-10-31 |
-| Verification | Unit/integration · 2026-10-31 · original fails 0 versus 12.5; regression and full suite pass; browser/security CI · Pending |
-| Reviewed | 2026-10-31 |
-
-</details>
-
----
-
-### B-048
-
-**Legacy library migration discards recovery data before durable save**
-
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔺 P1 | Implemented | 🟢 Small | ~90% |
-
-💻 **→ Human action required: No**<br />Inspect the durable-commit regressions and CI; close after green merge.
-
-| | |
-|---|---|
-| **Issue** | Quota or IndexedDB write failure left only a memory copy after deleting legacy sources. |
-| **Reproduce** | Migrate legacy entries while localStorage rejects writes or an IndexedDB transaction fails; restart. |
-| **Check** | Sources survive failed saves/retry; successful IDB commit clears recovery data only afterwards; error plus abort counts once. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Inspect the durable-commit regressions and CI; close after green merge. Unit/integration · 2026-10-31 · quota regression fails before fix; quota retry and IDB commit/error/abort checks pass; full suite passes; CI · Pending
-
-**Estimates:** Small remaining effort; ~90% complete. Estimate is not verification.
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
-| Opened | 2026-10-31 |
-| Verification | Unit/integration · 2026-10-31 · quota regression fails before fix; quota retry and IDB commit/error/abort checks pass; full suite passes; CI · Pending |
-| Reviewed | 2026-10-31 |
-
-</details>
-
----
-
-### B-049
-
-**Angular builder’s transitive Vite has published security advisories**
-
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
-
-💻 **→ Human action required: No**<br />Verify browser/build CI for the targeted Vite 8.3.5 override, then close. Revisit the override when a compatible builder patch supplies the fixed dependency.
-
-| | |
-|---|---|
-| **Issue** | Locked builder used Vite 8.3.2 with six npm advisories, including high-severity entries in development tooling. |
-| **Reproduce** | Run npm audit on the baseline lockfile and inspect the nested builder dependency. |
-| **Check** | Reproducible npm ci and app/browser/build checks with patched Vite; npm audit reports zero advisories. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Verify browser/build CI for the targeted Vite 8.3.5 override, then close. Revisit the override when a compatible builder patch supplies the fixed dependency. Dependency audit · 2026-10-31 · baseline 2 affected package entries/6 advisories; patched lockfile npm audit zero, clean npm ci and build pass; browser/security CI · Pending
-
-**Estimates:** Small remaining effort; ~90% complete. Estimate is not verification.
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
-| Opened | 2026-10-31 |
-| Verification | Dependency audit · 2026-10-31 · baseline 2 affected package entries/6 advisories; patched lockfile npm audit zero, clean npm ci and build pass; browser/security CI · Pending |
-| Reviewed | 2026-10-31 |
-
-</details>
-
----
 
 ### B-050
 
@@ -900,40 +730,6 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 
 
-
-### F-047
-
-**Establish explicit full product audit coverage under the adopted procedure**
-
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
-
-💻 **→ Human action required: No**<br />Check the full audit PR’s CI and merge; product findings retain their separate acceptance.
-
-| | |
-|---|---|
-| **Issue** | Existing narrative audits are preserved but do not automatically certify machine-readable full coverage; a harness-only review leaves product areas unclassified. |
-| **Reproduce** | Run check:audits after this adoption: scoped harness evidence cannot refresh code, logic, tests or security product review. |
-| **Check** | All eight areas have an evidence-backed review result at a named baseline, with real limits, defect/hypothesis/proposal classification and owning records; no stale narrative is silently promoted. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** All eight areas reviewed at main 3f7b844 plus the documented working-tree fixes. The dated full report/manifest classifies confirmed defects, outstanding agreed work, async-operation hypotheses and report-only proposals. Local checks pass; the audit PR’s own browser/security CI remains pending. Close this audit outcome after its green merge independently of product human/device checks. Seven-day area freshness enforcement is now enabled; historical reports remain unchanged.
-
-**Estimates:** Small remaining effort; ~90% complete. Review/report/tracking done; CI and merge remain.
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md); [#275](https://github.com/voidbrain/openbando/pull/275); [Scoped adoption review](audits/2026-10-31-harness-v3.1.1.md); [audit procedure](agents/audit.md) |
-| Opened | 2026-10-31 |
-| Verification | Documentation/source review · 2026-10-31 · all eight areas reviewed, 602 tests/build/types pass; current browser/security CI · Pending |
-| Reviewed | 2026-10-31 |
-
-</details>
-
----
 
 ## Other changes
 
