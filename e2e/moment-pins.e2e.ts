@@ -18,6 +18,15 @@ test('a pin at a moment of the replay is placed from the 3D view and can be remo
   });
   const pin = page.getByRole('button', {name: 'Pin this moment', exact: true});
   await expect(pin).toBeEnabled({timeout: 30_000});
+  await page.locator('app-timeline-panel button[title="Back to start"]').click();
+  const startPin = page.getByRole('button', {name: 'Pin start', exact: true});
+  await expect(startPin).toBeEnabled();
+  await page.getByRole('button', {name: 'Adjust position', exact: true}).click();
+  await expect(page.getByRole('button', {name: 'Done adjusting', exact: true})).toHaveAttribute('aria-pressed', 'true');
+  await startPin.click();
+  await expect(page.getByRole('button', {name: 'Adjust position', exact: true})).toHaveAttribute('aria-pressed', 'false');
+  await expect(startPin).toHaveClass(/on/);
+  await startPin.click();
   const scrub = page.locator('app-timeline-panel .scrub'); const b = (await scrub.boundingBox())!;
   await page.mouse.click(b.x + b.width * 0.3, b.y + b.height / 2);
   await pin.click();

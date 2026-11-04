@@ -35,7 +35,7 @@ export interface PlaceOptions {
   calRotDeg: number;
   /** FPV up-tilt in degrees; 0 for GPS-only replays (their orientation has no real camera angle to correct). */
   fpvTiltDeg: number;
-  /** The drone's ground under a point, scene units: terrain, floors and, with `y`, the floor of a tunnel or basement the point is in. Absent = no clamp. */
+  /** Camera ground under a point, scene units: terrain and, with `y`, an underground floor; never roofs or model standing surfaces. Absent = no clamp. */
   groundAt?: (x: number, z: number, y?: number) => number;
 }
 

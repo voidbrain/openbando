@@ -119,6 +119,8 @@ export class VideoService {
     this.loadFailed.set(false);
     this.element.src = this.objectUrl;
     this.primed = false;
+    this.seekIssuedAt = 0;
+    this.ownSeek = false;
     this.lastSeekTarget = -1;
     this.fileKey = `${file.name}:${file.size}`;
     this.fileName.set(file.name);
@@ -273,11 +275,14 @@ export class VideoService {
   private restoreSync(notify = true): void {
     const key = this.syncKey();
     const saved = key ? this.storage.readRaw(key) : null;
-    this.synced.set(saved !== null);
-    if (saved === null) return;
-    this.offset.set(+saved || 0);
+    const offset = saved === null ? null : Number(saved);
+    const valid = offset !== null && Number.isFinite(offset);
+    this.synced.set(valid);
+    this.offset.set(valid ? offset : 0);
     this.lastSeekTarget = -1;
-    if (notify && !this.quietSyncNotifications) this.toast.show(`Restored saved sync (offset ${(+saved).toFixed(2)} s)`);
+    this.features.set(null);
+    this.status.set('');
+    if (valid && notify && !this.quietSyncNotifications) this.toast.show(`Restored saved sync (offset ${offset.toFixed(2)} s)`);
   }
 
   /** Per frame: keep the video where the replay is (playing: free-run and correct drift; paused: seek). */

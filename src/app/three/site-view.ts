@@ -402,7 +402,7 @@ export class SiteViewRenderer {
     this.camera.lookAt(this.target);
     // never inside a hill; the indoor and basement views look from below the ground on purpose
     const collider = this.indoorFloor ? null : this.model?.collider;
-    if (collider) keepAbove(this.camera, (x, z, y) => collider.groundAt(x, z, y), this.target);
+    if (collider) keepAbove(this.camera, (x, z, y) => collider.cameraGroundAt(x, z, y), this.target);
     this.paths.setProgress();
     this.renderer.render(this.scene, this.camera);
   };

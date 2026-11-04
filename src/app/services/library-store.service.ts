@@ -58,11 +58,12 @@ export class LibraryStore {
     return (this.mem.get(c)!.get(key) as T | undefined) ?? null;
   }
 
-  put(c: Collection, key: string, value: unknown): void {
+  /** afterPersist runs only after a successful durable write, never for memory-only recovery. */
+  put(c: Collection, key: string, value: unknown, afterPersist?: () => void): void {
     this.mem.get(c)!.set(key, value);
     this.revision.update((n) => n + 1);
-    if (this.db) void this.write(c, (s) => s.put({ key, value }));
-    else this.lsWrite(`${LS}${c}/${key}`, value);
+    if (this.db) void this.write(c, (s) => s.put({ key, value })).then((saved) => { if (saved) afterPersist?.(); });
+    else if (this.lsWrite(`${LS}${c}/${key}`, value)) afterPersist?.();
   }
 
   delete(c: Collection, key: string): void {
@@ -90,25 +91,24 @@ export class LibraryStore {
   }
 
   /** One write; a failure (an error, an aborted transaction, a database that is gone) is counted and reported. */
-  private write(c: Collection, fn: (s: IDBObjectStore) => void): Promise<void> {
+  private write(c: Collection, fn: (s: IDBObjectStore) => void): Promise<boolean> {
     return new Promise((ok) => {
+      let settled = false;
+      const fail = (error: unknown): void => {
+        if (settled) return;
+        settled = true;
+        this.failed(error);
+        ok(false);
+      };
       try {
         const tx = this.db!.transaction(c, 'readwrite');
         fn(tx.objectStore(c));
-        tx.oncomplete = () => ok();
-        // the value stays in memory for this visit; the pilot is told, and Back up all keeps it
-        tx.onerror = (e) => {
-          e.preventDefault();
-          this.failed(tx.error);
-          ok();
-        };
-        tx.onabort = () => {
-          this.failed(tx.error ?? { name: 'AbortError' });
-          ok();
-        };
+        tx.oncomplete = () => { if (!settled) { settled = true; ok(true); } };
+        // Error followed by abort is one failed write, not two. Keep recovery sources until commit.
+        tx.onerror = (e) => { e.preventDefault(); fail(tx.error); };
+        tx.onabort = () => fail(tx.error ?? { name: 'AbortError' });
       } catch (e) {
-        this.failed(e);
-        ok();
+        fail(e);
       }
     });
   }
@@ -137,11 +137,13 @@ export class LibraryStore {
     }
   }
 
-  private lsWrite(k: string, v: unknown): void {
+  private lsWrite(k: string, v: unknown): boolean {
     try {
       localStorage.setItem(k, JSON.stringify(v));
+      return true;
     } catch (e) {
       this.failed(e); // full or unavailable: kept in memory for this visit, and reported
+      return false;
     }
   }
 }

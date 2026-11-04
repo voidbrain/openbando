@@ -230,8 +230,8 @@ export class SceneService {
     return { followingReplay: this.followingReplay(), flight: this.race.enabled() || this.layout.panels().welcome.visible ? null : this.flights.active, simPosition: this.sim.state.p, replayPosition: this.playback.pose.p };
   }
 
-  /** The drone's own ground (scene units, the collider is scaled with the model): cameras stay above it. */
-  private readonly groundAt = (x: number, z: number, y?: number): number => this.host?.site.collider.groundAt(x, z, y) ?? 0;
+  /** Camera ground only (scene units): terrain and underground floors, excluding aircraft standing surfaces. */
+  private readonly groundAt = (x: number, z: number, y?: number): number => this.host?.site.collider.cameraGroundAt(x, z, y) ?? 0;
 
   private placeOptions(): PlaceOptions {
     const f = this.flights.active;
@@ -364,6 +364,7 @@ export class SceneService {
       this.toast.show('Load a log first');
       return;
     }
+    this.endAdjust(false); // selecting a pin mode cancels an unfinished position preview (B-041)
     if (this.pin() === which) {
       this.endPin();
       return;

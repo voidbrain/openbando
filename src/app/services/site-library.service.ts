@@ -97,20 +97,35 @@ export class SiteLibraryService {
     const now = Date.now(); // once: a clock tick between two bandos must not swap their order
     ids.forEach((id, i) => {
       const t = this.storage.readRaw(legacyKey(id));
-      if (!t || this.store.get('sites', id)) return;
+      if (!t) { this.finishLegacy(id); return; }
       try {
         const spec = sanitizeSpec(JSON.parse(t) as unknown);
         if (spec) {
-          this.store.put('sites', id, { savedAt: now - i, spec } satisfies SiteRecord);
-          n++;
+          const existing = this.store.get<SiteRecord>('sites', id);
+          const current = existing && sanitizeSpec(existing.spec);
+          const record = current ? { ...existing, spec: current } : { savedAt: now - i, spec };
+          this.store.put('sites', id, record, () => this.finishLegacy(id));
+          if (!current) n++;
         }
       } catch {
         /* skip a corrupt bando */
       }
     });
-    for (const id of ids) this.storage.remove(legacyKey(id));
-    this.storage.remove(LEGACY_INDEX);
     return n;
+  }
+
+  /** Remove recovery data only after its replacement reached persistent storage. */
+  private finishLegacy(id: string): void {
+    this.storage.remove(legacyKey(id));
+    const raw = this.storage.readRaw(LEGACY_INDEX);
+    if (!raw) return;
+    try {
+      const rows: unknown = JSON.parse(raw);
+      if (!Array.isArray(rows)) return;
+      const left = rows.filter((row: {id?: unknown} | null) => row?.id !== id);
+      if (left.length) this.storage.write(LEGACY_INDEX, left);
+      else this.storage.remove(LEGACY_INDEX);
+    } catch { /* keep a malformed recovery index for inspection */ }
   }
 
   /** Store a copy of a site under a new id; returns it (null when the source is missing). */

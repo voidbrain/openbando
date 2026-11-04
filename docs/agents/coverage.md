@@ -2,16 +2,16 @@
 
 # Code coverage
 
-How much of the code the unit tests run, per folder. It says what ran, not that the behaviour is checked; branches say the most. A table to find untested parts, never a number to hit: CI warns when a folder drops, it does not fail.
+How much of the code the unit tests run, per folder. It says what ran, not that the behaviour is checked; branches say the most. A table to find untested parts, never a number to hit: CI reports fresh coverage; optional enforcement fails regressions against the main-branch baseline.
 
 | Folder | Files | Lines | Statements | Branches | Functions |
 |---|---|---|---|---|---|
-| `src/app/core/` | 74 | 93.9 % | 90.9 % | 82.0 % | 90.2 % |
-| `src/app/three/` | 21 | 69.6 % | 70.4 % | 60.2 % | 68.2 % |
-| `src/app/services/` | 33 | 40.4 % | 39.2 % | 34.5 % | 40.7 % |
+| `src/app/core/` | 74 | 93.9 % | 90.9 % | 82.1 % | 90.2 % |
+| `src/app/three/` | 22 | 69.1 % | 70.0 % | 60.0 % | 67.2 % |
+| `src/app/services/` | 33 | 40.9 % | 39.8 % | 34.5 % | 42.0 % |
 | `src/app/state/` | 7 | 90.3 % | 84.2 % | 73.7 % | 81.2 % |
-| `src/app/ui/` | 48 | 0.8 % | 0.8 % | 0.7 % | 0.7 % |
-| **all** | 188 | 54.0 % | 54.1 % | 48.2 % | 50.6 % |
+| `src/app/ui/` | 48 | 0.7 % | 0.8 % | 0.7 % | 0.7 % |
+| **all** | 189 | 54.0 % | 54.1 % | 48.2 % | 50.8 % |
 
 ## Files no unit test runs
 

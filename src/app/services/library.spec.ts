@@ -21,6 +21,27 @@ describe('the local library', () => {
     expect(lib.migrateLegacy()).toBe(0);
   });
 
+  it('keeps the legacy source when migration cannot persist its replacement, then retries safely', async () => {
+    const spec = emptySpec({lat: 1, lon: 1}, 'Legacy'); spec.id = 'legacy';
+    localStorage.setItem('abando-ng-sites', JSON.stringify([{id: spec.id}]));
+    localStorage.setItem('abando-ng-site-legacy', JSON.stringify(spec));
+    const full = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw Object.assign(new Error('full'), {name: 'QuotaExceededError'});
+    });
+    try {
+      const lib = TestBed.inject(SiteLibraryService);
+      await Promise.resolve();
+      expect(lib.load('legacy')?.name).toBe('Legacy');
+      expect(localStorage.getItem('abando-ng-site-legacy')).not.toBeNull();
+      expect(localStorage.getItem('abando-ng-sites')).not.toBeNull();
+    } finally { full.mockRestore(); }
+    TestBed.resetTestingModule();
+    const restored = TestBed.inject(SiteLibraryService);
+    await Promise.resolve();
+    expect(restored.load('legacy')?.name).toBe('Legacy');
+    expect(localStorage.getItem('abando-ng-site-legacy')).toBeNull();
+  });
+
   it('saves, lists newest first, loads a checked copy and removes', () => {
     const lib = TestBed.inject(SiteLibraryService);
     const s = emptySpec({ lat: 1, lon: 1 }, 'One');
@@ -171,4 +192,30 @@ describe('the map search', () => {
     expect(hits).toEqual([{ label: 'Milano', lat: 45.4642, lon: 9.19 }]);
     expect(asked).toEqual(['12 Via Inesistente, Milano, Italia', 'Via Inesistente, Milano, Italia', 'Milano, Italia']);
   });
+});
+
+it('waits for the IndexedDB commit before deleting legacy recovery data; error plus abort counts once', async () => {
+  for (const succeeds of [true, false]) {
+    TestBed.resetTestingModule(); localStorage.clear();
+    const spec = emptySpec({lat: 1, lon: 1}, 'Legacy'); spec.id = 'legacy-idb';
+    localStorage.setItem('abando-ng-sites', JSON.stringify([{id: spec.id}]));
+    localStorage.setItem('abando-ng-site-legacy-idb', JSON.stringify(spec));
+    const store = TestBed.inject(LibraryStore);
+    const tx = {
+      objectStore: () => ({put: vi.fn()}),
+      oncomplete: null as (() => void) | null,
+      onerror: null as ((event: {preventDefault: () => void}) => void) | null,
+      onabort: null as (() => void) | null,
+      error: {name: 'QuotaExceededError'},
+    };
+    Object.assign(store, {db: {transaction: () => tx} as unknown as IDBDatabase});
+    const lib = TestBed.inject(SiteLibraryService);
+    expect(lib.load(spec.id)?.name).toBe('Legacy');
+    expect(localStorage.getItem('abando-ng-site-legacy-idb')).not.toBeNull();
+    if (succeeds) tx.oncomplete!();
+    else { tx.onerror!({preventDefault: () => undefined}); tx.onabort!(); }
+    await Promise.resolve();
+    expect(localStorage.getItem('abando-ng-site-legacy-idb') === null).toBe(succeeds);
+    expect(store.health().failed).toBe(succeeds ? 0 : 1);
+  }
 });

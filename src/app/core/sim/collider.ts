@@ -58,10 +58,8 @@ export class SiteCollider implements CollisionWorld {
 
   groundAt(x: number, z: number, y?: number): number {
     const k = this.scale;
-    if (y !== undefined && this.underground.length) {
-      const f = floorUnder(this.underground, x / k, z / k, y / k);
-      if (f !== null) return f * k;
-    }
+    const floor = this.undergroundFloor(x, z, y);
+    if (floor !== null) return floor;
     let g = heightAt(this.ground, x / k, z / k);
     // a floor or flat roof under the drone (at most a few centimetres above it: it is resting there) is its ground
     if (y !== undefined) for (const s of this.standing) {
@@ -69,6 +67,17 @@ export class SiteCollider implements CollisionWorld {
       if (s.top > g && s.top <= y / k + 0.05 && insidePolygon(s.pts, x / k, z / k)) g = s.top;
     }
     return g * k;
+  }
+
+  /** Camera constraint: terrain and underground floors, never roofs or model standing surfaces. */
+  cameraGroundAt(x: number, z: number, y?: number): number {
+    return this.undergroundFloor(x, z, y) ?? heightAt(this.ground, x / this.scale, z / this.scale) * this.scale;
+  }
+
+  private undergroundFloor(x: number, z: number, y?: number): number | null {
+    if (y === undefined || !this.underground.length) return null;
+    const k = this.scale, floor = floorUnder(this.underground, x / k, z / k, y / k);
+    return floor === null ? null : floor * k;
   }
 
   hit(p: Vec3): boolean {
