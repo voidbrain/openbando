@@ -1,24 +1,33 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-10-31T22:36:06.490Z",
-  "policy": "ab0b8d2e0da6287c39d61cc6994c2c35e15650a269ae8816a35feaa8e850ebe5",
+  "reviewed": "2026-11-23T20:14:46.130Z",
+  "policy": "db5c4ffde3ebe2e17d9b8c5e6ac9af6ffb20ff0b786597a277e947dc56a83919",
   "inputs": {
-    "AGENTS.md": "ddb4d86fb8cf1874f710382fd1f3375fd8e341035b961768d10889c1b80a818b",
+    "AGENTS.md": "7197af0638e0c4fc2e8996dc40ef55ed5167b92a3b0dd26bb4b883bbdadc39cf",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
-    "docs/BACKLOG-RULES.md": "fec109fd07b5d03dbc7a04436c547a36285ff67862d6e94924e24cd8bc2ef378",
+    "docs/BACKLOG-RULES.md": "b9ec69529fce88862753599ea1b14ada22eb96a8ca4730071d19d2329fa692ad",
+    "docs/agents/angular.md": "ce4a2b6fd81fd5eae723cf2d1eb42203e253ab5d08c13457d656814aeaf2448e",
     "docs/agents/areas.md": "7d95d4ca293cdfc4056058d3bca93e7cc671e4df9b3809fe59603f4f6f1bf6c7",
-    "docs/agents/audit.md": "5096d238385e277a833b0fa7f4d0b20a1d209a79c142b9a42e8a32f77bdc3311",
-    "docs/agents/maintenance.md": "a7e93ce963ffab30b4592ee90bdd0e72d49ea1320f82df74f22c88f70899d899",
-    "tools/check-audits.mjs": "0e9c655f6f343399880405075eba8009a569b03138c4347323da869fc7b11c93",
-    "tools/check-freshness.mjs": "0b5dc4f28932a413392f34718bf900496c4abec8ac69fd9dc8d7ddaf4f2db655",
-    "tools/check-harness.mjs": "4677cc786243a1200f0795e2e343965cb9a38feb7881283247957c36df406b03",
-    "tools/coverage-table.mjs": "310ed3d4da849572afeef99703660f1488a893d935cea6c4e6a719abdf64b661",
-    "tools/friction.mjs": "126f11065c562464e20892789d62920ecf4558e92e300f084af60632a32e15cd",
-    "tools/maintenance.mjs": "c37ceaddb5b4bc2e454a39c645af3f7bc20e5a711e302cac401b7f8ca85874ad"
+    "docs/agents/audit.md": "e58480c21e8afe9a825df4726fa93b8a7f841557f4267f1fc2c61ac3dac8f642",
+    "docs/agents/maintenance.md": "69f77d944551e4a442de20a0e46badf19a91e42f870bf8048f428c8a64f343a9",
+    "docs/agents/pull-requests.md": "5ebab444064a06518768ea87b9c2944571f3a79520d2bb63512c533ec4fe4f57",
+    "docs/agents/session-start.md": "404f79eee1c0e2dbe3f9da2e38b9c93410a0bcc7b449bbb2749cc7d7853b88d7",
+    "docs/backlog/closure.md": "d5aa9fc8aab175326d82ee4f95f2afb21b572e41d22b066058d1dcd5ef6c3431",
+    "docs/backlog/documentation.md": "ebdbfe80a5df25e3db9c49479911535d4f424720acc23db027b3a418493c25ef",
+    "docs/backlog/records.md": "82686fdc164437a05cdd263bba24fa2eb65f2970f6d43d4ba153055d74f4ce86",
+    "docs/backlog/review.md": "553177fc99074b2bc3ac2c9b430f4d22eaac46247a41b5966b6a97734cfb73df",
+    "tools/check-audits.mjs": "7c9d6ebfdb4e9341b07a80329015fd771d8ab66afb42321d25899b204d826ec8",
+    "tools/check-freshness.mjs": "9ee82617f39e4bd6892370b4c56afdaadf4a84aee320f2a9e7c037d07b7feaf3",
+    "tools/check-harness.mjs": "3f39c811a356269ad08301baa807a8c38cd24ef45835ba7f1c094b7fc6cf5021",
+    "tools/check-rules.mjs": "f3279677ab7aa1acdbb7d134ee6948bee5d4eceb6203332c9d2314d34712a930",
+    "tools/check-tooling.mjs": "c2362c9c06ead61ef1febad395cd59396a16719fce8a0b411fdf8caeb06cf2e4",
+    "tools/coverage-table.mjs": "55f7f10f6cdde9cf3bc5445f2e5e011be62c4385ebfa93259d592dae55bc90f3",
+    "tools/friction.mjs": "b64672f40a91635d0c83f3142d56ee0a4c9ddc3a4e49d8ab60722d8a2780e034",
+    "tools/maintenance.mjs": "e9dfd2a1be530cc5f92b123e4c70f49f91230d4cfd14bcb790b1fb184f2350aa"
   },
   "measurements": {
     "samples": 1,
-    "latestAt": "2026-10-31T21:44:14.346Z",
+    "latestAt": "2026-11-23T20:14:45.987Z",
     "operations": {
       "adoption": {
         "samples": 0,
@@ -48,17 +57,17 @@
         "durationMs": {
           "observed": 1,
           "missing": 0,
-          "median": 285759
+          "median": 107805
         },
         "conflicts": {
-          "observed": 0,
-          "missing": 1,
-          "median": null
+          "observed": 1,
+          "missing": 0,
+          "median": 0
         },
         "unnecessaryPrompts": {
-          "observed": 0,
-          "missing": 1,
-          "median": null
+          "observed": 1,
+          "missing": 0,
+          "median": 0
         },
         "repeatedContextLoads": {
           "observed": 0,
@@ -70,39 +79,28 @@
   },
   "outcomes": [
     {
-      "kind": "tool",
-      "disposition": "implemented",
-      "target": "tools/maintenance.mjs",
-      "evidence": "Adopted exact published v3.1.1 helper; required policy selects actual OpenBando inputs; source fixture suite passes 72 checks."
-    },
-    {
-      "kind": "tool",
-      "disposition": "implemented",
-      "target": "tools/check-harness.mjs",
-      "evidence": "Published fork containment guards adopted without local fork; source regression fixtures pass."
-    },
-    {
       "kind": "rule",
       "disposition": "implemented",
       "target": "AGENTS.md",
-      "evidence": "Preserve project/privacy/authorization rules; distinguish required maintenance, scoped audit reporting and warning-only coverage."
-    },
-    {
-      "kind": "tool",
-      "disposition": "implemented",
-      "target": "docs/audits/2026-10-31-full-openbando.md",
-      "evidence": "Full product audit at main 3f7b844: all eight areas reviewed, owned findings and limitations recorded; no human/device acceptance inferred."
-    },
-    {
-      "kind": "none",
-      "disposition": "no-change",
-      "evidence": "Existing GitHub and Playwright capabilities suffice; no new skill/server/solution profile needed, and no extra coverage gate or policy reduction is justified."
+      "evidence": "Reconciled to harness v10.3.0 (F-048): safety rules stay in AGENTS, procedures moved to docs/agents and docs/backlog, Angular rules to docs/agents/angular.md; every project line kept and marked; check:rules passes."
     },
     {
       "kind": "rule",
       "disposition": "implemented",
-      "target": ".harness.json",
-      "evidence": "Enable seven-day area freshness after establishing an actual full baseline; coverage remains warning-only. Local friction aggregate is the earlier measured adoption/reconciliation phase, not a duration for this product audit."
+      "target": "docs/BACKLOG-RULES.md",
+      "evidence": "Split into docs/backlog/*.md per template v10.3.0 with OpenBando lines (design-system, mascot guides, pre-layout archive heading, ID start date) marked project; ledger migrated (no percentages, cue kinds, Other changes archived); check:backlog passes."
+    },
+    {
+      "kind": "tool",
+      "disposition": "backlog",
+      "target": "F-049",
+      "evidence": "check:tooling fails: no formatter check or linter. Owner chose follow-up PRs (reformat, then lint) over adopting inside the reconcile."
+    },
+    {
+      "kind": "rule",
+      "disposition": "backlog",
+      "target": "F-050",
+      "evidence": "check:rule-load warns: always-loaded rules ~4,700 tokens over 3,500, areas.md ~18,900 over 2,000; split areas by trigger without losing rules."
     }
   ]
 }

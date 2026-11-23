@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 41841651036 passed); reconciled in [#277](https://github.com/voidbrain/openbando/pull/277). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 23 November 2026 against main `34f90c3` (#277; CI 41845649869 passed, its Auto-sync note expected). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -10,11 +10,11 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Simulator and selected-flight/video regression**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~80% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-🧑 **→ Human action required: Yes**<br />Manually check simulator entry, collisions and selected-flight/video replay.
+🧑 **→ Human action required: Procedure**<br />Manually check simulator entry, collisions and selected-flight/video replay.
 
 | | |
 |---|---|
@@ -27,7 +27,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** Manually exercise simulator entry/exit, collision and selected-flight/video replay and synchronization after editor/racing changes.
 
-**Estimates:** Small remaining effort; ~80% complete. Implementation exists; the recorded manual regression checklist remains. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Small remaining effort. Implementation exists; the recorded manual regression checklist remains. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -44,11 +44,11 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Villetta replay misalignment with video**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~80% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-🧑 **→ Human action required: Yes**<br />Pin the demo flight at your three moments on the live site (since #258) and say whether the replay then follows the video.
+🧑 **→ Human action required: Procedure**<br />Pin the demo flight at your three moments on the live site (since #258) and say whether the replay then follows the video.
 
 | | |
 |---|---|
@@ -61,7 +61,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** Implemented 2026-10-30 ([#258](https://github.com/voidbrain/openbando/pull/258)): Path panel → Pin this moment (arm, then click the ground in any 3D view): `core/flight/moment-pins.ts` keeps offsets in model metres per moment, blended linearly from the take-off (left where it was placed) and held after the last pin; `prepareFlight` applies them before laying the path on the ground; saved per bando, log name and fix count in local storage (model metres, no coordinates) and restored when the log is loaded again; × removes them. Tests: the offsets (`moment-pins.spec.ts`), a pinned moment lands exactly where pinned and survives reloading the log (`services.spec.ts`), the workflow in the browser (`moment-pins.e2e.ts`). History: 2026-10-30, measured on the demo flight against three moments the owner named in the video (0:27.6 out through the greenhouse's west-face bottom hole; 1:13.1 in the middle of the greenhouse; 1:35.9 leaving the store): the replay is about 14 m short along the greenhouse and 4 m aside at the first, 8 m towards its north edge at the second, 6 m inside the store's edge at the third. Not timing: the GPS horizontal acceleration matches the IMU's (accelerometer turned by the attitude) best at a 0.1 s lag (r 0.84), so the GPS is on time and the video offset (Auto-sync, r 0.88) is right; a 1.2 s GPS delay first suggested by fitting the three moments was ruled out by this test. Not a single shift or turn either: the errors change size and direction within the flight. It is GPS drift (5–15 m over a minute or two). Plan, agreed: pins at chosen moments: stop the replay where the video shows clearly where the drone is, drag it there; each pin corrects the path around its moment, blending to the next pin (start and end pins become the first two cases); pins are saved with the flight. Also release 13 raises the greenhouse crown to 11.2 m (ratio 1.1), the owner's estimate, which also brings the arch above the replayed path at the west face. History: User confirms video and log timing is synchronized and that the greenhouse is approximately 30–40 cm above the surrounding ground; release 11 models an estimated 35 cm raised floor and frame. Investigate spatial displacement around the main store and greenhouse west exit. The [demo investigation](audits/2026-10-27-villetta-replay.md) matches the screenshots and identifies a separate hidden-origin projection defect (B-018), but does not establish its effect in the saved session. The greenhouse arch control uses a dimensionless crown-height-to-half-width ratio; the inspector now labels it and displays the resulting height in metres. Confirm which control was changed.
 
-**Estimates:** Small remaining effort; ~80% complete. Moment pins and automated coverage exist; the owner’s three-moment comparison remains. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Small remaining effort. Moment pins and automated coverage exist; the owner’s three-moment comparison remains. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -78,11 +78,11 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Hidden-origin GPS projection distorts flight paths**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔺 P1 | Implemented | 🟡 Medium | ~80% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔺 P1 | Implemented | 🟡 Medium |
 
-🧑 **→ Human action required: Yes**<br />Compare the corrected path with the real flight and test real GPS devices.
+🧑 **→ Human action required: Procedure**<br />Compare the corrected path with the real flight and test real GPS devices.
 
 | | |
 |---|---|
@@ -95,7 +95,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** A fixed local reference corrects the false sideways component and is kept with private local calibration; hidden sharing removes it. Tests cover start alignment, pin shifts, rotation, saved/imported calibration, multiple flights and the common live projection. A follow-up avoids saving a live reference before the first recorded-flight alignment; verify the pilot’s flight and real live devices. See [investigation](audits/2026-10-27-villetta-replay.md).
 
-**Estimates:** Medium remaining effort; ~80% complete. Projection and automated cases exist; private-flight comparison and real GPS checks remain. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Medium remaining effort. Projection and automated cases exist; private-flight comparison and real GPS checks remain. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -112,11 +112,11 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **New bando: grey map after a hidden bando, full addresses not found, Generate before a place**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~80% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-🧑 **→ Human action required: Yes**<br />On the live site after merge: open a hidden bando, then New; search a full street address; check the map, the matches list and Generate.
+🧑 **→ Human action required: Procedure**<br />On the live site after merge: open a hidden bando, then New; search a full street address; check the map, the matches list and Generate.
 
 | | |
 |---|---|
@@ -129,7 +129,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** Reported 2026-10-29 on the live site (Bandos → New → search). Causes and fixes: (1) the editor's "place hidden" state read the draft of the bando open before, so New after a hidden bando showed a grey map, "no map · place hidden" and a disabled Area step: a new bando is never place-hidden. (2) Nominatim answers nothing when OpenStreetMap lacks the street or its number (checked against the reported address): the search now retries without the house number, then without the leading parts (`coarserQueries`, two parts kept), at one request a second (Nominatim policy), and says the exact address was not found. (3) Go with several matches only opened a list: it now moves to the first match and lists all matches, the shown one marked (`aria-pressed`); another row moves the map there; the list closes with ✕ or a map drag. (4) Generate 3D was enabled before any place was chosen: on a new bando it waits for a picked match, typed coordinates or a map drag (the standalone guide step sets the place). Covered by `coarserQueries` and map-search unit cases and `e2e/new-bando.e2e.ts` (which fails with the old place-hidden check). Not checked: a real geocoder answer for a coarse fallback in a browser, pointer use on a device.
 
-**Estimates:** Small remaining effort; ~80% complete. Four fixes and automated cases exist; real geocoder and device pointer checks remain. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Small remaining effort. Four fixes and automated cases exist; real geocoder and device pointer checks remain. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -146,9 +146,9 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **After a timeline click the video can stay stuck on an old frame**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟠 | 🔶 P2 | Investigate | 🟡 Medium | ~10% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟠 | 🔶 P2 | Investigate | 🟡 Medium |
 
 💻 **→ Human action required: No**<br />Next: reproduce the stuck video after a timeline click (Safari and Chromium) and find the cause.
 
@@ -163,7 +163,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** The owner 2026-10-31: "there still is the timeline click-video-stuck problem; don't know if Safari, needs investigation" (B-040, the Safari repaint after Auto-sync, is solved). Earlier report 2026-10-30: Timeline panel, paused, an old frame in the middle of the video; to unlock it, ⏮ back to the first frame and Play, then the video follows again. Next: a browser case that clicks the timeline repeatedly while paused and playing and checks the video's time and that a new frame was presented (`requestVideoFrameCallback`), in Chromium and WebKit; then the fix.
 
-**Estimates:** Medium remaining effort; ~10% complete. The symptom and recovery are known; reproduction, diagnosis and browser fix remain. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Medium remaining effort. The symptom and recovery are known; reproduction, diagnosis and browser fix remain. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -180,9 +180,9 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **The showcase "Views stops the replay" e2e check fails intermittently in CI**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔺 P1 | Implemented | 🟢 Small | ~80% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔺 P1 | Implemented | 🟢 Small |
 
 💻 **→ Human action required: No**<br />Inspect the e2e (4) CI of the fix; close after green merge and a few later green runs.
 
@@ -197,7 +197,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** The test read an unpaused `<video>` as a playing replay, but loading primes the video with a short muted play, so the click could land during the load step while panels moved; ending the tour then left the priming play pending. Test-only change; app behaviour unchanged. Watch e2e (4) on #276 and later PRs before closure.
 
-**Estimates:** Small remaining effort; ~80% complete. Local repeat passes; CI remains.
+**Estimates:** Small remaining effort. Local repeat passes; CI remains.
 
 | Field | Value |
 |---|---|
@@ -216,9 +216,9 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Investigate delayed AI replies against a changed editor draft**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟠 | 🔶 P2 | Investigate | 🟢 Small | ~0% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟠 | 🔶 P2 | Investigate | 🟢 Small |
 
 💻 **→ Human action required: No**<br />Write the deferred-completion regression to confirm or refute the stale-response hypothesis; fix only if reproduced.
 
@@ -233,7 +233,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** Write the deferred-completion regression to confirm or refute the stale-response hypothesis; fix only if reproduced. Source review · 2026-10-31 · async boundary identified; reproduction and fix not established
 
-**Estimates:** Small remaining effort; ~0% complete. Estimate is not verification.
+**Estimates:** Small remaining effort. Estimate is not verification.
 
 | Field | Value |
 |---|---|
@@ -250,9 +250,9 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Investigate an Auto-sync result after changing its video/log pair**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟠 | 🔶 P2 | Investigate | 🟢 Small | ~0% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟠 | 🔶 P2 | Investigate | 🟢 Small |
 
 💻 **→ Human action required: No**<br />Add a deferred-scan service/browser test to confirm or refute stale pair application; keep separate from the fixed saved-offset leak B-047.
 
@@ -267,7 +267,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** Add a deferred-scan service/browser test to confirm or refute stale pair application; keep separate from the fixed saved-offset leak B-047. Source review · 2026-10-31 · async boundary identified; reproduction and fix not established
 
-**Estimates:** Small remaining effort; ~0% complete. Estimate is not verification.
+**Estimates:** Small remaining effort. Estimate is not verification.
 
 | Field | Value |
 |---|---|
@@ -284,11 +284,11 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Cut/Wing for diagonal basement outlines**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~80% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-🧑 **→ Human action required: Yes**<br />Review diagonal Cut/Wing editing and saved/imported outlines.
+🧑 **→ Human action required: Procedure**<br />Review diagonal Cut/Wing editing and saved/imported outlines.
 
 | | |
 |---|---|
@@ -301,7 +301,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** Recovered #117 onto current main: its merge into the former feature branch did not reach main. Diagonal Cut/Wing and 3D floor-height previews are implemented; verify browser editing and persistence. Open perimeter edges remain guarded for Cut/Wing (F-004).
 
-**Estimates:** Small remaining effort; ~80% complete. Recovered implementation exists; diagonal editing and persistence acceptance remain. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Small remaining effort. Recovered implementation exists; diagonal editing and persistence acceptance remain. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -318,11 +318,11 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Racing on real devices**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟡 Medium | ~70% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔶 P2 | Implemented | 🟡 Medium |
 
-🧑 **→ Human action required: Yes**<br />Run the two-device race/GPS field checklist with real telemetry feeds.
+🧑 **→ Human action required: Procedure**<br />Run the two-device race/GPS field checklist with real telemetry feeds.
 
 | | |
 |---|---|
@@ -335,7 +335,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** Follow the [field checklist](racing/README.md): align two devices, compare timing, connect two real GPS streams, verify stale hiding, GPS loss, relay disconnect/rejoin and crowded paths in every camera. No field-readiness claim until completed.
 
-**Estimates:** Medium remaining effort; ~70% complete. Racing implementation exists; two-device field scenarios have never been checked. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Medium remaining effort. Racing implementation exists; two-device field scenarios have never been checked. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -352,9 +352,9 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Move the take-off pad in the editor**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🟡 Medium | ~60% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔹 P3 | Open | 🟡 Medium |
 
 💻 **→ Human action required: No**<br />Next: three fixes from the owner's check (live preview in 3D, drag the pad itself, the pad on a raised building).
 
@@ -369,7 +369,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** The owner 2026-10-31, on the live site: it works, but (1) dragging in 3D shows no preview: the result appears only on release (the same issue other drags had; the rule: every drag previews its result live); (2) only the blue box on top of the pad can be grabbed: the pad itself should be what drags (and the box avoided); (3) dragging it onto the greenhouse, which stands above the ground, makes the pad disappear. Next: each one fixed with a browser case (the 3D drag previews; a press on the pad slab drags it; a drop on a raised building keeps it visible, on the ground or its roof as F-024 decides). Done 2026-10-30 ([#254](https://github.com/voidbrain/openbando/pull/254)): (1) `takeoffPadIndex` (core/site-spec.ts) is the one source: the pad under the start, or none, then the start marker (`START_MARKER`, 4 m, shared by 2D and 3D) is the take-off spot; `moveTakeoff`, the 3D pick and box, the 2D drawing (`takeoffRect`), the take-off height and area trimming read it; a new browser case (start off every pad) picks and drags the marker in 2D and 3D and keeps the slab where it is; (3) and (4) the inspector preview has a `pad` target, checked before the selected building (a screenshot of Playground shows the marker); (5) one `at (x, z) m` field with its Italian. A bare start marker is drawn under the buildings, a real pad over them: on the first CI run the marker covered the centre of buildings in three editor tests and took their click. (2) not reproduced: in Chromium and WebKit headless one pad element exists during a drag and no trail shows; left to the owner's Safari check. `areas.spec.ts` set up its take-off pad by the old rule (a pad away from the start): the fixture now puts the start on it. Reopened 2026-10-30 (owner, live site, with two screenshots): (1) in 3D the selection box is much bigger than the pad and the pad cannot be dragged; (2) in 2D a drag leaves a trail of pad copies; (3) the inspector shows no 3D preview of the pad; (4) selecting the pad sometimes leaves the previous object in the inspector's preview; (5) the two x / z fields are verbose. Cause of (1), found: the code takes the last pad as the take-off pad and assumes it stands at `droneStart`, but in Playground (pad at −14, 0; start at −30, 128) and Villetta (pad at 0, 0; start at 40, −50) it does not, and Chiari e Forti has no pad: the box spans a slab and the far start marker. Plan: (1) the take-off pad is the pad under `droneStart`, or none (then the start marker alone is the take-off spot); `moveTakeoff`, the 3D pick and box, the 2D drawing and the take-off height use that one source; (2) reproduce the trail (not seen in Chromium or WebKit headless; maybe a Safari repaint of the moved SVG rect); (3) and (4) the inspector preview gets a pad target and follows the pick; (5) a compact position readout with a Move to coordinates action instead of two fields. History: Requested 2026-10-29: the take-off pad (where flights start, `droneStart`, drawn as the last pad) could not be selected or moved in the editor; a never-called `SiteService.setTakeoffAt` moved the start without the drawn pad. Now `moveTakeoff` (core) moves the last pad and the drone start together, keeping their offset (older bandos' road pads stay). In 2D the pad has a red outline; Select picks it (the inspector shows x / z in metres) and drags it in one undo step; its right-click menu has "Move to coordinates…", and the ground's right-click menu has "Move the take-off pad here". `setTakeoffAt` removed. Covered by a `layers.spec.ts` case and `e2e/takeoff-pad.e2e.ts` (drag, ground menu: the pad lands under the click, export has pad and start together). Not done: moving it in the 3D editor view.
 
-**Estimates:** Medium remaining effort; ~60% complete. Pad identity, preview and editing work partly; three concrete drag/visibility defects remain. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Medium remaining effort. Pad identity, preview and editing work partly; three concrete drag/visibility defects remain. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -386,9 +386,9 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Take-off pad indoors, on an upper floor or on a flat roof**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🟢 Small | ~80% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔹 P3 | Open | 🟢 Small |
 
 💻 **→ Human action required: No**<br />Next: when the pad moves from indoors onto the roof, show the roof again (and the pad on it).
 
@@ -403,7 +403,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** The owner 2026-10-31, on the live site: the pad indoors with the roof hidden; moved onto the roof, the view still shows the indoors, and the pad moves but cannot be seen. The roof should appear when the pad stands on it. Next: a pad set on the roof turns the hidden roof back on (or draws the pad over it), with a browser case. Restored 2026-10-30: this record was set Implemented in #225 and put back to Open by a later backlog conflict resolution (the agent's merge helper; fixed). Requested 2026-10-29: the take-off pad (F-021) can stand inside a building on any floor, or on a flat roof; other roofs and more complex cases only on request. Plan: an optional take-off level in the spec (absent = ground, old bandos unchanged), set from the editor (Indoors on a floor, or the pad's menu "on the roof" for a flat roof), the pad and the drone drawn and started at that height, the ground under it not levelled for it. Closes with unit cases (height per level and roof, old specs) and a browser case placing it on a floor and a roof. Done 2026-10-30 ([#225](https://github.com/voidbrain/openbando/pull/225), every check green): `SiteSpec.takeoffOn` (`{ building, level }`, absent = ground, older bandos unchanged); `core/takeoff-place.ts`: `standingLevels` (upper floors, a flat roof; none for open shells or deep ruins) is the one source for the inspector's "stands on" menu, `takeoffHeight` and the model's standing surfaces; the collider's `groundAt` returns a floor or flat roof under the drone, so it rests, takes off and lands there; a roof stands `ROOF_CLEARANCE` (0.15 m, the collider margin) above its box, or every move from the pad would be a collision; the pad and the start marker are drawn at that height and the simulator starts there; in the 2D plan the take-off pad is now drawn over the buildings (it could not be picked inside one). Covered by `takeoff-place.spec.ts` (choices and heights, a vanished floor falls back to the ground, old specs, a drone resting on a roof stays clear of it and takes off) and `takeoff-pad.e2e.ts` (the menu offers ground / floor L1 / roof, the export keeps it). Not done: holes in floors (a stairwell) still count as floor; a drone flying up from below still passes through upper slabs (they are not solid); dragging the pad in 3D (F-035, since done in [#231](https://github.com/voidbrain/openbando/pull/231)).
 
-**Estimates:** Small remaining effort; ~80% complete. Floor and roof placement exist; roof visibility on moving from indoors remains. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Small remaining effort. Floor and roof placement exist; roof visibility on moving from indoors remains. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -420,11 +420,11 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Rework the Fly checklist**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🟡 Medium | ~0% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔹 P3 | Open | 🟡 Medium |
 
-🧑 **→ Human action required: Yes**<br />Say what the Fly checklist should do differently (steps, order, what it checks, when it opens).
+🧑 **→ Human action required: Decision**<br />Say what the Fly checklist should do differently (steps, order, what it checks, when it opens).
 
 | | |
 |---|---|
@@ -437,7 +437,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** Requested 2026-10-29 ("the Fly checklist must be worked"). The current checklist is the Fly panel's guide (`core/fly-guide.ts`, `ui/panels/fly-panel.ts`, guide snippet `fly-checklist`). Waiting for the pilot's direction before changing it.
 
-**Estimates:** Medium remaining effort; ~0% complete. The rework is unscoped pending the pilot’s direction; effort is provisional. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Medium remaining effort. The rework is unscoped pending the pilot’s direction; effort is provisional. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -454,11 +454,11 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Rework the panels' "?" tips: what they cover, checked automatically**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🟡 Medium | ~20% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔹 P3 | Open | 🟡 Medium |
 
-🧑 **→ Human action required: Yes**<br />Choose A (title-based tips), B (a tip per control) or C (remove tips).
+🧑 **→ Human action required: Decision**<br />Choose A (title-based tips), B (a tip per control) or C (remove tips).
 
 | | |
 |---|---|
@@ -471,7 +471,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** Requested 2026-10-29. The "?" button in every panel's title bar turns tips on hover on and off (`TourService.tips`); nobody has checked which controls they cover. Plan: an inventory per panel (controls with and without a tip), a proposal for the rework, and an automated check (unit or browser) that every control of a panel has its tip, like `check:i18n` for texts. Closes when the inventory is done, the rework is agreed and the check runs in CI. Part of F-028 (2026-10-29: the user asked whether the tips were mapped to controls; not yet). Inventory done 2026-10-30 (F-032 step 5, [#238](https://github.com/voidbrain/openbando/pull/238)): `docs/agents/element-map.md`, Tips per file: of 407 controls, 9 have a tip on hover (a guide step's `hover`), 116 a `title` (the browser's tooltip, which "?" does not use) and 286 neither, most in the editor (135), the racing controls (29) and the Elements box (19). Proposal (A, recommended): with "?" on, a control no guide step explains shows its `title` (or its accessible name) in the same tip box, so "?" covers every titled control at once; then add titles where they are missing, and a check in the element-map builder fails for an icon-only control with neither title nor tip (labelled controls explain themselves). (B) a written tip (guide step) for every control: complete but about 400 texts, each translated. (C) drop "?" and rely on titles. Waiting for the choice.<br />Previous next-action summary: Choose the tips rework: A (recommended), B or C, described under Next action.
 
-**Estimates:** Reassessed after the example info control: it has a title and accessible name; the dated inventory remains historical. Scope and estimates unchanged. Medium remaining effort; ~20% complete. Inventory and options exist; the owner’s choice, implementation and coverage check remain. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Reassessed after the example info control: it has a title and accessible name; the dated inventory remains historical. Scope and estimates unchanged. Medium remaining effort. Inventory and options exist; the owner’s choice, implementation and coverage check remain. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -488,11 +488,11 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Clips and films say when their sources changed since recording**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔹 P3 | Implemented | 🟡 Medium | ~70% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔹 P3 | Implemented | 🟡 Medium |
 
-🧑 **→ Human action required: Yes**<br />Re-record and review the guide clips and Welcome films.
+🧑 **→ Human action required: Procedure**<br />Re-record and review the guide clips and Welcome films.
 
 | | |
 |---|---|
@@ -505,7 +505,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** Requested 2026-10-29 (part of F-028): clips and films are recorded in a browser (`npm run clips`, `npm run films`), so CI cannot regenerate them, and nothing says one is out of date. Done 2026-10-29: `docs/guide/media.json` (per set: the commit it was recorded at, the source globs it shows), `tools/check-media.mjs` (`npm run check:media`; a CI warning, never blocking; test files left out), and `npm run clips` / `films` stamp their set after recording. First run: the guide clips (recorded at d35f0d3) show 12 changed files and the Welcome films (73aee6e) 15, so both are due for re-recording.<br />Previous next-action summary: Re-record the guide clips and Welcome films on a machine with the GPU and ffmpeg (`npm run clips`, `npm run films`) and review them: both sets show files changed since (the new palette among them).
 
-**Estimates:** Reassessed after moving example descriptions into a tooltip: review/re-record any Bandos clip showing the examples. Local Playwright browser download failed, so recording remains pending; estimates unchanged. Medium remaining effort; ~70% complete. Freshness tooling exists; recording and review of both media sets remain. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Reassessed after moving example descriptions into a tooltip: review/re-record any Bandos clip showing the examples. Local Playwright browser download failed, so recording remains pending; estimates unchanged. Medium remaining effort. Freshness tooling exists; recording and review of both media sets remain. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -522,11 +522,11 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Full impact map: chains, content, couplings, outside the repository, as a readable page**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small | ~90% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-🧑 **→ Human action required: Yes**<br />Read `docs/agents/impact-map.md` and say what is missing or wrong: it is meant to list everything that follows a change.
+🧑 **→ Human action required: Procedure**<br />Read `docs/agents/impact-map.md` and say what is missing or wrong: it is meant to list everything that follows a change.
 
 | | |
 |---|---|
@@ -539,7 +539,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** Restored 2026-10-30: [#224](https://github.com/voidbrain/openbando/pull/224) set this record Implemented, and a later backlog conflict resolution put the old version back (the agent's merge helper kept main's record; fixed to merge record by record). Requested 2026-10-29: the user asked which dependencies a file trigger misses (a mascot animation synced with the Welcome films, a film that records an example bando, a theme colour that changes everything visual) and asked for a readable list of content dependencies and value couplings, plus what lies outside the repository if useful to people. Template rules already released: 1.12.0 (chains, the map page, plans become records) and 1.13.0 (inputs, wide-reach settings, couplings, audits look outside). Recorded here at once because a plan given in the conversation is otherwise forgotten (BACKLOG-RULES). Done 2026-10-30 ([#224](https://github.com/voidbrain/openbando/pull/224), harness 1.15.0): 18 rows with ids, inputs and chains (block → catalogue → examples; Chiari e Forti, Bando Villetta and the demo flight → clips → guide pages, films; theme → art, design system, clips, films; library upgrades → clips, films), 6 value couplings (film length, `DEMO_OFFSET`, theme tokens, fence materials, roof kinds, structure kinds), 8 outside sources, links to the element map, the guide and the design system. A dry run gives the user's examples: a block → catalogue, examples; Chiari e Forti → clips, guide, films; `styles.scss` → theme, art, design system, clips, guide, films and the token coupling; the tour service → the film-length and demo-offset couplings. The two couplings nothing keeps equal have their own records (F-036, F-037).
 
-**Estimates:** Small remaining effort; ~90% complete. The generated map and dry runs exist; the requested owner review remains. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Small remaining effort. The generated map and dry runs exist; the requested owner review remains. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -556,9 +556,9 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Coverage of the browser tests in the coverage table**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🟣 | ◻️ P3 | Blocked | 🔴 Large | ~10% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟣 | ◻️ P3 | Blocked | 🔴 Large |
 
 💻 **→ Human action required: No**<br />Waiting for an upstream published browser-coverage contract; then wire OpenBando’s collection and CI.
 
@@ -573,7 +573,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** Blocked on published optional browser/combined coverage support tracked by [project-harness F-032, PR #59](https://github.com/voidbrain/project-harness/pull/59). After its compatible release, reconcile the helper here, integrate the OpenBando Playwright fixture, upload per-shard artifacts, merge them in CI and refresh the optional summary. The template owns generic contracts, collectors and its own acceptance; this record owns only OpenBando integration. No release exists yet. Historical plan split from F-038 on 30 October; the former foreign implementation steps have been moved to their owner.
 
-**Estimates:** Large remaining effort; ~10% complete. Integration waits for the named upstream contract, not a human check.
+**Estimates:** Large remaining effort. Integration waits for the named upstream contract, not a human check.
 
 | Field | Value |
 |---|---|
@@ -590,9 +590,9 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Adjust the replay drone's position in 3D, height included**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🟡 Medium | ~60% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔶 P2 | Open | 🟡 Medium |
 
 💻 **→ Human action required: No**<br />Next: find why a height set with Adjust position goes back to the wrong height about a metre later.
 
@@ -607,7 +607,7 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Next action / closure evidence:** The owner 2026-10-31, on the live site: Adjust position works; at 0:28 (one of the marked moments) the height was corrected and held, but about a metre of flight later the path went back to the wrong height. Not yet known whether that is the pin's blend toward the next pin (or the implicit take-off anchor), a later pin with no height, or the clamp that keeps the path above the ground. Next: reproduce on the demo flight with one height pin at 0:28, plot `pinOffset` dy around it, fix and cover it in `moment-pins.spec.ts`. Implemented 2026-10-30 ([#262](https://github.com/voidbrain/openbando/pull/262)): pins carry `dy` (blended like `dx`, `dz`; older saved pins read 0; the path never goes under the ground); Path panel → Adjust position puts a three.js TransformControls on the replay drone in the main 3D view (`three/adjust-gizmo.ts`); the orbit steps aside while the pointer is on it (`ControlTarget.blocked`); dragging previews the path live (`FlightService.previewPins`), Enter or the button again keeps one pin, Esc restores; arrow keys nudge 0.5 m (Shift+↑↓ vertical), captured so they do not seek the replay. The Path panel's pin buttons sit two to a row (the column had grown taller than the panel). Not done yet: the control in the editor's 3D view (Pin this moment works there). Tests: height in `moment-pins.spec.ts`; the keyboard path in `moment-pins.e2e.ts` (a pin, the replay not moved). History: Requested 2026-10-30 by the owner after trying Pin this moment (B-017): pins only move the drone across the ground, and its height still comes from the barometer and the ground under it. Plan: pins carry `dy` too (blended the same way, the take-off still at 0); "Adjust position" puts a move control (three axes and three planes, three.js TransformControls) on the replay drone in the main 3D view and the editor's 3D view; dragging moves the drone at this moment, Enter or a click elsewhere confirms (one pin), Esc cancels; arrow keys nudge it (Shift: vertical) for keyboard use. The automatic proposals of F-041 are pins of this kind, accepted or corrected with the same control.
 
-**Estimates:** Medium remaining effort; ~60% complete. Main-view height pins and controls exist; the reported height reset and editor control remain. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Medium remaining effort. Main-view height pins and controls exist; the reported height reset and editor control remain. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -624,9 +624,9 @@ Current work ledger, reviewed 4 November 2026 against main `e88b557` (#276; CI 4
 
 **Align a replay to the model automatically, with a confidence level**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🔴 Large | ~20% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔹 P3 | Open | 🔴 Large |
 
 💻 **→ Human action required: No**<br />Build the collision detector, then measure the learned-feature experiment.
 
@@ -647,7 +647,7 @@ Full run 2026-10-30 (branch `feat/align-automatically`, not merged: Viterbi sear
 
 Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), `tools/prototypes/`, not part of the app or CI), on the demo flight against the owner's three moments, converted to site shifts (x east, z south): 0:27.6 ≈ (−14, +2.6), low; 1:13.1 ≈ +7.7 across the greenhouse (z); 1:35.9 ≈ −4.9 across the store (x). Geometric (`align-collisions.ts`, the simulator's collider): the path passes through solids in six stretches, only one of them an owner's moment (1:35.9; the greenhouse is an open frame, so its drift hits nothing); there the cheapest clearing shift (height shifts weighted 3×, the barometer holds over seconds) is 0.9 m out and 3.5 m down, against ~5 m out observed, and "4 m up" costs almost the same: a detector of impossible stretches, not a measure; with two near-equal options the confidence rule would ask, as intended. Visual (`visual-probe.e2e.ts`): the model alone rendered from the replay's FPV camera on a grid of shifts (±16 m, four heights), edges compared with the video frame. The unshifted render scores −0.05 / 0.07 / 0.14, the best 0.24 / 0.31 / 0.26: at 0:27.6 x −10, z +10, 3 m lower (the tree and the end-frame legs line up as in the video); at 1:13.1 z +4 (half of +7.7) plus 12 m along the tunnel; at 1:35.9 x −8 (−4.9 observed) with the along-store axis flat. Right direction every time, 3–4 m off on the axis it sees, blind along the view and along repeated structure (the 4.6 m ribs). One moment cannot fix the position in 3D; moments together can, because the heading changes along the flight and the drift is slow. Cost: about 1.7 min per moment (1156 renders, headless): over an hour per flight at this grid, minutes with a coarse-to-fine search; not real time. Pathfinding (the owner asked): the fusion is map matching, a Viterbi search over candidate shifts per fix: costs for distance from the GPS (height dearer), for being inside a solid (high but finite, so a gap missing from the model can still be crossed, and that is when to ask about it), and for a poor video match; the shift may change only slowly between fixes. History: Requested 2026-10-30 by the owner. Two signals together. Geometric: where the replayed path passes through something solid, look for the smallest smooth shift that threads a nearby opening of the model. Visual: at that moment, render the FPV view at the shifted and unshifted positions and compare each with the video frame (local, no service). The model may lack small gaps that exist, so a path through a wall is evidence about the model as much as about the GPS. Confidence decides: both agree → go (automatic pins, marked, undoable); one sure, the other neutral → propose (dashed path, accept or reject); they disagree (through a wall, no opening near, the video prefers the unshifted path) → ask ("the flight goes through here, the model has no opening: add one?"). Prototype first: on the demo flight, how close the suggestions land to the owner's pins (0:27.6 west-face hole, 1:13.1 mid-greenhouse, 1:35.9 leaving the store), and whether hiding one opening in a copy of the model makes it ask instead of forcing a detour. A vision-language model on frame pairs was considered: hints rather than metres, seconds per call, and it would send frames of a private place to a service; only ever an opt-in experiment, if the local signals fall short. Not real time.
 
-**Estimates:** Large remaining effort; ~20% complete. Prototypes established limits; detector and learned-feature experiment remain with uncertain outcome. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Large remaining effort. Prototypes established limits; detector and learned-feature experiment remain with uncertain outcome. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -664,9 +664,9 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 **Right-click in the editor's 3D view: the same context menu as on the plan**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🟡 Medium | ~0% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔹 P3 | Open | 🟡 Medium |
 
 💻 **→ Human action required: No**<br />Next: open the plan's context menu on a right-click on any element (or the ground) in the 3D view.
 
@@ -681,7 +681,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 **Next action / closure evidence:** The owner 2026-10-31: a right-click on the ground (on every element) in 3D does nothing; it could open the contextual menu as in 2D. Next: reuse the plan's menu with the 3D pick (`userData.pick`, the ground point), a browser case for a building and the ground.
 
-**Estimates:** Medium remaining effort; ~0% complete. New request; context-menu picking and browser coverage remain. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Medium remaining effort. New request; context-menu picking and browser coverage remain. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -698,9 +698,9 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 **Line tools also draw by click A, live preview, click B (keeping the drag)**
 
-| Signal | Priority | Status | Effort | Complete |
-|:---:|---|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🔴 Large | ~10% |
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔹 P3 | Open | 🔴 Large |
 
 💻 **→ Human action required: No**<br />Implement two-click drawing alongside drag for every line tool.
 
@@ -715,7 +715,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 **Next action / closure evidence:** Requested 2026-10-31 by the owner, checking F-027 ("it works only on drag, aren't other segment elements also click A (preview) click B?"). Checked in the code (`bando-editor.ts`, the tool list and the pointer-up handlers): only Measure takes clicks (a chain, with a live preview); Fence, interior Wall, Road, Water in line mode, Tunnel and Bridge draw by press–drag–release with a live preview, and a click shorter than 0.5 m is dropped; Surface and Water outlines are drawn by hand. So the fence is not the odd one: the request is click–click for every line tool. Plan: a press released within a few pixels starts a line at A, the preview follows the pointer, the next click ends it at B (Esc or a right-click cancels); a longer drag still draws as today; one shared handler for all the line tools; the hints and their Italian updated; a browser case per tool (click–click and drag), and the guide steps whose clips show drawing checked (impact map). Chaining (B of one fence is A of the next, as in Measure) is a question for the owner when it is built. Made a project rule by the owner (2026-10-31): Editor area notes, "Tool palette": every line tool takes click A, live preview, click B, and every drag previews live.<br />Previous next-action summary: Next: let Fence, Wall, Road, Water (line), Tunnel and Bridge draw by two clicks with a live preview, as Measure does; a press-drag-release still works.
 
-**Estimates:** Large remaining effort; ~10% complete. Tool inventory and gesture plan exist; shared handling, six tool cases and guide review remain. Estimated 2026-10-31; not acceptance evidence.
+**Estimates:** Large remaining effort. Tool inventory and gesture plan exist; shared handling, six tool cases and guide review remain. Estimated 2026-10-31; not acceptance evidence.
 
 | Field | Value |
 |---|---|
@@ -731,53 +731,113 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 
 
+### F-048
+
+**Reconcile the harness from v3.1.1 to v10.3.0**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Merge the reconcile PR once every required check passes, then close this record.
+
+| | |
+|---|---|
+| **Issue** | OpenBando was on harness v3.1.1; v10.3.0 is published, so the copied tools, the AGENTS layout and the backlog rules were behind. |
+| **Reproduce** | `npm run check:freshness` listed 21 copied files to update and 8 adapted files to reconcile. |
+| **Check** | `check:freshness` reports "on template v10.3.0; copied files match it"; `check:backlog`, `check:rules`, `check:conventions`, `check:maintenance` pass; CI green. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Done 2026-11-23 on branch `harness/reconcile-10.3.0`: the 21 copied files were updated from v10.3.0, and 23 new guides and tools were adopted: `check-rules`, `rule-load`, `check-tooling`, `code-map`, `reconcile-draft`, `verification`, the two reviewer subagents, the procedure guides in `docs/agents/` and the backlog rule files in `docs/backlog/`. AGENTS.md now holds the safety rules and a procedures table, and the Angular rules moved to `docs/agents/angular.md`. Every project line was kept, marked `<!-- project -->`. Migrations: completion percentages removed (4.0.0); human-action cues name Procedure or Decision (8.0.0); `## Other changes` was moved to `docs/archive/reconciliation-2026.md` (8.6.0). CI action versions pinned to verified commit SHAs and a CycloneDX SBOM step added. Not adopted (optional): source-owned records and work items, task claims, work usage, the push guard, archive recaps, the quiet reporter, browser coverage, solution refresh, CI on push to `main` and `reviews.skills`. Prettier and ESLint (5.0.0) follow in F-049; rule-load budget warnings in F-050. Closes once the PR's required checks pass and it merges.
+
+**Estimates:** Small remaining effort. Reconcile done locally; the PR's CI remains. Estimated 2026-11-23; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-23 |
+| Verification | Script · 2026-11-23 · check:backlog, check:rules, check:conventions, check:integrations and check-harness pass locally; CI · Pending |
+| Reviewed | 2026-11-23 |
+
+</details>
+
+---
+
+### F-049
+
+**Adopt Prettier and ESLint (harness 5.0.0, `check:tooling`)**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔶 P2 | Open | 🟡 Medium |
+
+💻 **→ Human action required: No**<br />Add the Prettier and ESLint configuration and scripts, reformat the repository in one mechanical PR, then fix lint findings in a second.
+
+| | |
+|---|---|
+| **Issue** | Harness 5.0.0 requires a formatter check and a linter in CI for every stack; OpenBando has neither, so `check:tooling` fails and is not yet in CI. |
+| **Reproduce** | `npm run check:tooling`: no `format:check` and no `lint` script. |
+| **Check** | `npm run format:check`, `npm run lint` and `npm run check:tooling` pass locally and as CI steps; AGENTS lists both commands. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Agreed with the owner 2026-11-23 (reconcile F-048): adopt in follow-up PRs rather than in the reconcile. PR 1: `.prettierrc.json`, `.prettierignore`, `format` / `format:check` scripts and the whole-repository reformat, nothing else (verify unit, build and e2e unchanged). PR 2: `eslint.config.mjs` (angular-eslint), the `lint` script and fixes. Then add the "Formatter check, and that formatter and linter are enforced" CI step and remove the AGENTS project line that defers it. This replaces the 2.2.2 stamp note that ESLint was skipped on purpose.
+
+**Estimates:** Medium remaining effort. The reformat is mechanical; the number of lint findings is unknown until the config runs. Estimated 2026-11-23; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-23 |
+| Verification | Script · Pending |
+| Reviewed | 2026-11-23 |
+
+</details>
+
+---
+
+### F-050
+
+**Rule-load budgets: split the area notes and trim always-loaded rules**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔹 P3 | Open | 🟡 Medium |
+
+💻 **→ Human action required: No**<br />Split `docs/agents/areas.md` by area so each trigger reads under 5,000 tokens, and move procedure detail out of AGENTS.md.
+
+| | |
+|---|---|
+| **Issue** | `check:rule-load` (adopted in F-048) warns: the always-loaded rules are about 4,700 tokens (budget 3,500), `docs/agents/areas.md` about 18,900 (budget 2,000 per file), and 20 triggers read more than 5,000 tokens. |
+| **Reproduce** | `npm run check:rule-load`. |
+| **Check** | `check:rule-load` prints no warning, or each remaining one has a recorded reason; no rule is lost (`check:rules` passes). |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Found 2026-11-23 while reconciling F-048. Split the area notes into one file per area (`docs/agents/areas/<area>.md`), linked from the AGENTS area table; move procedure detail (such as the "Adding things" recipes) out of AGENTS.md while keeping every rule. Warnings only; CI does not fail on them.
+
+**Estimates:** Medium remaining effort. A mechanical split with link updates; the rule review must show that no requirement is lost. Estimated 2026-11-23; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-23 |
+| Verification | Script · Pending |
+| Reviewed | 2026-11-23 |
+
+</details>
+
+---
+
 ## Other changes
 
-2026-10-31: [#275](https://github.com/voidbrain/openbando/pull/275) adopts v3.1.1; its scoped review is [dated here](audits/2026-10-31-harness-v3.1.1.md). F-046 retains #274’s completed v2.2.2 CI evidence and owns current adoption acceptance; F-047 independently tracks full product audit coverage. Product human/device records, approved artwork/media and historical reports remain unchanged.
+Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-Harness ownership clarification ([#273](https://github.com/voidbrain/openbando/pull/273), 2.0.1 source): adopted the merged [template #40](https://github.com/voidbrain/project-harness/pull/40), `9c3abc6`, into BACKLOG-RULES and AGENTS. Ownership review rejects foreign Issue/next-action/closure work, including hidden details; masters use owned fixtures/contracts and never wait for derived implementation, deployment or adoption. This project owns only its own reconciliation. Template release tags remain upstream maintenance, not an active OpenBando task. Estimate policy and the 2.0.0 layout are unchanged.
-
-Harness 2.0.0, 2026-10-31: applied the merged [template #39](https://github.com/voidbrain/project-harness/pull/39) at commit `da68177` on the owner’s explicit instruction, with its release tag still pending. Copied check-backlog, reconciled the rules and migrated every active record; F-044 tracks this project’s verification.
-
-`main` protection active 2026-10-29 (user request, set through the API): ruleset "protect main" requires `check`, `e2e (1)`–`e2e (4)` and `race-browser` and refuses force pushes and deletion. B-025 (the flaky Auto-sync check) was closed first so the required checks are reliable.
-
-Harness templates 1.5.0 and 1.6.0 (2026-10-29, [#199](https://github.com/voidbrain/openbando/pull/199)): `check-backlog` (archives only grow: a record or closed row on `main` missing locally fails), `check-freshness` (compares with `origin/main`, counts squash merges, `freshness.auditDays`), `check-harness`, `ci-status` and `check-conventions` copied; the AGENTS failing-test and audit bullets reconciled; `.harness.json` on 1.6.0, audit cadence left at 7 days. The new tools were tried here before release: same output. CI green.
-
-Harness template 1.7.0 (2026-10-29, [#200](https://github.com/voidbrain/openbando/pull/200)): `check-backlog` and `check-freshness` copied (freshness lists commits without a PR to review); AGENTS and BACKLOG-RULES reconciled. CI green.
-
-Harness templates 1.8.0 and 1.9.0 (2026-10-29, [#204](https://github.com/voidbrain/openbando/pull/204)): BACKLOG-RULES gains "One repository, one backlog" (a record never waits for another repository); `check-harness` copied (comments only); the CI workflow clones the public template and runs `check:freshness` with `HARNESS_HOME`, so a PR on a project behind a release shows warnings (never blocking; a failed clone is a warning). `.harness.json` on 1.9.0. CI green; its freshness step read the cloned template ("on template v1.9.0").
-
-The Villetta example is renamed "Bando Villetta" (2026-10-29, user request; [#210](https://github.com/voidbrain/openbando/pull/210)): its file, the guide's flight bando and the examples test. Same release: copies keep their own name.
-
-AGENTS: a green PR that conflicts with `main` may get a push that only resolves the conflict (2026-10-29, user; [#211](https://github.com/voidbrain/openbando/pull/211), then made a template rule in 1.10.0, below); its checks run again before it can merge. Before this, #207 and #208 were replaced by new PRs for a backlog conflict.
-
-Harness template 1.10.0 (2026-10-29, [#212](https://github.com/voidbrain/openbando/pull/212); template [#12](https://github.com/voidbrain/project-harness/pull/12)): found here, after a rule for every project (conflict-only pushes to green PRs) was first written into this project's AGENTS without asking whether it belonged to the template. AGENTS gains "Changing a harness file" (the edit is the trigger; unsure: ask before editing) and the template's PR rules (no stacked PRs, no new work on a green PR, conflict-only pushes allowed); project lines inside template sections are marked `<!-- project -->` (12 in AGENTS); the Work tracking bullet points to the new section; BACKLOG-RULES: parallel PRs' backlog conflicts are resolved in the conflicting PR; `check-freshness` copied (it lists the harness files a branch changes); `.harness.json` on 1.10.0. CI green.
-
-Harness template 1.11.0 (2026-10-29, [#216](https://github.com/voidbrain/openbando/pull/216), CI green; template [#14](https://github.com/voidbrain/project-harness/pull/14)): the impact map (F-028); AGENTS gains "What follows a change", BACKLOG-RULES points to the map; `check-freshness` copied; `.harness.json` on 1.11.0 with nine rows. Harness 1.10.0 ([#212](https://github.com/voidbrain/openbando/pull/212)): CI green.
-
-Harness templates 1.12.0 – 1.15.1 (2026-10-30, [#224](https://github.com/voidbrain/openbando/pull/224), CI green; 1.15.1 escapes backslashes in the impact map's cells, found by CodeQL on #224): `tools/impact-map.mjs` copied and `check-freshness` updated; AGENTS ("What follows a change", the plans-become-records bullet, audits look outside) and BACKLOG-RULES reconciled; the CI step and `npm run impact-map`; `.harness.json` on 1.15.1 with the full map (F-033).
-
-Harness template 1.16.0 (2026-10-30, [#227](https://github.com/voidbrain/openbando/pull/227), CI green; template [#26](https://github.com/voidbrain/project-harness/pull/26)): the code coverage table (F-038 steps 1–2). `@vitest/coverage-v8` added, `npm run coverage` (every app file included, so untested files count at 0 %), CI runs the tests with coverage and `coverage-table --check` (warnings only); `docs/agents/coverage.md` and its baseline committed: core 93.8 % of lines, state 90.3 %, three 69.3 %, services 39.8 %, ui 0.8 % (its parts are tested in the browser, not counted yet), all 53.8 %; the page is linked from the impact map and has its impact row. `.harness.json` on 1.16.0.
-
-Harness template 1.17.0 (2026-10-30, [#244](https://github.com/voidbrain/openbando/pull/244), the owner's review of the harness; template [#28](https://github.com/voidbrain/project-harness/pull/28)): AGENTS gains "What the agent does on its own, and what it asks first", the backlog-conflict sentence (`tools/merge-backlog.mjs`) and coverage refreshed only on purpose; BACKLOG-RULES steps 4 and 7 (close only from Verified; automated acceptance is the merged PR's green CI run; once merged, a line names its PR by number) and the legend; `check-backlog`, `merge-backlog` and `merge-when-green` copied. The new check found 10 such placeholders already on main: each now names its PR. B-038 closed (#243 green, alert 1 dismissed as won't fix by the owner).
-
-Harness template 1.17.1 (2026-10-30, template [#30](https://github.com/voidbrain/project-harness/pull/30)): `check-backlog` ignores a quoted mention of the placeholder phrase; the 1.17.0 note here had quoted it and failed every PR until [#245](https://github.com/voidbrain/openbando/pull/245) reworded it.
-
-Harness template 1.18.0 (2026-10-30, requested by the owner; template [#32](https://github.com/voidbrain/project-harness/pull/32)): a record waiting for a person shows an Issue / Reproduce / Check table under its human-action line; `check-backlog` requires it on records a branch touches. All 25 waiting records got it at once. B-011 and F-008 closed on the owner's review of Welcome.
-
-Harness templates 1.19.0 and 1.19.1 (2026-10-30, decided with the owner after a merged placeholder twice failed `check:backlog` on every PR; template [#34](https://github.com/voidbrain/project-harness/pull/34), [#35](https://github.com/voidbrain/project-harness/pull/35)): on a PR's CI run `check-backlog` fails on a placeholder the branch adds and names the number; the rule is to write the number right after opening the PR. `merge-when-green` retries GitHub timeouts and ignores a stale failure after a push; `merge-backlog` keeps archived records gone.
-
-Villetta release 12 (2026-10-30, the owner's photo): a deciduous tree at the greenhouse's south-west corner, 7 m with a 3.2 m crown, placed 4 m out on the corner's diagonal; copies are offered the update. The Welcome films and the clips that show Villetta follow it (F-031).
-
-Villetta release 13 (2026-10-30, the owner): the greenhouse crown is 11.2 m (ratio 1.1) instead of the 9.3 m estimated from below; the two tests that held the old value now hold this one, with the reason.
-
-The "Map north" panel removed (2026-10-30, the owner: the compass widget is on the main view and in the editor's 3D view): the panel, its drawing (`core/drawing/compass.ts`, its `cameraUpAngle` moved to `camera-compass.ts`) and its test go; old saved layouts drop it. What follows, by the impact map: Views lists panels from `PANELS` (gone there); no guide step, README line or clip source names it (guide pages and element map unchanged); the clips that show the Views list show its old row until they are re-recorded (F-031); coverage table refreshed (code removed).
-
-Harness template 1.20.0 (2026-10-30, decided with the owner: records closed on 29 and 30 October had been appended to the 28 October archive; template [#37](https://github.com/voidbrain/project-harness/pull/37)): one archive per year. The 27 and 28 October files moved into [backlog-2026.md](archive/backlog-2026.md): the earlier tables under a heading of their own, every record under its closing day (5 on 28, 11 on 29, 27 on 30 October), nothing dropped (`check:backlog` counts every published line across the archives). `check-backlog` copied, BACKLOG-RULES archive paragraph reconciled, `version` 1.20.0.
-
-Harness template 1.20.1 (2026-10-31, the owner's find; template [#38](https://github.com/voidbrain/project-harness/pull/38)): a loose paragraph between F-009 and F-021, left from the old table layout (the note under the bugs table, 28 October), was the only place of the rule "a new finding about the same behaviour goes into its record"; next to "never reuse an ID" it read as a contradiction. The rule is now in BACKLOG-RULES beside the ID rule, the paragraph is gone, `version` 1.20.1.
-
-Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
+2026-11-23: harness reconciled from v3.1.1 to v10.3.0 (F-048): copied tools updated, completion percentages removed, human-action cues name their kind, this section archived. Prettier and ESLint adoption follows in F-049.
 
 ## Reconciliation history
 

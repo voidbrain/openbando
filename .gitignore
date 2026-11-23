@@ -21,3 +21,7 @@ public/demo/
 
 # Private numeric harness observations and running timers
 .harness/
+
+# Local harness measurements (tools/friction.mjs, tools/maintenance.mjs)
+.harness/friction-session.json
+.harness/review-outcomes.json

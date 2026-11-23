@@ -1,0 +1,25 @@
+# Parallel work and model assignment
+
+This optional workflow is adopted with `workItems.enabled` in `.harness.json`. Existing projects need no record migration until they opt in. It coordinates cooperating authorized agents; it is not a sandbox, identity provider, permission grant or guarantee of conflict-free merges. Read all applicable project rules before starting.
+
+Moved to [shared claims](claims.md): "Shared claims".
+
+## Records, tasks and source ownership
+
+Keep one stable B-/F- outcome per defect or feature. Split large work into explicit tasks named `F-001-T01` (or `B-001-T01`), each with one goal, acceptance, dependencies, affected resources, validation, privacy and escalation conditions. A bug's reproduction, fix and acceptance tasks retain the original bug identity; its committed failing regression and independent-review requirements still apply. Completing tasks does not close their parent without the parent's full acceptance.
+
+After adoption, `docs/work/records/ID.md` owns each active record; `docs/work/layout.json` owns the ledger introduction and section layout. `docs/BACKLOG.md` is the generated current-status view, preserving stable headings/links and the existing backlog checker. Edit record sources, not their generated copies. Local Markdown links are relative to each source file and are relocated when rendered into the ledger; migration verifies the exact round trip before writing. Titled/multiline/angle/escaped/parenthesized local destinations and reference usages (including shortcuts whose definitions occur elsewhere in the ledger) outside literal code are unsupported and require explicit migration review; the tool rejects them before creating sources rather than silently breaking navigation. The recap generator retains ownership of its marked derived block. Existing archives remain dated evidence, unchanged by migration. New records sort by ID within their B/F group; claim the named `contract:backlog-ids` resource before allocating IDs. Layout/roadmap/shared contracts need separately declared resource ownership too.
+
+`node tools/work-items.mjs migrate` splits a supported ledger without changing its bytes and refuses existing destinations or unsupported grouping. Review the exact result before adoption. `build` regenerates the view; `check` validates source/view equality, task dependencies and model-profile structure. Run the existing backlog, dependency, queue, roadmap and archive checks too. Their status and acceptance rules remain authoritative. Adding a task creates no automatic queue priority or permission.
+
+Store one JSON file per task in the configured tasks directory. Fields: `version: 1`, `id`, `parent`, `title`, `goal`, `status` (`planned`, `ready`, `implemented`, `verified`, `closed`), string arrays `acceptance`, `dependsOn`, `resources`, `capabilities`, `validation`, `escalation`, and a `privacy` string. Optional `suggestedProfile` names an existing model profile. Validation strings describe reviewed checks; the tool does not execute them. A task becomes ready only after its scope, prerequisites and parent/human cues have been reviewed. Known source paths and `directory/**` scopes are resources; `contract:name` and `generated:name` identify shared boundaries/outputs. Unknown scope is a reason to serialize work, not assume independence.
+
+## Model suitability and delegation
+
+A model, pilot, host and execution permission are separate choices. Required capabilities and evaluation evidence are more useful than parameter-count minimums or permanent provider rankings. Every model follows the same task, privacy, test and review requirements. Never grant a local/cheap model broader permissions to compensate for weak tool use.
+
+The configured profiles JSON has `version: 1` and a `profiles` array. Each profile has `id`, exact `model` description, `status` (`candidate` or `qualified`), `capabilities` and `evidence` arrays. Record model/version, quantization, runtime, context/concurrency budget, hardware and evaluation date/scope in its evidence; never store credentials or private prompts. Candidate means unmeasured/unqualified, not a minimal capable model. Qualified requires actual reviewed evidence for the named capabilities; schema validation cannot certify its quality. Reevaluate after material model/runtime/context changes.
+
+`acquire --profile PROFILE` rejects unqualified profiles or missing task capabilities. Omitting the option claims work without assigning a model; it does not choose one automatically. A suggested profile is advisory, never a measured pass or execution request. Model/host adapters and command runners remain project-owned; this tool runs none. Keep task context bounded, inspect the diff and run meaningful acceptance. Escalate ambiguity, repeated failures, tool misuse, context loss or higher-risk changes to an appropriate reviewer/model within existing privacy authorization. A larger model is not automatically a better reviewer, and a fallback never silently sends local-only content to a cloud service.
+
+Upfront feature plans (optional): [parallel-work-plans.md](parallel-work-plans.md).
