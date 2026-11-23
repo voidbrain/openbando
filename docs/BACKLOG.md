@@ -739,7 +739,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 |:---:|---|---|---|
 | 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Merge once every required check passes; the full audit and the v10.3.1 tool are in this PR.
+💻 **→ Human action required: No**<br />Merge once every required check passes; the full audit and the v10.3.1 tool are in #278.
 
 | | |
 |---|---|
@@ -871,7 +871,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-23: harness reconciled from v3.1.1 to v10.3.0 (F-048, [#278](https://github.com/voidbrain/openbando/pull/278)): copied tools updated, completion percentages removed, human-action cues name their kind, this section archived. Prettier and ESLint adoption follows in F-049. Same PR: the [23 November full audit](audits/2026-11-23-full-openbando.md) of all eight areas at main `34f90c3` (no new product defect; F-051 opened), carried here because `main` fails the audit gate and this PR holds the fresh maintenance receipt.
+2026-11-23: harness reconciled from v3.1.1 to v10.3.0 (F-048, [#278](https://github.com/voidbrain/openbando/pull/278)): copied tools updated, completion percentages removed, human-action cues name their kind, this section archived. Prettier and ESLint adoption follows in F-049. Same PR: the [23 November full audit](audits/2026-11-23-full-openbando.md) of all eight areas at main `34f90c3` (no new product defect; F-051 opened), carried in #278 because `main` fails the audit gate and #278 holds the fresh maintenance receipt.
 
 ## Reconciliation history
 
