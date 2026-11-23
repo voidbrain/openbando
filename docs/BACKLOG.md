@@ -702,7 +702,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-24: #282 (Angular 22.3) and #283 (harness v10.5.0) merged on green CI. Harness reconciled to v10.6.1 (friction samples survive worktrees; skills and rule-review guides) in [#284](https://github.com/voidbrain/openbando/pull/284).
+2026-11-24: #282 (Angular 22.3) and #283 (harness v10.5.0) merged on green CI. Harness reconciled to v10.6.1 (friction samples survive worktrees; skills and rule-review guides) and v10.7.0 (the closure rule names `work:close`) in [#284](https://github.com/voidbrain/openbando/pull/284).
 
 ## Reconciliation history
 
