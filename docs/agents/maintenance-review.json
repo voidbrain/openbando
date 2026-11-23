@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-23T20:29:56.542Z",
+  "reviewed": "2026-11-23T20:38:51.829Z",
   "policy": "db5c4ffde3ebe2e17d9b8c5e6ac9af6ffb20ff0b786597a277e947dc56a83919",
   "inputs": {
     "AGENTS.md": "9fb46687215045a5b9ded7c6b371781e8e5efe716a5cdc649c115be6104c0460",
@@ -19,7 +19,7 @@
     "tools/check-audits.mjs": "7c9d6ebfdb4e9341b07a80329015fd771d8ab66afb42321d25899b204d826ec8",
     "tools/check-freshness.mjs": "9ee82617f39e4bd6892370b4c56afdaadf4a84aee320f2a9e7c037d07b7feaf3",
     "tools/check-harness.mjs": "3f39c811a356269ad08301baa807a8c38cd24ef45835ba7f1c094b7fc6cf5021",
-    "tools/check-rules.mjs": "f3279677ab7aa1acdbb7d134ee6948bee5d4eceb6203332c9d2314d34712a930",
+    "tools/check-rules.mjs": "78bbe906bfe93a3d00bd7c5e9b078d660002ef9b5aa579f26eb2f6c3507f994e",
     "tools/check-tooling.mjs": "c2362c9c06ead61ef1febad395cd59396a16719fce8a0b411fdf8caeb06cf2e4",
     "tools/coverage-table.mjs": "55f7f10f6cdde9cf3bc5445f2e5e011be62c4385ebfa93259d592dae55bc90f3",
     "tools/friction.mjs": "b64672f40a91635d0c83f3142d56ee0a4c9ddc3a4e49d8ab60722d8a2780e034",
@@ -112,6 +112,12 @@
       "kind": "none",
       "disposition": "no-change",
       "evidence": "23 November full audit: the 7-day audit gate and daily maintenance check blocked all PRs after an idle week; kept as the owner set it on 31 October, proposal recorded report-only in docs/audits/2026-11-23-full-openbando.md."
+    },
+    {
+      "kind": "tool",
+      "disposition": "implemented",
+      "target": "tools/check-rules.mjs",
+      "evidence": "Copied from template v10.3.1 (B-048 there): glob regex characters escaped; clears the CodeQL js/incomplete-sanitization alert on #278."
     }
   ]
 }
