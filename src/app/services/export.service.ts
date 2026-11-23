@@ -255,7 +255,7 @@ export class ExportService {
       bitrate: bitrateFor(W),
       framerate: fps,
     };
-    let supported = false;
+    let supported: boolean;
     try {
       supported = !!(await VideoEncoder.isConfigSupported(config)).supported;
     } catch {

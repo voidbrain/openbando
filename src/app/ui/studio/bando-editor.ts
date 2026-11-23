@@ -1459,7 +1459,7 @@ export class BandoEditor {
     effect(() => {
       // a multi-selection of trees only lives while a tree is selected and the trees stay the same list
       const p = this.pick();
-      this.ed.draft().trees.length;
+      void this.ed.draft().trees; // read so the effect re-runs when the tree list changes
       if (p?.t !== 'tree') untracked(() => this.treeSet.set([]));
     });
     effect(() => {

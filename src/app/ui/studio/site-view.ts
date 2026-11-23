@@ -36,6 +36,7 @@ import type { BuildingHandle } from '../../three/building-handles';
       </div>
     }
     @if (basementVertices().length) {
+      <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -- the keydown only stops propagation; the summary is the focusable part -->
       <details class="vertex-access" (keydown)="$event.stopPropagation()">
         <summary>Basement vertices</summary>
         @for (index of basementVertices(); track index) {

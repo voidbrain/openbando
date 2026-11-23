@@ -2926,6 +2926,7 @@
                     (change)="mutate(setFlag('crenels'), checked($event))"
                 /></label>
                 @if (!bd.footprint) {
+                  <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -- its inputs are inside @for, which the rule does not see -->
                   <label
                     class="fld"
                     title="One wall more ruined than the rest (or less): percent, empty = as the building"
