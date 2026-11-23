@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 23 November 2026 against main `878c675` (#278; CI 45266928463 green, its Auto-sync note expected). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 23 November 2026 against main `297bbdd` (#279; its CI green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -703,9 +703,9 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔶 P2 | Open | 🟡 Medium |
+| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Prettier is in (#279); next: ESLint config, the `lint` script and its fixes, then `check:tooling` in CI.
+💻 **→ Human action required: No**<br />Merge #280 once every check passes, then close this record on its CI.
 
 | | |
 |---|---|
@@ -716,15 +716,15 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Step 1 done 2026-11-23 ([#279](https://github.com/voidbrain/openbando/pull/279)): `.prettierrc` on the template options (printWidth 120: the unused 100-wide config matched 1 of 278 files and changed 5,400 more lines), `.prettierignore`, `format` / `format:check` on `src/` and `e2e/`, Prettier pinned to 3.9.10, `format:check` in CI. One mechanical reformat of 266 files in `src/` and `e2e/`: the position-free TypeScript syntax tree matches for every .ts file but `underground.ts` (`a ?? (b ?? c)` → `a ?? b ?? c`, same value); `styles.scss` compiles to the same CSS except `0.90` → `0.9`; `bando-editor.html` parses to the same Angular template (independent review); three `prettier-ignore` comments where Prettier 3.9 is not idempotent on back-to-back interpolations. Two project tools read templates as text and broke on the new layout (check-i18n saw 653 of 852 texts, the element map mislabelled controls): both fixed and shown to give the same output on the old and new source. The a11y e2e check found the Library button by exact text (`/^\W*Library$/`); the reformat put its text on its own line, so Angular keeps one trailing space and the match failed (the visible label and accessible name are unchanged): the locator now allows trailing whitespace (`\s*$`), not a changed requirement. The reformat touches every source file, so the media checker now lists every clip and film as changed since recording (they were already stale, F-031). Step 2: ESLint (`angular/eslint.config.mjs`, with the `core/` rule allowing `signal`, `computed`, `untracked`), `lint` in CI, then `check:tooling` in CI. Agreed with the owner 2026-11-23 (reconcile F-048): adopt in follow-up PRs rather than in the reconcile. PR 1: `.prettierrc.json`, `.prettierignore`, `format` / `format:check` scripts and the whole-repository reformat, nothing else (verify unit, build and e2e unchanged). PR 2: `eslint.config.mjs` (angular-eslint), the `lint` script and fixes. Then add the "Formatter check, and that formatter and linter are enforced" CI step and remove the AGENTS project line that defers it. This replaces the 2.2.2 stamp note that ESLint was skipped on purpose.
+**Next action / closure evidence:** Step 2 done 2026-11-23 ([#280](https://github.com/voidbrain/openbando/pull/280)): ESLint 10 with typescript-eslint, angular-eslint (templates and their accessibility, inline templates included) and eslint-config-prettier, all pinned; `core/` may import only `signal`, `computed`, `untracked` from Angular (probe: `inject` and `@angular/common` rejected); copied harness tools and `tools/prototypes/` not linted. 19 findings: 9 code fixes (`const`, needless initial values, `this` alias, `any` in a test, a bare signal read written as `void`, a control-character sentinel), 7 template-rule firings at 5 places disabled on their line with the reason, 3 in `tools/prototypes/` (now not linted) (a listbox with `aria-activedescendant`, controls inside `@if`/`@for` the rule cannot see, pointer conveniences over focusable children). `lint`, `format:check` and `check:tooling` in CI. Step 1 merged as #279 (CI green). Review: fresh-context design review 2026-11-23, no blockers: `Quat.multiply` identical on 20,000 random cases, the five disables exact and hiding no defect, the same 852 i18n texts, the core/ rule probed; its wording nit fixed. Step 1 done 2026-11-23 ([#279](https://github.com/voidbrain/openbando/pull/279)): `.prettierrc` on the template options (printWidth 120: the unused 100-wide config matched 1 of 278 files and changed 5,400 more lines), `.prettierignore`, `format` / `format:check` on `src/` and `e2e/`, Prettier pinned to 3.9.10, `format:check` in CI. One mechanical reformat of 266 files in `src/` and `e2e/`: the position-free TypeScript syntax tree matches for every .ts file but `underground.ts` (`a ?? (b ?? c)` → `a ?? b ?? c`, same value); `styles.scss` compiles to the same CSS except `0.90` → `0.9`; `bando-editor.html` parses to the same Angular template (independent review); three `prettier-ignore` comments where Prettier 3.9 is not idempotent on back-to-back interpolations. Two project tools read templates as text and broke on the new layout (check-i18n saw 653 of 852 texts, the element map mislabelled controls): both fixed and shown to give the same output on the old and new source. The a11y e2e check found the Library button by exact text (`/^\W*Library$/`); the reformat put its text on its own line, so Angular keeps one trailing space and the match failed (the visible label and accessible name are unchanged): the locator now allows trailing whitespace (`\s*$`), not a changed requirement. The reformat touches every source file, so the media checker now lists every clip and film as changed since recording (they were already stale, F-031). Step 2: ESLint (`angular/eslint.config.mjs`, with the `core/` rule allowing `signal`, `computed`, `untracked`), `lint` in CI, then `check:tooling` in CI. Agreed with the owner 2026-11-23 (reconcile F-048): adopt in follow-up PRs rather than in the reconcile. PR 1: `.prettierrc.json`, `.prettierignore`, `format` / `format:check` scripts and the whole-repository reformat, nothing else (verify unit, build and e2e unchanged). PR 2: `eslint.config.mjs` (angular-eslint), the `lint` script and fixes. Then add the "Formatter check, and that formatter and linter are enforced" CI step and remove the AGENTS project line that defers it. This replaces the 2.2.2 stamp note that ESLint was skipped on purpose.
 
-**Estimates:** Medium remaining effort. The reformat is mechanical; the number of lint findings is unknown until the config runs. Estimated 2026-11-23; not acceptance evidence.
+**Estimates:** Small remaining effort: the PR's CI. Estimated 2026-11-23; not acceptance evidence.
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#279](https://github.com/voidbrain/openbando/pull/279) (Prettier) |
+| PR / evidence | [#279](https://github.com/voidbrain/openbando/pull/279) (Prettier, merged on green CI); [#280](https://github.com/voidbrain/openbando/pull/280) (ESLint) |
 | Opened | 2026-11-23 |
-| Verification | Script · 2026-11-23 · format:check, 602 unit tests, build, types, i18n 852, syntax-tree comparison; CI · Pending; lint · Pending |
+| Verification | Script · 2026-11-23 · lint clean, format:check, check:tooling, 602 unit tests, build, types, i18n 852; CI #279 green; CI #280 · Pending |
 | Reviewed | 2026-11-23 |
 
 </details>

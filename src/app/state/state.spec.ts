@@ -6,8 +6,14 @@ import { PlaybackStore } from './playback.store';
 import { RadioStore } from './radio.store';
 import { ViewStore } from './view.store';
 
-const saved = (key: string): Record<string, any> =>
-  JSON.parse(localStorage.getItem(key) ?? '{}') as Record<string, any>;
+interface SavedPanel {
+  x: number;
+  w: number;
+  ghost: boolean;
+  minimized: boolean;
+}
+/** What a store wrote to localStorage, typed by the test that reads it. */
+const saved = <T = Record<string, unknown>>(key: string): T => JSON.parse(localStorage.getItem(key) ?? '{}') as T;
 
 describe('stores', () => {
   beforeEach(() => {
@@ -57,7 +63,7 @@ describe('stores', () => {
       s.toggleMinimized('flights');
       s.resizeTo('path', 400, 300);
       TestBed.tick();
-      const p = saved('abando-ng-layout')['panels'];
+      const p = saved<{ panels: Record<'flights' | 'path', SavedPanel> }>('abando-ng-layout').panels;
       expect(p.flights.x).toBe(123);
       expect(p.flights.ghost).toBe(true);
       expect(p.flights.minimized).toBe(true);
@@ -179,7 +185,7 @@ describe('stores', () => {
       r.setAxis('pitch', { inv: false });
       expect(r.pitch().inv).toBe(false);
       TestBed.tick();
-      expect(saved('abando-ng-radio')['roll'].a).toBe(5);
+      expect(saved<{ roll: { a: number } }>('abando-ng-radio').roll.a).toBe(5);
     });
   });
 

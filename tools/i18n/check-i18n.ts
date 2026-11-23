@@ -96,13 +96,13 @@ for (const path of files(`${ROOT}/src/app`)) {
     const body = t
       .replace(/\{\{([\s\S]*?)\}\}/g, (_m, e: string) => {
         bits.push(e);
-        return '\u0001';
+        return '\uE000';
       })
       .replace(/"[^"]*"/g, '""')
       .replace(/@let[^;]*;/g, ' ')
       .replace(/@(?:if|else if|for|switch|case|default|defer|placeholder|empty)\b[^{]*\{|@else\s*\{|[{}]/g, ' ');
     for (const e of bits) for (const x of exprTexts(e)) see(x, rel);
-    for (const m of body.matchAll(/>([^<>]+)</g)) see(m[1]!.replace(/\u0001/g, '0'), rel);
+    for (const m of body.matchAll(/>([^<>]+)</g)) see(m[1]!.replace(/\uE000/g, '0'), rel);
   }
   // toasts and native dialogs with plain text
   // single- or double-quoted: Prettier writes a text holding an apostrophe in double quotes

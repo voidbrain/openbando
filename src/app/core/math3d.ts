@@ -104,12 +104,12 @@ export class Quat {
   }
   /** this = this * q  (apply q first in the local frame, like three.js). */
   multiply(q: Quat): this {
-    const a = this;
+    // set() runs after every argument is computed, so these read the old components
     return this.set(
-      a.x * q.w + a.w * q.x + a.y * q.z - a.z * q.y,
-      a.y * q.w + a.w * q.y + a.z * q.x - a.x * q.z,
-      a.z * q.w + a.w * q.z + a.x * q.y - a.y * q.x,
-      a.w * q.w - a.x * q.x - a.y * q.y - a.z * q.z,
+      this.x * q.w + this.w * q.x + this.y * q.z - this.z * q.y,
+      this.y * q.w + this.w * q.y + this.z * q.x - this.x * q.z,
+      this.z * q.w + this.w * q.z + this.x * q.y - this.y * q.x,
+      this.w * q.w - this.x * q.x - this.y * q.y - this.z * q.z,
     );
   }
   setFromEuler(x: number, y: number, z: number, order: EulerOrder = 'XYZ'): this {

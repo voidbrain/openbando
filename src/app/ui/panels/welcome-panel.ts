@@ -66,6 +66,7 @@ const PILLARS: readonly Pillar[] = [
         </header>
         <div class="cols">
           @for (p of pillars; track p.id) {
+            <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- keyboard users focus the buttons inside (focusin); the click is a pointer convenience -->
             <section class="col" [class.on]="focus() === p.id" (mouseenter)="focus.set(p.id)" (focusin)="focus.set(p.id)" (click)="focus.set(p.id)" [attr.data-tour]="'welcome-' + p.id">
               <div class="film">
                 <video #film [src]="p.clip" [attr.data-id]="p.id" muted loop playsinline preload="auto" [attr.aria-label]="p.title"></video>

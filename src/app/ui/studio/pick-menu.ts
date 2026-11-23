@@ -55,6 +55,7 @@ let nextId = 0;
     @if (open()) {
       <ul #list class="pm-list" role="listbox" tabindex="-1" [class.up]="place().up" [class.end]="place().end" [style.max-height.px]="place().max" [id]="listId" [attr.aria-label]="label()" [attr.aria-activedescendant]="listId + '-' + active()" (keydown)="listKey($event)">
         @for (o of options(); track o.id) {
+          <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -- listbox with aria-activedescendant: the list holds focus and handles the keys -->
           <li role="option" class="pm-opt" [id]="listId + '-' + $index" [class.on]="o.id === value()" [class.act]="$index === active()" [attr.aria-selected]="o.id === value()" (pointerenter)="active.set($index)" (click)="choose(o.id)">
             <app-tool-icon [name]="o.icon" />
             <span class="pm-lbl">{{ o.label }}@if (o.hint) {<small>{{ o.hint }}</small>}</span>

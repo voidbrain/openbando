@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-23T22:41:06.136Z",
+  "reviewed": "2026-11-23T22:50:56.743Z",
   "policy": "1d33852259259ef7c3916b6407a15cb1fca296a1495270897e71fe87eaa55b74",
   "inputs": {
-    "AGENTS.md": "0ec12608230f29c191f0e5d39e90f6b65fb7fe226e44d53b41a9661c1d0e156e",
+    "AGENTS.md": "0a1410228cfc95a4519a463f6441243166a1dc6e32701a8e32c16c32c62aaf00",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
     "docs/BACKLOG-RULES.md": "b9ec69529fce88862753599ea1b14ada22eb96a8ca4730071d19d2329fa692ad",
     "docs/agents/adding-things.md": "36acde3c36530665aa9e113dea0ef4b1a6b190c0c7a65c630084f60c796fc06b",
@@ -111,6 +111,12 @@
     },
     {
       "kind": "rule",
+      "disposition": "backlog",
+      "target": "F-050",
+      "evidence": "check:rule-load warns: always-loaded rules ~4,700 tokens over 3,500, areas.md ~18,900 over 2,000; split areas by trigger without losing rules."
+    },
+    {
+      "kind": "rule",
       "disposition": "implemented",
       "target": "AGENTS.md",
       "evidence": "Fresh-context review of #278: backlog legend migrated, missing project marker added in docs/backlog/documentation.md, audit scope project line restored (guides, clips, design system, accessibility); check:rules and check:backlog pass."
@@ -131,6 +137,12 @@
       "disposition": "implemented",
       "target": "AGENTS.md",
       "evidence": "F-049 step 1: Prettier adopted (format:check in CI and in the AGENTS command block); check-i18n and build-element-map fixed to read Prettier-formatted templates, same output on old and new source."
+    },
+    {
+      "kind": "tool",
+      "disposition": "implemented",
+      "target": "AGENTS.md",
+      "evidence": "F-049 step 2: ESLint adopted (lint, format:check and check:tooling in CI; AGENTS command block and project line); core/ import rule mirrors check:conventions; disables only per line with a reason."
     },
     {
       "kind": "rule",

@@ -245,7 +245,7 @@ export function rectilinear(ring: Pt[], minEdge = 1.2, tol = 0.25): Pt[] | null 
     at: number;
     len: number;
   }
-  let es: E[] = [];
+  const es: E[] = [];
   for (let i = 0; i < pts.length; i++) {
     const a = pts[i]!,
       b = pts[(i + 1) % pts.length]!;

@@ -72,7 +72,7 @@ export function positionAt(f: Flight, t: number): Vec3 | null {
   const first = f.pts[0];
   if (!first || !f.loc.length) return null;
   const T = t + first.t;
-  let i = f.pts.findIndex((p) => p.t >= T);
+  const i = f.pts.findIndex((p) => p.t >= T);
   if (i <= 0) return (i === 0 ? f.loc[0]! : f.loc.at(-1)!).clone();
   const a = f.pts[i - 1]!,
     b = f.pts[i]!,

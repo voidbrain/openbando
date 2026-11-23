@@ -62,11 +62,13 @@ npm run check:integrations                # optional recommendation metadata, no
 npm run check:maintenance                 # current input-bound review evidence
 npm run check:audits                      # declared audit scope and freshness
 npm run check:rules                       # safety rules live in AGENTS, not only in a procedure
+npm run lint                              # ESLint: TypeScript, Angular templates and their accessibility, core/ imports
 npm run format:check                      # Prettier on src/ and e2e/; `npm run format` fixes it
+npm run check:tooling                     # a formatter check and a linter exist and run in CI
 npm run code:map -- <path>                # exports with line ranges: read those lines, not the whole file
 ```
 
-- Every project formats and lints its source, in CI too: `check:tooling` fails without both. OpenBando has Prettier (`format:check` in CI; `npm run format` fixes it) and adopts ESLint next (F-049); until then `check:tooling` is not in CI and `lint` is not listed above. <!-- project -->
+- Every project formats and lints its source, in CI too: `check:tooling` fails without both. A lint rule is disabled only on its line, with the reason after `--`; the copied harness tools and `tools/prototypes/` are not linted. <!-- project -->
 - `npm run e2e` (Playwright, also a CI job): every guide step plays alone in a headless browser without errors, and the first visit, the editor with the library and a running guide step pass axe (WCAG 2.1 A / AA). Locate panels by `app-panel[data-id=…]` or by role: component hosts have no box of their own. Software WebGL is slow there: keep the long timeouts. <!-- project -->
 - A failing test is evidence until shown otherwise: check it against the intended behaviour. Change its expectation only when the requirement deliberately changed, and say which requirement; otherwise fix the code.
 - Tests that encoded the old demo site now set their site up explicitly (origin, take-off pad). <!-- project -->
