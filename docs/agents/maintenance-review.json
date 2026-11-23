@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-23T23:10:57.568Z",
-  "policy": "1d33852259259ef7c3916b6407a15cb1fca296a1495270897e71fe87eaa55b74",
+  "reviewed": "2026-11-23T23:13:39.936Z",
+  "policy": "aa82093e297866f33e5c2cb9e50ed0b4ed6146b953a300e52df2759e98bef297",
   "inputs": {
-    "AGENTS.md": "fa718d83231f645627490e247d131ca9f805fbc07c9d15019e3ca8115c510acd",
+    "AGENTS.md": "436f11cf6506b32d5d04b291d11ddc4a3efef39e82db0e5fe4a49392a796c5c9",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
     "docs/BACKLOG-RULES.md": "b9ec69529fce88862753599ea1b14ada22eb96a8ca4730071d19d2329fa692ad",
     "docs/agents/adding-things.md": "36acde3c36530665aa9e113dea0ef4b1a6b190c0c7a65c630084f60c796fc06b",
@@ -20,8 +20,9 @@
     "docs/agents/areas/sharing.md": "6147c892694d1e27fe6d950ae04bf59676326ce4e44bab879c9631f1964ab8f3",
     "docs/agents/areas/terrain.md": "11c57030c0e1b015e36a2cd1f75abdd5548f7702996f6f5a304793b64f859bf8",
     "docs/agents/areas/ui-chrome.md": "cb901371da976d9f2a3678d233dd273c5c557be3481ee4ff37c503b665df3d5e",
-    "docs/agents/areas/welcome.md": "3366833fa0de7f14a05e507a9cef5e488660e2df396e43a5bd160d19f549c7bb",
+    "docs/agents/areas/welcome.md": "776dccf506de28490a762f91ca583c64abf9a37441ab1115bdc16e5089ba6992",
     "docs/agents/audit.md": "e58480c21e8afe9a825df4726fa93b8a7f841557f4267f1fc2c61ac3dac8f642",
+    "docs/agents/e2e.md": "cf9d1e0f358d5efc09eb942178b7445bd04862ca038f628432cdf400b9dbb73d",
     "docs/agents/maintenance.md": "69f77d944551e4a442de20a0e46badf19a91e42f870bf8048f428c8a64f343a9",
     "docs/agents/pull-requests.md": "5ebab444064a06518768ea87b9c2944571f3a79520d2bb63512c533ec4fe4f57",
     "docs/agents/session-start.md": "404f79eee1c0e2dbe3f9da2e38b9c93410a0bcc7b449bbb2749cc7d7853b88d7",
@@ -159,7 +160,13 @@
       "kind": "rule",
       "disposition": "implemented",
       "target": "AGENTS.md",
-      "evidence": "Reconciled to harness v10.5.0 (lean AGENTS, landing queue): AGENTS rebuilt on the template, safety block verbatim, every OpenBando sentence traced to AGENTS or its area file; always-loaded 4,557 -> 3,490 tokens within 3,500; F-050 closed."
+      "evidence": "Reconciled to harness v10.5.0 (lean AGENTS, landing queue): AGENTS rebuilt on the template, safety block verbatim, every OpenBando sentence traced to AGENTS or its area file; always-loaded 4,557 -> 3,454 tokens within 3,500; F-050 closed."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "docs/agents/e2e.md",
+      "evidence": "Review of #283: e2e conventions in their own guide with a procedures row (any Playwright test reaches them); tsc commands written out (racing included); note figure corrected."
     }
   ]
 }

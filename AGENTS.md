@@ -39,7 +39,8 @@ Before you open, update or merge a PR, read [pull requests](docs/agents/pull-req
 ```bash
 npm run check:freshness        # first, at session start
 npx ng test --watch=false && npx ng build && npm run lint && npm run format:check
-npx tsc -p tsconfig.app.json --noEmit --noUnusedLocals --noUnusedParameters   # also tools/examples, tools/i18n
+npx tsc -p tsconfig.app.json --noEmit --noUnusedLocals --noUnusedParameters
+npx tsc -p tools/examples/tsconfig.json && npx tsc -p tools/i18n/tsconfig.json && npx tsc -p tools/racing/tsconfig.json
 npm run check:i18n             # also check:contrast, check:backlog, check:conventions, check:rules, check:tooling,
                                # check:integrations, check:maintenance, check:audits (all in CI)
 npm run code:map -- <path>     # exports with line ranges: read those lines, not the whole file
@@ -50,7 +51,7 @@ npm run code:map -- <path>     # exports with line ranges: read those lines, not
 - A bug fix starts with a committed test that fails without the fix; the fix never edits that test to pass (BACKLOG-RULES, "A bug fix starts with a failing test").
 - Replacing a feature removes its state, helpers and tests too: no dead code.
 - A lint rule is disabled only on its line, with the reason after `--`; the copied harness tools and `tools/prototypes/` are not linted. <!-- project -->
-- A panel removed means its store, helpers and tests go too. Playwright covers selected UI and pointer workflows, not all ([e2e conventions](docs/agents/areas/welcome.md)). <!-- project -->
+- A panel removed means its store, helpers and tests go too. <!-- project -->
 - Coverage: OpenBando keeps `coverage.enforce: false`; the [coverage guide](docs/agents/coverage-guide.md) says how the page in `docs/agents/coverage.md` is read and refreshed. <!-- project -->
 
 ### Changing a harness file
@@ -71,6 +72,7 @@ Each procedure is binding when its trigger applies: read it before the task; a s
 | update or close a backlog record | [backlog rules](docs/BACKLOG-RULES.md) (it names the one file a change needs) |
 | write or change documentation | [documentation](docs/backlog/documentation.md) |
 | change Angular code | [Angular conventions](docs/agents/angular.md) |
+| write or change a browser (e2e) test | [e2e conventions](docs/agents/e2e.md) |
 | add a structure kind, an AI command or a spec field | [adding things](docs/agents/adding-things.md) |
 | change something an output is derived from (generated pages and data, recordings, translations, guides, a value used in two places) | [change impact](docs/agents/change-impact.md); do each row `check:freshness` lists, or record why not |
 | change tests or coverage | [coverage guide](docs/agents/coverage-guide.md) |
@@ -95,7 +97,6 @@ Each procedure is binding when its trigger applies: read it before the task; a s
 ### Known pitfalls
 
 - Never claim an AI edit worked from the model's own words: its `reply` is a claim; report from `RunResult`.
-- Each area's traps (WebGL canvases hidden in tests, Overpass errors without CORS, calibration through the store, merged meshes and `userData.pick`) are in its area file below. <!-- project -->
 
 ## Area notes
 

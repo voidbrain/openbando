@@ -39,10 +39,6 @@ Area notes for OpenBando ([index](../areas.md)). Read before you change this are
 - The pilot taking over ends a playing guide or showcase first, through `TourService.leaveForNavigation()` (only on a real click: `event.isTrusted`), and leaves the pilot's layout: opening a bando in the Bandos panel, and showing or hiding a panel from Views (B-042; before, the showcase's next step closed the panel the pilot had just opened).
 - Welcome user navigation must await tour cancellation/cleanup and suppress return-to-Welcome/layout restoration; scripted tour clicks continue their own sequence. Do not null active run state before its finally cleanup. Stop still returns to Welcome. Recheck cancellation after preparation before executing actions. Focus outlines follow live element bounds, including resize, and clear on removal.
 
-### Moved from AGENTS.md (2026-11-24, harness 10.5.0 reconcile)
-
-- `npm run e2e` (Playwright, also a CI job): every guide step plays alone in a headless browser without errors, and the first visit, the editor with the library and a running guide step pass axe (WCAG 2.1 A / AA). Locate panels by `app-panel[data-id=…]` or by role: component hosts have no box of their own. Software WebGL is slow there: keep the long timeouts.
-- Tests that encoded the old demo site now set their site up explicitly (origin, take-off pad).
 
 ### Moved from AGENTS.md (2026-11-24): guide text
 

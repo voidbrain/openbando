@@ -769,7 +769,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-24: #281 merged on green CI: F-050 closed. Harness reconciled to v10.5.0 in [#283](https://github.com/voidbrain/openbando/pull/283): lean AGENTS, always-loaded rules 3,490 / 3,500 tokens.
+2026-11-24: #281 merged on green CI: F-050 closed. Harness reconciled to v10.5.0 in [#283](https://github.com/voidbrain/openbando/pull/283): lean AGENTS, always-loaded rules 3,454 / 3,500 tokens.
 
 ## Reconciliation history
 

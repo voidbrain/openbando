@@ -101,7 +101,7 @@
       ]
     ]
   },
-  "note": "OpenBando is the reference implementation extracted into the harness. Reconciled 2026-10-31 from the recorded 2.0.1 source commit 9c3abc6d0758feb445b00f82953e0a4fb2c663b1 to published v2.2.2 (0764a362d3c81d828ff6f1bf936e3a2782f19339). The former 2.0.1 stamp had no published tag; its recorded source commit was used for the comparison. Optional integration metadata/guides adopted without installing servers or skills; no solution role selected. ESLint config was a stale adapted entry with no file or lint script and is intentionally not adopted; check:conventions remains the existing checker. Reconciled next to published v3.1.1 (7a81b930c5cbd689b8db9d4c74f9dd42ec1e7031): required input-bound maintenance evidence and scheduled checks; optional scope-aware audit enforcement stays off until a full product baseline is reviewed; coverage remains warning-only. Project rules, product acceptance and existing impact/coupling mappings preserved. Reconciled 2026-11-23 from v3.1.1 to published v10.3.0, then v10.3.1 for the check-rules CodeQL fix (F-048): AGENTS split into safety rules plus procedures (docs/agents/, docs/backlog/, angular.md); completion percentages removed, human-action cues name their kind, Other changes archived; action SHAs pinned and SBOM added. Not adopted: work-items/source-owned records, task claims, work usage, push guard, archive recaps, quiet reporter, browser coverage, solution refresh, CI on push to main, reviews.skills. Prettier/ESLint (5.0.0, check:tooling) follow in F-049. Reconciled 2026-11-24 to v10.5.0 (and v10.4.0): AGENTS rebuilt on the lean template, always-loaded rules 3,482 tokens within the 3,500 budget; landing-queue guides copied.",
+  "note": "OpenBando is the reference implementation extracted into the harness. Reconciled 2026-10-31 from the recorded 2.0.1 source commit 9c3abc6d0758feb445b00f82953e0a4fb2c663b1 to published v2.2.2 (0764a362d3c81d828ff6f1bf936e3a2782f19339). The former 2.0.1 stamp had no published tag; its recorded source commit was used for the comparison. Optional integration metadata/guides adopted without installing servers or skills; no solution role selected. ESLint config was a stale adapted entry with no file or lint script and is intentionally not adopted; check:conventions remains the existing checker. Reconciled next to published v3.1.1 (7a81b930c5cbd689b8db9d4c74f9dd42ec1e7031): required input-bound maintenance evidence and scheduled checks; optional scope-aware audit enforcement stays off until a full product baseline is reviewed; coverage remains warning-only. Project rules, product acceptance and existing impact/coupling mappings preserved. Reconciled 2026-11-23 from v3.1.1 to published v10.3.0, then v10.3.1 for the check-rules CodeQL fix (F-048): AGENTS split into safety rules plus procedures (docs/agents/, docs/backlog/, angular.md); completion percentages removed, human-action cues name their kind, Other changes archived; action SHAs pinned and SBOM added. Not adopted: work-items/source-owned records, task claims, work usage, push guard, archive recaps, quiet reporter, browser coverage, solution refresh, CI on push to main, reviews.skills. Prettier/ESLint (5.0.0, check:tooling) follow in F-049. Reconciled 2026-11-24 to v10.5.0 (and v10.4.0): AGENTS rebuilt on the lean template, always-loaded rules 3,454 tokens within the 3,500 budget; landing-queue guides copied.",
   "impact": [
     {
       "id": "lockfile",
@@ -549,7 +549,8 @@
       "docs/agents/areas/panels.md",
       "docs/agents/areas/languages.md",
       "docs/agents/areas/ui-chrome.md",
-      "docs/agents/areas/harness.md"
+      "docs/agents/areas/harness.md",
+      "docs/agents/e2e.md"
     ]
   },
   "audit": {
