@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-23T23:08:03.312Z",
-  "policy": "1d33852259259ef7c3916b6407a15cb1fca296a1495270897e71fe87eaa55b74",
+  "reviewed": "2026-11-23T23:29:39.915Z",
+  "policy": "aa82093e297866f33e5c2cb9e50ed0b4ed6146b953a300e52df2759e98bef297",
   "inputs": {
-    "AGENTS.md": "0a1410228cfc95a4519a463f6441243166a1dc6e32701a8e32c16c32c62aaf00",
+    "AGENTS.md": "436f11cf6506b32d5d04b291d11ddc4a3efef39e82db0e5fe4a49392a796c5c9",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
     "docs/BACKLOG-RULES.md": "b9ec69529fce88862753599ea1b14ada22eb96a8ca4730071d19d2329fa692ad",
     "docs/agents/adding-things.md": "36acde3c36530665aa9e113dea0ef4b1a6b190c0c7a65c630084f60c796fc06b",
@@ -14,19 +14,20 @@
     "docs/agents/areas/editor-library.md": "de05bf2a3eb355c35dee6d23e722ab96b0dfc228281baa23b21d8e716dc090bd",
     "docs/agents/areas/editor.md": "348185424e7217af0fde7e23ee94e0458989b12019fb18384e75c35e8861fa0c",
     "docs/agents/areas/flights.md": "89f1986c748960ca3652f62b778eda1685b759f65f4d1c7ae7d99962d158eb38",
-    "docs/agents/areas/harness.md": "d6741bd064910254fdee829b38a575c024718c380bd65865a9c5edf881f98657",
+    "docs/agents/areas/harness.md": "cc6efc514a070df75e7f7f7d52c2c578dfaff78ec331deddb54d5866fc6c04d4",
     "docs/agents/areas/languages.md": "3a98ef9574cc79aed940e4eec6e5b04bcefb73732e69d8eb6a8e54645ed83fa9",
     "docs/agents/areas/panels.md": "04b0749646a7d05c5a011b11152c735fc9c3837d8aacb4499ffa85729a54b8bb",
     "docs/agents/areas/sharing.md": "6147c892694d1e27fe6d950ae04bf59676326ce4e44bab879c9631f1964ab8f3",
     "docs/agents/areas/terrain.md": "11c57030c0e1b015e36a2cd1f75abdd5548f7702996f6f5a304793b64f859bf8",
     "docs/agents/areas/ui-chrome.md": "cb901371da976d9f2a3678d233dd273c5c557be3481ee4ff37c503b665df3d5e",
-    "docs/agents/areas/welcome.md": "da66bd470a9daacdf7fe0268a8221ba4b26a5bb938ac2d2fd8f005dc9deacf76",
+    "docs/agents/areas/welcome.md": "776dccf506de28490a762f91ca583c64abf9a37441ab1115bdc16e5089ba6992",
     "docs/agents/audit.md": "e58480c21e8afe9a825df4726fa93b8a7f841557f4267f1fc2c61ac3dac8f642",
+    "docs/agents/e2e.md": "cf9d1e0f358d5efc09eb942178b7445bd04862ca038f628432cdf400b9dbb73d",
     "docs/agents/maintenance.md": "69f77d944551e4a442de20a0e46badf19a91e42f870bf8048f428c8a64f343a9",
     "docs/agents/pull-requests.md": "5ebab444064a06518768ea87b9c2944571f3a79520d2bb63512c533ec4fe4f57",
     "docs/agents/session-start.md": "404f79eee1c0e2dbe3f9da2e38b9c93410a0bcc7b449bbb2749cc7d7853b88d7",
     "docs/backlog/closure.md": "d5aa9fc8aab175326d82ee4f95f2afb21b572e41d22b066058d1dcd5ef6c3431",
-    "docs/backlog/documentation.md": "214e6603dc6193cf1c31a1c87af2ce5f455c754e4874a02ef0c868038386e635",
+    "docs/backlog/documentation.md": "838db4ce37ee0f43f3ac15de640a6577cde0a2a359ed7cd68a139283c4e66f2e",
     "docs/backlog/records.md": "82686fdc164437a05cdd263bba24fa2eb65f2970f6d43d4ba153055d74f4ce86",
     "docs/backlog/review.md": "553177fc99074b2bc3ac2c9b430f4d22eaac46247a41b5966b6a97734cfb73df",
     "tools/check-audits.mjs": "7c9d6ebfdb4e9341b07a80329015fd771d8ab66afb42321d25899b204d826ec8",
@@ -111,12 +112,6 @@
     },
     {
       "kind": "rule",
-      "disposition": "backlog",
-      "target": "F-050",
-      "evidence": "check:rule-load warns: always-loaded rules ~4,700 tokens over 3,500, areas.md ~18,900 over 2,000; split areas by trigger without losing rules."
-    },
-    {
-      "kind": "rule",
       "disposition": "implemented",
       "target": "AGENTS.md",
       "evidence": "Fresh-context review of #278: backlog legend migrated, missing project marker added in docs/backlog/documentation.md, audit scope project line restored (guides, clips, design system, accessibility); check:rules and check:backlog pass."
@@ -160,6 +155,18 @@
       "disposition": "implemented",
       "target": "AGENTS.md",
       "evidence": "Review of #281: calibration-through-the-store and userData.pick kept in AGENTS (they reach flight and builder code); template Area notes sentence restored with a separate project line; recipe names userData.pick; Overpass noted in terrain too."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "AGENTS.md",
+      "evidence": "Reconciled to harness v10.5.0 (lean AGENTS, landing queue): AGENTS rebuilt on the template, safety block verbatim, every OpenBando sentence traced to AGENTS or its area file; always-loaded 4,557 -> 3,454 tokens within 3,500; F-050 closed."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "docs/agents/e2e.md",
+      "evidence": "Review of #283: e2e conventions in their own guide with a procedures row (any Playwright test reaches them); tsc commands written out (racing included); note figure corrected."
     }
   ]
 }

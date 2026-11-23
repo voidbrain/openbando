@@ -4,6 +4,8 @@ Dated reconciliation entries and archived `Other changes` entries moved from `do
 
 ## Archived Other changes (moved from BACKLOG.md on 2026-11-23)
 
+2026-11-23: #279 (Prettier) and #280 (ESLint) merged on green CI: F-049 closed and archived; `check:tooling` in CI. Angular 22.3 in [#282](https://github.com/voidbrain/openbando/pull/282) (F-051).
+
 2026-11-23: [#278](https://github.com/voidbrain/openbando/pull/278) merged on green CI (harness v10.3.1 and the full audit); F-048 and B-052 closed and archived. Prettier adopted in [#279](https://github.com/voidbrain/openbando/pull/279) (F-049 step 1).
 
 2026-11-23: harness reconciled from v3.1.1 to v10.3.0 (F-048, [#278](https://github.com/voidbrain/openbando/pull/278)): copied tools updated, completion percentages removed, human-action cues name their kind, this section archived. Prettier and ESLint adoption follows in F-049. Same PR: the [23 November full audit](audits/2026-11-23-full-openbando.md) of all eight areas at main `34f90c3` (no new product defect; F-051 opened), carried in #278 because `main` fails the audit gate and #278 holds the fresh maintenance receipt.

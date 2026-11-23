@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 23 November 2026 against main `b5e1f86` (#280; CI 45280905075 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 24 November 2026 against main `26389b8` (#282; CI 45286115366 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -697,79 +697,12 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 
 
-### F-050
-
-**Rule-load budgets: split the area notes and trim always-loaded rules**
-
-| Signal | Priority | Status | Effort |
-|:---:|---|---|---|
-| 🟡 | 🔹 P3 | Implemented | 🟢 Small |
-
-💻 **→ Human action required: No**<br />Merge #281 once every check passes, then close this record on its CI.
-
-| | |
-|---|---|
-| **Issue** | `check:rule-load` (adopted in F-048) warns: the always-loaded rules are about 4,700 tokens (budget 3,500), `docs/agents/areas.md` about 18,900 (budget 2,000 per file), and 20 triggers read more than 5,000 tokens. |
-| **Reproduce** | `npm run check:rule-load`. |
-| **Check** | `check:rule-load` prints no warning, or each remaining one has a recorded reason; no rule is lost (`check:rules` passes). |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Done 2026-11-23 ([#281](https://github.com/voidbrain/openbando/pull/281)): `docs/agents/areas.md` (18,865 tokens) is now an index over 13 files in `docs/agents/areas/` (the editor in three), each linked from the AGENTS area table and measured by `rules.procedures`; the "Adding things" recipes moved to `docs/agents/adding-things.md` (a procedures row); area pitfalls and the two-bugs lesson moved to their area files; the "never" rule, the calibration-through-the-store rule and `userData.pick` stay in AGENTS (review: they reach flight and builder code too); every link resolves and `check:rules` passes. AGENTS.md 4,665 → 4,527 tokens. Remaining warnings, with their reason: (1) always-loaded 4,557 > 3,500 and the per-trigger totals > 5,000 that follow from it: the template's own AGENTS is about 3,160 tokens with placeholders (the template repository itself loads 3,522), so any project rules exceed the budget; the 1,115 tokens of OpenBando lines are rules, not procedure detail. A budget for a real project is the template's question, raised to the owner. (2) Five area files at 2,100–3,100 tokens (editor tools, terrain, flights, welcome, sharing): each is one area read only when that area changes; splitting further would scatter one area's rules. Found 2026-11-23 while reconciling F-048. Warnings only; CI does not fail on them.
-
-**Estimates:** Small remaining effort: the PR's CI. Estimated 2026-11-23; not acceptance evidence.
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#281](https://github.com/voidbrain/openbando/pull/281) |
-| Opened | 2026-11-23 |
-| Verification | Script · 2026-11-23 · check:rules, links resolve, check:rule-load warnings listed with reasons; CI #281 · Pending |
-| Reviewed | 2026-11-23 |
-
-</details>
-
----
-
-### F-051
-
-**Update Angular to 22.3 and drop the Vite override**
-
-| Signal | Priority | Status | Effort |
-|:---:|---|---|---|
-| 🟡 | 🔹 P3 | Implemented | 🟢 Small |
-
-💻 **→ Human action required: No**<br />Merge #282 once every check passes (the e2e jobs are the browser check), then close on its CI.
-
-| | |
-|---|---|
-| **Issue** | B-049 (31 October) pinned the builder's Vite to 8.3.5 to clear six advisories, to be reassessed once the builder ships a fixed Vite. `@angular/build` 22.3.0 depends on Vite 8.3.8 (full audit 2026-11-23). |
-| **Reproduce** | `npm view @angular/build@22.3.0 dependencies.vite`; `npm ls vite` shows `vite@8.3.5 overridden`. |
-| **Check** | `package.json` has no Vite override; `npm ls vite` shows the builder's own version; `npm audit` 0; unit, build and every e2e job green; the 3D views looked at (impact row `lockfile`). |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Done 2026-11-23 ([#282](https://github.com/voidbrain/openbando/pull/282)): `ng update` to Angular 22.3.0 (core, CLI, build; no migration applied, the one optional migration is for library projects); the `overrides.@angular/build.vite` pin removed, Vite now the builder's own 8.3.8; `npm audit` 0. The reinstall re-resolved build tooling (142 versions, mostly Babel, Inquirer, lmdb); three, Playwright, TypeScript, Vitest, rxjs unchanged. 602 unit tests, build, types, lint, i18n, relay, examples regenerated unchanged. Rendering (impact row `lockfile`): the CI e2e jobs run every guide step and the 3D views in a browser; no three.js change. Found by the [23 November full audit](audits/2026-11-23-full-openbando.md). Run `ng update @angular/core@22.3 @angular/cli@22.3`, remove the override, regenerate the lockfile, then run the full checks. A library upgrade can change rendering: follow the `lockfile` impact row (clips and films, F-031).
-
-**Estimates:** Small remaining effort. A minor framework update; risk is in rendering and browser-test timing. Estimated 2026-11-23; not acceptance evidence.
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#282](https://github.com/voidbrain/openbando/pull/282) |
-| Opened | 2026-11-23 |
-| Verification | Script · 2026-11-23 · unit 602, build, types, lint, audit 0; e2e · Pending (#282 CI) |
-| Reviewed | 2026-11-23 |
-
-</details>
-
----
 
 ## Other changes
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-23: #279 (Prettier) and #280 (ESLint) merged on green CI: F-049 closed and archived; `check:tooling` in CI. Angular 22.3 in [#282](https://github.com/voidbrain/openbando/pull/282) (F-051).
+2026-11-24: #281 (area notes) and #282 (Angular 22.3) merged on green CI: F-050 and F-051 closed. Harness reconciled to v10.5.0 in [#283](https://github.com/voidbrain/openbando/pull/283): lean AGENTS, always-loaded rules 3,454 / 3,500 tokens.
 
 ## Reconciliation history
 
