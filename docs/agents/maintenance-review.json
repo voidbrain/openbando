@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-23T22:38:05.872Z",
+  "reviewed": "2026-11-23T22:41:06.136Z",
   "policy": "1d33852259259ef7c3916b6407a15cb1fca296a1495270897e71fe87eaa55b74",
   "inputs": {
-    "AGENTS.md": "3d7925fc14805afac533fb13eb68a2bb42f5cfea1504929b8ff0661816fa02d6",
+    "AGENTS.md": "0ec12608230f29c191f0e5d39e90f6b65fb7fe226e44d53b41a9661c1d0e156e",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
     "docs/BACKLOG-RULES.md": "b9ec69529fce88862753599ea1b14ada22eb96a8ca4730071d19d2329fa692ad",
-    "docs/agents/adding-things.md": "673d0511cde398b343bb1b5bc04968243b5902c2d9ff1e332487e880b9964013",
+    "docs/agents/adding-things.md": "36acde3c36530665aa9e113dea0ef4b1a6b190c0c7a65c630084f60c796fc06b",
     "docs/agents/angular.md": "ce4a2b6fd81fd5eae723cf2d1eb42203e253ab5d08c13457d656814aeaf2448e",
     "docs/agents/areas.md": "0daacda1e35deef9f4b01620b1cfc4ab4a5cb7175cfb72e9d825e9269fa7571c",
     "docs/agents/areas/buildings.md": "8564f89d44a9ca54d47678dafe3adc4772848936537a0359647c5bde60c2e856",
@@ -17,8 +17,8 @@
     "docs/agents/areas/harness.md": "d6741bd064910254fdee829b38a575c024718c380bd65865a9c5edf881f98657",
     "docs/agents/areas/languages.md": "3a98ef9574cc79aed940e4eec6e5b04bcefb73732e69d8eb6a8e54645ed83fa9",
     "docs/agents/areas/panels.md": "04b0749646a7d05c5a011b11152c735fc9c3837d8aacb4499ffa85729a54b8bb",
-    "docs/agents/areas/sharing.md": "b70495c8c4386be07262dbb3daa2674b38a1d5924e11485695edb1f434175b6f",
-    "docs/agents/areas/terrain.md": "50889fa109b6fc00623a1037e46bf7ab0332bf9d6afadaa6556d72846d58b0e1",
+    "docs/agents/areas/sharing.md": "6147c892694d1e27fe6d950ae04bf59676326ce4e44bab879c9631f1964ab8f3",
+    "docs/agents/areas/terrain.md": "11c57030c0e1b015e36a2cd1f75abdd5548f7702996f6f5a304793b64f859bf8",
     "docs/agents/areas/ui-chrome.md": "cb901371da976d9f2a3678d233dd273c5c557be3481ee4ff37c503b665df3d5e",
     "docs/agents/areas/welcome.md": "da66bd470a9daacdf7fe0268a8221ba4b26a5bb938ac2d2fd8f005dc9deacf76",
     "docs/agents/audit.md": "e58480c21e8afe9a825df4726fa93b8a7f841557f4267f1fc2c61ac3dac8f642",
@@ -142,6 +142,12 @@
       "kind": "none",
       "disposition": "no-change",
       "evidence": "Residual check:rule-load warnings kept visible with reasons in F-050: the template AGENTS alone is ~3,160 tokens against a 3,500 always-loaded budget, so the budget is a template question raised to the owner; five area files at 2,100-3,100 tokens stay whole per area."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "AGENTS.md",
+      "evidence": "Review of #281: calibration-through-the-store and userData.pick kept in AGENTS (they reach flight and builder code); template Area notes sentence restored with a separate project line; recipe names userData.pick; Overpass noted in terrain too."
     }
   ]
 }

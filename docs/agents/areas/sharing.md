@@ -23,6 +23,4 @@ Area notes for OpenBando ([index](../areas.md)). Read before you change this are
 
 ### Moved from AGENTS.md, Known pitfalls and Testing the joins (2026-11-23, F-050)
 
-- `SiteService.applySpec` re-applies the calibration every time (Save, every edit). The pilot's own alignment (pins, compass)
-  therefore lives in `SiteSpec.calibration`; an effect in `SiteService` copies live changes into the spec. Do not set the
-  calibration anywhere without going through the store, or it will be undone on the next edit.
+- Calibration goes through the store: the rule is in AGENTS.md, Architecture (it applies to flight code too).

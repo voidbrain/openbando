@@ -17,6 +17,10 @@ Angular and TypeScript conventions, accessibility requirements (axe, WCAG AA) an
   usual source of bugs. Convert in one place and test it.
 - Every wall builder must add `level.baseY`. A new geometry builder needs a collider: the collider only knows axis-aligned
   boxes and vertical cylinders (ground based); cut long or rotated parts into short boxes.
+- Meshes that can be clicked in the 3D editor carry `userData.pick` (`{ kind, id | i }`); keep it when adding a new builder (merged meshes: [editor geometry](docs/agents/areas/editor-geometry.md)). <!-- project -->
+- `SiteService.applySpec` re-applies the calibration every time (Save, every edit). The pilot's own alignment (pins, compass)
+  therefore lives in `SiteSpec.calibration`; an effect in `SiteService` copies live changes into the spec. Do not set the
+  calibration anywhere without going through the store, or it will be undone on the next edit. <!-- project -->
 
 ### Design system
 
@@ -121,7 +125,9 @@ All applicable rules must be known and followed from the start; shorter indexes 
 
 ## Area notes
 
-Before changing an area, read its file (linked below; index: [docs/agents/areas.md](docs/agents/areas.md)): the rules and lessons there are as binding as this file. Harness capabilities and reconciliation: [areas/harness.md](docs/agents/areas/harness.md). <!-- project -->
+Before changing an area, read its section in [docs/agents/areas.md](docs/agents/areas.md): the rules and lessons there are as binding as this file.
+
+OpenBando keeps one file per area under `docs/agents/areas/`, linked in the table below; harness capabilities and reconciliation: [areas/harness.md](docs/agents/areas/harness.md). <!-- project -->
 
 | Area | Covers |
 |---|---|
