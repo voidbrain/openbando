@@ -4,7 +4,7 @@
 
 The element-level part of the impact map ([impact-map.md](impact-map.md), from the harness, lists what must follow a change). Every control the templates show, with its label, its `data-tour` mark, the guide steps that show it as a tip on hover and the guide steps whose clips use it (F-032). Generated; CI fails when this page differs from the code.
 
-**410 controls** · 9 with a tip on hover · 120 with a title · 18 shown in a clip · 32 whose name the script cannot read (a bound expression; axe checks the real names)
+**410 controls** · 9 with a tip on hover · 120 with a title · 18 shown in a clip · 31 whose name the script cannot read (a bound expression; axe checks the real names)
 
 ## Tips per file
 
@@ -118,13 +118,12 @@ What the panels' "?" (tips on hover) covers: a guide step's tip, the browser's o
 
 | Control | Element | Mark | Title | Tip (guide step) | In clips |
 |---|---|---|---|---|---|
-| (none) | input |  |  |  |  |
 | … | button |  |  |  |  |
 | … | button |  |  |  |  |
 | Add live source | button |  |  |  |  |
+| Broadcast live paths | input |  |  |  |  |
 | Clear shared paths | button |  |  |  |  |
-| Closed loop Set start gate @if (row.track.closed) { Laps : … | input |  |  |  |  |
-| Closed loop Set start gate @if (row.track.closed) { Laps : … | button |  |  |  |  |
+| Closed loop | input |  |  |  |  |
 | Colour trails by speed | input |  |  |  |  |
 | Disconnect | button |  |  |  |  |
 | Export race | button |  |  |  |  |
@@ -139,12 +138,13 @@ What the panels' "?" (tips on hover) covers: a guide step's tip, the browser's o
 | Race time (s) | input |  |  |  |  |
 | Relay token | input |  |  |  |  |
 | Relay URL | input |  |  |  |  |
-| Repeat replay Race time (s) | input |  |  |  |  |
+| Repeat replay | input |  |  |  |  |
 | Restart race | button |  |  |  |  |
 | Room | input |  |  |  |  |
+| Set start gate | button |  |  |  |  |
 | Share local paths | button |  |  |  |  |
 | Show pilot:  | input |  |  |  |  |
-| Show racing ghosts @if (race.enabled()) { Colour trails by s | input |  |  |  |  |
+| Show racing ghosts | input |  |  |  |  |
 | Start delay (s) | input |  |  |  |  |
 | Telemetry URL | input |  |  |  |  |
 
