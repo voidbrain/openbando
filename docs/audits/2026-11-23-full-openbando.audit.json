@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "kind": "full",
+  "reviewed": "2026-11-23T20:29:22.178Z",
+  "baseline": "34f90c3f341ce78595d577b31bd9243ed58c66cd",
+  "report": "docs/audits/2026-11-23-full-openbando.md",
+  "areas": {
+    "code": {
+      "result": "checked",
+      "evidence": "See docs/audits/2026-11-23-full-openbando.md, Results by area, Findings and Validation.",
+      "limits": "Diff review of the 14 changed source/e2e files plus marker and unused-export scans; unchanged code keeps the 31 October evidence; not a proof of zero defects."
+    },
+    "logic": {
+      "result": "checked",
+      "evidence": "See docs/audits/2026-11-23-full-openbando.md, Results by area, Findings and Validation.",
+      "limits": "Representative state fixes retraced; B-045, B-050 and B-051 remain uninvestigated."
+    },
+    "tests": {
+      "result": "checked",
+      "evidence": "See docs/audits/2026-11-23-full-openbando.md, Results by area, Findings and Validation.",
+      "limits": "Unit suite with coverage and CI history; no local browser run; no human/device acceptance."
+    },
+    "documentation": {
+      "result": "checked",
+      "evidence": "See docs/audits/2026-11-23-full-openbando.md, Results by area, Findings and Validation.",
+      "limits": "Generated outputs compared; clips and films remain stale under F-031; no media re-recorded."
+    },
+    "harness": {
+      "result": "checked",
+      "evidence": "See docs/audits/2026-11-23-full-openbando.md, Results by area, Findings and Validation.",
+      "limits": "Stamp, maintenance and audit-gate review; the v10.3.0 reconcile is in PR #278, not on this baseline."
+    },
+    "security": {
+      "result": "checked",
+      "evidence": "See docs/audits/2026-11-23-full-openbando.md, Results by area, Findings and Validation.",
+      "limits": "Dependency, alert, secret-pattern and image-metadata checks; no penetration or live relay test."
+    },
+    "delivery": {
+      "result": "checked",
+      "evidence": "See docs/audits/2026-11-23-full-openbando.md, Results by area, Findings and Validation.",
+      "limits": "Build, deploy and Pages status; outside sources not re-measured live."
+    },
+    "backlog": {
+      "result": "checked",
+      "evidence": "See docs/audits/2026-11-23-full-openbando.md, Results by area, Findings and Validation.",
+      "limits": "All 21 active records read; none advanced without new evidence."
+    }
+  }
+}

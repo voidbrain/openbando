@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-23T20:14:46.130Z",
+  "reviewed": "2026-11-23T20:29:56.542Z",
   "policy": "db5c4ffde3ebe2e17d9b8c5e6ac9af6ffb20ff0b786597a277e947dc56a83919",
   "inputs": {
-    "AGENTS.md": "7197af0638e0c4fc2e8996dc40ef55ed5167b92a3b0dd26bb4b883bbdadc39cf",
+    "AGENTS.md": "9fb46687215045a5b9ded7c6b371781e8e5efe716a5cdc649c115be6104c0460",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
     "docs/BACKLOG-RULES.md": "b9ec69529fce88862753599ea1b14ada22eb96a8ca4730071d19d2329fa692ad",
     "docs/agents/angular.md": "ce4a2b6fd81fd5eae723cf2d1eb42203e253ab5d08c13457d656814aeaf2448e",
@@ -13,7 +13,7 @@
     "docs/agents/pull-requests.md": "5ebab444064a06518768ea87b9c2944571f3a79520d2bb63512c533ec4fe4f57",
     "docs/agents/session-start.md": "404f79eee1c0e2dbe3f9da2e38b9c93410a0bcc7b449bbb2749cc7d7853b88d7",
     "docs/backlog/closure.md": "d5aa9fc8aab175326d82ee4f95f2afb21b572e41d22b066058d1dcd5ef6c3431",
-    "docs/backlog/documentation.md": "ebdbfe80a5df25e3db9c49479911535d4f424720acc23db027b3a418493c25ef",
+    "docs/backlog/documentation.md": "bf61357c4e5da481d454659ca0b154fbbdf87a29e6f9a3ae7fe761eddbdf926d",
     "docs/backlog/records.md": "82686fdc164437a05cdd263bba24fa2eb65f2970f6d43d4ba153055d74f4ce86",
     "docs/backlog/review.md": "553177fc99074b2bc3ac2c9b430f4d22eaac46247a41b5966b6a97734cfb73df",
     "tools/check-audits.mjs": "7c9d6ebfdb4e9341b07a80329015fd771d8ab66afb42321d25899b204d826ec8",
@@ -101,6 +101,17 @@
       "disposition": "backlog",
       "target": "F-050",
       "evidence": "check:rule-load warns: always-loaded rules ~4,700 tokens over 3,500, areas.md ~18,900 over 2,000; split areas by trigger without losing rules."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "AGENTS.md",
+      "evidence": "Fresh-context review of #278: backlog legend migrated, missing project marker added in docs/backlog/documentation.md, audit scope project line restored (guides, clips, design system, accessibility); check:rules and check:backlog pass."
+    },
+    {
+      "kind": "none",
+      "disposition": "no-change",
+      "evidence": "23 November full audit: the 7-day audit gate and daily maintenance check blocked all PRs after an idle week; kept as the owner set it on 31 October, proposal recorded report-only in docs/audits/2026-11-23-full-openbando.md."
     }
   ]
 }

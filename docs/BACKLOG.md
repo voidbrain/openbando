@@ -833,11 +833,45 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 ---
 
+### F-051
+
+**Update Angular to 22.3 and drop the Vite override**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔴 | 🔹 P3 | Open | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Update the Angular packages to 22.3.x, remove the `overrides.@angular/build.vite` pin, and run the browser tests.
+
+| | |
+|---|---|
+| **Issue** | B-049 (31 October) pinned the builder's Vite to 8.3.5 to clear six advisories, to be reassessed once the builder ships a fixed Vite. `@angular/build` 22.3.0 depends on Vite 8.3.8 (full audit 2026-11-23). |
+| **Reproduce** | `npm view @angular/build@22.3.0 dependencies.vite`; `npm ls vite` shows `vite@8.3.5 overridden`. |
+| **Check** | `package.json` has no Vite override; `npm ls vite` shows the builder's own version; `npm audit` 0; unit, build and every e2e job green; the 3D views looked at (impact row `lockfile`). |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Found by the [23 November full audit](audits/2026-11-23-full-openbando.md). Run `ng update @angular/core@22.3 @angular/cli@22.3`, remove the override, regenerate the lockfile, then run the full checks. A library upgrade can change rendering: follow the `lockfile` impact row (clips and films, F-031).
+
+**Estimates:** Small remaining effort. A minor framework update; risk is in rendering and browser-test timing. Estimated 2026-11-23; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | — |
+| Opened | 2026-11-23 |
+| Verification | Script · Pending; e2e · Pending |
+| Reviewed | 2026-11-23 |
+
+</details>
+
+---
+
 ## Other changes
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-23: harness reconciled from v3.1.1 to v10.3.0 (F-048, [#278](https://github.com/voidbrain/openbando/pull/278)): copied tools updated, completion percentages removed, human-action cues name their kind, this section archived. Prettier and ESLint adoption follows in F-049.
+2026-11-23: harness reconciled from v3.1.1 to v10.3.0 (F-048, [#278](https://github.com/voidbrain/openbando/pull/278)): copied tools updated, completion percentages removed, human-action cues name their kind, this section archived. Prettier and ESLint adoption follows in F-049. Same PR: the [23 November full audit](audits/2026-11-23-full-openbando.md) of all eight areas at main `34f90c3` (no new product defect; F-051 opened), carried here because `main` fails the audit gate and this PR holds the fresh maintenance receipt.
 
 ## Reconciliation history
 
