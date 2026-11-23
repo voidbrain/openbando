@@ -104,7 +104,7 @@ test('the editor with a model, the inspector and the library', async ({ page }) 
   await expectInteractionContrast(page, 'app-panel[data-id=studio]');
   await page
     .locator('app-bando-editor button')
-    .filter({ hasText: /^\W*Library$/ })
+    .filter({ hasText: /^\W*Library\s*$/ })
     .first()
     .click();
   await expect(page.getByPlaceholder('Search blocks…')).toBeVisible();
@@ -112,7 +112,7 @@ test('the editor with a model, the inspector and the library', async ({ page }) 
   await expectInteractionContrast(page, 'app-blocks-box');
   await page
     .locator('app-bando-editor button')
-    .filter({ hasText: /^\W*Library$/ })
+    .filter({ hasText: /^\W*Library\s*$/ })
     .first()
     .click();
   await page.locator('app-bando-editor button[data-tour="ai"]').click();
