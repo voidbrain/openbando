@@ -38,3 +38,12 @@ Area notes for OpenBando ([index](../areas.md)). Read before you change this are
 - Tour caption countdown is determinate remaining time, reset per snippet. Use rendered mascot progress for Welcome, playback position for full replay, and label other guide timing as estimates; unfinished estimates retain a small remainder. Pause freezes progress. Fit each complete card film into its remaining mascot third and restore its playback rate, hold the last mascot pose during showcase, then release the hold for ordinary Welcome. Preserve GIF/timeline choreography when fixing this scheduling issue.
 - The pilot taking over ends a playing guide or showcase first, through `TourService.leaveForNavigation()` (only on a real click: `event.isTrusted`), and leaves the pilot's layout: opening a bando in the Bandos panel, and showing or hiding a panel from Views (B-042; before, the showcase's next step closed the panel the pilot had just opened).
 - Welcome user navigation must await tour cancellation/cleanup and suppress return-to-Welcome/layout restoration; scripted tour clicks continue their own sequence. Do not null active run state before its finally cleanup. Stop still returns to Welcome. Recheck cancellation after preparation before executing actions. Focus outlines follow live element bounds, including resize, and clear on removal.
+
+### Moved from AGENTS.md (2026-11-24, harness 10.5.0 reconcile)
+
+- `npm run e2e` (Playwright, also a CI job): every guide step plays alone in a headless browser without errors, and the first visit, the editor with the library and a running guide step pass axe (WCAG 2.1 A / AA). Locate panels by `app-panel[data-id=…]` or by role: component hosts have no box of their own. Software WebGL is slow there: keep the long timeouts.
+- Tests that encoded the old demo site now set their site up explicitly (origin, take-off pad).
+
+### Moved from AGENTS.md (2026-11-24): guide text
+
+- Generated guide text changes in `tools/build-guide.mjs` or the tour source, then `node tools/build-guide.mjs`. That is not re-recording: `npm run clips` and `npm run films` are separate browser/media workflows (F-011).

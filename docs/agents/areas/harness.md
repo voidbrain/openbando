@@ -18,3 +18,8 @@ Area notes for OpenBando ([index](../areas.md)). Read before you change this are
 - A newly selected video/log pair restores only its own finite saved offset; otherwise reset offset to zero, synced state, diagnostics and seek state. Do not reuse the previous pair’s sync (B-047). This does not establish a fix for the paused stale-frame report B-045.
 - Legacy library sources are recovery data: remove a source/index entry only after its replacement commits in IndexedDB or localStorage. Memory-only success is not durable success. Error followed by abort counts as one failed write; corrupt legacy entries remain recoverable (B-048).
 - Arming a path pin cancels an unfinished Adjust position preview with `endAdjust(false)`; starting Adjust position cancels pins. Preserve the original start/end transport-position requirements (B-041).
+
+### Moved from AGENTS.md (2026-11-24, harness 10.5.0 reconcile)
+
+- CI prints ordinary freshness reminders as warnings; required maintenance evidence and invalid audit metadata fail. OpenBando enables seven-day overdue-area enforcement after its 31 October full product baseline review; a blocked area does not count as checked.
+- Audits also cover the guides and their clips, the design system and accessibility, images' GPS metadata, and the outputs' outside dependencies listed under `outside` in `.harness.json`.

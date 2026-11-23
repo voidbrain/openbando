@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 23 November 2026 against main `297bbdd` (#279; its CI green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 24 November 2026 against main `1684030` (#281; CI 45283575523 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -731,40 +731,6 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 ---
 
-### F-050
-
-**Rule-load budgets: split the area notes and trim always-loaded rules**
-
-| Signal | Priority | Status | Effort |
-|:---:|---|---|---|
-| 🟡 | 🔹 P3 | Implemented | 🟢 Small |
-
-💻 **→ Human action required: No**<br />Merge #281 once every check passes, then close this record on its CI.
-
-| | |
-|---|---|
-| **Issue** | `check:rule-load` (adopted in F-048) warns: the always-loaded rules are about 4,700 tokens (budget 3,500), `docs/agents/areas.md` about 18,900 (budget 2,000 per file), and 20 triggers read more than 5,000 tokens. |
-| **Reproduce** | `npm run check:rule-load`. |
-| **Check** | `check:rule-load` prints no warning, or each remaining one has a recorded reason; no rule is lost (`check:rules` passes). |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Done 2026-11-23 ([#281](https://github.com/voidbrain/openbando/pull/281)): `docs/agents/areas.md` (18,865 tokens) is now an index over 13 files in `docs/agents/areas/` (the editor in three), each linked from the AGENTS area table and measured by `rules.procedures`; the "Adding things" recipes moved to `docs/agents/adding-things.md` (a procedures row); area pitfalls and the two-bugs lesson moved to their area files; the "never" rule, the calibration-through-the-store rule and `userData.pick` stay in AGENTS (review: they reach flight and builder code too); every link resolves and `check:rules` passes. AGENTS.md 4,665 → 4,527 tokens. Remaining warnings, with their reason: (1) always-loaded 4,557 > 3,500 and the per-trigger totals > 5,000 that follow from it: the template's own AGENTS is about 3,160 tokens with placeholders (the template repository itself loads 3,522), so any project rules exceed the budget; the 1,115 tokens of OpenBando lines are rules, not procedure detail. A budget for a real project is the template's question, raised to the owner. (2) Five area files at 2,100–3,100 tokens (editor tools, terrain, flights, welcome, sharing): each is one area read only when that area changes; splitting further would scatter one area's rules. Found 2026-11-23 while reconciling F-048. Warnings only; CI does not fail on them.
-
-**Estimates:** Small remaining effort: the PR's CI. Estimated 2026-11-23; not acceptance evidence.
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#281](https://github.com/voidbrain/openbando/pull/281) |
-| Opened | 2026-11-23 |
-| Verification | Script · 2026-11-23 · check:rules, links resolve, check:rule-load warnings listed with reasons; CI #281 · Pending |
-| Reviewed | 2026-11-23 |
-
-</details>
-
----
-
 ### F-051
 
 **Update Angular to 22.3 and drop the Vite override**
@@ -803,7 +769,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-23: [#278](https://github.com/voidbrain/openbando/pull/278) merged on green CI (harness v10.3.1 and the full audit); F-048 and B-052 closed and archived. Prettier adopted in [#279](https://github.com/voidbrain/openbando/pull/279) (F-049 step 1).
+2026-11-24: #281 merged on green CI: F-050 closed. Harness reconciled to v10.5.0 in [#283](https://github.com/voidbrain/openbando/pull/283): lean AGENTS, always-loaded rules 3,490 / 3,500 tokens.
 
 ## Reconciliation history
 

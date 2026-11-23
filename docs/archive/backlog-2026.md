@@ -1584,3 +1584,39 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 </details>
 
 ---
+
+## Closed 2026-11-24
+
+### F-050
+
+**Rule-load budgets: split the area notes and trim always-loaded rules**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P3 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-24: always-loaded rules within budget after #281 and the v10.5.0 reconcile; remaining warnings have recorded reasons.
+
+| | |
+|---|---|
+| **Issue** | `check:rule-load` (adopted in F-048) warns: the always-loaded rules are about 4,700 tokens (budget 3,500), `docs/agents/areas.md` about 18,900 (budget 2,000 per file), and 20 triggers read more than 5,000 tokens. |
+| **Reproduce** | `npm run check:rule-load`. |
+| **Check** | `check:rule-load` prints no warning, or each remaining one has a recorded reason; no rule is lost (`check:rules` passes). |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-24: [#281](https://github.com/voidbrain/openbando/pull/281) merged at `1684030`, CI [45283575523](https://github.com/voidbrain/openbando/actions/runs/45283575523) green; the template made AGENTS lean ([project-harness F-090](https://github.com/voidbrain/project-harness/pull/238), v10.5.0, owner-approved) and the reconcile [#283](https://github.com/voidbrain/openbando/pull/283) rebuilt AGENTS on it: always-loaded 4,557 → 3,490 tokens, under the 3,500 budget, every OpenBando sentence traced to AGENTS or its area file. Remaining `check:rule-load` warnings, with reasons: five area files at 2,050–3,100 tokens (one area each, read only when it changes); four triggers just over 5,000 (parallel work, skills, rule review, audit) because those copied template guides are long, which is the template's to trim, not this project's. Done 2026-11-23 ([#281](https://github.com/voidbrain/openbando/pull/281)): `docs/agents/areas.md` (18,865 tokens) is now an index over 13 files in `docs/agents/areas/` (the editor in three), each linked from the AGENTS area table and measured by `rules.procedures`; the "Adding things" recipes moved to `docs/agents/adding-things.md` (a procedures row); area pitfalls and the two-bugs lesson moved to their area files; the "never" rule, the calibration-through-the-store rule and `userData.pick` stay in AGENTS (review: they reach flight and builder code too); every link resolves and `check:rules` passes. AGENTS.md 4,665 → 4,527 tokens. Remaining warnings, with their reason: (1) always-loaded 4,557 > 3,500 and the per-trigger totals > 5,000 that follow from it: the template's own AGENTS is about 3,160 tokens with placeholders (the template repository itself loads 3,522), so any project rules exceed the budget; the 1,115 tokens of OpenBando lines are rules, not procedure detail. A budget for a real project is the template's question, raised to the owner. (2) Five area files at 2,100–3,100 tokens (editor tools, terrain, flights, welcome, sharing): each is one area read only when that area changes; splitting further would scatter one area's rules. Found 2026-11-23 while reconciling F-048. Warnings only; CI does not fail on them.
+
+**Estimates:** No remaining effort: closed 2026-11-24.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#281](https://github.com/voidbrain/openbando/pull/281); [#283](https://github.com/voidbrain/openbando/pull/283) (v10.5.0 reconcile) |
+| Opened | 2026-11-23 |
+| Verification | CI · 2026-11-24 · #281 green; rule-load · always-loaded 3,490 / 3,500 after #283 |
+| Reviewed | 2026-11-23 |
+
+</details>
+
+---
