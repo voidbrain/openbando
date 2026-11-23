@@ -27,15 +27,7 @@ Angular and TypeScript conventions, accessibility requirements (axe, WCAG AA) an
 
 ### Adding things
 
-- **A structure kind**: add it to `StructureKind` and `STRUCTURE_DEFAULTS` / `RECT_KINDS` (`three/structures.ts`), build it
-  in `buildStructure` (geometry + collider), list it in `structKinds` (`ui/studio/bando-editor.ts`) and draw its plan symbol in `bando-editor.html`,
-  add it to `STRUCTURE_KINDS` in `core/ai-commands.ts` if the assistant may place it, optionally map an OSM tag in
-  `GeoService.areaData`. Add a case to `three/structures.spec.ts`.
-- **An AI command**: add the op to `OPS`, fields to `AiCommand` + `normalizeCommands` (clamp every number), a `case` in
-  `runCommands`, the property to `AI_SCHEMA`, a line (and ideally an example) to `SYSTEM_PROMPT`. Cover it in
-  `core/ai-commands.spec.ts`. The model's `reply` is only a claim: report from `RunResult`.
-- **A spec field**: add it to the type, keep `sanitizeSpec` (it rebuilds the object) and `cloneSpec` (JSON) in step, and
-  make old saved specs load (optional field with a default).
+A structure kind, an AI command or a spec field touches several files in a fixed order: [adding things](docs/agents/adding-things.md) lists them and the test each needs. The model's `reply` is only a claim: report from `RunResult`. <!-- project -->
 
 ### Checks before you finish
 
@@ -97,6 +89,7 @@ All applicable rules must be known and followed from the start; shorter indexes 
 | start a session (`npm run check:freshness` lists what is due) | [session start](docs/agents/session-start.md) |
 | open, update or merge a PR | [pull requests](docs/agents/pull-requests.md) |
 | change Angular code | [Angular conventions](docs/agents/angular.md) |
+| add a structure kind, an AI command or a spec field | [adding things](docs/agents/adding-things.md) |
 | switch independent tasks or compact/handoff context | [Task context](docs/agents/task-context.md) |
 | work on parallel branches or model assignments | [Parallel work](docs/agents/parallel-work.md) |
 | reassess architecture, decisions or alternatives | [Architecture reassessment](docs/agents/architecture-review.md) |
@@ -117,38 +110,31 @@ All applicable rules must be known and followed from the start; shorter indexes 
 ### Testing the joins
 
 - A change that touches how two parts meet gets a test across both, not one per side. Unit tests on each part did not catch the bugs that reached users.
-- Two bugs reached the live site although every unit had tests: flights on generated bandos were turned 90° (the map's projection and the flight's were each right, but the default alignment between them was not), and a timeline click was undone while the video played (seek and video clock each worked alone). Their cross-part tests: `calibration-default.spec.ts` (a GPS fix lands where the map puts the same point), the seek-with-a-playing-video case in `services.spec.ts`. <!-- project -->
+- The two bugs that taught this (a 90° turn between map and flight, a timeline click undone while the video played) and their cross-part tests are in [flights](docs/agents/areas/flights.md). <!-- project -->
 - Test coordinates are neutral (Milan centre, 45.4642, 9.1900, or open sea at 1°N 1°E for flights). Never use a real bando's place, and never the private ones' (see Privacy). The map starts at Milan centre (`DEFAULT_START`) until the pilot searches. <!-- project -->
 - Typed coordinates are parsed locally (`parseLatLon`) and never sent to the geocoder: a bando's coordinates are the pilot's secret. <!-- project -->
 
 ### Known pitfalls
 
-- WebGL canvases (inspector preview, 3D editor view) skip rendering while hidden; they must not be assumed to exist in tests
-  (the scene builders are testable without a renderer).
-- Overpass answers 429 / 500 without CORS headers: do not treat the browser's "access control" error as a code bug.
 - Never claim an AI edit worked from the model's own words.
-- `SiteService.applySpec` re-applies the calibration every time (Save, every edit). The pilot's own alignment (pins, compass)
-  therefore lives in `SiteSpec.calibration`; an effect in `SiteService` copies live changes into the spec. Do not set the
-  calibration anywhere without going through the store, or it will be undone on the next edit.
-- The flight view and the 3D editor build the site with `{ merge: true }` (`three/merge.ts`): each building, its roof and each structure become one mesh per material (Chiari: 1,217 meshes → under 100). Transparent and instanced meshes stay apart, and so does any mesh with its own `userData.pick` (columns, partitions: the editor clicks them one by one); the x-ray fades the merged mesh, the collider is unchanged. Previews (`bare`) are not merged.
-- Meshes that can be clicked in the 3D editor carry `userData.pick` (`{ kind, id | i }`); keep it when adding a new builder.
+- Each area's traps (WebGL canvases hidden in tests, Overpass errors without CORS, calibration through the store, merged meshes and `userData.pick`) are in its area file below. <!-- project -->
 
 ## Area notes
 
-Before changing an area, read its section in [docs/agents/areas.md](docs/agents/areas.md): the rules and lessons there are as binding as this file.
+Before changing an area, read its file (linked below; index: [docs/agents/areas.md](docs/agents/areas.md)): the rules and lessons there are as binding as this file. Harness capabilities and reconciliation: [areas/harness.md](docs/agents/areas/harness.md). <!-- project -->
 
 | Area | Covers |
 |---|---|
-| Editor | shell and tool controllers, palette, selection, measures, Elements, modules, blocks and the library, coordinates, water/roads/surfaces, inspector docking |
-| Terrain, roads and underground | `siteGround`, terrain styles, road priority and draping, underground cuts, basements and their perimeter walls |
-| Buildings and example bandos | ruins, generated examples (`npm run examples`), the Villetta measured example, Bardwell House |
-| Sharing and privacy | hidden/exact export, backup, import, pins and calibration of hidden bandos |
-| Flights, replay and racing | log parsing, video sync and Auto-sync, replay smoothing, cameras, paths, racing, Fly entry |
-| Welcome, guide and mascot | first visit, the showcase, the guided tour and its timing, the pixel mascot |
-| Panels and Views | Views hierarchy, Hide all / Reset UI |
-| Languages | `I18nService`, the Italian dictionary, `check:i18n` |
-| UI chrome and contrast | theme tokens, control state pairs, contrast tests |
-| Future | proposals that are not implemented |
+| Editor: [tools](docs/agents/areas/editor.md), [library](docs/agents/areas/editor-library.md), [geometry](docs/agents/areas/editor-geometry.md) | shell and tool controllers, palette, selection, measures, Elements, modules, blocks and the library, coordinates, water/roads/surfaces, inspector docking |
+| [Terrain, roads and underground](docs/agents/areas/terrain.md) | `siteGround`, terrain styles, road priority and draping, underground cuts, basements and their perimeter walls |
+| [Buildings and example bandos](docs/agents/areas/buildings.md) | ruins, generated examples (`npm run examples`), the Villetta measured example, Bardwell House |
+| [Sharing and privacy](docs/agents/areas/sharing.md) | hidden/exact export, backup, import, pins and calibration of hidden bandos |
+| [Flights, replay and racing](docs/agents/areas/flights.md) | log parsing, video sync and Auto-sync, replay smoothing, cameras, paths, racing, Fly entry |
+| [Welcome, guide and mascot](docs/agents/areas/welcome.md) | first visit, the showcase, the guided tour and its timing, the pixel mascot |
+| [Panels and Views](docs/agents/areas/panels.md) | Views hierarchy, Hide all / Reset UI |
+| [Languages](docs/agents/areas/languages.md) | `I18nService`, the Italian dictionary, `check:i18n` |
+| [UI chrome and contrast](docs/agents/areas/ui-chrome.md) | theme tokens, control state pairs, contrast tests |
+| [Future](docs/agents/areas/future.md) | proposals that are not implemented |
 
 ## Privacy
 

@@ -23,7 +23,7 @@ What must follow a change, and what must run again after it (docs/agents/change-
 | catalogue | `library/blocks/**`, `tools/build-catalog.mjs` |  | republish the catalogue | `node tools/build-catalog.mjs` |  | CI (catalogue) |
 | examples | `tools/examples/**`, `src/app/core/site-spec.ts`, `src/app/three/**` | `tools/examples/data/**` | rebuild the example bandos (they place catalogue blocks) | `npm run examples` | catalogue | CI (generated examples must match) |
 | panels | `src/app/ui/panel-defs.ts`, `src/app/ui/panels/**` |  | a new or renamed panel gets its Views entry, its guide step (core/tour.ts) and its line in the README |  |  | nothing |
-| docs | `src/app/ui/**`, `src/app/three/**`, `src/app/core/**`, `src/app/services/**` |  | a new or changed feature updates the README (what the app does) and the area's notes in docs/agents/areas.md |  |  | nothing (BACKLOG-RULES, Documentation consistency) |
+| docs | `src/app/ui/**`, `src/app/three/**`, `src/app/core/**`, `src/app/services/**` |  | a new or changed feature updates the README (what the app does) and the area's notes in docs/agents/areas/ (one file per area) |  |  | nothing (BACKLOG-RULES, Documentation consistency) |
 | impact-page | `.harness.json` |  | regenerate the impact map page | `node tools/impact-map.mjs` |  | CI (impact map page matches the rows) |
 | coverage | `src/app/**/*.ts` |  | when coverage changes on purpose (code removed, tests added), refresh the coverage table and its baseline | `npm run coverage` |  | CI (warns when a folder drops more than 2 points) |
 
