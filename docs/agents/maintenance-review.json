@@ -1,19 +1,32 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-23T22:58:14.159Z",
-  "policy": "db5c4ffde3ebe2e17d9b8c5e6ac9af6ffb20ff0b786597a277e947dc56a83919",
+  "reviewed": "2026-11-23T23:08:03.312Z",
+  "policy": "1d33852259259ef7c3916b6407a15cb1fca296a1495270897e71fe87eaa55b74",
   "inputs": {
-    "AGENTS.md": "af6b432e7f40d251332e758f6c0e8132af2099310a786b9b2f88bdaaf9b9a13f",
+    "AGENTS.md": "0a1410228cfc95a4519a463f6441243166a1dc6e32701a8e32c16c32c62aaf00",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
     "docs/BACKLOG-RULES.md": "b9ec69529fce88862753599ea1b14ada22eb96a8ca4730071d19d2329fa692ad",
+    "docs/agents/adding-things.md": "36acde3c36530665aa9e113dea0ef4b1a6b190c0c7a65c630084f60c796fc06b",
     "docs/agents/angular.md": "ce4a2b6fd81fd5eae723cf2d1eb42203e253ab5d08c13457d656814aeaf2448e",
-    "docs/agents/areas.md": "7d95d4ca293cdfc4056058d3bca93e7cc671e4df9b3809fe59603f4f6f1bf6c7",
+    "docs/agents/areas.md": "0daacda1e35deef9f4b01620b1cfc4ab4a5cb7175cfb72e9d825e9269fa7571c",
+    "docs/agents/areas/buildings.md": "8564f89d44a9ca54d47678dafe3adc4772848936537a0359647c5bde60c2e856",
+    "docs/agents/areas/editor-geometry.md": "239de69c8fa55c16e48b3733f3fd6754a2ab8d74671bad0a7b01c76f6923a3fc",
+    "docs/agents/areas/editor-library.md": "de05bf2a3eb355c35dee6d23e722ab96b0dfc228281baa23b21d8e716dc090bd",
+    "docs/agents/areas/editor.md": "348185424e7217af0fde7e23ee94e0458989b12019fb18384e75c35e8861fa0c",
+    "docs/agents/areas/flights.md": "89f1986c748960ca3652f62b778eda1685b759f65f4d1c7ae7d99962d158eb38",
+    "docs/agents/areas/harness.md": "d6741bd064910254fdee829b38a575c024718c380bd65865a9c5edf881f98657",
+    "docs/agents/areas/languages.md": "3a98ef9574cc79aed940e4eec6e5b04bcefb73732e69d8eb6a8e54645ed83fa9",
+    "docs/agents/areas/panels.md": "04b0749646a7d05c5a011b11152c735fc9c3837d8aacb4499ffa85729a54b8bb",
+    "docs/agents/areas/sharing.md": "6147c892694d1e27fe6d950ae04bf59676326ce4e44bab879c9631f1964ab8f3",
+    "docs/agents/areas/terrain.md": "11c57030c0e1b015e36a2cd1f75abdd5548f7702996f6f5a304793b64f859bf8",
+    "docs/agents/areas/ui-chrome.md": "cb901371da976d9f2a3678d233dd273c5c557be3481ee4ff37c503b665df3d5e",
+    "docs/agents/areas/welcome.md": "da66bd470a9daacdf7fe0268a8221ba4b26a5bb938ac2d2fd8f005dc9deacf76",
     "docs/agents/audit.md": "e58480c21e8afe9a825df4726fa93b8a7f841557f4267f1fc2c61ac3dac8f642",
     "docs/agents/maintenance.md": "69f77d944551e4a442de20a0e46badf19a91e42f870bf8048f428c8a64f343a9",
     "docs/agents/pull-requests.md": "5ebab444064a06518768ea87b9c2944571f3a79520d2bb63512c533ec4fe4f57",
     "docs/agents/session-start.md": "404f79eee1c0e2dbe3f9da2e38b9c93410a0bcc7b449bbb2749cc7d7853b88d7",
     "docs/backlog/closure.md": "d5aa9fc8aab175326d82ee4f95f2afb21b572e41d22b066058d1dcd5ef6c3431",
-    "docs/backlog/documentation.md": "bf61357c4e5da481d454659ca0b154fbbdf87a29e6f9a3ae7fe761eddbdf926d",
+    "docs/backlog/documentation.md": "214e6603dc6193cf1c31a1c87af2ce5f455c754e4874a02ef0c868038386e635",
     "docs/backlog/records.md": "82686fdc164437a05cdd263bba24fa2eb65f2970f6d43d4ba153055d74f4ce86",
     "docs/backlog/review.md": "553177fc99074b2bc3ac2c9b430f4d22eaac46247a41b5966b6a97734cfb73df",
     "tools/check-audits.mjs": "7c9d6ebfdb4e9341b07a80329015fd771d8ab66afb42321d25899b204d826ec8",
@@ -130,6 +143,23 @@
       "disposition": "implemented",
       "target": "AGENTS.md",
       "evidence": "F-049 step 2: ESLint adopted (lint, format:check and check:tooling in CI; AGENTS command block and project line); core/ import rule mirrors check:conventions; disables only per line with a reason."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "AGENTS.md",
+      "evidence": "F-050: area notes split into docs/agents/areas/ (13 files, index kept), Adding things recipes into docs/agents/adding-things.md, area pitfalls into their area files; no rule removed (check:rules passes, never rule stays in AGENTS); AGENTS 4,665 -> 4,365 tokens."
+    },
+    {
+      "kind": "none",
+      "disposition": "no-change",
+      "evidence": "Residual check:rule-load warnings kept visible with reasons in F-050: the template AGENTS alone is ~3,160 tokens against a 3,500 always-loaded budget, so the budget is a template question raised to the owner; five area files at 2,100-3,100 tokens stay whole per area."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "AGENTS.md",
+      "evidence": "Review of #281: calibration-through-the-store and userData.pick kept in AGENTS (they reach flight and builder code); template Area notes sentence restored with a separate project line; recipe names userData.pick; Overpass noted in terrain too."
     }
   ]
 }

@@ -703,9 +703,9 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 | Signal | Priority | Status | Effort |
 |:---:|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🟡 Medium |
+| 🟡 | 🔹 P3 | Implemented | 🟢 Small |
 
-💻 **→ Human action required: No**<br />Split `docs/agents/areas.md` by area so each trigger reads under 5,000 tokens, and move procedure detail out of AGENTS.md.
+💻 **→ Human action required: No**<br />Merge #281 once every check passes, then close this record on its CI.
 
 | | |
 |---|---|
@@ -716,15 +716,15 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Found 2026-11-23 while reconciling F-048. Split the area notes into one file per area (`docs/agents/areas/<area>.md`), linked from the AGENTS area table; move procedure detail (such as the "Adding things" recipes) out of AGENTS.md while keeping every rule. Warnings only; CI does not fail on them.
+**Next action / closure evidence:** Done 2026-11-23 ([#281](https://github.com/voidbrain/openbando/pull/281)): `docs/agents/areas.md` (18,865 tokens) is now an index over 13 files in `docs/agents/areas/` (the editor in three), each linked from the AGENTS area table and measured by `rules.procedures`; the "Adding things" recipes moved to `docs/agents/adding-things.md` (a procedures row); area pitfalls and the two-bugs lesson moved to their area files; the "never" rule, the calibration-through-the-store rule and `userData.pick` stay in AGENTS (review: they reach flight and builder code too); every link resolves and `check:rules` passes. AGENTS.md 4,665 → 4,527 tokens. Remaining warnings, with their reason: (1) always-loaded 4,557 > 3,500 and the per-trigger totals > 5,000 that follow from it: the template's own AGENTS is about 3,160 tokens with placeholders (the template repository itself loads 3,522), so any project rules exceed the budget; the 1,115 tokens of OpenBando lines are rules, not procedure detail. A budget for a real project is the template's question, raised to the owner. (2) Five area files at 2,100–3,100 tokens (editor tools, terrain, flights, welcome, sharing): each is one area read only when that area changes; splitting further would scatter one area's rules. Found 2026-11-23 while reconciling F-048. Warnings only; CI does not fail on them.
 
-**Estimates:** Medium remaining effort. A mechanical split with link updates; the rule review must show that no requirement is lost. Estimated 2026-11-23; not acceptance evidence.
+**Estimates:** Small remaining effort: the PR's CI. Estimated 2026-11-23; not acceptance evidence.
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#281](https://github.com/voidbrain/openbando/pull/281) |
 | Opened | 2026-11-23 |
-| Verification | Script · Pending |
+| Verification | Script · 2026-11-23 · check:rules, links resolve, check:rule-load warnings listed with reasons; CI #281 · Pending |
 | Reviewed | 2026-11-23 |
 
 </details>
