@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 23 November 2026 against main `34f90c3` (#277; its CI 41845649869 on the PR head passed, the Auto-sync note expected). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 23 November 2026 against main `878c675` (#278; CI 45266928463 green, its Auto-sync note expected). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -171,40 +171,6 @@ Current work ledger, reviewed 23 November 2026 against main `34f90c3` (#277; its
 | Opened | 2026-10-31 |
 | Verification | Pending |
 | Reviewed | 2026-10-31 |
-
-</details>
-
----
-
-### B-052
-
-**The showcase "Views stops the replay" e2e check fails intermittently in CI**
-
-| Signal | Priority | Status | Effort |
-|:---:|---|---|---|
-| 🟡 | 🔺 P1 | Implemented | 🟢 Small |
-
-💻 **→ Human action required: No**<br />Inspect the e2e (4) CI of the fix; close after green merge and a few later green runs.
-
-| | |
-|---|---|
-| **Issue** | `e2e/showcase.e2e.ts` "the pilot opening a panel from Views…" failed both attempts in CI (#273 first run, #276): the video stayed unpaused past 5 s, then on retry the video panel intercepted the Views click. |
-| **Reproduce** | CI shard e2e (4) on software WebGL; passes locally. |
-| **Check** | The test waits for the replay transport (timeline Play on), not an unpaused video that may only be priming; presses Views buttons by keyboard (trusted, not interceptable); allows 30 s for the pause. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** The test read an unpaused `<video>` as a playing replay, but loading primes the video with a short muted play, so the click could land during the load step while panels moved; ending the tour then left the priming play pending. Test-only change; app behaviour unchanged. Watch e2e (4) on #276 and later PRs before closure.
-
-**Estimates:** Small remaining effort. Local repeat passes; CI remains.
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); failing runs 41198464903, 41249038556 |
-| Opened | 2026-11-04 |
-| Verification | e2e local · 2026-11-04 · test passes 3/3 runs; CI e2e (4) · Pending |
-| Reviewed | 2026-11-04 |
 
 </details>
 
@@ -731,40 +697,6 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 
 
-### F-048
-
-**Reconcile the harness from v3.1.1 to v10.3.0**
-
-| Signal | Priority | Status | Effort |
-|:---:|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
-
-💻 **→ Human action required: No**<br />Merge once every required check passes; the full audit and the v10.3.1 tool are in #278.
-
-| | |
-|---|---|
-| **Issue** | OpenBando was on harness v3.1.1; v10.3.0 is published, so the copied tools, the AGENTS layout and the backlog rules were behind. |
-| **Reproduce** | `npm run check:freshness` listed 21 copied files to update and 8 adapted files to reconcile. |
-| **Check** | `check:freshness` reports "on template v10.3.0; copied files match it"; `check:backlog`, `check:rules`, `check:conventions`, `check:maintenance` pass; CI green. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Done 2026-11-23 on branch `harness/reconcile-10.3.0`: the 21 copied files were updated from v10.3.0, and 23 new guides and tools were adopted: `check-rules`, `rule-load`, `check-tooling`, `code-map`, `reconcile-draft`, `verification`, the two reviewer subagents, the procedure guides in `docs/agents/` and the backlog rule files in `docs/backlog/`. AGENTS.md now holds the safety rules and a procedures table, and the Angular rules moved to `docs/agents/angular.md`. Every project line was kept, marked `<!-- project -->`. Migrations: completion percentages removed (4.0.0); human-action cues name Procedure or Decision (8.0.0); `## Other changes` was moved to `docs/archive/reconciliation-2026.md` (8.6.0). CI action versions pinned to verified commit SHAs and a CycloneDX SBOM step added. Not adopted (optional): source-owned records and work items, task claims, work usage, the push guard, archive recaps, the quiet reporter, browser coverage, solution refresh, CI on push to `main` and `reviews.skills`. Prettier and ESLint (5.0.0) follow in F-049; rule-load budget warnings in F-050. Closes once the PR's required checks pass and it merges. Blocked on main too: CodeQL flagged `tools/check-rules.mjs` (copied from v10.3.0), fixed in the template as B-048 ([template #234](https://github.com/voidbrain/project-harness/pull/234), released [v10.3.1](https://github.com/voidbrain/project-harness/releases/tag/v10.3.1)) and copied here; the stamp is on 10.3.1; `check` fails on every PR, main included, until a new full audit report lands (the last one is 2026-10-31). Review: fresh-context design review 2026-11-23 (Opus subagent): copied files byte-identical to v10.3.0, safety block identical to the template, no project rule lost; should-fix items fixed (backlog legend, a missing project marker, audit scope line); blockers are the two above.
-
-**Estimates:** Small remaining effort. Reconcile done locally; the PR's CI remains. Estimated 2026-11-23; not acceptance evidence.
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#278](https://github.com/voidbrain/openbando/pull/278) |
-| Opened | 2026-11-23 |
-| Verification | Script · 2026-11-23 · check:backlog, check:rules, check:conventions, check:integrations and check-harness pass locally; CI · Pending |
-| Reviewed | 2026-11-23 |
-
-</details>
-
----
-
 ### F-049
 
 **Adopt Prettier and ESLint (harness 5.0.0, `check:tooling`)**
@@ -773,7 +705,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 |:---:|---|---|---|
 | 🔴 | 🔶 P2 | Open | 🟡 Medium |
 
-💻 **→ Human action required: No**<br />Add the Prettier and ESLint configuration and scripts, reformat the repository in one mechanical PR, then fix lint findings in a second.
+💻 **→ Human action required: No**<br />Prettier is in (#279); next: ESLint config, the `lint` script and its fixes, then `check:tooling` in CI.
 
 | | |
 |---|---|
@@ -784,15 +716,15 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 <details>
 <summary>Next action, estimates and PR history</summary>
 
-**Next action / closure evidence:** Agreed with the owner 2026-11-23 (reconcile F-048): adopt in follow-up PRs rather than in the reconcile. PR 1: `.prettierrc.json`, `.prettierignore`, `format` / `format:check` scripts and the whole-repository reformat, nothing else (verify unit, build and e2e unchanged). PR 2: `eslint.config.mjs` (angular-eslint), the `lint` script and fixes. Then add the "Formatter check, and that formatter and linter are enforced" CI step and remove the AGENTS project line that defers it. This replaces the 2.2.2 stamp note that ESLint was skipped on purpose.
+**Next action / closure evidence:** Step 1 done 2026-11-23 ([#279](https://github.com/voidbrain/openbando/pull/279)): `.prettierrc` on the template options (printWidth 120: the unused 100-wide config matched 1 of 278 files and changed 5,400 more lines), `.prettierignore`, `format` / `format:check` on `src/` and `e2e/`, Prettier pinned to 3.9.10, `format:check` in CI. One mechanical reformat of 268 files: the position-free TypeScript syntax tree matches for 305 of 307 files (the two others are equivalent: `a ?? (b ?? c)` and `0.90`); three `prettier-ignore` comments where Prettier 3.9 is not idempotent on back-to-back interpolations. Two project tools read templates as text and broke on the new layout (check-i18n saw 653 of 852 texts, the element map mislabelled controls): both fixed and shown to give the same output on the old and new source. The reformat touches every source file, so the media checker now lists every clip and film as changed since recording (they were already stale, F-031). Step 2: ESLint (`angular/eslint.config.mjs`, with the `core/` rule allowing `signal`, `computed`, `untracked`), `lint` in CI, then `check:tooling` in CI. Agreed with the owner 2026-11-23 (reconcile F-048): adopt in follow-up PRs rather than in the reconcile. PR 1: `.prettierrc.json`, `.prettierignore`, `format` / `format:check` scripts and the whole-repository reformat, nothing else (verify unit, build and e2e unchanged). PR 2: `eslint.config.mjs` (angular-eslint), the `lint` script and fixes. Then add the "Formatter check, and that formatter and linter are enforced" CI step and remove the AGENTS project line that defers it. This replaces the 2.2.2 stamp note that ESLint was skipped on purpose.
 
 **Estimates:** Medium remaining effort. The reformat is mechanical; the number of lint findings is unknown until the config runs. Estimated 2026-11-23; not acceptance evidence.
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#279](https://github.com/voidbrain/openbando/pull/279) (Prettier) |
 | Opened | 2026-11-23 |
-| Verification | Script · Pending |
+| Verification | Script · 2026-11-23 · format:check, 602 unit tests, build, types, i18n 852, syntax-tree comparison; CI · Pending; lint · Pending |
 | Reviewed | 2026-11-23 |
 
 </details>
@@ -871,7 +803,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-23: harness reconciled from v3.1.1 to v10.3.0 (F-048, [#278](https://github.com/voidbrain/openbando/pull/278)): copied tools updated, completion percentages removed, human-action cues name their kind, this section archived. Prettier and ESLint adoption follows in F-049. Same PR: the [23 November full audit](audits/2026-11-23-full-openbando.md) of all eight areas at main `34f90c3` (no new product defect; F-051 opened), carried in #278 because `main` fails the audit gate and #278 holds the fresh maintenance receipt.
+2026-11-23: [#278](https://github.com/voidbrain/openbando/pull/278) merged on green CI (harness v10.3.1 and the full audit); F-048 and B-052 closed and archived. Prettier adopted in [#279](https://github.com/voidbrain/openbando/pull/279) (F-049 step 1).
 
 ## Reconciliation history
 

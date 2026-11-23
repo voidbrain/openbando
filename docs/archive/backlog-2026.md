@@ -1514,3 +1514,73 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 </details>
 
 ---
+
+## Closed 2026-11-23
+
+### B-052
+
+**The showcase "Views stops the replay" e2e check fails intermittently in CI**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P1 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-23: e2e (4) green on three runs since the fix, with no retry.
+
+| | |
+|---|---|
+| **Issue** | `e2e/showcase.e2e.ts` "the pilot opening a panel from Views…" failed both attempts in CI (#273 first run, #276): the video stayed unpaused past 5 s, then on retry the video panel intercepted the Views click. |
+| **Reproduce** | CI shard e2e (4) on software WebGL; passes locally. |
+| **Check** | The test waits for the replay transport (timeline Play on), not an unpaused video that may only be priming; presses Views buttons by keyboard (trusted, not interceptable); allows 30 s for the pause. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-23: e2e (4) green with no retry on #276 (41841651036), #277 (41845649869) and #278 (45266928463). The test read an unpaused `<video>` as a playing replay, but loading primes the video with a short muted play, so the click could land during the load step while panels moved; ending the tour then left the priming play pending. Test-only change; app behaviour unchanged. Watch e2e (4) on #276 and later PRs before closure.
+
+**Estimates:** Small remaining effort. Local repeat passes; CI remains.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); failing runs 41198464903, 41249038556 |
+| Opened | 2026-11-04 |
+| Verification | e2e local · 2026-11-04 · 3/3; CI e2e (4) · 2026-11-23 · green on runs 41841651036, 41845649869, 45266928463 |
+| Reviewed | 2026-11-23 |
+
+</details>
+
+---
+
+### F-048
+
+**Reconcile the harness from v3.1.1 to v10.3.0**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P2 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-23: #278 merged with every required check green.
+
+| | |
+|---|---|
+| **Issue** | OpenBando was on harness v3.1.1; v10.3.0 is published, so the copied tools, the AGENTS layout and the backlog rules were behind. |
+| **Reproduce** | `npm run check:freshness` listed 21 copied files to update and 8 adapted files to reconcile. |
+| **Check** | `check:freshness` reports "on template v10.3.0; copied files match it"; `check:backlog`, `check:rules`, `check:conventions`, `check:maintenance` pass; CI green. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-23: [#278](https://github.com/voidbrain/openbando/pull/278) merged at `878c675`; CI [45266928463](https://github.com/voidbrain/openbando/actions/runs/45266928463): check, e2e (1)–(4), race-browser and CodeQL green; on template v10.3.1 with copied files matching it. Done 2026-11-23 on branch `harness/reconcile-10.3.0`: the 21 copied files were updated from v10.3.0, and 23 new guides and tools were adopted: `check-rules`, `rule-load`, `check-tooling`, `code-map`, `reconcile-draft`, `verification`, the two reviewer subagents, the procedure guides in `docs/agents/` and the backlog rule files in `docs/backlog/`. AGENTS.md now holds the safety rules and a procedures table, and the Angular rules moved to `docs/agents/angular.md`. Every project line was kept, marked `<!-- project -->`. Migrations: completion percentages removed (4.0.0); human-action cues name Procedure or Decision (8.0.0); `## Other changes` was moved to `docs/archive/reconciliation-2026.md` (8.6.0). CI action versions pinned to verified commit SHAs and a CycloneDX SBOM step added. Not adopted (optional): source-owned records and work items, task claims, work usage, the push guard, archive recaps, the quiet reporter, browser coverage, solution refresh, CI on push to `main` and `reviews.skills`. Prettier and ESLint (5.0.0) follow in F-049; rule-load budget warnings in F-050. Closes once the PR's required checks pass and it merges. Blocked on main too: CodeQL flagged `tools/check-rules.mjs` (copied from v10.3.0), fixed in the template as B-048 ([template #234](https://github.com/voidbrain/project-harness/pull/234), released [v10.3.1](https://github.com/voidbrain/project-harness/releases/tag/v10.3.1)) and copied here; the stamp is on 10.3.1; `check` fails on every PR, main included, until a new full audit report lands (the last one is 2026-10-31). Review: fresh-context design review 2026-11-23 (Opus subagent): copied files byte-identical to v10.3.0, safety block identical to the template, no project rule lost; should-fix items fixed (backlog legend, a missing project marker, audit scope line); blockers are the two above.
+
+**Estimates:** Small remaining effort. Reconcile done locally; the PR's CI remains. Estimated 2026-11-23; not acceptance evidence.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#278](https://github.com/voidbrain/openbando/pull/278) |
+| Opened | 2026-11-23 |
+| Verification | CI · 2026-11-23 · run 45266928463 all jobs and CodeQL green; check-harness: copied files match v10.3.1 |
+| Reviewed | 2026-11-23 |
+
+</details>
+
+---
