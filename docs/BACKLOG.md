@@ -756,7 +756,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | [#278](https://github.com/voidbrain/openbando/pull/278) |
 | Opened | 2026-11-23 |
 | Verification | Script · 2026-11-23 · check:backlog, check:rules, check:conventions, check:integrations and check-harness pass locally; CI · Pending |
 | Reviewed | 2026-11-23 |
@@ -837,7 +837,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-23: harness reconciled from v3.1.1 to v10.3.0 (F-048): copied tools updated, completion percentages removed, human-action cues name their kind, this section archived. Prettier and ESLint adoption follows in F-049.
+2026-11-23: harness reconciled from v3.1.1 to v10.3.0 (F-048, [#278](https://github.com/voidbrain/openbando/pull/278)): copied tools updated, completion percentages removed, human-action cues name their kind, this section archived. Prettier and ESLint adoption follows in F-049.
 
 ## Reconciliation history
 
