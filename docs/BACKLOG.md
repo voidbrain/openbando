@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 24 November 2026 against main `1684030` (#281; CI 45283575523 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 24 November 2026 against main `26389b8` (#282; CI 45286115366 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -697,79 +697,12 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 
 
-### F-049
-
-**Adopt Prettier and ESLint (harness 5.0.0, `check:tooling`)**
-
-| Signal | Priority | Status | Effort |
-|:---:|---|---|---|
-| 🟡 | 🔶 P2 | Implemented | 🟢 Small |
-
-💻 **→ Human action required: No**<br />Merge #280 once every check passes, then close this record on its CI.
-
-| | |
-|---|---|
-| **Issue** | Harness 5.0.0 requires a formatter check and a linter in CI for every stack; OpenBando has neither, so `check:tooling` fails and is not yet in CI. |
-| **Reproduce** | `npm run check:tooling`: no `format:check` and no `lint` script. |
-| **Check** | `npm run format:check`, `npm run lint` and `npm run check:tooling` pass locally and as CI steps; AGENTS lists both commands. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Step 2 done 2026-11-23 ([#280](https://github.com/voidbrain/openbando/pull/280)): ESLint 10 with typescript-eslint, angular-eslint (templates and their accessibility, inline templates included) and eslint-config-prettier, all pinned; `core/` may import only `signal`, `computed`, `untracked` from Angular (probe: `inject` and `@angular/common` rejected); copied harness tools and `tools/prototypes/` not linted. 19 findings: 9 code fixes (`const`, needless initial values, `this` alias, `any` in a test, a bare signal read written as `void`, a control-character sentinel), 7 template-rule firings at 5 places disabled on their line with the reason, 3 in `tools/prototypes/` (now not linted) (a listbox with `aria-activedescendant`, controls inside `@if`/`@for` the rule cannot see, pointer conveniences over focusable children). `lint`, `format:check` and `check:tooling` in CI. Step 1 merged as #279 (CI green). Review: fresh-context design review 2026-11-23, no blockers: `Quat.multiply` identical on 20,000 random cases, the five disables exact and hiding no defect, the same 852 i18n texts, the core/ rule probed; its wording nit fixed. Step 1 done 2026-11-23 ([#279](https://github.com/voidbrain/openbando/pull/279)): `.prettierrc` on the template options (printWidth 120: the unused 100-wide config matched 1 of 278 files and changed 5,400 more lines), `.prettierignore`, `format` / `format:check` on `src/` and `e2e/`, Prettier pinned to 3.9.10, `format:check` in CI. One mechanical reformat of 266 files in `src/` and `e2e/`: the position-free TypeScript syntax tree matches for every .ts file but `underground.ts` (`a ?? (b ?? c)` → `a ?? b ?? c`, same value); `styles.scss` compiles to the same CSS except `0.90` → `0.9`; `bando-editor.html` parses to the same Angular template (independent review); three `prettier-ignore` comments where Prettier 3.9 is not idempotent on back-to-back interpolations. Two project tools read templates as text and broke on the new layout (check-i18n saw 653 of 852 texts, the element map mislabelled controls): both fixed and shown to give the same output on the old and new source. The a11y e2e check found the Library button by exact text (`/^\W*Library$/`); the reformat put its text on its own line, so Angular keeps one trailing space and the match failed (the visible label and accessible name are unchanged): the locator now allows trailing whitespace (`\s*$`), not a changed requirement. The reformat touches every source file, so the media checker now lists every clip and film as changed since recording (they were already stale, F-031). Step 2: ESLint (`angular/eslint.config.mjs`, with the `core/` rule allowing `signal`, `computed`, `untracked`), `lint` in CI, then `check:tooling` in CI. Agreed with the owner 2026-11-23 (reconcile F-048): adopt in follow-up PRs rather than in the reconcile. PR 1: `.prettierrc.json`, `.prettierignore`, `format` / `format:check` scripts and the whole-repository reformat, nothing else (verify unit, build and e2e unchanged). PR 2: `eslint.config.mjs` (angular-eslint), the `lint` script and fixes. Then add the "Formatter check, and that formatter and linter are enforced" CI step and remove the AGENTS project line that defers it. This replaces the 2.2.2 stamp note that ESLint was skipped on purpose.
-
-**Estimates:** Small remaining effort: the PR's CI. Estimated 2026-11-23; not acceptance evidence.
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#279](https://github.com/voidbrain/openbando/pull/279) (Prettier, merged on green CI); [#280](https://github.com/voidbrain/openbando/pull/280) (ESLint) |
-| Opened | 2026-11-23 |
-| Verification | Script · 2026-11-23 · lint clean, format:check, check:tooling, 602 unit tests, build, types, i18n 852; CI #279 green; CI #280 · Pending |
-| Reviewed | 2026-11-23 |
-
-</details>
-
----
-
-### F-051
-
-**Update Angular to 22.3 and drop the Vite override**
-
-| Signal | Priority | Status | Effort |
-|:---:|---|---|---|
-| 🔴 | 🔹 P3 | Open | 🟢 Small |
-
-💻 **→ Human action required: No**<br />Update the Angular packages to 22.3.x, remove the `overrides.@angular/build.vite` pin, and run the browser tests.
-
-| | |
-|---|---|
-| **Issue** | B-049 (31 October) pinned the builder's Vite to 8.3.5 to clear six advisories, to be reassessed once the builder ships a fixed Vite. `@angular/build` 22.3.0 depends on Vite 8.3.8 (full audit 2026-11-23). |
-| **Reproduce** | `npm view @angular/build@22.3.0 dependencies.vite`; `npm ls vite` shows `vite@8.3.5 overridden`. |
-| **Check** | `package.json` has no Vite override; `npm ls vite` shows the builder's own version; `npm audit` 0; unit, build and every e2e job green; the 3D views looked at (impact row `lockfile`). |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-**Next action / closure evidence:** Found by the [23 November full audit](audits/2026-11-23-full-openbando.md). Run `ng update @angular/core@22.3 @angular/cli@22.3`, remove the override, regenerate the lockfile, then run the full checks. A library upgrade can change rendering: follow the `lockfile` impact row (clips and films, F-031).
-
-**Estimates:** Small remaining effort. A minor framework update; risk is in rendering and browser-test timing. Estimated 2026-11-23; not acceptance evidence.
-
-| Field | Value |
-|---|---|
-| PR / evidence | — |
-| Opened | 2026-11-23 |
-| Verification | Script · Pending; e2e · Pending |
-| Reviewed | 2026-11-23 |
-
-</details>
-
----
 
 ## Other changes
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-24: #281 merged on green CI: F-050 closed. Harness reconciled to v10.5.0 in [#283](https://github.com/voidbrain/openbando/pull/283): lean AGENTS, always-loaded rules 3,454 / 3,500 tokens.
+2026-11-24: #281 (area notes) and #282 (Angular 22.3) merged on green CI: F-050 and F-051 closed. Harness reconciled to v10.5.0 in [#283](https://github.com/voidbrain/openbando/pull/283): lean AGENTS, always-loaded rules 3,454 / 3,500 tokens.
 
 ## Reconciliation history
 
