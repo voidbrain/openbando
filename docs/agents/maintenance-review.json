@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-23T22:50:56.743Z",
+  "reviewed": "2026-11-23T23:08:03.312Z",
   "policy": "1d33852259259ef7c3916b6407a15cb1fca296a1495270897e71fe87eaa55b74",
   "inputs": {
     "AGENTS.md": "0a1410228cfc95a4519a463f6441243166a1dc6e32701a8e32c16c32c62aaf00",
@@ -105,9 +105,9 @@
     },
     {
       "kind": "tool",
-      "disposition": "backlog",
-      "target": "F-049",
-      "evidence": "check:tooling fails: no formatter check or linter. Owner chose follow-up PRs (reformat, then lint) over adopting inside the reconcile."
+      "disposition": "implemented",
+      "target": "tools/check-tooling.mjs",
+      "evidence": "F-049 closed 2026-11-23: Prettier (#279) and ESLint (#280) merged on green CI; format:check, lint and check:tooling run in CI."
     },
     {
       "kind": "rule",

@@ -43,12 +43,12 @@
   "private": true,
   "packageManager": "npm@11.17.0",
   "dependencies": {
-    "@angular/common": "^22.2.0",
-    "@angular/compiler": "^22.2.0",
-    "@angular/core": "^22.2.0",
-    "@angular/forms": "^22.2.0",
-    "@angular/platform-browser": "^22.2.0",
-    "@angular/router": "^22.2.0",
+    "@angular/common": "^22.3.0",
+    "@angular/compiler": "^22.3.0",
+    "@angular/core": "^22.3.0",
+    "@angular/forms": "^22.3.0",
+    "@angular/platform-browser": "^22.3.0",
+    "@angular/router": "^22.3.0",
     "@mlc-ai/web-llm": "^0.2.86",
     "@ngrx/signals": "^22.0.1",
     "leaflet": "^1.9.4",
@@ -58,9 +58,9 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular/build": "^22.2.2",
-    "@angular/cli": "^22.2.4",
-    "@angular/compiler-cli": "^22.2.0",
+    "@angular/build": "^22.3.0",
+    "@angular/cli": "^22.3.0",
+    "@angular/compiler-cli": "^22.3.0",
     "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "10.0.1",
     "@playwright/test": "^1.64.1",
@@ -78,10 +78,5 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "8.74.0",
     "vitest": "^5.0.0"
-  },
-  "overrides": {
-    "@angular/build": {
-      "vite": "8.3.5"
-    }
   }
 }
