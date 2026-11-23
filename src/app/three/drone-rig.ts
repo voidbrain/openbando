@@ -35,8 +35,16 @@ export class DroneRig {
       arm.rotation.y = (s * Math.PI) / 4;
       this.body.add(arm);
     }
-    for (const [x, z] of [[1, 1], [-1, 1], [1, -1], [-1, -1]] as const) {
-      const p = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.004, 10), new THREE.MeshBasicMaterial({ color: '#ff7a1a', transparent: true, opacity: 0.55 }));
+    for (const [x, z] of [
+      [1, 1],
+      [-1, 1],
+      [1, -1],
+      [-1, -1],
+    ] as const) {
+      const p = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.065, 0.065, 0.004, 10),
+        new THREE.MeshBasicMaterial({ color: '#ff7a1a', transparent: true, opacity: 0.55 }),
+      );
       p.position.set(x * 0.13, 0.02, z * 0.13);
       this.body.add(p);
       this.props.push(p);
@@ -62,7 +70,10 @@ export class DroneRig {
     this.sim.add(this.body, this.beacon);
     scene.add(this.sim);
 
-    this.cone = new THREE.Mesh(new THREE.ConeGeometry(0.5, 1.6, 4).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: '#ffffff' }));
+    this.cone = new THREE.Mesh(
+      new THREE.ConeGeometry(0.5, 1.6, 4).rotateX(-Math.PI / 2),
+      new THREE.MeshBasicMaterial({ color: '#ffffff' }),
+    );
     this.ghostBody = this.body.clone();
     this.ghostBody.scale.setScalar(4);
     this.ghost.add(this.cone, this.ghostBody);

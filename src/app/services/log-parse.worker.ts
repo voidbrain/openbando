@@ -7,7 +7,9 @@ addEventListener('message', (e: MessageEvent<File>) => {
       try {
         const log = parseLog(text);
         const tel = log.tel;
-        const transfer = tel ? [tel.t, tel.att, tel.rc, tel.mot, tel.gyro, tel.vbat].map((a) => a.buffer as ArrayBuffer) : [];
+        const transfer = tel
+          ? [tel.t, tel.att, tel.rc, tel.mot, tel.gyro, tel.vbat].map((a) => a.buffer as ArrayBuffer)
+          : [];
         postMessage({ log }, { transfer });
       } catch (err) {
         postMessage({ error: (err as Error).message });

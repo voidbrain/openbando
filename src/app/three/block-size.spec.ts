@@ -13,6 +13,7 @@ describe('block sizes in the Library', () => {
     expect(blockSize(block('abando/column-rows'))).toBeNull(); // a pattern has no size of its own
   });
   it('every catalogue block that is not a pattern gets a size', () => {
-    for (const raw of published.blocks as { id: string; kind: string }[]) if (raw.kind !== 'pattern') expect(blockSize(sanitizeBlock(raw)!), raw.id).not.toBeNull();
+    for (const raw of published.blocks as { id: string; kind: string }[])
+      if (raw.kind !== 'pattern') expect(blockSize(sanitizeBlock(raw)!), raw.id).not.toBeNull();
   });
 });

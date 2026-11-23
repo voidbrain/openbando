@@ -3,7 +3,10 @@ import { addPin, pinOffset, sanitizePins } from './moment-pins';
 
 describe('pins at moments of a flight (B-017)', () => {
   it('blends from the take-off (left where it was placed) through the pins, and holds after the last', () => {
-    const pins = [{ t: 10, dx: 4, dz: 0 }, { t: 30, dx: 0, dz: -8 }];
+    const pins = [
+      { t: 10, dx: 4, dz: 0 },
+      { t: 30, dx: 0, dz: -8 },
+    ];
     expect(pinOffset([], 5)).toEqual({ dx: 0, dy: 0, dz: 0 });
     expect(pinOffset(pins, 0)).toEqual({ dx: 0, dy: 0, dz: 0 });
     expect(pinOffset(pins, 5)).toEqual({ dx: 2, dy: 0, dz: 0 });
@@ -28,7 +31,10 @@ describe('pins at moments of a flight (B-017)', () => {
   });
 
   it('keeps only well-formed saved pins, clamped and in order', () => {
-    expect(sanitizePins([{ t: 5, dx: 1, dz: 2 }, { t: 'x' }, null, { t: 1, dx: 9999, dz: 0 }])).toEqual([{ t: 1, dx: 500, dz: 0 }, { t: 5, dx: 1, dz: 2 }]);
+    expect(sanitizePins([{ t: 5, dx: 1, dz: 2 }, { t: 'x' }, null, { t: 1, dx: 9999, dz: 0 }])).toEqual([
+      { t: 1, dx: 500, dz: 0 },
+      { t: 5, dx: 1, dz: 2 },
+    ]);
     expect(sanitizePins('nope')).toEqual([]);
   });
   it('carries a height too, blended the same way; a click on the ground keeps it (F-040)', () => {

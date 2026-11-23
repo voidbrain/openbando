@@ -187,7 +187,12 @@ export class TourOverlay {
   protected readonly barAt = computed<{ left: number; top: number | null; bottom: number | null }>(() => {
     const w = Math.min(520, innerWidth - 32);
     const d = this.dragged();
-    if (d) return { left: Math.max(0, Math.min(innerWidth - w, d.left)), top: Math.max(0, Math.min(innerHeight - 40, d.top)), bottom: null };
+    if (d)
+      return {
+        left: Math.max(0, Math.min(innerWidth - w, d.left)),
+        top: Math.max(0, Math.min(innerHeight - 40, d.top)),
+        bottom: null,
+      };
     return { left: Math.round((innerWidth - w) / 2), top: null, bottom: 40 };
   });
   private grab: { dx: number; dy: number } | null = null;
@@ -212,11 +217,15 @@ export class TourOverlay {
     this.last = el;
     if (this.timer) clearTimeout(this.timer);
     if (!el) return this.dropTip();
-    const s = (el.getAttribute('data-tour') ?? '').split(/\s+/).map((m) => snippetForMark(m)).find((x) => !!x);
+    const s = (el.getAttribute('data-tour') ?? '')
+      .split(/\s+/)
+      .map((m) => snippetForMark(m))
+      .find((x) => !!x);
     if (!s) return this.dropTip();
     this.timer = setTimeout(() => {
       const r = el.getBoundingClientRect();
-      const x = Math.min(innerWidth - 276, Math.max(8, r.right + 8)), y = Math.min(innerHeight - 140, Math.max(8, r.top));
+      const x = Math.min(innerWidth - 276, Math.max(8, r.right + 8)),
+        y = Math.min(innerHeight - 140, Math.max(8, r.top));
       this.keepTip();
       this.tip.set({ s, x, y });
     }, 700);

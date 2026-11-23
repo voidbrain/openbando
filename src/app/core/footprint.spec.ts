@@ -23,7 +23,14 @@ describe('footprint', () => {
   });
 
   it('snaps a slightly crooked L outline to a rectilinear one', () => {
-    const ring = [{ x: 0, z: 0 }, { x: 20, z: 0.3 }, { x: 20.2, z: 8 }, { x: 10, z: 8.1 }, { x: 10.1, z: 14 }, { x: 0, z: 14.2 }];
+    const ring = [
+      { x: 0, z: 0 },
+      { x: 20, z: 0.3 },
+      { x: 20.2, z: 8 },
+      { x: 10, z: 8.1 },
+      { x: 10.1, z: 14 },
+      { x: 0, z: 14.2 },
+    ];
     const p = rectilinear(ring);
     expect(p).not.toBeNull();
     expect(p!.length).toBe(6);

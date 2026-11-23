@@ -6,7 +6,17 @@ import { emptySpec, type StructureSpec } from '../core/site-spec';
 import { buildSiteFromSpec } from './site-model';
 import { STRUCTURE_DEFAULTS, buildStructure } from './structures';
 
-const mk = (kind: StructureSpec['kind'], o: Partial<StructureSpec> = {}): StructureSpec => ({ id: kind, kind, name: kind, x: 50, z: -20, rotDeg: 0, height: STRUCTURE_DEFAULTS[kind].height, size: STRUCTURE_DEFAULTS[kind].size, ...o });
+const mk = (kind: StructureSpec['kind'], o: Partial<StructureSpec> = {}): StructureSpec => ({
+  id: kind,
+  kind,
+  name: kind,
+  x: 50,
+  z: -20,
+  rotDeg: 0,
+  height: STRUCTURE_DEFAULTS[kind].height,
+  size: STRUCTURE_DEFAULTS[kind].size,
+  ...o,
+});
 
 describe('more structures', () => {
   const solid = (k: StructureSpec['kind'], o: Partial<StructureSpec> = {}): SiteCollider => {
@@ -90,7 +100,11 @@ describe('structures', () => {
 
   it('an arch bridge puts ribs under the deck, and the site builder includes all structures', () => {
     const spec = emptySpec({ lat: 0, lon: 0 }, 't');
-    spec.structures = [mk('bridge', { style: 'arch', length: 50 }), mk('silo', { x: 0, z: 0 }), mk('tank', { x: 20, z: 0 })];
+    spec.structures = [
+      mk('bridge', { style: 'arch', length: 50 }),
+      mk('silo', { x: 0, z: 0 }),
+      mk('tank', { x: 20, z: 0 }),
+    ];
     const model = buildSiteFromSpec(spec, { bare: true });
     expect(model.collider.trees.length).toBe(2); // silo + tank
     expect(model.collider.solids.length).toBeGreaterThan(30);

@@ -27,7 +27,12 @@ export function tr(s: string): string {
 @Service()
 export class I18nService {
   private readonly storage = inject(StorageService);
-  readonly lang = signal<Lang>(pickLang(this.storage.readRaw(KEY), typeof navigator === 'undefined' ? [] : navigator.languages ?? [navigator.language]));
+  readonly lang = signal<Lang>(
+    pickLang(
+      this.storage.readRaw(KEY),
+      typeof navigator === 'undefined' ? [] : (navigator.languages ?? [navigator.language]),
+    ),
+  );
   /** English text seen on screen with no translation (for the dictionary's maintainers: `ng.getInjector` in dev tools). */
   readonly missing = new Set<string>();
 
@@ -63,7 +68,13 @@ export class I18nService {
     if (!this.dict || typeof MutationObserver === 'undefined') return;
     this.walk(document.body);
     this.observer = new MutationObserver((list) => this.onMutations(list));
-    this.observer.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: [...ATTRS] });
+    this.observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: [...ATTRS],
+    });
   }
 
   private onMutations(list: MutationRecord[]): void {
@@ -83,7 +94,8 @@ export class I18nService {
     }
     if (!(root instanceof Element) || root.closest(SKIP_ATTR)) return;
     for (const a of ATTRS) if (root.hasAttribute(a)) this.attr(root, a);
-    for (const el of root.querySelectorAll('[title], [placeholder], [aria-label]')) if (!el.closest(SKIP_ATTR)) for (const a of ATTRS) if (el.hasAttribute(a)) this.attr(el, a);
+    for (const el of root.querySelectorAll('[title], [placeholder], [aria-label]'))
+      if (!el.closest(SKIP_ATTR)) for (const a of ATTRS) if (el.hasAttribute(a)) this.attr(el, a);
     if (root.closest(SKIP)) return;
     const it = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     for (let n = it.nextNode(); n; n = it.nextNode()) this.text(n as Text);
@@ -132,7 +144,8 @@ export class I18nService {
   /** Put the English back wherever the page still shows our translation. */
   private restore(): void {
     for (const [n, v] of this.texts) if (n.nodeValue === v.out) n.nodeValue = v.en;
-    for (const [el, m] of this.attrs) for (const [a, v] of m) if (el.getAttribute(a) === v.out) el.setAttribute(a, v.en);
+    for (const [el, m] of this.attrs)
+      for (const [a, v] of m) if (el.getAttribute(a) === v.out) el.setAttribute(a, v.en);
     this.texts.clear();
     this.attrs.clear();
   }

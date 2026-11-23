@@ -6,7 +6,16 @@ import type { Calibration, GeoPoint } from '../core/models';
 import { setSiteOrigin } from '../core/constants';
 import { coarserQueries, parseLatLon, solveCalibration, toGeo } from '../core/geo';
 import { bounds, edgesOf, recentre, rectilinear, type Pt } from '../core/footprint';
-import type { BuildingSpec, LocationInfo, SiteSpec, StructureSpec, TreeSpec, Vec2, WallOpening, ZoneSpec } from '../core/site-spec';
+import type {
+  BuildingSpec,
+  LocationInfo,
+  SiteSpec,
+  StructureSpec,
+  TreeSpec,
+  Vec2,
+  WallOpening,
+  ZoneSpec,
+} from '../core/site-spec';
 import { keepInsideAreas } from '../core/areas';
 import { emptySpec, uid } from '../core/site-spec';
 import { setActiveGround, setActiveSiteId, setAutoAlign, setHiddenSite, setTakeoff } from '../core/takeoff';
@@ -33,7 +42,12 @@ const clampHalf = (v: number): number => Math.min(MAX_HALF_EXTENT, Math.max(30, 
 
 const bboxPoly = (pts: Pt[]): Pt[] => {
   const b = bounds(pts);
-  return [{ x: b.x0, z: b.z0 }, { x: b.x1, z: b.z0 }, { x: b.x1, z: b.z1 }, { x: b.x0, z: b.z1 }];
+  return [
+    { x: b.x0, z: b.z0 },
+    { x: b.x1, z: b.z0 },
+    { x: b.x1, z: b.z1 },
+    { x: b.x0, z: b.z1 },
+  ];
 };
 
 export interface GenerateOptions {
@@ -99,7 +113,14 @@ export class SiteService {
     const a = this.active();
     if (!a.id) return;
     const wanted = a.calibration ?? calibrationForSpec(a);
-    if (Math.abs(wanted.rot - c.rot) < 1e-9 && Math.abs(wanted.dx - c.dx) < 1e-9 && Math.abs(wanted.dz - c.dz) < 1e-9 && wanted.reference?.lat === c.reference?.lat && wanted.reference?.lon === c.reference?.lon) return;
+    if (
+      Math.abs(wanted.rot - c.rot) < 1e-9 &&
+      Math.abs(wanted.dx - c.dx) < 1e-9 &&
+      Math.abs(wanted.dz - c.dz) < 1e-9 &&
+      wanted.reference?.lat === c.reference?.lat &&
+      wanted.reference?.lon === c.reference?.lon
+    )
+      return;
     a.calibration = { ...c };
     this.editor.live((s) => {
       s.calibration = { ...c };
@@ -169,14 +190,26 @@ export class SiteService {
   }
 
   /** A bando as a file to share: with its exact place, or hidden (the real ground then travels inside). A hidden bando stays hidden. */
-  async exportShared(id: string, privacy: Privacy): Promise<{ name: string; text: string; ground: boolean; hidden: boolean } | null> {
+  async exportShared(
+    id: string,
+    privacy: Privacy,
+  ): Promise<{ name: string; text: string; ground: boolean; hidden: boolean } | null> {
     const spec = this.library.load(id) ?? (this.active().id === id ? this.active() : null);
     if (!spec) return null;
     const key = spec.terrain?.base?.key;
     if (key && !getTerrainBase(key)) await this.elevation.ensure(spec);
     const copy = shareCopy(spec, privacy, key ? getTerrainBase(key) : null);
-    const slug = spec.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'bando';
-    return { name: `${slug}${copy.privacy ? '-hidden' : ''}.bando.json`, text: JSON.stringify(copy), ground: !!copy.terrain?.base?.data, hidden: !!copy.privacy };
+    const slug =
+      spec.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '') || 'bando';
+    return {
+      name: `${slug}${copy.privacy ? '-hidden' : ''}.bando.json`,
+      text: JSON.stringify(copy),
+      ground: !!copy.terrain?.base?.data,
+      hidden: !!copy.privacy,
+    };
   }
 
   /**
@@ -189,7 +222,9 @@ export class SiteService {
     try {
       const k = Math.min(5, Math.max(0.2, opts.scale ?? 1));
       const seed = opts.seed ?? 7;
-      const area = opts.area ? { halfE: clampHalf(opts.area.halfE), halfN: clampHalf(opts.area.halfN), rotDeg: opts.area.rotDeg ?? 0 } : { halfE: 250, halfN: 250, rotDeg: 0 };
+      const area = opts.area
+        ? { halfE: clampHalf(opts.area.halfE), halfN: clampHalf(opts.area.halfN), rotDeg: opts.area.rotDeg ?? 0 }
+        : { halfE: 250, halfN: 250, rotDeg: 0 };
       let data;
       try {
         data = await this.geo.areaData(info.lat, info.lon, area.halfE, area.halfN, area.rotDeg);
@@ -199,12 +234,21 @@ export class SiteService {
         return null;
       }
       void k;
-      if (data.partial) this.toast.show('Trees and roads could not be loaded (servers busy): buildings only. Regenerate later to add them.');
+      if (data.partial)
+        this.toast.show(
+          'Trees and roads could not be loaded (servers busy): buildings only. Regenerate later to add them.',
+        );
       const spec = this.specFromZone(info, data.footprints, data.trees, data.structures, area, seed);
       spec.roads = data.roads;
       spec.surfaces = data.surfaces;
       spec.waters = data.waters;
-      spec.zone = { lat: info.lat, lon: info.lon, halfE: area.halfE, halfN: area.halfN, ...(area.rotDeg ? { rotDeg: area.rotDeg } : {}) };
+      spec.zone = {
+        lat: info.lat,
+        lon: info.lon,
+        halfE: area.halfE,
+        halfN: area.halfN,
+        ...(area.rotDeg ? { rotDeg: area.rotDeg } : {}),
+      };
       if (opts.areas && opts.areas.length > 1) {
         spec.areas = opts.areas.map((a) => ({ ...a }));
         spec.fillGaps = !!opts.fillGaps;
@@ -222,7 +266,8 @@ export class SiteService {
         const r = await this.elevation.fetchBase(spec);
         spec.terrain = { cell: r.dims.cell, half: r.dims.half, base: r.base, strokes: [] };
       } catch {
-        groundNote = ' The real ground could not be loaded (offline?): it is flat for now; Terrain → Real ground loads it later.';
+        groundNote =
+          ' The real ground could not be loaded (offline?): it is flat for now; Terrain → Real ground loads it later.';
       }
       this.applySpec(spec, true);
       this.library.save(spec);
@@ -290,7 +335,11 @@ export class SiteService {
     const host = this.scene.host;
     if (!host) return;
     const rect = host.canvas.getBoundingClientRect();
-    const hit = host.groundPoint(host.mainCamera, ((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+    const hit = host.groundPoint(
+      host.mainCamera,
+      ((clientX - rect.left) / rect.width) * 2 - 1,
+      -((clientY - rect.top) / rect.height) * 2 + 1,
+    );
     if (!hit) return;
     const k = this.calibration.modelScale() || 1;
     const [lat, lon] = toGeo(hit.x / k, hit.z / k, this.calibration.calibration());
@@ -322,7 +371,9 @@ export class SiteService {
   saveActive(): void {
     const spec = this.active();
     this.library.save(spec);
-    this.toast.show(`Bando “${spec.name}” saved (${this.generatedCount()} in the library). Source: ${this.geo.attribution}.`);
+    this.toast.show(
+      `Bando “${spec.name}” saved (${this.generatedCount()} in the library). Source: ${this.geo.attribution}.`,
+    );
   }
 
   /** Store the editor draft in the library and make it the active site (the Sites panel's Save). */
@@ -330,7 +381,9 @@ export class SiteService {
     const spec = this.editor.snapshot();
     this.library.save(spec);
     this.applySpec(spec, false);
-    this.toast.show(`Bando “${spec.name}” saved (${this.library.list().length} in the library). Source: ${this.geo.attribution}.`);
+    this.toast.show(
+      `Bando “${spec.name}” saved (${this.library.list().length} in the library). Source: ${this.geo.attribution}.`,
+    );
   }
 
   /** Re-solve the GPS calibration from the active spec's corner landmarks / bearing (after a "Point north"). */
@@ -384,39 +437,63 @@ export class SiteService {
    * +z = south), origin at the zone centre. Each footprint keeps its true outline when it is rectilinear (L, T, U, H
    * shapes ...) or becomes a rectangle along its longest edge otherwise; roads are rotated pads.
    */
-  private specFromZone(info: LocationInfo, fps: Footprint[], osmTrees: TreeSpec[], structures: StructureSpec[], area: { halfE: number; halfN: number; rotDeg?: number }, seed: number): SiteSpec {
+  private specFromZone(
+    info: LocationInfo,
+    fps: Footprint[],
+    osmTrees: TreeSpec[],
+    structures: StructureSpec[],
+    area: { halfE: number; halfN: number; rotDeg?: number },
+    seed: number,
+  ): SiteSpec {
     const mLat = 111132;
     const mLon = 111320 * Math.cos((info.lat * Math.PI) / 180);
     const buildings: BuildingSpec[] = [];
     for (const f of fps.slice(0, 120)) {
-      let la = 0, lo = 0;
-      for (const [p, q] of f.ring) { lo += p; la += q; }
-      la /= f.ring.length; lo /= f.ring.length;
-      const cx = (lo - info.lon) * mLon, cz = -(la - info.lat) * mLat; // centroid, site metres
+      let la = 0,
+        lo = 0;
+      for (const [p, q] of f.ring) {
+        lo += p;
+        la += q;
+      }
+      la /= f.ring.length;
+      lo /= f.ring.length;
+      const cx = (lo - info.lon) * mLon,
+        cz = -(la - info.lat) * mLat; // centroid, site metres
       const rot = (((f.headingDeg - 90) % 360) + 360) % 360;
       const a = (rot * Math.PI) / 180;
-      const cs = Math.cos(a), sn = Math.sin(a);
+      const cs = Math.cos(a),
+        sn = Math.sin(a);
       const local: Pt[] = f.ring.map(([p, q]) => {
-        const dx = (p - lo) * mLon, dz = -(q - la) * mLat;
+        const dx = (p - lo) * mLon,
+          dz = -(q - la) * mLat;
         return { x: dx * cs + dz * sn, z: -dx * sn + dz * cs };
       });
       const greenhouse = f.type === 'greenhouse';
       let outline = greenhouse ? null : rectilinear(local);
       if (outline && outline.length === 4) outline = null;
       const rc = recentre(outline ?? bboxPoly(local));
-      const L = Math.max(3, rc.length), W = Math.max(3, rc.width);
+      const L = Math.max(3, rc.length),
+        W = Math.max(3, rc.width);
       const pos = { x: cx + rc.shift.x * cs - rc.shift.z * sn, z: cz + rc.shift.x * sn + rc.shift.z * cs };
       const H = Math.min(120, Math.max(2.5, f.heightM ?? 3.2));
       const lev = Math.max(1, Math.min(12, f.levels ?? 1));
       const lh = H / lev;
-      const roof: 'gable' | 'flat' = !outline && (/^(hip|gable)/i.test(f.roof ?? '') || lev === 1) && lev === 1 ? 'gable' : 'flat';
+      const roof: 'gable' | 'flat' =
+        !outline && (/^(hip|gable)/i.test(f.roof ?? '') || lev === 1) && lev === 1 ? 'gable' : 'flat';
       const sides = { n: true, s: true, e: true, w: true };
       const dh = Math.min(lh * 0.8, 3);
-      const doors: BuildingSpec['levels'][number]['doors'] = outline ? {} : { s: [{ kind: 'door', c: L / 2, w: Math.min(3, L * 0.3), h: dh }] };
+      const doors: BuildingSpec['levels'][number]['doors'] = outline
+        ? {}
+        : { s: [{ kind: 'door', c: L / 2, w: Math.min(3, L * 0.3), h: dh }] };
       const wallOpenings: WallOpening[] = [];
       if (outline) {
         const e = edgesOf(rc.poly).sort((p, q) => q.to - q.from - (p.to - p.from))[0];
-        if (e) wallOpenings.push(e.axis === 'x' ? { kind: 'door', x: (e.from + e.to) / 2, z: e.at, w: Math.min(3, (e.to - e.from) * 0.3), h: dh } : { kind: 'door', x: e.at, z: (e.from + e.to) / 2, w: Math.min(3, (e.to - e.from) * 0.3), h: dh });
+        if (e)
+          wallOpenings.push(
+            e.axis === 'x'
+              ? { kind: 'door', x: (e.from + e.to) / 2, z: e.at, w: Math.min(3, (e.to - e.from) * 0.3), h: dh }
+              : { kind: 'door', x: e.at, z: (e.from + e.to) / 2, w: Math.min(3, (e.to - e.from) * 0.3), h: dh },
+          );
       }
       if (greenhouse) {
         // the arched steel-skeleton greenhouse: a vault tunnel along the longest side
@@ -430,7 +507,18 @@ export class SiteService {
           width: Math.max(3, W),
           frame: 'greenhouse',
           color: '#9ec1b6',
-          levels: [{ baseY: 0, height: 2.4, sides: { n: false, s: false, e: false, w: false }, doors: {}, partitions: [], roof: 'vault', roofRise: 0, vaultK: 0.7 }],
+          levels: [
+            {
+              baseY: 0,
+              height: 2.4,
+              sides: { n: false, s: false, e: false, w: false },
+              doors: {},
+              partitions: [],
+              roof: 'vault',
+              roofRise: 0,
+              vaultK: 0.7,
+            },
+          ],
         });
         continue;
       }
@@ -461,17 +549,25 @@ export class SiteService {
     const inside = (x: number, z: number, pad: number): boolean =>
       buildings.some((b) => {
         const a = (b.rotDeg * Math.PI) / 180;
-        const dx = x - b.pos.x, dz = z - b.pos.z;
-        const lx = dx * Math.cos(a) + dz * Math.sin(a), lz = -dx * Math.sin(a) + dz * Math.cos(a);
+        const dx = x - b.pos.x,
+          dz = z - b.pos.z;
+        const lx = dx * Math.cos(a) + dz * Math.sin(a),
+          lz = -dx * Math.sin(a) + dz * Math.cos(a);
         return Math.abs(lx) < b.length / 2 + pad && Math.abs(lz) < b.width / 2 + pad;
       });
     // take-off pad: the free spot closest to the zone centre
-    let sx = 0, sz = 0;
+    let sx = 0,
+      sz = 0;
     search: for (let r = 0; r < 300; r += 4) {
       for (let k = 0; k < Math.max(1, Math.round(r / 2)); k++) {
         const ang = (k / Math.max(1, Math.round(r / 2))) * Math.PI * 2;
-        const x = Math.cos(ang) * r, z = Math.sin(ang) * r;
-        if (!inside(x, z, 6)) { sx = x; sz = z; break search; }
+        const x = Math.cos(ang) * r,
+          z = Math.sin(ang) * r;
+        if (!inside(x, z, 6)) {
+          sx = x;
+          sz = z;
+          break search;
+        }
       }
     }
     const spec = emptySpec({ lat: info.lat, lon: info.lon }, info.label || 'New bando');
@@ -532,7 +628,9 @@ export class SiteService {
         s.terrain = { cell: r.dims.cell, half: r.dims.half, base: r.base, strokes: s.terrain?.strokes ?? [] };
       });
       this.applyDraft();
-      this.toast.show(`Real ground loaded (${r.base.datum} m above sea level at the centre). ${ELEVATION_ATTRIBUTION}.`);
+      this.toast.show(
+        `Real ground loaded (${r.base.datum} m above sea level at the centre). ${ELEVATION_ATTRIBUTION}.`,
+      );
       return true;
     } catch (e) {
       this.toast.show(`Could not load the real ground: ${e instanceof Error ? e.message : 'network error'}.`);
@@ -554,14 +652,23 @@ export class SiteService {
   calibrateFromCorners(a: GeoPoint, b: GeoPoint): boolean {
     const spec = this.active();
     const k = this.calibration.modelScale() || 1;
-    const r = solveCalibration(a, b, { x: spec.calibCorners.p1.x * k, z: spec.calibCorners.p1.z * k }, { x: spec.calibCorners.p2.x * k, z: spec.calibCorners.p2.z * k }, spec.origin);
+    const r = solveCalibration(
+      a,
+      b,
+      { x: spec.calibCorners.p1.x * k, z: spec.calibCorners.p1.z * k },
+      { x: spec.calibCorners.p2.x * k, z: spec.calibCorners.p2.z * k },
+      spec.origin,
+    );
     if (!r) {
       this.toast.show('The two corners are too close together to solve a rotation.');
       return false;
     }
     this.calibration.apply(r.calibration);
     this.lastRatio = r.distanceRatio;
-    this.active.update((s) => ({ ...s, geoCorners: { p1: { lat: a.lat, lon: a.lon }, p2: { lat: b.lat, lon: b.lon } } }));
+    this.active.update((s) => ({
+      ...s,
+      geoCorners: { p1: { lat: a.lat, lon: a.lon }, p2: { lat: b.lat, lon: b.lon } },
+    }));
     this.editor.load(this.active());
     return true;
   }
@@ -575,7 +682,13 @@ export function calibrationForSpec(spec: SiteSpec): Calibration {
   // generated bandos are drawn north-up (x east, z south), which is a turn of 0 in toLocalAt; the old "+ 90" came from
   // the first hand-built demo site and turned every flight on a generated bando a quarter turn
   if (!spec.geoCorners) return { rot: -spec.bearingDeg, dx: 0, dz: 0 };
-  const r = solveCalibration(spec.geoCorners.p1, spec.geoCorners.p2, spec.calibCorners.p1, spec.calibCorners.p2, spec.origin);
+  const r = solveCalibration(
+    spec.geoCorners.p1,
+    spec.geoCorners.p2,
+    spec.calibCorners.p1,
+    spec.calibCorners.p2,
+    spec.origin,
+  );
   return r ? r.calibration : { rot: 0, dx: 0, dz: 0 };
 }
 

@@ -31,7 +31,12 @@ function parseGpx(text: string): GeoSample[] {
     const body = m[3] ?? '';
     const ele = /<ele>([-\d.]+)/.exec(body);
     const time = /<time>([^<]+)/.exec(body);
-    pts.push({ lat: +(m[1] as string), lon: +(m[2] as string), alt: ele ? +(ele[1] as string) : 0, t: time ? Date.parse(time[1] as string) / 1e3 : pts.length * 0.1 });
+    pts.push({
+      lat: +(m[1] as string),
+      lon: +(m[2] as string),
+      alt: ele ? +(ele[1] as string) : 0,
+      t: time ? Date.parse(time[1] as string) / 1e3 : pts.length * 0.1,
+    });
   }
   return pts;
 }
@@ -125,13 +130,22 @@ function parseCsv(text: string): { pts: GeoSample[]; tel: Telemetry | null } {
     if (baroCol >= 0) baro.push(parseFloat(c[baroCol] as string));
   }
   // Betaflight "time" has no unit in its header: it is microseconds.
-  if (pts.length > 1 && unit === 1 && /^time$/.test(timeHeader) && (pts[pts.length - 1] as GeoSample).t - (pts[0] as GeoSample).t > 1e5) unit = 1e6;
+  if (
+    pts.length > 1 &&
+    unit === 1 &&
+    /^time$/.test(timeHeader) &&
+    (pts[pts.length - 1] as GeoSample).t - (pts[0] as GeoSample).t > 1e5
+  )
+    unit = 1e6;
   pts.forEach((p, i) => {
     p.t = isNaN(p.t) ? i * 0.1 : p.t / unit;
     if (raw) p.alt /= 10; // raw Betaflight GPS_altitude is in decimetres
   });
   if (baro.length === pts.length && baro.length > 1 && baro.every(isFinite) && baro.some((b) => b !== baro[0])) {
-    const h = cleanHeights(baro.map((b) => b / 100), pts.map((p) => p.t));
+    const h = cleanHeights(
+      baro.map((b) => b / 100),
+      pts.map((p) => p.t),
+    );
     pts.forEach((p, i) => (p.alt = h[i]!));
   }
 
@@ -168,22 +182,44 @@ export function cleanHeights(h: readonly number[], t: readonly number[], maxRate
 }
 
 const TELEMETRY_COLUMNS = [
-  'heading[0]', 'heading[1]', 'heading[2]',
-  'rccommand[0]', 'rccommand[1]', 'rccommand[2]', 'rccommand[3]',
-  'motor[0]', 'motor[1]', 'motor[2]', 'motor[3]',
-  'gyroadc[0]', 'gyroadc[1]', 'gyroadc[2]',
+  'heading[0]',
+  'heading[1]',
+  'heading[2]',
+  'rccommand[0]',
+  'rccommand[1]',
+  'rccommand[2]',
+  'rccommand[3]',
+  'motor[0]',
+  'motor[1]',
+  'motor[2]',
+  'motor[3]',
+  'gyroadc[0]',
+  'gyroadc[1]',
+  'gyroadc[2]',
 ] as const;
 
 /** Blackbox rows are ~800 Hz: keep every 8th (~100 Hz), plenty for replay and instruments. */
 const DECIMATION = 8;
 
-function parseTelemetry(lines: string[], headerRow: number, delim: string, cols: CsvColumns, unit: number, t0: number): Telemetry | null {
+function parseTelemetry(
+  lines: string[],
+  headerRow: number,
+  delim: string,
+  cols: CsvColumns,
+  unit: number,
+  t0: number,
+): Telemetry | null {
   const idx = TELEMETRY_COLUMNS.map((n) => cols.names.indexOf(n));
   if (cols.t < 0 || idx.some((k) => k < 0)) return null;
   const vbatCol = cols.names.indexOf('vbatlatest');
   const courseCol = cols.names.indexOf('gps_ground_course');
   const speedCol = cols.names.indexOf('gps_speed');
-  const t: number[] = [], att: number[] = [], rc: number[] = [], mot: number[] = [], gyro: number[] = [], vbat: number[] = [];
+  const t: number[] = [],
+    att: number[] = [],
+    rc: number[] = [],
+    mot: number[] = [],
+    gyro: number[] = [],
+    vbat: number[] = [];
   let sinSum = 0;
   let cosSum = 0;
   let n = 0;
@@ -201,7 +237,12 @@ function parseTelemetry(lines: string[], headerRow: number, delim: string, cols:
     gyro.push(v[11]!, v[12]!, v[13]!);
     vbat.push(vbatCol >= 0 ? parseFloat(c[vbatCol] as string) || 0 : 0);
     // The IMU yaw has an arbitrary zero: align it to the GPS course while moving (> 6 m/s).
-    if (courseCol >= 0 && speedCol >= 0 && parseFloat(c[speedCol] as string) > 600 && !isNaN(parseFloat(c[courseCol] as string))) {
+    if (
+      courseCol >= 0 &&
+      speedCol >= 0 &&
+      parseFloat(c[speedCol] as string) > 600 &&
+      !isNaN(parseFloat(c[courseCol] as string))
+    ) {
       const d = ((parseFloat(c[courseCol] as string) / 10) * Math.PI) / 180 - (v[2] as number);
       sinSum += Math.sin(d);
       cosSum += Math.cos(d);

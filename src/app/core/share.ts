@@ -38,7 +38,15 @@ export function decodeHeights(text: string, n: number): Float32Array | null {
 
 /** The plain name of a structure kind, for a copy that must not carry names from the map. */
 const GENERIC_NAME: Partial<Record<StructureKind, string>> = {
-  bridge: 'Bridge', stairs: 'Steps', chimney: 'Chimney', silo: 'Silo', tank: 'Tank', water_tower: 'Water tower', lattice_tower: 'Lattice tower', ramp: 'Ramp', tower_crane: 'Tower crane',
+  bridge: 'Bridge',
+  stairs: 'Steps',
+  chimney: 'Chimney',
+  silo: 'Silo',
+  tank: 'Tank',
+  water_tower: 'Water tower',
+  lattice_tower: 'Lattice tower',
+  ramp: 'Ramp',
+  tower_crane: 'Tower crane',
 };
 
 /**
@@ -68,7 +76,14 @@ export function shareCopy(spec: SiteSpec, privacy: Privacy, heights: Float32Arra
     delete st.nameFromMap;
   }
   if (s.terrain?.base) {
-    if (heights) s.terrain.base = { source: 'embedded', key: `embedded:${uid('t')}`, fetchedAt: 0, datum: 0, data: encodeHeights(heights) };
+    if (heights)
+      s.terrain.base = {
+        source: 'embedded',
+        key: `embedded:${uid('t')}`,
+        fetchedAt: 0,
+        datum: 0,
+        data: encodeHeights(heights),
+      };
     else delete s.terrain.base; // nothing to carry: the shape of the strokes stays, on flat ground
   }
   return s;

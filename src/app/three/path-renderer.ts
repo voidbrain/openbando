@@ -29,7 +29,8 @@ export function aheadColor(r: number, g: number, b: number): [number, number, nu
 export class PathRenderer {
   readonly group = new THREE.Group();
   /** Per flight: the thick flown line, drawn up to the playhead. */
-  private readonly tracks: { flight: Flight; step: number; flown: LineGeometry; segments: number; shown: number }[] = [];
+  private readonly tracks: { flight: Flight; step: number; flown: LineGeometry; segments: number; shown: number }[] =
+    [];
 
   constructor(scene: THREE.Scene) {
     scene.add(this.group);
@@ -42,7 +43,10 @@ export class PathRenderer {
       const n = f.loc.length;
       if (!n) continue;
       const step = Math.ceil(n / MAX_POINTS);
-      const pos: number[] = [], col: number[] = [], gnd: number[] = [], drop: number[] = [];
+      const pos: number[] = [],
+        col: number[] = [],
+        gnd: number[] = [],
+        drop: number[] = [];
       const q = new Vec3();
       for (let i = 0; i < n; i += step) {
         const p = f.loc[i]!;
@@ -79,10 +83,16 @@ export class PathRenderer {
         new THREE.Line(line, new THREE.LineBasicMaterial({ vertexColors: true })),
         new THREE.Points(line, new THREE.PointsMaterial({ size: 3, sizeAttenuation: false, vertexColors: true })),
         new THREE.Line(shadow, new THREE.LineBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.4 })),
-        new THREE.LineSegments(drops, new THREE.LineBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.2 })),
+        new THREE.LineSegments(
+          drops,
+          new THREE.LineBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.2 }),
+        ),
         new Line2(flown, new LineMaterial({ vertexColors: true, linewidth: FLOWN_WIDTH, worldUnits: false })),
       );
-      for (const [p, c] of [[f.loc[0]!, 0x2ecc40], [f.loc[n - 1]!, 0xff3b30]] as const) {
+      for (const [p, c] of [
+        [f.loc[0]!, 0x2ecc40],
+        [f.loc[n - 1]!, 0xff3b30],
+      ] as const) {
         const m = new THREE.Mesh(new THREE.SphereGeometry(0.7, 8, 6), new THREE.MeshBasicMaterial({ color: c }));
         m.position.set(p.x, p.y, p.z);
         this.group.add(m);

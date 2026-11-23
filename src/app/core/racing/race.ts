@@ -116,12 +116,7 @@ export function parseRacePack(raw: unknown): RacePack {
     let previous = -1;
     const points: RacePoint[] = r['points'].map((value: unknown) => {
       const p = obj(value);
-      if (
-        !p ||
-        !['x', 'y', 'z'].every((k) => num(p[k], -20000, 20000)) ||
-        !num(p['t'], 0, 86400) ||
-        p['t'] <= previous
-      )
+      if (!p || !['x', 'y', 'z'].every((k) => num(p[k], -20000, 20000)) || !num(p['t'], 0, 86400) || p['t'] <= previous)
         throw new Error('Race points must be finite and strictly time ordered');
       previous = p['t'];
       return { x: p['x'] as number, y: p['y'] as number, z: p['z'] as number, t: p['t'] };
@@ -259,9 +254,7 @@ export function raceFrameKey(spec: {
       spec.trees,
     ],
     (key, value) =>
-      ['id', 'name', 'block', 'color', 'floorColor', 'roofColor', 'nameFromMap'].includes(key)
-        ? undefined
-        : value,
+      ['id', 'name', 'block', 'color', 'floorColor', 'roofColor', 'nameFromMap'].includes(key) ? undefined : value,
   );
   let hash = 2166136261;
   for (let i = 0; i < text.length; i++) hash = Math.imul(hash ^ text.charCodeAt(i), 16777619);

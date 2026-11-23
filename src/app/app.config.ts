@@ -1,4 +1,10 @@
-import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
+} from '@angular/core';
 import { LibraryStore } from './services/library-store.service';
 import { SiteLibraryService } from './services/site-library.service';
 import { BlockLibraryService } from './services/block-library.service';

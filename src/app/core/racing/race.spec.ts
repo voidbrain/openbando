@@ -1,13 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  gateFromTrack,
-  lapTimes,
-  parseRacePack,
-  racePose,
-  raceFrameKey,
-  type RaceTrack,
-  type RacePoint,
-} from './race';
+import { gateFromTrack, lapTimes, parseRacePack, racePose, raceFrameKey, type RaceTrack, type RacePoint } from './race';
 const point = (x: number, z: number, t: number): RacePoint => ({ x, y: 2, z, t });
 const track = (): RaceTrack => ({
   id: 'p1',
@@ -45,9 +37,7 @@ describe('race coordinates and replay', () => {
     expect(racePose(t, 4)).toBeNull();
   });
   it('round-trips local metres only and rejects malformed packages atomically', () => {
-    expect(parseRacePack(JSON.parse(JSON.stringify(pack()))).tracks[0]!.points).toEqual(
-      track().points,
-    );
+    expect(parseRacePack(JSON.parse(JSON.stringify(pack()))).tracks[0]!.points).toEqual(track().points);
     const extra = { ...pack(), lat: 45, tracks: [{ ...track(), gps: 'private' }] };
     expect(JSON.stringify(parseRacePack(extra))).not.toContain('gps');
     expect(JSON.stringify(parseRacePack(extra))).not.toContain('lat');
@@ -94,9 +84,7 @@ describe('closed-loop lap timing', () => {
   });
   it('rejects jitter, backwards crossing, short loops and gaps', () => {
     const g = gateFromTrack(ps)!;
-    expect(
-      lapTimes([point(-0.5, 0, 0), point(0.5, 0, 1), point(-0.5, 0, 2), point(0.5, 0, 3)], g),
-    ).toEqual([]);
+    expect(lapTimes([point(-0.5, 0, 0), point(0.5, 0, 1), point(-0.5, 0, 2), point(0.5, 0, 3)], g)).toEqual([]);
     expect(lapTimes(ps, { ...g, nx: -g.nx, nz: -g.nz, minSeconds: 100 })).toEqual([]);
     expect(lapTimes(ps, { ...g, minDistance: 1000 })).toEqual([]);
     const gap = ps.map((p) => ({ ...p }));

@@ -279,7 +279,10 @@ export class StudioPanel {
     this.view.setMainSource('3d');
     this.layout.setVisible('studio', false);
     // the replay workspace, with the Fly checklist beside it for what to do next (F-018)
-    void this.placer.open([...PANELS.filter(panel => panel.group === 'telemetry' && panel.id !== 'live').map(panel => panel.id), 'fly']);
+    void this.placer.open([
+      ...PANELS.filter((panel) => panel.group === 'telemetry' && panel.id !== 'live').map((panel) => panel.id),
+      'fly',
+    ]);
   }
   private readonly toast = inject(ToastService);
   private readonly layout = inject(LayoutStore);
@@ -306,7 +309,8 @@ export class StudioPanel {
           this.layout.setWidth('studio', width);
           // widening keeps the left edge: slide a panel opened right of centre back inside the window
           const box = document.querySelector('app-panel[data-id="studio"]')?.getBoundingClientRect();
-          if (box && box.left + width > innerWidth - 12) this.layout.moveTo('studio', Math.max(12, innerWidth - 12 - width), box.top);
+          if (box && box.left + width > innerWidth - 12)
+            this.layout.moveTo('studio', Math.max(12, innerWidth - 12 - width), box.top);
           widened = true;
         } else if (!zone && widened) {
           this.layout.restore({ studio: { w: null, h: null } });
@@ -364,7 +368,10 @@ export class StudioPanel {
       r.blocks && `${r.blocks} own blocks`,
       r.dropped && `${r.dropped} broken entries skipped`,
     ].filter((x): x is string => !!x);
-    this.toast.show(parts.length ? `Restored: ${parts.join(' · ')}.` : 'Nothing to restore: the backup is empty.', 5000);
+    this.toast.show(
+      parts.length ? `Restored: ${parts.join(' · ')}.` : 'Nothing to restore: the backup is empty.',
+      5000,
+    );
   }
 
   protected async importFile(e: Event): Promise<void> {

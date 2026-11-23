@@ -197,7 +197,12 @@ export class FloatBox {
       if (raw) {
         const p = JSON.parse(raw) as Partial<Geo>;
         // a remembered size below the minimum is a leftover of an earlier bug: ignore it
-        if ([p.x, p.y, p.w, p.h].every((v) => typeof v === 'number' && isFinite(v)) && p.w! >= this.minW() && p.h! >= this.minH()) g = p as Geo;
+        if (
+          [p.x, p.y, p.w, p.h].every((v) => typeof v === 'number' && isFinite(v)) &&
+          p.w! >= this.minW() &&
+          p.h! >= this.minH()
+        )
+          g = p as Geo;
       }
     } catch {
       /* no storage: defaults */
@@ -220,10 +225,16 @@ export class FloatBox {
   /** Keep the box inside its parent area (and never below its minimum size). */
   private clamp(g: Geo): Geo {
     const par = this.host.nativeElement.parentElement;
-    const pw = par?.clientWidth || 9999, ph = par?.clientHeight || 9999;
+    const pw = par?.clientWidth || 9999,
+      ph = par?.clientHeight || 9999;
     const w = Math.min(Math.max(this.minW(), g.w), Math.max(this.minW(), pw - 8));
     const h = Math.min(Math.max(this.minH(), g.h), Math.max(this.minH(), ph - 8));
-    return { w, h, x: Math.min(Math.max(0, g.x), Math.max(0, pw - w)), y: Math.min(Math.max(0, g.y), Math.max(0, ph - h)) };
+    return {
+      w,
+      h,
+      x: Math.min(Math.max(0, g.x), Math.max(0, pw - w)),
+      y: Math.min(Math.max(0, g.y), Math.max(0, ph - h)),
+    };
   }
 
   private save(): void {
@@ -256,7 +267,9 @@ export class FloatBox {
     if (!this.drag) return;
     const par = this.host.nativeElement.parentElement?.getBoundingClientRect();
     if (!par) return;
-    this.geo.update((g) => this.clamp({ ...g, x: e.clientX - par.left - this.drag!.dx, y: e.clientY - par.top - this.drag!.dy }));
+    this.geo.update((g) =>
+      this.clamp({ ...g, x: e.clientX - par.left - this.drag!.dx, y: e.clientY - par.top - this.drag!.dy }),
+    );
   }
 
   private bl: { x: number; y: number; g: Geo } | null = null;
@@ -274,7 +287,8 @@ export class FloatBox {
     const d = this.bl;
     if (!d) return;
     const dx = e.clientX - d.x;
-    let x = d.g.x + dx, w = d.g.w - dx;
+    let x = d.g.x + dx,
+      w = d.g.w - dx;
     if (w < this.minW()) {
       x -= this.minW() - w;
       w = this.minW();

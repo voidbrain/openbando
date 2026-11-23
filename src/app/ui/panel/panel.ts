@@ -26,7 +26,8 @@ import { CASCADE_STEP, PANEL_BY_ID, cascadeIndex, type PanelId } from '../panel-
     // collapsed: drop the remembered height so the box hugs the title bar instead of staying big over the page;
     // expanded (or ghost-collapsed): exactly the remembered / default height — never the transient content height.
     '[style.height.px]': 'state().minimized ? null : panelHeight()',
-    '[style.max-height]': 'panelHeight() === null && def().maxHeight ? "min(" + def().maxHeight + "px, calc(100vh - 8px))" : null',
+    '[style.max-height]':
+      'panelHeight() === null && def().maxHeight ? "min(" + def().maxHeight + "px, calc(100vh - 8px))" : null',
     '(pointerdown)': 'raise(); gripDown($event)',
     '(document:pointerup)': 'sizeCommit()',
     '(document:pointercancel)': 'sizeCommit()',
@@ -187,13 +188,17 @@ export class Panel {
   constructor() {
     effect(() => {
       if (!this.open()) return; // only when it is shown or expanded, not on every move or raise
-      afterNextRender(() => {
-        const el = this.host.nativeElement, r = el.getBoundingClientRect();
-        const bottom = el.ownerDocument.documentElement.clientHeight - 4;
-        const y = Math.round(Math.max(0, bottom - r.height));
-        if (el.hidden || r.height === 0 || r.bottom <= bottom || y === Math.round(r.top)) return;
-        this.layout.moveTo(this.id(), Math.round(r.left), y);
-      }, { injector: this.injector });
+      afterNextRender(
+        () => {
+          const el = this.host.nativeElement,
+            r = el.getBoundingClientRect();
+          const bottom = el.ownerDocument.documentElement.clientHeight - 4;
+          const y = Math.round(Math.max(0, bottom - r.height));
+          if (el.hidden || r.height === 0 || r.bottom <= bottom || y === Math.round(r.top)) return;
+          this.layout.moveTo(this.id(), Math.round(r.left), y);
+        },
+        { injector: this.injector },
+      );
     });
   }
   readonly def = computed(() => PANEL_BY_ID[this.id()]);
@@ -246,7 +251,14 @@ export class Panel {
   protected blDown(e: PointerEvent): void {
     const el = this.host.nativeElement;
     this.layout.raise(this.id());
-    this.bl = { x: e.clientX, y: e.clientY, left: el.offsetLeft, top: el.offsetTop, w: el.offsetWidth, h: el.offsetHeight };
+    this.bl = {
+      x: e.clientX,
+      y: e.clientY,
+      left: el.offsetLeft,
+      top: el.offsetTop,
+      w: el.offsetWidth,
+      h: el.offsetHeight,
+    };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     e.preventDefault();
     e.stopPropagation();

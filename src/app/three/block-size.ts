@@ -24,13 +24,33 @@ export function blockSize(b: BlockSpec): { w: number; d: number; h: number } | n
         o.traverse((m) => (m as THREE.Mesh).geometry?.dispose());
       }
       for (const bd of spec.buildings) {
-        const top = Math.max(0, ...bd.levels.map((l) => l.baseY + l.height + (l.roof === 'none' || l.roof === 'flat' ? 0 : l.roofRise)));
-        const a = (bd.rotDeg * Math.PI) / 180, c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a));
-        const hw = (bd.length * c + bd.width * s) / 2, hd = (bd.length * s + bd.width * c) / 2;
-        box.union(new THREE.Box3(new THREE.Vector3(bd.pos.x - hw, 0, bd.pos.z - hd), new THREE.Vector3(bd.pos.x + hw, top, bd.pos.z + hd)));
+        const top = Math.max(
+          0,
+          ...bd.levels.map((l) => l.baseY + l.height + (l.roof === 'none' || l.roof === 'flat' ? 0 : l.roofRise)),
+        );
+        const a = (bd.rotDeg * Math.PI) / 180,
+          c = Math.abs(Math.cos(a)),
+          s = Math.abs(Math.sin(a));
+        const hw = (bd.length * c + bd.width * s) / 2,
+          hd = (bd.length * s + bd.width * c) / 2;
+        box.union(
+          new THREE.Box3(
+            new THREE.Vector3(bd.pos.x - hw, 0, bd.pos.z - hd),
+            new THREE.Vector3(bd.pos.x + hw, top, bd.pos.z + hd),
+          ),
+        );
       }
-      for (const w of spec.walls ?? []) box.union(new THREE.Box3().setFromPoints([new THREE.Vector3(w.a.x, 0, w.a.z), new THREE.Vector3(w.b.x, w.height, w.b.z)]));
-      for (const t of spec.trees) box.union(new THREE.Box3(new THREE.Vector3(t.x - t.r, 0, t.z - t.r), new THREE.Vector3(t.x + t.r, t.h, t.z + t.r)));
+      for (const w of spec.walls ?? [])
+        box.union(
+          new THREE.Box3().setFromPoints([
+            new THREE.Vector3(w.a.x, 0, w.a.z),
+            new THREE.Vector3(w.b.x, w.height, w.b.z),
+          ]),
+        );
+      for (const t of spec.trees)
+        box.union(
+          new THREE.Box3(new THREE.Vector3(t.x - t.r, 0, t.z - t.r), new THREE.Vector3(t.x + t.r, t.h, t.z + t.r)),
+        );
       if (!box.isEmpty()) {
         const s = box.getSize(new THREE.Vector3());
         out = { w: Math.round(s.x * 10) / 10, d: Math.round(s.z * 10) / 10, h: Math.round(s.y * 10) / 10 };

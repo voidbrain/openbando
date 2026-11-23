@@ -65,14 +65,35 @@ export class SimRecorder {
   }
 
   toCsv(): string {
-    const head = 'time (us),GPS_numSat,GPS_coord[0],GPS_coord[1],GPS_altitude,GPS_speed (m/s),GPS_ground_course,roll,pitch,yaw,throttle';
+    const head =
+      'time (us),GPS_numSat,GPS_coord[0],GPS_coord[1],GPS_altitude,GPS_speed (m/s),GPS_ground_course,roll,pitch,yaw,throttle';
     const rows = this.samples.map((r) =>
-      [Math.round(r.t * 1e6), 14, r.lat.toFixed(7), r.lon.toFixed(7), r.alt.toFixed(2), r.spd.toFixed(2), r.crs.toFixed(1), r.roll.toFixed(1), r.pitch.toFixed(1), r.yaw.toFixed(1), r.thr.toFixed(2)].join(','),
+      [
+        Math.round(r.t * 1e6),
+        14,
+        r.lat.toFixed(7),
+        r.lon.toFixed(7),
+        r.alt.toFixed(2),
+        r.spd.toFixed(2),
+        r.crs.toFixed(1),
+        r.roll.toFixed(1),
+        r.pitch.toFixed(1),
+        r.yaw.toFixed(1),
+        r.thr.toFixed(2),
+      ].join(','),
     );
     return [head, ...rows].join('\n');
   }
 
   toJson(): string {
-    return JSON.stringify(this.samples.map((r) => ({ t: +r.t.toFixed(2), lat: r.lat, lon: r.lon, alt: +r.alt.toFixed(2), speed: +r.spd.toFixed(2) })));
+    return JSON.stringify(
+      this.samples.map((r) => ({
+        t: +r.t.toFixed(2),
+        lat: r.lat,
+        lon: r.lon,
+        alt: +r.alt.toFixed(2),
+        speed: +r.spd.toFixed(2),
+      })),
+    );
   }
 }

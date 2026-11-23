@@ -59,7 +59,9 @@ export interface PadLike {
 /** Prefer a radio transmitter by name; otherwise any device with at least four axes. */
 export function pickGamepad<T extends PadLike>(pads: readonly (T | null)[]): T | null {
   const list = pads.filter((g): g is T => !!g);
-  return list.find((g) => /zorro|radiomaster|edgetx|opentx/i.test(g.id)) ?? list.find((g) => g.axes.length >= 4) ?? null;
+  return (
+    list.find((g) => /zorro|radiomaster|edgetx|opentx/i.test(g.id)) ?? list.find((g) => g.axes.length >= 4) ?? null
+  );
 }
 
 export function axisValue(pad: PadLike, m: AxisMap): number {

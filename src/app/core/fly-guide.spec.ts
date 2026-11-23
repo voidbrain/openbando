@@ -1,6 +1,15 @@
 import { currentStep, flySteps, type FlyState } from './fly-guide';
 
-const empty: FlyState = { bando: false, logs: 0, video: false, synced: false, controller: false, simulatorOpen: false, armed: false, live: 'idle' };
+const empty: FlyState = {
+  bando: false,
+  logs: 0,
+  video: false,
+  synced: false,
+  controller: false,
+  simulatorOpen: false,
+  armed: false,
+  live: 'idle',
+};
 const none = new Set<string>();
 
 describe('fly guide', () => {

@@ -7,14 +7,29 @@ import { FlightService } from './flight.service';
 
 describe('hidden-site GPS alignment', () => {
   beforeEach(() => {
-    localStorage.clear(); TestBed.resetTestingModule(); setSiteOrigin({lat: 0, lon: 0});
-    setTakeoff({x: 40, z: -50}); setHiddenSite(true); setAutoAlign(true); setActiveGround(null);
+    localStorage.clear();
+    TestBed.resetTestingModule();
+    setSiteOrigin({ lat: 0, lon: 0 });
+    setTakeoff({ x: 40, z: -50 });
+    setHiddenSite(true);
+    setAutoAlign(true);
+    setActiveGround(null);
   });
-  afterEach(() => { TestBed.resetTestingModule(); setHiddenSite(false); setAutoAlign(false); setTakeoff({x: 0, z: 0}); });
+  afterEach(() => {
+    TestBed.resetTestingModule();
+    setHiddenSite(false);
+    setAutoAlign(false);
+    setTakeoff({ x: 0, z: 0 });
+  });
   it('aligns the first flight and keeps other flights and live positions in the same frame', () => {
-    const service = TestBed.inject(FlightService), calibration = TestBed.inject(CalibrationStore);
-    const points = [{lat:45,lon:9,alt:0,t:0}, {lat:45.001,lon:9,alt:2,t:1}];
-    const a = service.add('A', points), b = service.add('B', points);
+    const service = TestBed.inject(FlightService),
+      calibration = TestBed.inject(CalibrationStore);
+    const points = [
+      { lat: 45, lon: 9, alt: 0, t: 0 },
+      { lat: 45.001, lon: 9, alt: 2, t: 1 },
+    ];
+    const a = service.add('A', points),
+      b = service.add('B', points);
     TestBed.tick();
     expect(a.loc[0]!.x).toBeCloseTo(40, 4);
     expect(a.loc[0]!.z).toBeCloseTo(-50, 4);
@@ -27,16 +42,19 @@ describe('hidden-site GPS alignment', () => {
     expect(live[1]).toBeCloseTo(a.loc[1]!.z, 5);
   });
   it('does not save an unaligned live reference before the first recorded flight', () => {
-    const service = TestBed.inject(FlightService), calibration = TestBed.inject(CalibrationStore);
-    const points = [{lat:45,lon:9,alt:0,t:0}, {lat:45.001,lon:9,alt:2,t:1}];
-    service.add('live', points, null, {live: true});
+    const service = TestBed.inject(FlightService),
+      calibration = TestBed.inject(CalibrationStore);
+    const points = [
+      { lat: 45, lon: 9, alt: 0, t: 0 },
+      { lat: 45.001, lon: 9, alt: 2, t: 1 },
+    ];
+    service.add('live', points, null, { live: true });
     expect(autoAlignFlights()).toBe(true);
     expect(calibration.calibration().reference).toBeUndefined();
     const flight = service.add('recorded', points);
     expect(autoAlignFlights()).toBe(false);
-    expect(calibration.calibration().reference).toEqual({lat:45,lon:9});
+    expect(calibration.calibration().reference).toEqual({ lat: 45, lon: 9 });
     expect(flight.loc[0]!.x).toBeCloseTo(40, 4);
     expect(flight.loc[0]!.z).toBeCloseTo(-50, 4);
   });
-
 });

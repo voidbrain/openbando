@@ -25,7 +25,7 @@ export class AttitudePanel {
     const useSim = this.sim.state.armed || !this.flights.active;
     const q = useSim ? this.sim.state.q : this.playback.pose.q;
     const e = eulerYXZ(q);
-    const heading = (((-e.y - (this.cal.rot() * Math.PI) / 180) * DEG) % 360 + 360) % 360;
+    const heading = ((((-e.y - (this.cal.rot() * Math.PI) / 180) * DEG) % 360) + 360) % 360;
     drawInstruments(g, { pitch: e.x * DEG, roll: -e.z * DEG, heading });
   };
 }

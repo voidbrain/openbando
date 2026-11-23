@@ -1,5 +1,14 @@
 import { Injectable } from '@angular/core';
-import type { BuildingSpec, RoadKind, RoadSpec, StructureSpec, SurfaceKind, SurfaceSpec, TreeSpec, WaterSpec } from '../core/site-spec';
+import type {
+  BuildingSpec,
+  RoadKind,
+  RoadSpec,
+  StructureSpec,
+  SurfaceKind,
+  SurfaceSpec,
+  TreeSpec,
+  WaterSpec,
+} from '../core/site-spec';
 import { STRUCTURE_DEFAULTS } from '../three/structures';
 import { uid } from '../core/site-spec';
 
@@ -130,12 +139,15 @@ export class GeoService {
     try {
       const cache = await caches.open(GeoService.CACHE);
       const hit = await cache.match(key);
-      if (hit && Date.now() - Number(hit.headers.get('x-ts') ?? 0) < GeoService.CACHE_MS) return (await hit.json()) as { elements: OsmElement[] };
+      if (hit && Date.now() - Number(hit.headers.get('x-ts') ?? 0) < GeoService.CACHE_MS)
+        return (await hit.json()) as { elements: OsmElement[] };
     } catch {
       /* Cache Storage unavailable: just fetch */
     }
     const mine = GeoService.endpoint;
-    const base = [...GeoService.MIRRORS].sort((a, b) => (a === GeoService.lastGood ? -1 : b === GeoService.lastGood ? 1 : 0));
+    const base = [...GeoService.MIRRORS].sort((a, b) =>
+      a === GeoService.lastGood ? -1 : b === GeoService.lastGood ? 1 : 0,
+    );
     const order = mine ? [mine, ...base] : base;
     const failures: string[] = [];
     for (let round = 0; round < 2; round++) {
@@ -144,13 +156,23 @@ export class GeoService {
         const ctl = new AbortController();
         const timer = setTimeout(() => ctl.abort(), 25000);
         try {
-          const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `data=${encodeURIComponent(ql)}`, signal: ctl.signal });
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `data=${encodeURIComponent(ql)}`,
+            signal: ctl.signal,
+          });
           if (res.ok) {
             const data = (await res.json()) as { elements: OsmElement[] };
             GeoService.lastGood = url;
             try {
               const cache = await caches.open(GeoService.CACHE);
-              await cache.put(key, new Response(JSON.stringify(data), { headers: { 'content-type': 'application/json', 'x-ts': String(Date.now()) } }));
+              await cache.put(
+                key,
+                new Response(JSON.stringify(data), {
+                  headers: { 'content-type': 'application/json', 'x-ts': String(Date.now()) },
+                }),
+              );
             } catch {
               /* not cached: fine */
             }
@@ -166,7 +188,9 @@ export class GeoService {
       if (round === 0) await new Promise((r) => setTimeout(r, 3000));
     }
     const uniq = [...new Set(failures)];
-    throw new Error(`OpenStreetMap data servers did not answer (${uniq.slice(0, 4).join('; ')}). They are usually only busy: wait a minute and retry, or set your own data server.`);
+    throw new Error(
+      `OpenStreetMap data servers did not answer (${uniq.slice(0, 4).join('; ')}). They are usually only busy: wait a minute and retry, or set your own data server.`,
+    );
   }
 
   /**
@@ -175,17 +199,37 @@ export class GeoService {
    * (the model is still built, `partial` says trees / roads are missing). The query box is snapped to a ~55 m grid so
    * that nearby frames share one cached answer; the result is then cut back to the real frame.
    */
-  async areaData(lat: number, lon: number, halfE: number, halfN: number, rotDeg = 0): Promise<{ footprints: Footprint[]; trees: TreeSpec[]; roads: RoadSpec[]; surfaces: SurfaceSpec[]; waters: WaterSpec[]; structures: StructureSpec[]; partial: boolean }> {
+  async areaData(
+    lat: number,
+    lon: number,
+    halfE: number,
+    halfN: number,
+    rotDeg = 0,
+  ): Promise<{
+    footprints: Footprint[];
+    trees: TreeSpec[];
+    roads: RoadSpec[];
+    surfaces: SurfaceSpec[];
+    waters: WaterSpec[];
+    structures: StructureSpec[];
+    partial: boolean;
+  }> {
     const mLon = metresPerDegLon(lat);
     const G = 0.0005;
     // a turned frame: ask for its bounding box, then keep only what is inside the turned rectangle (inZone)
-    const rr = (rotDeg * Math.PI) / 180, cr = Math.abs(Math.cos(rr)), sr = Math.abs(Math.sin(rr));
-    const bE = cr * halfE + sr * halfN, bN = sr * halfE + cr * halfN;
-    const south = Math.floor((lat - bN / M_LAT) / G) * G, north = Math.ceil((lat + bN / M_LAT) / G) * G;
-    const west = Math.floor((lon - bE / mLon) / G) * G, east = Math.ceil((lon + bE / mLon) / G) * G;
+    const rr = (rotDeg * Math.PI) / 180,
+      cr = Math.abs(Math.cos(rr)),
+      sr = Math.abs(Math.sin(rr));
+    const bE = cr * halfE + sr * halfN,
+      bN = sr * halfE + cr * halfN;
+    const south = Math.floor((lat - bN / M_LAT) / G) * G,
+      north = Math.ceil((lat + bN / M_LAT) / G) * G;
+    const west = Math.floor((lon - bE / mLon) / G) * G,
+      east = Math.ceil((lon + bE / mLon) / G) * G;
     const bbox = `${south.toFixed(4)},${west.toFixed(4)},${north.toFixed(4)},${east.toFixed(4)}`; // south,west,north,east
     const buildingsQ = `way["building"]["building"!~"^(roof|hangar)$"](${bbox});`;
-    const fullQ = `[out:json][timeout:25];(${buildingsQ}node["natural"="tree"](${bbox});way["natural"="tree_row"](${bbox});way["highway"~"^(primary|secondary|tertiary|residential|unclassified|service|track|path|footway|cycleway)$"](${bbox});` +
+    const fullQ =
+      `[out:json][timeout:25];(${buildingsQ}node["natural"="tree"](${bbox});way["natural"="tree_row"](${bbox});way["highway"~"^(primary|secondary|tertiary|residential|unclassified|service|track|path|footway|cycleway)$"](${bbox});` +
       `way["railway"~"^(rail|tram|light_rail|abandoned|disused)$"](${bbox});way["landuse"~"^(grass|meadow|brownfield|construction|industrial|railway|basin|reservoir)$"](${bbox});` +
       `way["natural"~"^(water|sand|scrub|bare_rock)$"](${bbox});way["waterway"="riverbank"](${bbox});way["amenity"="parking"](${bbox});` +
       `node["man_made"~"^(tower|mast|chimney|silo|storage_tank|water_tower|crane)$"](${bbox});way["man_made"~"^(chimney|silo|storage_tank|water_tower)$"](${bbox});node["power"="tower"](${bbox});way["highway"="steps"](${bbox});` +
@@ -203,34 +247,54 @@ export class GeoService {
       }
     }
     const inZone = (la: number, lo: number): boolean => {
-      const dx = (lo - lon) * mLon, dz = -(la - lat) * M_LAT; // east, south
-      const u = dx * Math.cos(rr) + dz * Math.sin(rr), v = -dx * Math.sin(rr) + dz * Math.cos(rr); // in the frame's own axes
+      const dx = (lo - lon) * mLon,
+        dz = -(la - lat) * M_LAT; // east, south
+      const u = dx * Math.cos(rr) + dz * Math.sin(rr),
+        v = -dx * Math.sin(rr) + dz * Math.cos(rr); // in the frame's own axes
       return Math.abs(u) <= halfE + 8 && Math.abs(v) <= halfN + 8;
     };
     // a way crossing the edge of the box can come back with gaps (null points): drop them before anything reads them
-    for (const el of data.elements) if (el.geometry) el.geometry = (el.geometry as unknown[]).filter((p): p is { lat: number; lon: number } => !!p && typeof (p as { lat?: unknown }).lat === 'number' && typeof (p as { lon?: unknown }).lon === 'number');
+    for (const el of data.elements)
+      if (el.geometry)
+        el.geometry = (el.geometry as unknown[]).filter(
+          (p): p is { lat: number; lon: number } =>
+            !!p && typeof (p as { lat?: unknown }).lat === 'number' && typeof (p as { lon?: unknown }).lon === 'number',
+        );
     const footprints: Footprint[] = [];
     const trees: TreeSpec[] = [];
     const roads: RoadSpec[] = [];
     const surfaces: SurfaceSpec[] = [];
     const waters: WaterSpec[] = [];
-    const toSite = (p: { lat: number; lon: number }): { x: number; z: number } => ({ x: (p.lon - lon) * mLon, z: -(p.lat - lat) * M_LAT });
+    const toSite = (p: { lat: number; lon: number }): { x: number; z: number } => ({
+      x: (p.lon - lon) * mLon,
+      z: -(p.lat - lat) * M_LAT,
+    });
     const structures: StructureSpec[] = [];
     for (const el of data.elements) {
       const tags = el.tags ?? {};
-      const bridge = tags['bridge'] && tags['bridge'] !== 'no' && el.type === 'way' && el.geometry && el.geometry.length >= 2;
+      const bridge =
+        tags['bridge'] && tags['bridge'] !== 'no' && el.type === 'way' && el.geometry && el.geometry.length >= 2;
       const manMade = tags['man_made'] ?? (tags['power'] === 'tower' ? 'pylon' : '');
       if (bridge) {
         // a bridge: its chord, as one oriented deck. (The road / rail under its length is not drawn as a ground pad.)
         const g = el.geometry!;
-        const p0 = g[0]!, p1 = g[g.length - 1]!;
-        const dx = (p1.lon - p0.lon) * mLon, dz = -(p1.lat - p0.lat) * M_LAT;
+        const p0 = g[0]!,
+          p1 = g[g.length - 1]!;
+        const dx = (p1.lon - p0.lon) * mLon,
+          dz = -(p1.lat - p0.lat) * M_LAT;
         const len = Math.hypot(dx, dz);
         const mid = { lat: (p0.lat + p1.lat) / 2, lon: (p0.lon + p1.lon) / 2 };
         if (len >= 8 && structures.length < 60 && inZone(mid.lat, mid.lon)) {
           const layer = Math.max(1, parseInt(tags['layer'] ?? '1', 10) || 1);
           const hw = tags['highway'];
-          const width = hw === 'primary' || hw === 'secondary' ? 10 : hw === 'service' || hw === 'path' || hw === 'footway' ? 3.5 : tags['railway'] ? 5 : 7;
+          const width =
+            hw === 'primary' || hw === 'secondary'
+              ? 10
+              : hw === 'service' || hw === 'path' || hw === 'footway'
+                ? 3.5
+                : tags['railway']
+                  ? 5
+                  : 7;
           structures.push({
             id: uid('st'),
             kind: 'bridge',
@@ -248,9 +312,11 @@ export class GeoService {
       } else if (tags['highway'] === 'steps' && el.type === 'way' && el.geometry && el.geometry.length >= 2) {
         // a flight of steps: from its first to its last point, going up unless the way is tagged incline=down
         const g = el.geometry;
-        let p0 = g[0]!, p1 = g[g.length - 1]!;
+        let p0 = g[0]!,
+          p1 = g[g.length - 1]!;
         if (tags['incline'] === 'down') [p0, p1] = [p1, p0];
-        const dx = (p1.lon - p0.lon) * mLon, dz = -(p1.lat - p0.lat) * M_LAT;
+        const dx = (p1.lon - p0.lon) * mLon,
+          dz = -(p1.lat - p0.lat) * M_LAT;
         const len = Math.hypot(dx, dz);
         const mid = { lat: (p0.lat + p1.lat) / 2, lon: (p0.lon + p1.lon) / 2 };
         if (len >= 1.5 && structures.length < 60 && inZone(mid.lat, mid.lon)) {
@@ -267,26 +333,50 @@ export class GeoService {
             length: len,
           });
         }
-      } else if (manMade && (el.type === 'node' || (el.type === 'way' && el.geometry && el.geometry.length >= 4)) && structures.length < 60) {
+      } else if (
+        manMade &&
+        (el.type === 'node' || (el.type === 'way' && el.geometry && el.geometry.length >= 4)) &&
+        structures.length < 60
+      ) {
         const kind: StructureSpec['kind'] | null =
-          manMade === 'crane' ? 'tower_crane' : manMade === 'chimney' ? 'chimney' : manMade === 'silo' ? 'silo' : manMade === 'storage_tank' ? 'tank' : manMade === 'water_tower' ? 'water_tower' :
-          manMade === 'pylon' || ((manMade === 'tower' || manMade === 'mast') && (tags['tower:construction'] === 'lattice' || tags['tower:type'] === 'communication' || tags['tower:type'] === 'transmission' || manMade === 'mast')) ? 'lattice_tower' : null;
+          manMade === 'crane'
+            ? 'tower_crane'
+            : manMade === 'chimney'
+              ? 'chimney'
+              : manMade === 'silo'
+                ? 'silo'
+                : manMade === 'storage_tank'
+                  ? 'tank'
+                  : manMade === 'water_tower'
+                    ? 'water_tower'
+                    : manMade === 'pylon' ||
+                        ((manMade === 'tower' || manMade === 'mast') &&
+                          (tags['tower:construction'] === 'lattice' ||
+                            tags['tower:type'] === 'communication' ||
+                            tags['tower:type'] === 'transmission' ||
+                            manMade === 'mast'))
+                      ? 'lattice_tower'
+                      : null;
         if (!kind) continue;
-        let tx: number, tz: number, radius: number | null = null;
+        let tx: number,
+          tz: number,
+          radius: number | null = null;
         if (el.type === 'node' && el.lat !== undefined && el.lon !== undefined) {
           if (!inZone(el.lat, el.lon)) continue;
           tx = (el.lon - lon) * mLon;
           tz = -(el.lat - lat) * M_LAT;
         } else {
           const g = el.geometry!;
-          const cl = g.reduce((a, q) => a + q.lat, 0) / g.length, co = g.reduce((a, q) => a + q.lon, 0) / g.length;
+          const cl = g.reduce((a, q) => a + q.lat, 0) / g.length,
+            co = g.reduce((a, q) => a + q.lon, 0) / g.length;
           if (!inZone(cl, co)) continue;
           tx = (co - lon) * mLon;
           tz = -(cl - lat) * M_LAT;
           radius = Math.sqrt(this.polyArea(g.map((q) => [q.lon, q.lat] as [number, number])) / Math.PI);
         }
         const d = STRUCTURE_DEFAULTS[kind];
-        const height = parseFloat(tags['height'] ?? tags['tower:height'] ?? '') || (manMade === 'pylon' ? 28 : d.height);
+        const height =
+          parseFloat(tags['height'] ?? tags['tower:height'] ?? '') || (manMade === 'pylon' ? 28 : d.height);
         structures.push({
           id: uid('st'),
           kind,
@@ -301,16 +391,24 @@ export class GeoService {
       } else if (el.type === 'node' && tags['natural'] === 'tree' && el.lat !== undefined && el.lon !== undefined) {
         if (trees.length >= 250 || !inZone(el.lat, el.lon)) continue;
         const h = Math.min(30, Math.max(3, parseFloat(tags['height'] ?? '') || 8));
-        trees.push({ x: (el.lon - lon) * mLon, z: -(el.lat - lat) * M_LAT, h, r: Math.max(1.2, h * 0.22), kind: tags['leaf_type'] === 'needleleaved' ? 'c' : 'd' });
+        trees.push({
+          x: (el.lon - lon) * mLon,
+          z: -(el.lat - lat) * M_LAT,
+          h,
+          r: Math.max(1.2, h * 0.22),
+          kind: tags['leaf_type'] === 'needleleaved' ? 'c' : 'd',
+        });
       } else if (el.type === 'way' && tags['natural'] === 'tree_row' && el.geometry) {
         // a row of trees: one tree every ~7 m along it
         const g = el.geometry;
         for (let i = 0; i + 1 < g.length && trees.length < 250; i++) {
-          const a = g[i]!, b = g[i + 1]!;
+          const a = g[i]!,
+            b = g[i + 1]!;
           const len = Math.hypot((b.lon - a.lon) * mLon, (b.lat - a.lat) * M_LAT);
           for (let t = 0; t < len; t += 7) {
             const f = len ? t / len : 0;
-            const la = a.lat + (b.lat - a.lat) * f, lo = a.lon + (b.lon - a.lon) * f;
+            const la = a.lat + (b.lat - a.lat) * f,
+              lo = a.lon + (b.lon - a.lon) * f;
             trees.push({ x: (lo - lon) * mLon, z: -(la - lat) * M_LAT, h: 8, r: 1.8, kind: 'd' });
           }
         }
@@ -318,15 +416,47 @@ export class GeoService {
         // a road, track, path or railway: its centre line as it is on the map
         if (roads.length >= 150 || !el.geometry.some((p) => inZone(p.lat, p.lon))) continue;
         const hw = tags['highway'] ?? '';
-        const kind: RoadKind = tags['railway'] ? 'rail' : hw === 'track' ? 'track' : /^(path|footway|cycleway)$/.test(hw) ? 'path' : 'road';
-        const width = parseFloat(tags['width'] ?? '') || (kind === 'rail' ? 3.2 : kind === 'track' ? 3.5 : kind === 'path' ? 1.6 : hw === 'service' ? 4 : hw === 'residential' || hw === 'unclassified' ? 6 : 8);
+        const kind: RoadKind = tags['railway']
+          ? 'rail'
+          : hw === 'track'
+            ? 'track'
+            : /^(path|footway|cycleway)$/.test(hw)
+              ? 'path'
+              : 'road';
+        const width =
+          parseFloat(tags['width'] ?? '') ||
+          (kind === 'rail'
+            ? 3.2
+            : kind === 'track'
+              ? 3.5
+              : kind === 'path'
+                ? 1.6
+                : hw === 'service'
+                  ? 4
+                  : hw === 'residential' || hw === 'unclassified'
+                    ? 6
+                    : 8);
         const surface = surfaceOf(tags['surface']);
-        roads.push({ pts: el.geometry.map(toSite), width: Math.min(30, Math.max(1, width)), kind, ...(surface ? { surface } : {}) });
-      } else if (el.type === 'way' && el.geometry && el.geometry.length >= 4 && (tags['landuse'] || tags['natural'] || tags['waterway'] === 'riverbank' || tags['amenity'] === 'parking')) {
+        roads.push({
+          pts: el.geometry.map(toSite),
+          width: Math.min(30, Math.max(1, width)),
+          kind,
+          ...(surface ? { surface } : {}),
+        });
+      } else if (
+        el.type === 'way' &&
+        el.geometry &&
+        el.geometry.length >= 4 &&
+        (tags['landuse'] || tags['natural'] || tags['waterway'] === 'riverbank' || tags['amenity'] === 'parking')
+      ) {
         // an area: water becomes a basin, the rest a ground surface
         const ring = el.geometry.map(toSite);
         if (!el.geometry.some((p) => inZone(p.lat, p.lon))) continue;
-        const water = tags['natural'] === 'water' || tags['waterway'] === 'riverbank' || tags['landuse'] === 'basin' || tags['landuse'] === 'reservoir';
+        const water =
+          tags['natural'] === 'water' ||
+          tags['waterway'] === 'riverbank' ||
+          tags['landuse'] === 'basin' ||
+          tags['landuse'] === 'reservoir';
         if (water) {
           if (waters.length < 30) waters.push({ pts: ring.slice(0, -1), depth: 1.5 });
         } else {
@@ -339,7 +469,13 @@ export class GeoService {
         if (!ring || ring.length < 4) continue;
         if (this.polyArea(ring) > 1_000_000) continue; // a district outline, not a building
         const fp = this.toFootprint(ring, tags);
-        if (inZone(fp.ring.reduce((a, q) => a + q[1], 0) / fp.ring.length, fp.ring.reduce((a, q) => a + q[0], 0) / fp.ring.length)) footprints.push(fp);
+        if (
+          inZone(
+            fp.ring.reduce((a, q) => a + q[1], 0) / fp.ring.length,
+            fp.ring.reduce((a, q) => a + q[0], 0) / fp.ring.length,
+          )
+        )
+          footprints.push(fp);
       }
     }
     footprints.sort((p, q) => this.polyArea(q.ring) - this.polyArea(p.ring));
@@ -355,7 +491,8 @@ export class GeoService {
       // relations come without member geometry in "out geom center": a small default box around the centre
       const s = 30;
       const { lat, lon } = el.center;
-      const dLat = s / M_LAT, dLon = s / metresPerDegLon(lat);
+      const dLat = s / M_LAT,
+        dLon = s / metresPerDegLon(lat);
       return [
         [lon - dLon, lat - dLat],
         [lon + dLon, lat - dLat],
@@ -368,7 +505,8 @@ export class GeoService {
 
   /** Ring (lon/lat) -> local metres relative to the ring centroid, plus size / heading / height guesses. */
   private toFootprint(ring: Ring, tags: Record<string, string>): Footprint {
-    let clon = 0, clat = 0;
+    let clon = 0,
+      clat = 0;
     for (const [lo, la] of ring) {
       clon += lo;
       clat += la;
@@ -378,10 +516,14 @@ export class GeoService {
     const mLon = metresPerDegLon(clat);
     const pts = ring.map(([lo, la]) => ({ x: (lo - clon) * mLon, z: -(la - clat) * M_LAT }));
     // longest edge direction = heading of the building's length axis (degrees clockwise from north)
-    let bestLen = 0, bx = 1, bz = 0;
+    let bestLen = 0,
+      bx = 1,
+      bz = 0;
     for (let i = 0; i < pts.length; i++) {
-      const a = pts[i]!, b = pts[(i + 1) % pts.length]!;
-      const dx = b.x - a.x, dz = b.z - a.z;
+      const a = pts[i]!,
+        b = pts[(i + 1) % pts.length]!;
+      const dx = b.x - a.x,
+        dz = b.z - a.z;
       const l = Math.hypot(dx, dz);
       if (l > bestLen) {
         bestLen = l;
@@ -390,7 +532,10 @@ export class GeoService {
       }
     }
     // project every corner on the length axis to get true dx / dz extents
-    let mn = Infinity, mx = -Infinity, mn2 = Infinity, mx2 = -Infinity;
+    let mn = Infinity,
+      mx = -Infinity,
+      mn2 = Infinity,
+      mx2 = -Infinity;
     for (const p of pts) {
       const u = p.x * bx + p.z * bz;
       const v = -p.x * bz + p.z * bx;
@@ -402,12 +547,26 @@ export class GeoService {
     const levels = parseInt(tags['levels'] ?? tags['building:levels'] ?? '', 10);
     const taggedH = parseFloat(tags['height'] ?? '');
     const type = tags['building'] ?? 'yes';
-    const defaultLevels = /^(house|residential|farm|detached|semis)$/.test(type) ? 2 : /^(shed|garage|barn|warehouse|industrial|hut|greenhouse|roof|bridge|station)$/.test(type) ? 1 : 2;
+    const defaultLevels = /^(house|residential|farm|detached|semis)$/.test(type)
+      ? 2
+      : /^(shed|garage|barn|warehouse|industrial|hut|greenhouse|roof|bridge|station)$/.test(type)
+        ? 1
+        : 2;
     const nlev = Number.isFinite(levels) && levels > 0 ? levels : defaultLevels;
     const heightM = Number.isFinite(taggedH) && taggedH > 0 ? taggedH : nlev * 3.2;
     let headingDeg = (Math.atan2(bx, -bz) * 180) / Math.PI; // direction (east, north-ish) -> compass bearing of the length axis
     headingDeg = ((headingDeg % 180) + 180) % 180;
-    return { ring, name: tags['name'] || undefined, levels: nlev, heightM, roof: tags['roof:shape'], type: tags['building'], dx: mx - mn, dz: mx2 - mn2, headingDeg };
+    return {
+      ring,
+      name: tags['name'] || undefined,
+      levels: nlev,
+      heightM,
+      roof: tags['roof:shape'],
+      type: tags['building'],
+      dx: mx - mn,
+      dz: mx2 - mn2,
+      headingDeg,
+    };
   }
 
   /** Shoelace area of a lon/lat ring, square metres (for sorting). */
@@ -416,8 +575,9 @@ export class GeoService {
     const lat = ring.reduce((a, p) => a + p[1], 0) / ring.length;
     const mLon = metresPerDegLon(lat);
     for (let i = 0; i < ring.length; i++) {
-      const a = ring[i]!, b = ring[(i + 1) % ring.length]!;
-      s += a[0] * mLon * (-(b[1] * M_LAT)) - b[0] * mLon * (-(a[1] * M_LAT));
+      const a = ring[i]!,
+        b = ring[(i + 1) % ring.length]!;
+      s += a[0] * mLon * -(b[1] * M_LAT) - b[0] * mLon * -(a[1] * M_LAT);
     }
     return Math.abs(s / 2);
   }
@@ -450,7 +610,8 @@ function surfaceOf(v: string | undefined): SurfaceKind | null {
 function areaSurface(t: Record<string, string>): SurfaceKind | null {
   const own = surfaceOf(t['surface']);
   if (own) return own;
-  const l = t['landuse'], n = t['natural'];
+  const l = t['landuse'],
+    n = t['natural'];
   if (l === 'grass' || l === 'meadow') return 'grass';
   if (l === 'brownfield') return 'rubble';
   if (l === 'construction') return 'dirt';

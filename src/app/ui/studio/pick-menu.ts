@@ -1,4 +1,15 @@
-import { Component, ElementRef, Injector, afterNextRender, computed, inject, input, model, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Injector,
+  afterNextRender,
+  computed,
+  inject,
+  input,
+  model,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { ToolIcon } from './tool-icon';
 
 /** One choice: a picture (a tool-icon key), a name, and an optional line of explanation. */
@@ -160,19 +171,29 @@ export class PickMenu {
   }
 
   private show(): void {
-    this.active.set(Math.max(0, this.options().findIndex((o) => o.id === this.value())));
+    this.active.set(
+      Math.max(
+        0,
+        this.options().findIndex((o) => o.id === this.value()),
+      ),
+    );
     // a menu near the bottom of the window opens upwards; it never reaches past the window (the page must not scroll)
-    const r = this.btn().nativeElement.getBoundingClientRect(), room = this.room();
-    const below = room.bottom - r.bottom - 12, above = r.top - room.top - 12;
+    const r = this.btn().nativeElement.getBoundingClientRect(),
+      room = this.room();
+    const below = room.bottom - r.bottom - 12,
+      above = r.top - room.top - 12;
     const wanted = Math.min(320, this.options().length * 36 + 10);
     const up = below < wanted && above > below;
     this.place.set({ up, end: r.left + 220 > room.right - 8, max: Math.max(80, Math.min(320, up ? above : below)) });
     this.open.set(true);
     // the list exists only after the next render: move the focus into it then, without scrolling the page to it
-    afterNextRender(() => {
-      this.list()?.nativeElement.focus({ preventScroll: true });
-      this.scrollActive();
-    }, { injector: this.injector });
+    afterNextRender(
+      () => {
+        this.list()?.nativeElement.focus({ preventScroll: true });
+        this.scrollActive();
+      },
+      { injector: this.injector },
+    );
   }
 
   private close(refocus: boolean): void {
@@ -215,7 +236,8 @@ export class PickMenu {
    * body). Measuring the window alone opened a menu downwards out of sight in an options bar at the bottom of the editor.
    */
   private room(): { top: number; bottom: number; right: number } {
-    const doc = this.host.nativeElement.ownerDocument, view = doc.documentElement;
+    const doc = this.host.nativeElement.ownerDocument,
+      view = doc.documentElement;
     const room = { top: 0, bottom: view.clientHeight, right: view.clientWidth };
     for (let el = this.host.nativeElement.parentElement; el && el !== doc.body; el = el.parentElement) {
       const st = getComputedStyle(el);
@@ -230,13 +252,17 @@ export class PickMenu {
 
   /** Bring the active choice into view inside the list only (scrollIntoView would scroll the page as well). */
   private scrollActive(): void {
-    afterNextRender(() => {
-      const list = this.list()?.nativeElement;
-      const act = list?.querySelector<HTMLElement>('.act');
-      if (!list || !act) return;
-      if (act.offsetTop < list.scrollTop) list.scrollTop = act.offsetTop;
-      else if (act.offsetTop + act.offsetHeight > list.scrollTop + list.clientHeight) list.scrollTop = act.offsetTop + act.offsetHeight - list.clientHeight;
-    }, { injector: this.injector });
+    afterNextRender(
+      () => {
+        const list = this.list()?.nativeElement;
+        const act = list?.querySelector<HTMLElement>('.act');
+        if (!list || !act) return;
+        if (act.offsetTop < list.scrollTop) list.scrollTop = act.offsetTop;
+        else if (act.offsetTop + act.offsetHeight > list.scrollTop + list.clientHeight)
+          list.scrollTop = act.offsetTop + act.offsetHeight - list.clientHeight;
+      },
+      { injector: this.injector },
+    );
   }
 
   protected outside(e: PointerEvent): void {

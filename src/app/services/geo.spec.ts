@@ -1,12 +1,22 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { GeoService } from './geo.service';
 
-const LAT = 45.46, LON = 9.19;
+const LAT = 45.46,
+  LON = 9.19;
 const dLat = (m: number): number => m / 111132;
 const dLon = (m: number): number => m / (111320 * Math.cos((LAT * Math.PI) / 180));
-const pt = (east: number, north: number): { lat: number; lon: number } => ({ lat: LAT + dLat(north), lon: LON + dLon(east) });
+const pt = (east: number, north: number): { lat: number; lon: number } => ({
+  lat: LAT + dLat(north),
+  lon: LON + dLon(east),
+});
 
-const rect = (e: number, n: number, w: number, h: number): { lat: number; lon: number }[] => [pt(e, n), pt(e + w, n), pt(e + w, n + h), pt(e, n + h), pt(e, n)];
+const rect = (e: number, n: number, w: number, h: number): { lat: number; lon: number }[] => [
+  pt(e, n),
+  pt(e + w, n),
+  pt(e + w, n + h),
+  pt(e, n + h),
+  pt(e, n),
+];
 
 describe('OpenStreetMap import of other structure types', () => {
   afterEach(() => vi.unstubAllGlobals());
@@ -18,12 +28,20 @@ describe('OpenStreetMap import of other structure types', () => {
       { id: 3, type: 'node', tags: { man_made: 'chimney', height: '42' }, ...pt(-10, 40) },
       { id: 4, type: 'node', tags: { power: 'tower' }, ...pt(70, 30) },
       { id: 5, type: 'node', tags: { man_made: 'tower', 'tower:type': 'observation' }, ...pt(-70, 50) }, // not a lattice mast: skipped
-      { id: 6, type: 'way', tags: { highway: 'residential', bridge: 'yes', layer: '1' }, geometry: [pt(-30, -60), pt(30, -60)] },
+      {
+        id: 6,
+        type: 'way',
+        tags: { highway: 'residential', bridge: 'yes', layer: '1' },
+        geometry: [pt(-30, -60), pt(30, -60)],
+      },
       { id: 7, type: 'way', tags: { highway: 'residential' }, geometry: [pt(-30, -80), pt(30, -80)] },
       { id: 8, type: 'way', tags: { highway: 'steps' }, geometry: [pt(40, -40), pt(40, -30)] },
       { id: 9, type: 'node', tags: { man_made: 'crane', height: '55' }, ...pt(60, 60) },
     ];
-    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ elements }), { status: 200 })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify({ elements }), { status: 200 })),
+    );
     const d = await new GeoService().areaData(LAT, LON, 150, 120);
 
     expect(d.footprints.map((f) => f.type)).toContain('greenhouse');
@@ -48,14 +66,22 @@ describe('OpenStreetMap import of other structure types', () => {
 
   it('brings roads as centre lines, ground surfaces and water basins', async () => {
     const elements = [
-      { id: 1, type: 'way', tags: { highway: 'track', surface: 'gravel' }, geometry: [pt(-50, 0), pt(0, 10), pt(50, 0)] },
+      {
+        id: 1,
+        type: 'way',
+        tags: { highway: 'track', surface: 'gravel' },
+        geometry: [pt(-50, 0), pt(0, 10), pt(50, 0)],
+      },
       { id: 2, type: 'way', tags: { railway: 'disused' }, geometry: [pt(-60, -40), pt(60, -40)] },
       { id: 3, type: 'way', tags: { landuse: 'brownfield' }, geometry: rect(-40, 20, 30, 20) },
       { id: 4, type: 'way', tags: { natural: 'water' }, geometry: rect(20, 20, 20, 15) },
       { id: 5, type: 'way', tags: { amenity: 'parking' }, geometry: rect(-40, -30, 20, 10) },
       { id: 6, type: 'way', tags: { landuse: 'retail' }, geometry: rect(0, -20, 10, 10) }, // not ground: ignored
     ];
-    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ elements }), { status: 200 })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify({ elements }), { status: 200 })),
+    );
     const d = await new GeoService().areaData(LAT, LON, 150, 120);
     const track = d.roads.find((r) => r.kind === 'track')!;
     expect(track.pts).toHaveLength(3);
@@ -70,10 +96,23 @@ describe('OpenStreetMap import of other structure types', () => {
   it('survives ways with gaps (null points) where they cross the edge of the box', async () => {
     const elements = [
       { id: 1, type: 'way', tags: { highway: 'residential' }, geometry: [pt(-50, 0), null, pt(50, 0)] },
-      { id: 2, type: 'way', tags: { landuse: 'grass' }, geometry: [pt(0, 0), pt(10, 0), null, pt(10, 10), pt(0, 10), pt(0, 0)] },
-      { id: 3, type: 'way', tags: { building: 'yes' }, geometry: [...rect(20, 10, 20, 10).slice(0, 2), null, ...rect(20, 10, 20, 10).slice(2)] },
+      {
+        id: 2,
+        type: 'way',
+        tags: { landuse: 'grass' },
+        geometry: [pt(0, 0), pt(10, 0), null, pt(10, 10), pt(0, 10), pt(0, 0)],
+      },
+      {
+        id: 3,
+        type: 'way',
+        tags: { building: 'yes' },
+        geometry: [...rect(20, 10, 20, 10).slice(0, 2), null, ...rect(20, 10, 20, 10).slice(2)],
+      },
     ];
-    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ elements }), { status: 200 })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify({ elements }), { status: 200 })),
+    );
     const d = await new GeoService().areaData(LAT, LON, 150, 120);
     expect(d.roads[0]!.pts).toHaveLength(2);
     expect(d.surfaces).toHaveLength(1);

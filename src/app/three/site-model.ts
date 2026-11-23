@@ -10,7 +10,20 @@ import { NO_SLABS, ROOFLESS, roofCells, roofRuns, ruinRandom, wallPieces, wallTo
 import * as THREE from 'three';
 import { mergeUnit } from './merge';
 import { satelliteTexture } from './satellite-ground';
-import { type BuildingSpec, type LevelSpec, type RoadSpec, type SiteSpec, type SurfaceSpec, type TreeSpec, type UndergroundSpec, type WallSpec, createRandom, fixturesInSite, START_MARKER, takeoffPadIndex } from '../core/site-spec';
+import {
+  type BuildingSpec,
+  type LevelSpec,
+  type RoadSpec,
+  type SiteSpec,
+  type SurfaceSpec,
+  type TreeSpec,
+  type UndergroundSpec,
+  type WallSpec,
+  createRandom,
+  fixturesInSite,
+  START_MARKER,
+  takeoffPadIndex,
+} from '../core/site-spec';
 import { SiteCollider, type SolidBox, type StandingSurface, type TreeCylinder } from '../core/sim/collider';
 import { standingLevels, takeoffHeight } from '../core/takeoff-place';
 import { FLUSH_INSET, flushWalls } from '../core/flush-walls';
@@ -110,10 +123,28 @@ interface Ctx {
   rot: number;
   solids: SolidBox[];
   occluders: THREE.Mesh[];
-  mat: { wall: THREE.MeshStandardMaterial; white: THREE.MeshStandardMaterial; pier: THREE.MeshStandardMaterial; steel: THREE.MeshStandardMaterial; conc: THREE.MeshStandardMaterial; dirt: THREE.MeshStandardMaterial };
+  mat: {
+    wall: THREE.MeshStandardMaterial;
+    white: THREE.MeshStandardMaterial;
+    pier: THREE.MeshStandardMaterial;
+    steel: THREE.MeshStandardMaterial;
+    conc: THREE.MeshStandardMaterial;
+    dirt: THREE.MeshStandardMaterial;
+  };
   matFor(c?: string): THREE.MeshStandardMaterial;
   seed: number;
-  addBox(target: THREE.Object3D, x: number, y: number, z: number, w: number, h: number, d: number, m: THREE.Material, solid: boolean, cast: boolean): THREE.Mesh;
+  addBox(
+    target: THREE.Object3D,
+    x: number,
+    y: number,
+    z: number,
+    w: number,
+    h: number,
+    d: number,
+    m: THREE.Material,
+    solid: boolean,
+    cast: boolean,
+  ): THREE.Mesh;
   addMesh(target: THREE.Object3D, m: THREE.Mesh, x: number, y: number, z: number, solidBox?: SolidBox): void;
 }
 
@@ -160,7 +191,8 @@ function gable(w: number, d: number, rise: number, mat: THREE.Material, gambrel 
   shape.moveTo(-d / 2 - 0.3, 0);
   shape.lineTo(d / 2 + 0.3, 0);
   if (gambrel) {
-    const kx = d / 2 - (d / 2) * GAMBREL_KNEE.inset, ky = rise * GAMBREL_KNEE.rise;
+    const kx = d / 2 - (d / 2) * GAMBREL_KNEE.inset,
+      ky = rise * GAMBREL_KNEE.rise;
     shape.lineTo(kx, ky);
     shape.lineTo(0, rise);
     shape.lineTo(-kx, ky);
@@ -177,10 +209,19 @@ function gable(w: number, d: number, rise: number, mat: THREE.Material, gambrel 
 
 /** Wall strips of one side with openings punched out (doors from the floor, windows on a high sill). */
 /** The leaf of a closed door / the pane of a closed window, solid for the drone. Open ones are just the hole. */
-function openingLeaf(ctx: Ctx, target: THREE.Object3D, l: LevelSpec, o: { kind: 'door' | 'window'; w: number; h: number; sill?: number }, along: number, across: number, alongX: boolean): void {
+function openingLeaf(
+  ctx: Ctx,
+  target: THREE.Object3D,
+  l: LevelSpec,
+  o: { kind: 'door' | 'window'; w: number; h: number; sill?: number },
+  along: number,
+  across: number,
+  alongX: boolean,
+): void {
   const gy0 = o.kind === 'door' ? 0 : Math.min(l.height - 0.2, o.sill ?? Math.max(0.4, l.height * 0.75));
   const h = Math.min(l.height - gy0, o.h);
-  const mat = o.kind === 'door' ? material('#7a5a3d') : material('#9ec7d8', { transparent: true, opacity: 0.4, roughness: 0.1 });
+  const mat =
+    o.kind === 'door' ? material('#7a5a3d') : material('#9ec7d8', { transparent: true, opacity: 0.4, roughness: 0.1 });
   const y = l.baseY + gy0 + h / 2;
   if (alongX) ctx.addBox(target, along, y, across, o.w, h, 0.12, mat, true, o.kind === 'door');
   else ctx.addBox(target, across, y, along, 0.12, h, o.w, mat, true, o.kind === 'door');
@@ -200,7 +241,8 @@ function roofSolid(ctx: Ctx, x: number, z: number, w: number, d: number, y0: num
 
 function buildSide(ctx: Ctx, b: BuildingSpec, l: LevelSpec, side: 'n' | 's' | 'e' | 'w', target: THREE.Object3D): void {
   const runLen = side === 'n' || side === 's' ? b.length : b.width; // n and s run along the length, e and w along the width
-  const acrossPos = side === 'w' ? -b.length / 2 : side === 'e' ? b.length / 2 : side === 'n' ? -b.width / 2 : b.width / 2;
+  const acrossPos =
+    side === 'w' ? -b.length / 2 : side === 'e' ? b.length / 2 : side === 'n' ? -b.width / 2 : b.width / 2;
   const th = ctx.thin.has(side) ? 0.5 - 2 * FLUSH_INSET : 0.5;
   // a ruin open to the sky: this wall stands up to its broken line (its own ruin level if it has one)
   const standing = standingOf(ctx, runLen, b.ruinWalls?.[side] ?? ctx.ruin?.level ?? 0, side);
@@ -208,8 +250,10 @@ function buildSide(ctx: Ctx, b: BuildingSpec, l: LevelSpec, side: 'n' | 's' | 'e
     if (len < 0.01 || hh < 0.01) return;
     const bottom = l.baseY + y - hh / 2; // y is measured from this floor's slab
     for (const p of wallPieces(from, len, bottom, bottom + hh, standing)) {
-      const m = p.from + p.len / 2 - runLen / 2, h = p.top - bottom;
-      if (side === 'w' || side === 'e') ctx.addBox(target, acrossPos, bottom + h / 2, m, th, h, p.len, ctx.mat.wall, true, true);
+      const m = p.from + p.len / 2 - runLen / 2,
+        h = p.top - bottom;
+      if (side === 'w' || side === 'e')
+        ctx.addBox(target, acrossPos, bottom + h / 2, m, th, h, p.len, ctx.mat.wall, true, true);
       else ctx.addBox(target, m, bottom + h / 2, acrossPos, p.len, h, th, ctx.mat.wall, true, true);
     }
   };
@@ -233,7 +277,11 @@ function buildPolyWalls(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.O
     const th = ctx.thin.has(`edge${k}`) ? 0.5 - 2 * FLUSH_INSET : 0.5;
     const standing = standingOf(ctx, e.to - e.from, ctx.ruin?.level ?? 0, `edge${k}`);
     const ops = (l.wallOpenings ?? [])
-      .filter((o) => (e.axis === 'x' ? Math.abs(o.z - e.at) < 0.08 && o.x >= e.from - 0.08 && o.x <= e.to + 0.08 : Math.abs(o.x - e.at) < 0.08 && o.z >= e.from - 0.08 && o.z <= e.to + 0.08))
+      .filter((o) =>
+        e.axis === 'x'
+          ? Math.abs(o.z - e.at) < 0.08 && o.x >= e.from - 0.08 && o.x <= e.to + 0.08
+          : Math.abs(o.x - e.at) < 0.08 && o.z >= e.from - 0.08 && o.z <= e.to + 0.08,
+      )
       .map((o) => ({ o, c: e.axis === 'x' ? o.x : o.z }))
       .sort((p, q) => p.c - q.c);
     const wall = (from: number, to: number, y: number, hh: number): void => {
@@ -241,14 +289,16 @@ function buildPolyWalls(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.O
       if (len < 0.01 || hh < 0.01) return;
       const bottom = l.baseY + y - hh / 2;
       for (const p of wallPieces(from - e.from, len, bottom, bottom + hh, standing)) {
-        const m = e.from + p.from + p.len / 2, h = p.top - bottom;
+        const m = e.from + p.from + p.len / 2,
+          h = p.top - bottom;
         if (e.axis === 'x') ctx.addBox(target, m, bottom + h / 2, e.at, p.len, h, th, ctx.mat.wall, true, true);
         else ctx.addBox(target, e.at, bottom + h / 2, m, th, h, p.len, ctx.mat.wall, true, true);
       }
     };
     let p = e.from - th / 2;
     for (const { o, c } of ops) {
-      const a = Math.max(p, c - o.w / 2), z = Math.min(e.to + th / 2, c + o.w / 2);
+      const a = Math.max(p, c - o.w / 2),
+        z = Math.min(e.to + th / 2, c + o.w / 2);
       wall(p, a, l.height / 2, l.height);
       const gy0 = o.kind === 'door' ? 0 : Math.min(l.height - 0.2, o.sill ?? Math.max(0.4, l.height * 0.75));
       const gy1 = Math.min(l.height, gy0 + o.h);
@@ -266,7 +316,8 @@ function buildPolyWalls(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.O
  * ruined wall's top has fallen there are none.
  */
 function buildCrenels(ctx: Ctx, b: BuildingSpec, top: number, target: THREE.Object3D): void {
-  const L = b.length / 2, W = b.width / 2;
+  const L = b.length / 2,
+    W = b.width / 2;
   const edges = b.footprint
     ? edgesOf(b.footprint).map((e, k) => ({ ...e, side: null, key: `edge${k}` }))
     : [
@@ -275,10 +326,13 @@ function buildCrenels(ctx: Ctx, b: BuildingSpec, top: number, target: THREE.Obje
         { axis: 'z' as const, at: -L, from: -W, to: W, side: 'w' as const, key: 'w' },
         { axis: 'z' as const, at: L, from: -W, to: W, side: 'e' as const, key: 'e' },
       ];
-  const h = 0.9, y = top + h / 2, th = 0.55;
+  const h = 0.9,
+    y = top + h / 2,
+    th = 0.55;
   for (const e of edges) {
     const standing = standingOf(ctx, e.to - e.from, (e.side && b.ruinWalls?.[e.side]) ?? b.ruin ?? 0, e.key);
-    const len = e.to - e.from, n = Math.max(1, Math.round(len / 1.4));
+    const len = e.to - e.from,
+      n = Math.max(1, Math.round(len / 1.4));
     for (let i = 0; i <= n; i++) {
       const c = e.from + (len * i) / n;
       if (standing && standing(c - e.from) < top - 0.2) continue; // the wall has fallen here
@@ -300,11 +354,13 @@ function buildWalls(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Objec
   l.partitions.forEach(([a, c], pi) => {
     const len = Math.hypot(c.x - a.x, c.z - a.z);
     if (len < 0.3) return;
-    const mx = (a.x + c.x) / 2 - b.length / 2, mz = (a.z + c.z) / 2 - b.width / 2;
+    const mx = (a.x + c.x) / 2 - b.length / 2,
+      mz = (a.z + c.z) / 2 - b.width / 2;
     const my = l.baseY + l.height / 2;
     let m: THREE.Mesh;
     if (Math.abs(a.x - c.x) < 0.01) m = ctx.addBox(target, mx, my, mz, 0.3, l.height, len, ctx.mat.wall, true, true);
-    else if (Math.abs(a.z - c.z) < 0.01) m = ctx.addBox(target, mx, my, mz, len, l.height, 0.3, ctx.mat.wall, true, true);
+    else if (Math.abs(a.z - c.z) < 0.01)
+      m = ctx.addBox(target, mx, my, mz, len, l.height, 0.3, ctx.mat.wall, true, true);
     else {
       const angle = Math.atan2(c.z - a.z, c.x - a.x);
       m = new THREE.Mesh(new THREE.BoxGeometry(len, l.height, 0.3), ctx.mat.wall);
@@ -312,10 +368,26 @@ function buildWalls(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Objec
       m.castShadow = m.receiveShadow = true;
       ctx.addMesh(target, m, mx, my, mz);
       // Short AABBs follow the diagonal instead of blocking its entire bounding rectangle.
-      const n = Math.ceil(len / 0.5), rot = ctx.rot * Math.PI / 180, cos = Math.cos(rot), sin = Math.sin(rot);
+      const n = Math.ceil(len / 0.5),
+        rot = (ctx.rot * Math.PI) / 180,
+        cos = Math.cos(rot),
+        sin = Math.sin(rot);
       for (let k = 0; k < n; k++) {
-        const t = (k + 0.5) / n, x = a.x + (c.x - a.x) * t - b.length / 2, z = a.z + (c.z - a.z) * t - b.width / 2;
-        ctx.solids.push(rotBoxLocal(ctx.at[0] + x * cos - z * sin, ctx.at[1] + x * sin + z * cos, len / n, 0.3, ctx.rot + angle * 180 / Math.PI, l.baseY, l.baseY + l.height, false));
+        const t = (k + 0.5) / n,
+          x = a.x + (c.x - a.x) * t - b.length / 2,
+          z = a.z + (c.z - a.z) * t - b.width / 2;
+        ctx.solids.push(
+          rotBoxLocal(
+            ctx.at[0] + x * cos - z * sin,
+            ctx.at[1] + x * sin + z * cos,
+            len / n,
+            0.3,
+            ctx.rot + (angle * 180) / Math.PI,
+            l.baseY,
+            l.baseY + l.height,
+            false,
+          ),
+        );
       }
     }
     m.userData['pick'] = { kind: 'wall', id: b.id, li, i: pi };
@@ -333,12 +405,44 @@ function buildRoof(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object
   const runs = (len: number): { from: number; len: number }[] => roofRuns(len, ruin, rnd);
   if (b.footprint) {
     // shaped buildings: a flat roof, one slab per rectangle of the outline (each is also a collider)
-    for (const s of slabs(b.footprint)) for (const r of roofCells(s.x0, s.x1, s.z0, s.z1, ruin, rnd)) ctx.addBox(target, (r.x0 + r.x1) / 2, top + 0.15, (r.z0 + r.z1) / 2, r.x1 - r.x0, 0.3, r.z1 - r.z0, rc, true, true);
+    for (const s of slabs(b.footprint))
+      for (const r of roofCells(s.x0, s.x1, s.z0, s.z1, ruin, rnd))
+        ctx.addBox(
+          target,
+          (r.x0 + r.x1) / 2,
+          top + 0.15,
+          (r.z0 + r.z1) / 2,
+          r.x1 - r.x0,
+          0.3,
+          r.z1 - r.z0,
+          rc,
+          true,
+          true,
+        );
     return;
   }
   if (l.roof === 'flat') {
     if (ruin > 0.01) {
-      for (const r of roofCells(-b.length / 2 - 0.3, b.length / 2 + 0.3, -b.width / 2 - 0.3, b.width / 2 + 0.3, ruin, rnd)) ctx.addBox(target, (r.x0 + r.x1) / 2, top + 0.15, (r.z0 + r.z1) / 2, r.x1 - r.x0, 0.3, r.z1 - r.z0, rc, true, true);
+      for (const r of roofCells(
+        -b.length / 2 - 0.3,
+        b.length / 2 + 0.3,
+        -b.width / 2 - 0.3,
+        b.width / 2 + 0.3,
+        ruin,
+        rnd,
+      ))
+        ctx.addBox(
+          target,
+          (r.x0 + r.x1) / 2,
+          top + 0.15,
+          (r.z0 + r.z1) / 2,
+          r.x1 - r.x0,
+          0.3,
+          r.z1 - r.z0,
+          rc,
+          true,
+          true,
+        );
       return;
     }
     ctx.addBox(target, 0, top + 0.15, 0, b.length + 0.6, 0.3, b.width + 0.6, rc, false, true);
@@ -358,7 +462,8 @@ function buildRoof(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object
       const c = -across / 2 + span / 2 + i * span;
       if (ruin > 0.01) {
         for (const r of runs(run)) {
-          const m = gable(r.len, span, rise, rc, barn), off = -run / 2 + r.from + r.len / 2;
+          const m = gable(r.len, span, rise, rc, barn),
+            off = -run / 2 + r.from + r.len / 2;
           if (turn) {
             m.rotation.y = Math.PI / 2;
             ctx.addMesh(target, m, c, top, off);
@@ -376,14 +481,19 @@ function buildRoof(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object
         ctx.addMesh(target, m, c, top, 0);
       } else ctx.addMesh(target, m, 0, top, c);
     }
-    if (ruin <= 0.01) ctx.solids.push(rotBoxLocal(ctx.at[0], ctx.at[1], b.length, b.width, ctx.rot, top, top + rise, true));
+    if (ruin <= 0.01)
+      ctx.solids.push(rotBoxLocal(ctx.at[0], ctx.at[1], b.length, b.width, ctx.rot, top, top + rise, true));
     return;
   }
   const run = turn ? b.length : b.width; // barrel length
   const across = turn ? b.width : b.length;
-  const strip = n >= 2 && n % 2 === 0 && Number.isFinite(l.roofCenterStrip)
-    ? Math.max(0, Math.min(across / 2, l.roofCenterStrip!)) : 0;
-  const VW = (across - strip) / n, VR = VW / 2, VK = l.vaultK ?? 0.58;
+  const strip =
+    n >= 2 && n % 2 === 0 && Number.isFinite(l.roofCenterStrip)
+      ? Math.max(0, Math.min(across / 2, l.roofCenterStrip!))
+      : 0;
+  const VW = (across - strip) / n,
+    VR = VW / 2,
+    VK = l.vaultK ?? 0.58;
   if (strip > 0) {
     // A shallow connecting roof, not a hole: the four barrels leave a measured central walkway/strip.
     const connector = turn
@@ -392,7 +502,15 @@ function buildRoof(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object
     connector.userData['roofCenterStrip'] = true;
   }
   // the ends of each barrel are closed by the end walls, carried up into the arch (where that wall exists)
-  const ends: [number, boolean][] = turn ? [[-run / 2, l.sides.w], [run / 2, l.sides.e]] : [[-run / 2, l.sides.n], [run / 2, l.sides.s]];
+  const ends: [number, boolean][] = turn
+    ? [
+        [-run / 2, l.sides.w],
+        [run / 2, l.sides.e],
+      ]
+    : [
+        [-run / 2, l.sides.n],
+        [run / 2, l.sides.s],
+      ];
   for (let i = 0; i < n; i++) {
     const c = -across / 2 + VW / 2 + i * VW + (i >= n / 2 ? strip : 0);
     for (const [at, wall] of ends) {
@@ -409,7 +527,8 @@ function buildRoof(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object
     }
     if (ruin > 0.01) {
       for (const r of runs(run)) {
-        const m = vault(r.len, VR, VK, rc), off = -run / 2 + r.from + r.len / 2;
+        const m = vault(r.len, VR, VK, rc),
+          off = -run / 2 + r.from + r.len / 2;
         if (turn) {
           m.rotation.y = Math.PI / 2;
           ctx.addMesh(target, m, off, top, c);
@@ -428,38 +547,87 @@ function buildRoof(ctx: Ctx, b: BuildingSpec, l: LevelSpec, target: THREE.Object
       ctx.addMesh(target, m, 0, top, c);
     } else ctx.addMesh(target, m, c, top, 0);
   }
-  if (ruin <= 0.01) ctx.solids.push(rotBoxLocal(ctx.at[0], ctx.at[1], b.length, b.width, ctx.rot, top + 0.4, top + VR * VK + 0.2, true));
+  if (ruin <= 0.01)
+    ctx.solids.push(
+      rotBoxLocal(ctx.at[0], ctx.at[1], b.length, b.width, ctx.rot, top + 0.4, top + VR * VK + 0.2, true),
+    );
 }
 
 /** Floor slab of a level (minus its voids), plus the water basin of a ground-floor void, plus its columns. */
-function buildFloorAndColumns(ctx: Ctx, b: BuildingSpec, l: LevelSpec, inner: THREE.Object3D, floorMat: THREE.Material): void {
-  const L = b.length, W = b.width;
-  const voids = (l.voids ?? []).map((v) => ({ x0: v.x0 - L / 2, x1: v.x1 - L / 2, z0: v.z0 - W / 2, z1: v.z1 - W / 2, water: !!v.water }));
+function buildFloorAndColumns(
+  ctx: Ctx,
+  b: BuildingSpec,
+  l: LevelSpec,
+  inner: THREE.Object3D,
+  floorMat: THREE.Material,
+): void {
+  const L = b.length,
+    W = b.width;
+  const voids = (l.voids ?? []).map((v) => ({
+    x0: v.x0 - L / 2,
+    x1: v.x1 - L / 2,
+    z0: v.z0 - W / 2,
+    z1: v.z1 - W / 2,
+    water: !!v.water,
+  }));
   let rects = b.footprint ? slabs(b.footprint) : [{ x0: -L / 2, x1: L / 2, z0: -W / 2, z1: W / 2 }];
   for (const v of voids) rects = rects.flatMap((r) => cutRect(r, v));
   for (const r of rects) {
-    const cx = (r.x0 + r.x1) / 2, cz = (r.z0 + r.z1) / 2, w = r.x1 - r.x0, d = r.z1 - r.z0;
+    const cx = (r.x0 + r.x1) / 2,
+      cz = (r.z0 + r.z1) / 2,
+      w = r.x1 - r.x0,
+      d = r.z1 - r.z0;
     if (b.frame && l === b.levels[0] && l.baseY > 0) {
       // A raised greenhouse platform is solid, but one rotated AABB would cover too much ground around it.
       ctx.addBox(inner, cx, l.baseY / 2, cz, w, l.baseY, d, floorMat, false, false);
-      const nx = Math.max(1, Math.ceil(w / 3)), nz = Math.max(1, Math.ceil(d / 3));
-      const a = ctx.rot * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
-      for (let ix = 0; ix < nx; ix++) for (let iz = 0; iz < nz; iz++) {
-        const x = r.x0 + (ix + 0.5) * w / nx, z = r.z0 + (iz + 0.5) * d / nz;
-        ctx.solids.push(rotBoxLocal(ctx.at[0] + x * c - z * s, ctx.at[1] + x * s + z * c, w / nx, d / nz, ctx.rot, 0, l.baseY, false));
-      }
-    }
-    else if (l.baseY === 0) ctx.addBox(inner, cx, 0.05, cz, w, 0.1, d, floorMat, !!b.basement, !!b.basement);
+      const nx = Math.max(1, Math.ceil(w / 3)),
+        nz = Math.max(1, Math.ceil(d / 3));
+      const a = (ctx.rot * Math.PI) / 180,
+        c = Math.cos(a),
+        s = Math.sin(a);
+      for (let ix = 0; ix < nx; ix++)
+        for (let iz = 0; iz < nz; iz++) {
+          const x = r.x0 + ((ix + 0.5) * w) / nx,
+            z = r.z0 + ((iz + 0.5) * d) / nz;
+          ctx.solids.push(
+            rotBoxLocal(
+              ctx.at[0] + x * c - z * s,
+              ctx.at[1] + x * s + z * c,
+              w / nx,
+              d / nz,
+              ctx.rot,
+              0,
+              l.baseY,
+              false,
+            ),
+          );
+        }
+    } else if (l.baseY === 0) ctx.addBox(inner, cx, 0.05, cz, w, 0.1, d, floorMat, !!b.basement, !!b.basement);
     else if (!ctx.noSlabs) ctx.addBox(inner, cx, l.baseY, cz, w, 0.2, d, floorMat, false, false); // a deep ruin has lost its upper floors
   }
   if (l.baseY === 0) {
     const water = material('#3d86b6', { transparent: true, opacity: 0.78, roughness: 0.15 });
-    for (const v of voids) if (v.water) ctx.addBox(inner, (v.x0 + v.x1) / 2, 0.03, (v.z0 + v.z1) / 2, v.x1 - v.x0, 0.06, v.z1 - v.z0, water, false, false);
+    for (const v of voids)
+      if (v.water)
+        ctx.addBox(
+          inner,
+          (v.x0 + v.x1) / 2,
+          0.03,
+          (v.z0 + v.z1) / 2,
+          v.x1 - v.x0,
+          0.06,
+          v.z1 - v.z0,
+          water,
+          false,
+          false,
+        );
   }
   const colMat = material('#b8b4a8');
   const li = Math.max(0, b.levels.indexOf(l));
   (l.columns ?? []).forEach((c, ci) => {
-    const cx = c.x - L / 2, cz = c.z - W / 2, y = l.baseY + l.height / 2;
+    const cx = c.x - L / 2,
+      cz = c.z - W / 2,
+      y = l.baseY + l.height / 2;
     const tag = { kind: 'column', id: b.id, li, i: ci }; // what a click on it in the editor selects
     if (c.round) {
       const cyl = new THREE.Mesh(new THREE.CylinderGeometry(c.size / 2, c.size / 2, l.height, 14), colMat);
@@ -475,45 +643,73 @@ function buildFloorAndColumns(ctx: Ctx, b: BuildingSpec, l: LevelSpec, inner: TH
 /** Greenhouse tunnel: elliptical glass vault (middle third torn away), steel ribs every ~2.5 m, bar-only ends. */
 function buildGreenhouse(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, roofTarget: THREE.Object3D): void {
   const l = b.levels[0];
-  const GS = l.baseY, GW = b.width / 2, GK = l.vaultK ?? 0.7, GHT = GS + GW * GK;
-  const glassMat = material('#9ec1b6', { transparent: true, opacity: 0.3, side: THREE.DoubleSide, roughness: 0.3, depthWrite: false });
-  const TZ0 = -b.length / 2 + 0.66 * b.length, TZ1 = -b.length / 2 + 0.92 * b.length;
+  const GS = l.baseY,
+    GW = b.width / 2,
+    GK = l.vaultK ?? 0.7,
+    GHT = GS + GW * GK;
+  const glassMat = material('#9ec1b6', {
+    transparent: true,
+    opacity: 0.3,
+    side: THREE.DoubleSide,
+    roughness: 0.3,
+    depthWrite: false,
+  });
+  const TZ0 = -b.length / 2 + 0.66 * b.length,
+    TZ1 = -b.length / 2 + 0.92 * b.length;
   const glazed = b.glass !== false; // false: only the steel skeleton is left
   const parabolic = b.archShape === 'parabola';
   const archY = (z: number): number => GS + GW * GK * Math.max(0, 1 - (z / GW) ** 2);
-  for (const [f0, f1] of glazed ? ([[0, 0.37], [0.37, 0.66], [0.92, 1]] as const) : []) {
-    const x0 = -b.length / 2 + f0 * b.length, x1 = -b.length / 2 + f1 * b.length;
+  for (const [f0, f1] of glazed
+    ? ([
+        [0, 0.37],
+        [0.37, 0.66],
+        [0.92, 1],
+      ] as const)
+    : []) {
+    const x0 = -b.length / 2 + f0 * b.length,
+      x1 = -b.length / 2 + f1 * b.length;
     if (parabolic) {
-      const positions: number[] = [], indices: number[] = [], segments = 32;
-      for (const x of [x0, x1]) for (let i = 0; i <= segments; i++) {
-        const z = -GW + 2 * GW * i / segments;
-        positions.push(x, archY(z), z);
-      }
-      for (let i = 0; i < segments; i++) indices.push(i, i + segments + 1, i + 1, i + 1, i + segments + 1, i + segments + 2);
+      const positions: number[] = [],
+        indices: number[] = [],
+        segments = 32;
+      for (const x of [x0, x1])
+        for (let i = 0; i <= segments; i++) {
+          const z = -GW + (2 * GW * i) / segments;
+          positions.push(x, archY(z), z);
+        }
+      for (let i = 0; i < segments; i++)
+        indices.push(i, i + segments + 1, i + 1, i + 1, i + segments + 1, i + segments + 2);
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-      geo.setIndex(indices); geo.computeVertexNormals();
+      geo.setIndex(indices);
+      geo.computeVertexNormals();
       ctx.addMesh(roofTarget, new THREE.Mesh(geo, glassMat), 0, 0, 0);
     } else {
       const v = vault(x1 - x0, GW, GK, glassMat, 14);
-      v.castShadow = false; v.rotation.y = Math.PI / 2;
+      v.castShadow = false;
+      v.rotation.y = Math.PI / 2;
       ctx.addMesh(roofTarget, v, (x0 + x1) / 2, GS, 0);
     }
   }
   const lp: number[] = [];
   for (let a = 22.5; a < 180; a += 22.5) {
-    const r = (a * Math.PI) / 180, z = GW * Math.cos(r), y = parabolic ? archY(z) : GS + GW * GK * Math.sin(r);
+    const r = (a * Math.PI) / 180,
+      z = GW * Math.cos(r),
+      y = parabolic ? archY(z) : GS + GW * GK * Math.sin(r);
     lp.push(-b.length / 2, y, z, b.length / 2, y, z);
   }
   const rnd = createRandom(ctx.seed);
-  const pitch = typeof b.ribSpacing === 'number' && Number.isFinite(b.ribSpacing) ? Math.max(0.5, Math.min(20, b.ribSpacing)) : null;
+  const pitch =
+    typeof b.ribSpacing === 'number' && Number.isFinite(b.ribSpacing)
+      ? Math.max(0.5, Math.min(20, b.ribSpacing))
+      : null;
   const nRibs = pitch ? Math.ceil(b.length / pitch) : Math.max(2, Math.round(b.length / 2.5));
   for (let i = 0; i <= nRibs; i++) {
     const x = -b.length / 2 + (pitch ? Math.min(i * pitch, b.length) : (i * b.length) / nRibs);
     const torn = glazed && x > TZ0 && x < TZ1;
     if (parabolic) {
       const points = Array.from({ length: 65 }, (_, i) => {
-        const z = -GW + 2 * GW * i / 64;
+        const z = -GW + (2 * GW * i) / 64;
         return new THREE.Vector3(0, archY(z) - GS, z);
       });
       const curve = new THREE.CatmullRomCurve3(points);
@@ -533,16 +729,40 @@ function buildGreenhouse(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, roof
   g.setAttribute('position', new THREE.Float32BufferAttribute(lp, 3));
   target.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0x56655f })));
   if (!glazed) return; // a bare skeleton can be flown through
-  ctx.solids.push(rotBoxLocal((-b.length / 2 + TZ0) / 2 + ctx.at[0], ctx.at[1], TZ0 + b.length / 2, 8, ctx.rot, GHT - 1.5, GHT, false));
-  ctx.solids.push(rotBoxLocal((TZ1 + b.length / 2) / 2 + ctx.at[0], ctx.at[1], b.length / 2 - TZ1, 8, ctx.rot, GHT - 1.5, GHT, false));
+  ctx.solids.push(
+    rotBoxLocal(
+      (-b.length / 2 + TZ0) / 2 + ctx.at[0],
+      ctx.at[1],
+      TZ0 + b.length / 2,
+      8,
+      ctx.rot,
+      GHT - 1.5,
+      GHT,
+      false,
+    ),
+  );
+  ctx.solids.push(
+    rotBoxLocal((TZ1 + b.length / 2) / 2 + ctx.at[0], ctx.at[1], b.length / 2 - TZ1, 8, ctx.rot, GHT - 1.5, GHT, false),
+  );
 }
 
 /** Collider AABB of an element at site coordinates (x, z), rotated `deg` about Y (conservative envelope). */
-function rotBoxLocal(x: number, z: number, w: number, d: number, deg: number, y0: number, y1: number, roof: boolean): SolidBox {
+function rotBoxLocal(
+  x: number,
+  z: number,
+  w: number,
+  d: number,
+  deg: number,
+  y0: number,
+  y1: number,
+  roof: boolean,
+): SolidBox {
   if (Math.abs(deg) < 0.01) return [x - w / 2, x + w / 2, y0, y1, z - d / 2, z + d / 2, roof];
   const a = (-deg * Math.PI) / 180;
-  const c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a));
-  const hw = (w * c + d * s) / 2, hd = (w * s + d * c) / 2;
+  const c = Math.abs(Math.cos(a)),
+    s = Math.abs(Math.sin(a));
+  const hw = (w * c + d * s) / 2,
+    hd = (w * s + d * c) / 2;
   return [x - hw, x + hw, y0, y1, z - hd, z + hd, roof];
 }
 
@@ -554,7 +774,8 @@ function liftSolids(solids: SolidBox[], from: number, dy: number): void {
     solids[i] = [b[0], b[1], b[2] + dy, b[3] + dy, b[4], b[5], b[6]];
   }
 }
-const liftCylinder = (c: TreeCylinder, dy: number): TreeCylinder => (dy ? [c[0], c[1], c[2], c[3] + dy, (c[4] ?? 0) + dy] : c);
+const liftCylinder = (c: TreeCylinder, dy: number): TreeCylinder =>
+  dy ? [c[0], c[1], c[2], c[3] + dy, (c[4] ?? 0) + dy] : c;
 
 const PATCH_COLORS = ['#6f9350', '#86a35a', '#8a8656', '#7d7a52', '#98a262', '#9a8a5c'];
 
@@ -562,15 +783,23 @@ const PATCH_COLORS = ['#6f9350', '#86a35a', '#8a8656', '#7d7a52', '#98a262', '#9
  * The terrain as one mesh (a vertex per grid point, or every other one on a big grid), coloured like the old meadow:
  * the ground colour with the same seeded patches baked into the vertex colours, so they follow the slopes.
  */
-function terrainMesh(g: HeightGrid, color: string, rnd: () => number, surfaces: readonly SurfaceSpec[] = [], volumes: readonly UndergroundSpec[] = []): THREE.Mesh {
+function terrainMesh(
+  g: HeightGrid,
+  color: string,
+  rnd: () => number,
+  surfaces: readonly SurfaceSpec[] = [],
+  volumes: readonly UndergroundSpec[] = [],
+): THREE.Mesh {
   const step = g.nx * g.nz > 250_000 ? 2 : 1;
-  const nx = Math.floor((g.nx - 1) / step) + 1, nz = Math.floor((g.nz - 1) / step) + 1;
+  const nx = Math.floor((g.nx - 1) / step) + 1,
+    nz = Math.floor((g.nz - 1) / step) + 1;
   const pos = new Float32Array(nx * nz * 3);
   const col = new Float32Array(nx * nz * 3);
   const base = new THREE.Color(color);
   for (let j = 0; j < nz; j++) {
     for (let i = 0; i < nx; i++) {
-      const k = j * nx + i, gi = (j * step) * g.nx + i * step;
+      const k = j * nx + i,
+        gi = j * step * g.nx + i * step;
       pos[k * 3] = g.x0 + i * step * g.cell;
       pos[k * 3 + 1] = g.h[gi]!;
       pos[k * 3 + 2] = g.z0 + j * step * g.cell;
@@ -579,15 +808,19 @@ function terrainMesh(g: HeightGrid, color: string, rnd: () => number, surfaces: 
       col[k * 3 + 2] = base.b;
     }
   }
-  const w = (nx - 1) * step * g.cell, d = (nz - 1) * step * g.cell;
+  const w = (nx - 1) * step * g.cell,
+    d = (nz - 1) * step * g.cell;
   const pc = PATCH_COLORS.map((c) => new THREE.Color(c));
   for (let p = 0; p < 300; p++) {
     const r = 3 + rnd() * 13;
     rnd(); // the old decal's rotation: keeps the patch layout of the flat ground
-    const cx = g.x0 + rnd() * w, cz = g.z0 + rnd() * d;
+    const cx = g.x0 + rnd() * w,
+      cz = g.z0 + rnd() * d;
     const c = pc[p % 6]!;
-    const i0 = Math.max(0, Math.floor((cx - r - g.x0) / (step * g.cell))), i1 = Math.min(nx - 1, Math.ceil((cx + r - g.x0) / (step * g.cell)));
-    const j0 = Math.max(0, Math.floor((cz - r - g.z0) / (step * g.cell))), j1 = Math.min(nz - 1, Math.ceil((cz + r - g.z0) / (step * g.cell)));
+    const i0 = Math.max(0, Math.floor((cx - r - g.x0) / (step * g.cell))),
+      i1 = Math.min(nx - 1, Math.ceil((cx + r - g.x0) / (step * g.cell)));
+    const j0 = Math.max(0, Math.floor((cz - r - g.z0) / (step * g.cell))),
+      j1 = Math.min(nz - 1, Math.ceil((cz + r - g.z0) / (step * g.cell)));
     for (let j = j0; j <= j1; j++) {
       for (let i = i0; i <= i1; i++) {
         if (Math.hypot(g.x0 + i * step * g.cell - cx, g.z0 + j * step * g.cell - cz) > r) continue;
@@ -601,9 +834,12 @@ function terrainMesh(g: HeightGrid, color: string, rnd: () => number, surfaces: 
   // surfaces (asphalt, gravel, sand ...) paint the vertices inside their outline
   for (const sf of surfaces) {
     const c = new THREE.Color(surfaceDef(sf.kind).color);
-    const xs = sf.pts.map((q) => q.x), zs = sf.pts.map((q) => q.z);
-    const i0 = Math.max(0, Math.floor((Math.min(...xs) - g.x0) / (step * g.cell))), i1 = Math.min(nx - 1, Math.ceil((Math.max(...xs) - g.x0) / (step * g.cell)));
-    const j0 = Math.max(0, Math.floor((Math.min(...zs) - g.z0) / (step * g.cell))), j1 = Math.min(nz - 1, Math.ceil((Math.max(...zs) - g.z0) / (step * g.cell)));
+    const xs = sf.pts.map((q) => q.x),
+      zs = sf.pts.map((q) => q.z);
+    const i0 = Math.max(0, Math.floor((Math.min(...xs) - g.x0) / (step * g.cell))),
+      i1 = Math.min(nx - 1, Math.ceil((Math.max(...xs) - g.x0) / (step * g.cell)));
+    const j0 = Math.max(0, Math.floor((Math.min(...zs) - g.z0) / (step * g.cell))),
+      j1 = Math.min(nz - 1, Math.ceil((Math.max(...zs) - g.z0) / (step * g.cell)));
     for (let j = j0; j <= j1; j++) {
       for (let i = i0; i <= i1; i++) {
         if (!insidePolygon(sf.pts, g.x0 + i * step * g.cell, g.z0 + j * step * g.cell)) continue;
@@ -618,9 +854,16 @@ function terrainMesh(g: HeightGrid, color: string, rnd: () => number, surfaces: 
   let n = 0;
   for (let j = 0; j < nz - 1; j++) {
     for (let i = 0; i < nx - 1; i++) {
-      const a = j * nx + i, b = a + 1, c = a + nx, e = c + 1;
-      idx[n++] = a; idx[n++] = c; idx[n++] = b;
-      idx[n++] = b; idx[n++] = c; idx[n++] = e;
+      const a = j * nx + i,
+        b = a + 1,
+        c = a + nx,
+        e = c + 1;
+      idx[n++] = a;
+      idx[n++] = c;
+      idx[n++] = b;
+      idx[n++] = b;
+      idx[n++] = c;
+      idx[n++] = e;
     }
   }
   const geo = new THREE.BufferGeometry();
@@ -628,24 +871,40 @@ function terrainMesh(g: HeightGrid, color: string, rnd: () => number, surfaces: 
   geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
   // u east, v south from the grid's north-west corner: where a satellite picture of the area lands
   const uv = new Float32Array(nx * nz * 2);
-  for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) uv.set([i / Math.max(1, nx - 1), j / Math.max(1, nz - 1)], (j * nx + i) * 2);
+  for (let j = 0; j < nz; j++)
+    for (let i = 0; i < nx; i++) uv.set([i / Math.max(1, nx - 1), j / Math.max(1, nz - 1)], (j * nx + i) * 2);
   geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
   geo.setIndex(new THREE.BufferAttribute(idx.subarray(0, n), 1));
   geo.computeVertexNormals();
-  const m = new THREE.Mesh(cutUnderground(geo, volumes), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95 }));
+  const m = new THREE.Mesh(
+    cutUnderground(geo, volumes),
+    new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95 }),
+  );
   m.receiveShadow = true;
   return m;
 }
 
 /** A flat rectangle laid on the terrain (a road pad), subdivided every ~2 m so it follows the slopes. */
-function drapedPad(ground: SiteGround, x: number, z: number, w: number, d: number, rotDeg: number, mat: THREE.Material): THREE.Mesh {
+function drapedPad(
+  ground: SiteGround,
+  x: number,
+  z: number,
+  w: number,
+  d: number,
+  rotDeg: number,
+  mat: THREE.Material,
+): THREE.Mesh {
   const geo = new THREE.PlaneGeometry(w, d, Math.max(1, Math.ceil(w / 2)), Math.max(1, Math.ceil(d / 2)));
   geo.rotateX(-Math.PI / 2);
-  const a = (-rotDeg * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a);
+  const a = (-rotDeg * Math.PI) / 180,
+    c = Math.cos(a),
+    s = Math.sin(a);
   const p = geo.attributes['position'] as THREE.BufferAttribute;
   for (let i = 0; i < p.count; i++) {
-    const lx = p.getX(i), lz = p.getZ(i);
-    const wx = x + lx * c + lz * s, wz = z - lx * s + lz * c;
+    const lx = p.getX(i),
+      lz = p.getZ(i);
+    const wx = x + lx * c + lz * s,
+      wz = z - lx * s + lz * c;
     p.setXYZ(i, wx, ground.at(wx, wz) + 0.08, wz);
   }
   geo.computeVertexNormals();
@@ -659,8 +918,10 @@ function drapedPad(ground: SiteGround, x: number, z: number, w: number, d: numbe
  * height, the corners at the corner's height, so a hillside does not end in a wall (the grid edge is not forced down).
  */
 function skirtMesh(g: HeightGrid, outer: number, mat: THREE.Material): THREE.Mesh {
-  const pos: number[] = [], idx: number[] = [];
-  const x1 = g.x0 + (g.nx - 1) * g.cell, z1 = g.z0 + (g.nz - 1) * g.cell;
+  const pos: number[] = [],
+    idx: number[] = [];
+  const x1 = g.x0 + (g.nx - 1) * g.cell,
+    z1 = g.z0 + (g.nz - 1) * g.cell;
   const at = (i: number, j: number): number => g.h[j * g.nx + i]!;
   const step = Math.max(1, Math.round(4 / g.cell)); // a vertex every ~4 m is plenty out here
   /** A strip between `inner` points on the grid edge and the same points pushed out to the outer square. */
@@ -681,11 +942,18 @@ function skirtMesh(g: HeightGrid, outer: number, mat: THREE.Material): THREE.Mes
     out.push(n - 1);
     return out;
   };
-  const xs = along(g.nx), zs = along(g.nz);
-  strip(xs.map((i): [number, number, number] => [g.x0 + i * g.cell, at(i, 0), g.z0]), (x) => [x, -outer]); // north
+  const xs = along(g.nx),
+    zs = along(g.nz);
+  strip(
+    xs.map((i): [number, number, number] => [g.x0 + i * g.cell, at(i, 0), g.z0]),
+    (x) => [x, -outer],
+  ); // north
   strip(xs.map((i): [number, number, number] => [g.x0 + i * g.cell, at(i, g.nz - 1), z1]).reverse(), (x) => [x, outer]); // south
   strip(zs.map((j): [number, number, number] => [g.x0, at(0, j), g.z0 + j * g.cell]).reverse(), (_x, z) => [-outer, z]); // west
-  strip(zs.map((j): [number, number, number] => [x1, at(g.nx - 1, j), g.z0 + j * g.cell]), (_x, z) => [outer, z]); // east
+  strip(
+    zs.map((j): [number, number, number] => [x1, at(g.nx - 1, j), g.z0 + j * g.cell]),
+    (_x, z) => [outer, z],
+  ); // east
   // the four corners: a flat square at the corner's height
   const corner = (x: number, z: number, y: number, ox: number, oz: number): void => {
     const b = pos.length / 3;
@@ -721,23 +989,38 @@ function flatShape(pts: readonly { x: number; z: number }[], mat: THREE.Material
  * along the whole line, mitred at each bend (`stripFrames`): separate strips per segment left wedge gaps at the bends.
  */
 function roadMesh(ground: SiteGround, r: RoadSpec, order: number): THREE.Mesh {
-  const pos: number[] = [], idx: number[] = [];
+  const pos: number[] = [],
+    idx: number[] = [];
   const half = r.width / 2;
   const step = Math.min(1, ground.grid?.cell ?? 1);
   const across = Math.max(1, Math.ceil(r.width / step));
   const frames = stripFrames(roadLine(r), step);
-  for (const f of frames) for (let j = 0; j <= across; j++) {
-    const side = (-half + (r.width * j) / across) * f.s;
-    const x = f.x + f.nx * side, z = f.z + f.nz * side;
-    pos.push(x, meshHeightAt(ground.grid, x, z) + 0.06, z);
-  }
-  for (let k = 0; k + 1 < frames.length; k++) for (let j = 0; j < across; j++) {
-    const v = k * (across + 1) + j, w = v + across + 1;
-    idx.push(v, w, v + 1, v + 1, w, w + 1);
-  }
+  for (const f of frames)
+    for (let j = 0; j <= across; j++) {
+      const side = (-half + (r.width * j) / across) * f.s;
+      const x = f.x + f.nx * side,
+        z = f.z + f.nz * side;
+      pos.push(x, meshHeightAt(ground.grid, x, z) + 0.06, z);
+    }
+  for (let k = 0; k + 1 < frames.length; k++)
+    for (let j = 0; j < across; j++) {
+      const v = k * (across + 1) + j,
+        w = v + across + 1;
+      idx.push(v, w, v + 1, v + 1, w, w + 1);
+    }
   const geo = drapeRoad(pos, idx, ground.grid, 0.06);
   const color = r.surface ? surfaceDef(r.surface).color : roadDef(r.kind).color;
-  const m = new THREE.Mesh(cutUnderground(geo, ground.vols, 0.06), material(color, { side: THREE.DoubleSide, depthWrite: false, depthTest: !!ground.grid, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 }));
+  const m = new THREE.Mesh(
+    cutUnderground(geo, ground.vols, 0.06),
+    material(color, {
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      depthTest: !!ground.grid,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -2,
+    }),
+  );
   m.receiveShadow = true;
   m.renderOrder = order;
   m.userData['roadKind'] = r.kind;
@@ -754,7 +1037,15 @@ export function buildUnderground(v: UndergroundSpec): THREE.Group {
     const geo = new THREE.ExtrudeGeometry(shape, { depth: v.wall, bevelEnabled: false });
     geo.rotateX(-Math.PI / 2); // extruded along +y from y = 0
     // Subtract the opening prism from the ceiling mesh; it also handles openings that cross its outline.
-    const cuts: UndergroundSpec[] = holes.map((outline, i) => ({ id: `ceiling-cut-${i}`, name: '', outline, floor: -0.01, ceiling: v.wall + 0.01, shape: 'box', wall: 0 }));
+    const cuts: UndergroundSpec[] = holes.map((outline, i) => ({
+      id: `ceiling-cut-${i}`,
+      name: '',
+      outline,
+      floor: -0.01,
+      ceiling: v.wall + 0.01,
+      shape: 'box',
+      wall: 0,
+    }));
     const m = new THREE.Mesh(cutUnderground(geo, cuts), UNDER_MAT);
     m.position.y = y;
     m.receiveShadow = true;
@@ -764,28 +1055,61 @@ export function buildUnderground(v: UndergroundSpec): THREE.Group {
   const axis = tunnelAxis(v);
   const h = v.ceiling - v.floor;
   if (axis && v.shape !== 'box') {
-    const dx = axis.b.x - axis.a.x, dz = axis.b.z - axis.a.z, len = Math.hypot(dx, dz);
-    const section = tunnelSection(v)!.map(p=>new THREE.Vector2(p.x,p.y));
+    const dx = axis.b.x - axis.a.x,
+      dz = axis.b.z - axis.a.z,
+      len = Math.hypot(dx, dz);
+    const section = tunnelSection(v)!.map((p) => new THREE.Vector2(p.x, p.y));
     // Extrude a real cross-section along the axis. No cylinder Euler rotations that flatten the vault.
-    const centre = section.reduce((c,p) => c.add(p), new THREE.Vector2()).multiplyScalar(1/section.length);
-    const outer = section.map(p => { const d=p.clone().sub(centre); return p.clone().add(d.normalize().multiplyScalar(v.wall)); });
+    const centre = section.reduce((c, p) => c.add(p), new THREE.Vector2()).multiplyScalar(1 / section.length);
+    const outer = section.map((p) => {
+      const d = p.clone().sub(centre);
+      return p.clone().add(d.normalize().multiplyScalar(v.wall));
+    });
     // A vault has a separate floor slab. Its bottom cross-section edge must not also be
     // extruded as a shell face: the two coplanar floors produce z-fighting in the portal.
-    const shell = v.shape === 'vault'
-      ? new THREE.Shape([...section.slice(1), section[0]!, outer[0]!, ...outer.slice(1).reverse()])
-      : new THREE.Shape(outer);
+    const shell =
+      v.shape === 'vault'
+        ? new THREE.Shape([...section.slice(1), section[0]!, outer[0]!, ...outer.slice(1).reverse()])
+        : new THREE.Shape(outer);
     if (v.shape !== 'vault') shell.holes.push(new THREE.Path([...section].reverse()));
-    const geo = new THREE.ExtrudeGeometry(shell, {depth:len,bevelEnabled:false,steps:1});
+    const geo = new THREE.ExtrudeGeometry(shell, { depth: len, bevelEnabled: false, steps: 1 });
     // local x = cross-section width, local y = world height, extrusion z = tunnel axis
-    const transform = new THREE.Matrix4().set(-dz/len,0,dx/len,axis.a.x, 0,1,0,0, dx/len,0,dz/len,axis.a.z, 0,0,0,1);
+    const transform = new THREE.Matrix4().set(
+      -dz / len,
+      0,
+      dx / len,
+      axis.a.x,
+      0,
+      1,
+      0,
+      0,
+      dx / len,
+      0,
+      dz / len,
+      axis.a.z,
+      0,
+      0,
+      0,
+      1,
+    );
     geo.applyMatrix4(transform);
-    const cuts: UndergroundSpec[] = (v.ceilingHoles ?? []).map((outline, i) => ({ id: `tunnel-cut-${i}`, name: '', outline, floor: tunnelOpeningBottom(v), ceiling: v.ceiling + v.wall + 0.01, shape: 'box', wall: 0 }));
+    const cuts: UndergroundSpec[] = (v.ceilingHoles ?? []).map((outline, i) => ({
+      id: `tunnel-cut-${i}`,
+      name: '',
+      outline,
+      floor: tunnelOpeningBottom(v),
+      ceiling: v.ceiling + v.wall + 0.01,
+      shape: 'box',
+      wall: 0,
+    }));
     out.add(new THREE.Mesh(cutUnderground(geo, cuts), UNDER_MAT));
-
   } else {
     for (let i = 0; i < v.outline.length; i++) {
-      const a = v.outline[i]!, b = v.outline[(i + 1) % v.outline.length]!;
-      const dx = b.x - a.x, dz = b.z - a.z, len = Math.hypot(dx, dz);
+      const a = v.outline[i]!,
+        b = v.outline[(i + 1) % v.outline.length]!;
+      const dx = b.x - a.x,
+        dz = b.z - a.z,
+        len = Math.hypot(dx, dz);
       if (len < 0.05) continue;
       const w = new THREE.Mesh(new THREE.BoxGeometry(len, h + 2 * v.wall, v.wall), UNDER_MAT);
       w.position.set((a.x + b.x) / 2, (v.floor + v.ceiling) / 2, (a.z + b.z) / 2);
@@ -799,7 +1123,10 @@ export function buildUnderground(v: UndergroundSpec): THREE.Group {
     const shape = new THREE.Shape(v.outline.map((q) => new THREE.Vector2(q.x, -q.z)));
     const geo = new THREE.ShapeGeometry(shape);
     geo.rotateX(-Math.PI / 2);
-    const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: WATER_COLOR, transparent: true, opacity: 0.8 }));
+    const m = new THREE.Mesh(
+      geo,
+      new THREE.MeshStandardMaterial({ color: WATER_COLOR, transparent: true, opacity: 0.8 }),
+    );
     m.position.y = v.floor + v.water;
     out.add(m);
   }
@@ -820,12 +1147,21 @@ function buildBasement(ctx: Ctx, b: BuildingSpec, target: THREE.Object3D, floorM
 }
 
 /** One derived basement floor (`basement`, from basementBuilding) of building `b`, placed in `b`'s frame. */
-function buildBasementRoom(ctx: Ctx, b: BuildingSpec, basement: BuildingSpec, target: THREE.Object3D, floorMat: THREE.Material): void {
+function buildBasementRoom(
+  ctx: Ctx,
+  b: BuildingSpec,
+  basement: BuildingSpec,
+  target: THREE.Object3D,
+  floorMat: THREE.Material,
+): void {
   const level = basement.levels[0]!;
   const room = new THREE.Group();
-  room.userData['pick'] = {kind:'basement',id:b.id};
-  const angle = b.rotDeg * Math.PI / 180, c = Math.cos(angle), s = Math.sin(angle);
-  const dx = basement.pos.x - b.pos.x, dz = basement.pos.z - b.pos.z;
+  room.userData['pick'] = { kind: 'basement', id: b.id };
+  const angle = (b.rotDeg * Math.PI) / 180,
+    c = Math.cos(angle),
+    s = Math.sin(angle);
+  const dx = basement.pos.x - b.pos.x,
+    dz = basement.pos.z - b.pos.z;
   room.position.set(dx * c + dz * s, 0, -dx * s + dz * c);
   const oldAt = ctx.at;
   ctx.at = [basement.pos.x, basement.pos.z];
@@ -837,28 +1173,45 @@ function buildBasementRoom(ctx: Ctx, b: BuildingSpec, basement: BuildingSpec, ta
     buildWalls(ctx, basement, level, room);
   }
   ctx.at = oldAt;
-  room.traverse(o=>{if(o.userData['pick'])o.userData['pick']={kind:'basement',id:b.id};});
+  room.traverse((o) => {
+    if (o.userData['pick']) o.userData['pick'] = { kind: 'basement', id: b.id };
+  });
 }
 
 /**
  * A freeform basement floor, clipped by its rectangular floor openings and its courtyards (rings in the floor's frame,
  * where the ground is kept), and walls along its actual edges and around each courtyard.
  */
-function buildDiagonalBasement(ctx: Ctx, b: BuildingSpec, l: LevelSpec, room: THREE.Object3D, floorMat: THREE.Material): void {
+function buildDiagonalBasement(
+  ctx: Ctx,
+  b: BuildingSpec,
+  l: LevelSpec,
+  room: THREE.Object3D,
+  floorMat: THREE.Material,
+): void {
   const yards = l.courtyards ?? [];
   const poly = b.footprint!;
   const shape = new THREE.Shape();
   shape.moveTo(poly[0]!.x, poly[0]!.z);
   for (const p of poly.slice(1)) shape.lineTo(p.x, p.z);
   shape.closePath();
-  for (const { ring } of yards) shape.holes.push(new THREE.Path(ring.map(p => new THREE.Vector2(p.x, p.z))));
+  for (const { ring } of yards) shape.holes.push(new THREE.Path(ring.map((p) => new THREE.Vector2(p.x, p.z))));
   const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.2, bevelEnabled: false });
   geo.rotateX(Math.PI / 2);
   geo.translate(0, l.baseY + 0.1, 0);
   const holes: UndergroundSpec[] = (l.voids ?? []).map((v, i) => ({
-    id: `floor-hole-${i}`, name: '', shape: 'box', wall: 0,
-    floor: l.baseY - 1, ceiling: l.baseY + 1,
-    outline: [{ x: v.x0 - b.length / 2, z: v.z0 - b.width / 2 }, { x: v.x1 - b.length / 2, z: v.z0 - b.width / 2 }, { x: v.x1 - b.length / 2, z: v.z1 - b.width / 2 }, { x: v.x0 - b.length / 2, z: v.z1 - b.width / 2 }],
+    id: `floor-hole-${i}`,
+    name: '',
+    shape: 'box',
+    wall: 0,
+    floor: l.baseY - 1,
+    ceiling: l.baseY + 1,
+    outline: [
+      { x: v.x0 - b.length / 2, z: v.z0 - b.width / 2 },
+      { x: v.x1 - b.length / 2, z: v.z0 - b.width / 2 },
+      { x: v.x1 - b.length / 2, z: v.z1 - b.width / 2 },
+      { x: v.x0 - b.length / 2, z: v.z1 - b.width / 2 },
+    ],
   }));
   const floor = new THREE.Mesh(cutUnderground(geo, holes), floorMat);
   floor.receiveShadow = true;
@@ -879,43 +1232,75 @@ function buildDiagonalBasement(ctx: Ctx, b: BuildingSpec, l: LevelSpec, room: TH
   buildWalls(ctx, interior, interior.levels[0]!, room);
 
   // one wall per edge, openings punched out; the perimeter carries the floor's openings, courtyards have none
-  const ringWalls = (ring: readonly { x: number; z: number }[], flags: readonly boolean[] | undefined, wallOpenings: LevelSpec['wallOpenings']): void => {
+  const ringWalls = (
+    ring: readonly { x: number; z: number }[],
+    flags: readonly boolean[] | undefined,
+    wallOpenings: LevelSpec['wallOpenings'],
+  ): void => {
     for (let i = 0; i < ring.length; i++) {
       if (flags?.[i] === false) continue;
-      const a = ring[i]!, end = ring[(i + 1) % ring.length]!;
-      const dx = end.x - a.x, dz = end.z - a.z, length = Math.hypot(dx, dz);
+      const a = ring[i]!,
+        end = ring[(i + 1) % ring.length]!;
+      const dx = end.x - a.x,
+        dz = end.z - a.z,
+        length = Math.hypot(dx, dz);
       if (length < 0.01) continue;
-      const ux = dx / length, uz = dz / length, angle = Math.atan2(dz, dx);
-      const openings = (wallOpenings ?? []).map(o => {
-        const x = o.x - a.x, z = o.z - a.z, c = x * ux + z * uz;
-        return { o, c, distance: Math.abs(x * uz - z * ux) };
-      }).filter(x => x.distance < 0.08 && x.c >= -0.08 && x.c <= length + 0.08).sort((x, y) => x.c - y.c);
+      const ux = dx / length,
+        uz = dz / length,
+        angle = Math.atan2(dz, dx);
+      const openings = (wallOpenings ?? [])
+        .map((o) => {
+          const x = o.x - a.x,
+            z = o.z - a.z,
+            c = x * ux + z * uz;
+          return { o, c, distance: Math.abs(x * uz - z * ux) };
+        })
+        .filter((x) => x.distance < 0.08 && x.c >= -0.08 && x.c <= length + 0.08)
+        .sort((x, y) => x.c - y.c);
       const part = (from: number, to: number, bottom: number, top: number, mat: THREE.Material): void => {
         if (to - from < 0.01 || top - bottom < 0.01) return;
-        const centre = (from + to) / 2, mx = a.x + ux * centre, mz = a.z + uz * centre;
+        const centre = (from + to) / 2,
+          mx = a.x + ux * centre,
+          mz = a.z + uz * centre;
         const mesh = new THREE.Mesh(new THREE.BoxGeometry(to - from, top - bottom, 0.5), mat);
         mesh.rotation.y = -angle;
         mesh.castShadow = mesh.receiveShadow = true;
         ctx.addMesh(room, mesh, mx, (bottom + top) / 2, mz);
         // Small conservative boxes follow the wall instead of one huge diagonal bounding box.
         const n = Math.max(1, Math.ceil((to - from) / 0.5));
-        const rot = b.rotDeg * Math.PI / 180, c = Math.cos(rot), s = Math.sin(rot);
+        const rot = (b.rotDeg * Math.PI) / 180,
+          c = Math.cos(rot),
+          s = Math.sin(rot);
         for (let k = 0; k < n; k++) {
-          const p = from + (to - from) * (k + 0.5) / n;
-          const x = a.x + ux * p, z = a.z + uz * p;
-          ctx.solids.push(rotBoxLocal(ctx.at[0] + x * c - z * s, ctx.at[1] + x * s + z * c, (to - from) / n, 0.5, b.rotDeg + angle * 180 / Math.PI, bottom, top, false));
+          const p = from + ((to - from) * (k + 0.5)) / n;
+          const x = a.x + ux * p,
+            z = a.z + uz * p;
+          ctx.solids.push(
+            rotBoxLocal(
+              ctx.at[0] + x * c - z * s,
+              ctx.at[1] + x * s + z * c,
+              (to - from) / n,
+              0.5,
+              b.rotDeg + (angle * 180) / Math.PI,
+              bottom,
+              top,
+              false,
+            ),
+          );
         }
       };
       let from = 0;
       for (const { o, c } of openings) {
-        const left = Math.max(from, c - o.w / 2), right = Math.min(length, c + o.w / 2);
+        const left = Math.max(from, c - o.w / 2),
+          right = Math.min(length, c + o.w / 2);
         if (right <= left) continue;
         part(from, left, l.baseY, l.baseY + l.height, ctx.mat.wall);
         const sill = o.kind === 'door' ? 0 : Math.min(l.height - 0.2, o.sill ?? Math.max(0.4, l.height * 0.75));
         const top = Math.min(l.height, sill + o.h);
         part(left, right, l.baseY, l.baseY + sill, ctx.mat.wall);
         part(left, right, l.baseY + top, l.baseY + l.height, ctx.mat.wall);
-        if (o.closed) part(left, right, l.baseY + sill, l.baseY + top, material(o.kind === 'door' ? '#7a5a3d' : '#9ec7d8'));
+        if (o.closed)
+          part(left, right, l.baseY + sill, l.baseY + top, material(o.kind === 'door' ? '#7a5a3d' : '#9ec7d8'));
         from = right;
       }
       part(from, length, l.baseY, l.baseY + l.height, ctx.mat.wall);
@@ -974,8 +1359,12 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
       o.receiveShadow = true;
       target.add(o);
       if (solid) {
-        const a = ctx.rot * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
-        solids.push(rotBoxLocal(ctx.at[0] + x * c - z * s, ctx.at[1] + x * s + z * c, w, d, ctx.rot, y - h / 2, y + h / 2, false));
+        const a = (ctx.rot * Math.PI) / 180,
+          c = Math.cos(a),
+          s = Math.sin(a);
+        solids.push(
+          rotBoxLocal(ctx.at[0] + x * c - z * s, ctx.at[1] + x * s + z * c, w, d, ctx.rot, y - h / 2, y + h / 2, false),
+        );
         occluders.push(o);
       }
       return o;
@@ -1011,8 +1400,15 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
         group.add(o);
       }
     }
-    for (const [i, r] of orderedRoads(spec.roads ?? []).entries()) {const m=roadMesh(ground,r,1+i);m.userData['pick']={kind:'road',i:spec.roads!.indexOf(r)};group.add(m);}
-    const start = new THREE.Mesh(new THREE.BoxGeometry(START_MARKER.size, 0.04, START_MARKER.size), material(START_MARKER.color));
+    for (const [i, r] of orderedRoads(spec.roads ?? []).entries()) {
+      const m = roadMesh(ground, r, 1 + i);
+      m.userData['pick'] = { kind: 'road', i: spec.roads!.indexOf(r) };
+      group.add(m);
+    }
+    const start = new THREE.Mesh(
+      new THREE.BoxGeometry(START_MARKER.size, 0.04, START_MARKER.size),
+      material(START_MARKER.color),
+    );
     start.position.set(spec.droneStart.x, ground.start + takeoffHeight(spec) + 0.2, spec.droneStart.z);
     start.receiveShadow = true;
     start.userData['pick'] = TAKEOFF_PICK;
@@ -1025,7 +1421,9 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     field.receiveShadow = true;
     field.renderOrder = GROUND_ORDER;
     group.add(field);
-    const patchMats = ['#6f9350', '#86a35a', '#8a8656', '#7d7a52', '#98a262', '#9a8a5c'].map((c) => material(c, { depthWrite: false, depthTest: false }));
+    const patchMats = ['#6f9350', '#86a35a', '#8a8656', '#7d7a52', '#98a262', '#9a8a5c'].map((c) =>
+      material(c, { depthWrite: false, depthTest: false }),
+    );
     for (let i = 0; i < 300; i++) {
       const p = new THREE.Mesh(new THREE.CircleGeometry(3 + rnd() * 13, 6), patchMats[i % 6]);
       p.rotation.set(-Math.PI / 2, 0, rnd() * 6);
@@ -1054,15 +1452,28 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
       m.renderOrder = order++;
       group.add(m);
     }
-    for (const r of orderedRoads(spec.roads ?? [])) {const m=roadMesh(ground,r,order++);m.userData['pick']={kind:'road',i:spec.roads!.indexOf(r)};group.add(m);}
-    const start = new THREE.Mesh(new THREE.BoxGeometry(START_MARKER.size, 0.04, START_MARKER.size), material(START_MARKER.color));
+    for (const r of orderedRoads(spec.roads ?? [])) {
+      const m = roadMesh(ground, r, order++);
+      m.userData['pick'] = { kind: 'road', i: spec.roads!.indexOf(r) };
+      group.add(m);
+    }
+    const start = new THREE.Mesh(
+      new THREE.BoxGeometry(START_MARKER.size, 0.04, START_MARKER.size),
+      material(START_MARKER.color),
+    );
     start.position.set(spec.droneStart.x, takeoffHeight(spec) + 0.2, spec.droneStart.z);
     start.receiveShadow = true;
     start.userData['pick'] = TAKEOFF_PICK;
     group.add(start);
   }
   // ---- water: a flat, see-through surface at each basin's level (the ground under it is dug when there is a terrain)
-  const waterMat = new THREE.MeshStandardMaterial({ color: WATER_COLOR, transparent: true, opacity: 0.78, roughness: 0.15, metalness: 0.1 });
+  const waterMat = new THREE.MeshStandardMaterial({
+    color: WATER_COLOR,
+    transparent: true,
+    opacity: 0.78,
+    roughness: 0.15,
+    metalness: 0.1,
+  });
   if (!opts.bare) {
     (spec.waters ?? []).forEach((w, i) => {
       const m = flatShape(w.pts, waterMat);
@@ -1074,14 +1485,20 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
 
   // ---- underground volumes: walls, floor and ceiling (a pipe or a vault for straight tunnels), solid for the drone
   for (const source of opts.bare ? [] : (spec.underground ?? [])) {
-    const v = ground.vols.find(item => item.id === source.id) ?? source;
+    const v = ground.vols.find((item) => item.id === source.id) ?? source;
     const g = buildUnderground(v);
     g.userData['pick'] = { kind: 'underground', id: v.id };
     group.add(g);
     const boxes = volumeSolids(v);
     solids.push(...boxes);
-    if (v.ceilingHoles?.length) for (const box of boxes)
-      if (v.shape === 'box' ? box[2] >= v.ceiling - 1e-6 && box[3] <= v.ceiling + v.wall + 1e-6 : box[3] >= tunnelOpeningBottom(v)) ceilingTiles.push({ box, volume: v });
+    if (v.ceilingHoles?.length)
+      for (const box of boxes)
+        if (
+          v.shape === 'box'
+            ? box[2] >= v.ceiling - 1e-6 && box[3] <= v.ceiling + v.wall + 1e-6
+            : box[3] >= tunnelOpeningBottom(v)
+        )
+          ceilingTiles.push({ box, volume: v });
   }
 
   // ---- buildings (and the floors and flat roofs a drone can stand on: one source with the take-off menu)
@@ -1102,14 +1519,18 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     ctx.rot = b.rotDeg;
     const floorMat = material(b.floorColor ?? '#a9aaa0');
     const baseWall = ctx.mat.wall;
-    ctx.mat.wall = wallMats[b.color ?? '#d7d0bd'] ??= material(b.color ?? '#d7d0bd', { polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 });
+    ctx.mat.wall = wallMats[b.color ?? '#d7d0bd'] ??= material(b.color ?? '#d7d0bd', {
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -2,
+    });
     const ruin = Math.min(1, Math.max(0, b.ruin ?? 0));
     const open = !b.frame && (!!b.roofless || ruin >= ROOFLESS); // no roof left
     ctx.noSlabs = !b.frame && (!!b.roofless || ruin >= NO_SLABS);
     for (const [li, l] of b.levels.entries()) {
       const anyRuin = ruin > 0.01 || Object.values(b.ruinWalls ?? {}).some((v) => (v ?? 0) > 0.01);
-    const height = (b.levels.at(-1)?.baseY ?? 0) + (b.levels.at(-1)?.height ?? 0);
-    ctx.ruin = anyRuin && !b.frame ? { level: ruin, li, open, height, id: b.id } : null;
+      const height = (b.levels.at(-1)?.baseY ?? 0) + (b.levels.at(-1)?.height ?? 0);
+      ctx.ruin = anyRuin && !b.frame ? { level: ruin, li, open, height, id: b.id } : null;
       if (b.footprint && (!isRectilinear(b.footprint) || l.courtyards?.length)) {
         buildDiagonalBasement(ctx, b, l, inner, floorMat);
         if (!open && l.roof !== 'none') buildRoof(ctx, b, l, localRoof);
@@ -1126,7 +1547,8 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
       if (!open) buildRoof(ctx, b, l, localRoof); // a deep ruin or an open shell has lost its roof
     }
     const last = b.levels[b.levels.length - 1];
-    if (b.crenels && last && !b.frame && (open || last.roof === 'flat' || last.roof === 'none' || !!b.footprint)) buildCrenels(ctx, b, last.baseY + last.height, inner);
+    if (b.crenels && last && !b.frame && (open || last.roof === 'flat' || last.roof === 'none' || !!b.footprint))
+      buildCrenels(ctx, b, last.baseY + last.height, inner);
     ctx.ruin = null;
     ctx.noSlabs = false;
     ctx.mat.wall = baseWall;
@@ -1139,24 +1561,34 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     roof.attach(localRoof);
     units.push(inner, localRoof);
     liftSolids(solids, firstSolid, by);
-    if (!opts.bare) for (const lv of standingLevels(b)) standing.push({ pts: siteOutline(b), top: by + lv.height, roof: lv.roof });
+    if (!opts.bare)
+      for (const lv of standingLevels(b)) standing.push({ pts: siteOutline(b), top: by + lv.height, roof: lv.roof });
   }
 
   // ---- free-standing walls / fences
   for (const w of spec.walls ?? []) {
-    const dx = w.b.x - w.a.x, dz = w.b.z - w.a.z, len = Math.hypot(dx, dz);
+    const dx = w.b.x - w.a.x,
+      dz = w.b.z - w.a.z,
+      len = Math.hypot(dx, dz);
     if (len < 0.3) continue;
     const def = fenceDef(w.material);
     const pick = { kind: 'fence', i: spec.walls?.indexOf(w) ?? 0 };
     // collision: a staircase of 1 m boxes along the wall, each from the ground up to its height there (the collider only
     // knows axis-aligned boxes)
     const steps = Math.max(1, Math.ceil(len / 1.0));
-    const seg = len / steps, ca = Math.abs(dx / len), sa = Math.abs(dz / len);
-    const hw = (seg * ca + w.thick * sa) / 2, hd = (seg * sa + w.thick * ca) / 2;
+    const seg = len / steps,
+      ca = Math.abs(dx / len),
+      sa = Math.abs(dz / len);
+    const hw = (seg * ca + w.thick * sa) / 2,
+      hd = (seg * sa + w.thick * ca) / 2;
     if (def.look !== 'hedge' && def.look !== 'wires') {
       for (let i = 0; i < steps; i++) {
-        const t0 = i / steps, t1 = (i + 1) / steps, cx = w.a.x + dx * (t0 + t1) / 2, cz = w.a.z + dz * (t0 + t1) / 2;
-        const g0 = ground.at(w.a.x + dx * t0, w.a.z + dz * t0), g1 = ground.at(w.a.x + dx * t1, w.a.z + dz * t1);
+        const t0 = i / steps,
+          t1 = (i + 1) / steps,
+          cx = w.a.x + (dx * (t0 + t1)) / 2,
+          cz = w.a.z + (dz * (t0 + t1)) / 2;
+        const g0 = ground.at(w.a.x + dx * t0, w.a.z + dz * t0),
+          g1 = ground.at(w.a.x + dx * t1, w.a.z + dz * t1);
         solids.push([cx - hw, cx + hw, Math.min(g0, g1), Math.max(g0, g1) + w.height, cz - hd, cz + hd, false]);
       }
     }
@@ -1165,7 +1597,16 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
       continue;
     }
     // the panel follows the ground: its foot 30 cm into it, its top `height` above it all along (B-034)
-    const panel = def.mesh ? new THREE.MeshStandardMaterial({ color: w.color ?? def.color, transparent: true, opacity: 0.35, roughness: 0.6, metalness: 0.4, depthWrite: false }) : material(w.color ?? def.color);
+    const panel = def.mesh
+      ? new THREE.MeshStandardMaterial({
+          color: w.color ?? def.color,
+          transparent: true,
+          opacity: 0.35,
+          roughness: 0.6,
+          metalness: 0.4,
+          depthWrite: false,
+        })
+      : material(w.color ?? def.color);
     const m = new THREE.Mesh(groundRibbon(w, len, ground, { off: 0, thick: w.thick, y0: -0.3, y1: w.height }), panel);
     m.castShadow = !def.mesh;
     m.receiveShadow = true;
@@ -1175,7 +1616,8 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
     const postMat = material(def.mesh ? '#6f787a' : (w.color ?? def.color));
     for (const t of postsAlong(len, w.material)) {
       // each post stands on the ground under it and reaches just over the top of the panel there
-      const py = ground.at(w.a.x + dx * t, w.a.z + dz * t), ph = w.height + 0.1;
+      const py = ground.at(w.a.x + dx * t, w.a.z + dz * t),
+        ph = w.height + 0.1;
       const post = new THREE.Mesh(new THREE.BoxGeometry(0.12, ph, Math.max(0.12, w.thick + 0.06)), postMat);
       post.position.set(w.a.x + dx * t, py + ph / 2, w.a.z + dz * t);
       post.rotation.y = -Math.atan2(dz, dx);
@@ -1186,8 +1628,13 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
   }
 
   // ---- towers and bridges, and the fixtures of buildings (a click on one selects its building)
-  const fixtures = spec.buildings.flatMap((b) => fixturesInSite(b).map((st, k) => ({ st, pick: { kind: 'building', id: b.id }, fixture: k as number | undefined })));
-  for (const { st, pick, fixture } of [...(spec.structures ?? []).map((st) => ({ st, pick: { kind: 'structure', id: st.id }, fixture: undefined })), ...fixtures]) {
+  const fixtures = spec.buildings.flatMap((b) =>
+    fixturesInSite(b).map((st, k) => ({ st, pick: { kind: 'building', id: b.id }, fixture: k as number | undefined })),
+  );
+  for (const { st, pick, fixture } of [
+    ...(spec.structures ?? []).map((st) => ({ st, pick: { kind: 'structure', id: st.id }, fixture: undefined })),
+    ...fixtures,
+  ]) {
     const built = buildStructure(st);
     const sy = ground.at(st.x, st.z);
     built.object.userData['pick'] = pick;
@@ -1206,10 +1653,15 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
   const con = spec.trees.filter((t) => t.kind === 'c');
   const dm = new THREE.Object3D();
   const palette = ['#2f6a46', '#3f7a4c', '#4d8150', '#6b9154', '#7a9a58'].map((c) => new THREE.Color(c));
-  const trunks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.2, 0.32, 1, 5), material('#70533a'), dec.length + con.length);
+  const trunks = new THREE.InstancedMesh(
+    new THREE.CylinderGeometry(0.2, 0.32, 1, 5),
+    material('#70533a'),
+    dec.length + con.length,
+  );
   const crownsDec = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), material('#ffffff'), dec.length);
   const crownsCon = new THREE.InstancedMesh(new THREE.ConeGeometry(1, 1, 6), material('#ffffff'), con.length);
-  const decY = dec.map((t) => ground.at(t.x, t.z)), conY = con.map((t) => ground.at(t.x, t.z));
+  const decY = dec.map((t) => ground.at(t.x, t.z)),
+    conY = con.map((t) => ground.at(t.x, t.z));
   const field = new TreeField(dec, con, trunks, crownsDec, crownsCon, decY, conY);
   let j = 0;
   const place = (t: TreeSpec, i: number, kind: TreeKind): void => {
@@ -1238,7 +1690,17 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
 
   if (opts.merge) mergeUnits(units, occluders);
 
-  const collider = new SiteCollider(solids, treeSolids, ground.grid, opts.bare ? [] : (spec.waters ?? []).map((w, i) => ({ pts: w.pts, level: ground.grid ? (ground.water[i] ?? 0) : 0.03 })), opts.bare ? [] : ground.vols, ceilingTiles, standing);
+  const collider = new SiteCollider(
+    solids,
+    treeSolids,
+    ground.grid,
+    opts.bare
+      ? []
+      : (spec.waters ?? []).map((w, i) => ({ pts: w.pts, level: ground.grid ? (ground.water[i] ?? 0) : 0.03 })),
+    opts.bare ? [] : ground.vols,
+    ceilingTiles,
+    standing,
+  );
   return {
     group,
     roof,
@@ -1267,7 +1729,8 @@ export function buildSiteFromSpec(spec: SiteSpec, opts: { bare?: boolean; merge?
       const mat = terrain.material as THREE.MeshStandardMaterial;
       mat.wireframe = style === 'wire';
       const sat = style === 'satellite' && !spec.privacy && !opts.bare;
-      const t = terrain, grid = ground.grid;
+      const t = terrain,
+        grid = ground.grid;
       const apply = (tex: THREE.Texture | null): void => {
         const on = sat && !!tex && t.userData['style'] === 'satellite';
         mat.map = on ? tex : null;
@@ -1296,24 +1759,44 @@ function mergeUnits(units: readonly THREE.Object3D[], occluders: THREE.Mesh[]): 
  * `y1` metres above the ground under every metre of it, moved `off` metres sideways (planks nailed to one face of the
  * posts). Flat-shaded, one mesh for the whole length.
  */
-function groundRibbon(w: WallSpec, len: number, ground: SiteGround, o: { off: number; thick: number; y0: number; y1: number }): THREE.BufferGeometry {
-  const dx = w.b.x - w.a.x, dz = w.b.z - w.a.z, nx = -dz / len, nz = dx / len;
-  const n = Math.max(1, Math.ceil(len)), v: THREE.Vector3[][] = [];
+function groundRibbon(
+  w: WallSpec,
+  len: number,
+  ground: SiteGround,
+  o: { off: number; thick: number; y0: number; y1: number },
+): THREE.BufferGeometry {
+  const dx = w.b.x - w.a.x,
+    dz = w.b.z - w.a.z,
+    nx = -dz / len,
+    nz = dx / len;
+  const n = Math.max(1, Math.ceil(len)),
+    v: THREE.Vector3[][] = [];
   for (let k = 0; k <= n; k++) {
-    const x = w.a.x + (dx * k) / n + nx * o.off, z = w.a.z + (dz * k) / n + nz * o.off, g = ground.at(x, z);
-    const l = [x + (nx * o.thick) / 2, z + (nz * o.thick) / 2], r = [x - (nx * o.thick) / 2, z - (nz * o.thick) / 2];
-    v.push([new THREE.Vector3(l[0], g + o.y0, l[1]), new THREE.Vector3(l[0], g + o.y1, l[1]), new THREE.Vector3(r[0], g + o.y0, r[1]), new THREE.Vector3(r[0], g + o.y1, r[1])]);
+    const x = w.a.x + (dx * k) / n + nx * o.off,
+      z = w.a.z + (dz * k) / n + nz * o.off,
+      g = ground.at(x, z);
+    const l = [x + (nx * o.thick) / 2, z + (nz * o.thick) / 2],
+      r = [x - (nx * o.thick) / 2, z - (nz * o.thick) / 2];
+    v.push([
+      new THREE.Vector3(l[0], g + o.y0, l[1]),
+      new THREE.Vector3(l[0], g + o.y1, l[1]),
+      new THREE.Vector3(r[0], g + o.y0, r[1]),
+      new THREE.Vector3(r[0], g + o.y1, r[1]),
+    ]);
   }
   const tri: THREE.Vector3[] = [];
-  const quad = (a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3, d: THREE.Vector3): void => void tri.push(a, b, c, a, c, d);
+  const quad = (a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3, d: THREE.Vector3): void =>
+    void tri.push(a, b, c, a, c, d);
   for (let k = 0; k < n; k++) {
-    const [lb, lt, rb, rt] = v[k]!, [lb2, lt2, rb2, rt2] = v[k + 1]!;
+    const [lb, lt, rb, rt] = v[k]!,
+      [lb2, lt2, rb2, rt2] = v[k + 1]!;
     quad(lb, lb2, lt2, lt); // one face
     quad(rb, rt, rt2, rb2); // the other
     quad(lt, lt2, rt2, rt); // top
     quad(lb, rb, rb2, lb2); // bottom
   }
-  const [a0, a1, a2, a3] = v[0]!, [b0, b1, b2, b3] = v[n]!;
+  const [a0, a1, a2, a3] = v[0]!,
+    [b0, b1, b2, b3] = v[n]!;
   quad(a0, a1, a3, a2); // ends
   quad(b0, b2, b3, b1);
   const geo = new THREE.BufferGeometry().setFromPoints(tri);
@@ -1336,17 +1819,24 @@ function buildLine(
   const own = new THREE.Group();
   own.userData['pick'] = pick;
   group.add(own);
-  const rot = -Math.atan2(dz, dx), ux = dx / len, uz = dz / len;
+  const rot = -Math.atan2(dz, dx),
+    ux = dx / len,
+    uz = dz / len;
   const at = (t: number): [number, number] => [w.a.x + dx * t, w.a.z + dz * t];
   const box = (cx: number, cz: number, bw: number, bd: number, z0: number, z1: number): void => {
-    const ca = Math.abs(ux), sa = Math.abs(uz), hw = (bw * ca + bd * sa) / 2, hd = (bw * sa + bd * ca) / 2;
+    const ca = Math.abs(ux),
+      sa = Math.abs(uz),
+      hw = (bw * ca + bd * sa) / 2,
+      hd = (bw * sa + bd * ca) / 2;
     solids.push([cx - hw, cx + hw, z0, z1, cz - hd, cz + hd, false]);
   };
   if (def.look === 'rail') {
     // posts on the ground, three planks nailed to their face, each following the ground at its own height (F-027)
     const wood = material(w.color ?? def.color, { roughness: 0.85 });
     for (const t of postsAlong(len, w.material)) {
-      const [px, pz] = at(t), gy = ground.at(px, pz), ph = w.height + 0.05;
+      const [px, pz] = at(t),
+        gy = ground.at(px, pz),
+        ph = w.height + 0.05;
       const post = new THREE.Mesh(new THREE.BoxGeometry(0.12, ph, 0.12), wood);
       post.position.set(px, gy + ph / 2, pz);
       post.rotation.y = rot;
@@ -1356,7 +1846,15 @@ function buildLine(
     }
     for (const share of RAIL_PLANKS) {
       const mid = w.height * share;
-      const plank = new THREE.Mesh(groundRibbon(w, len, ground, { off: 0.08, thick: 0.04, y0: mid - RAIL_PLANK_H / 2, y1: mid + RAIL_PLANK_H / 2 }), wood);
+      const plank = new THREE.Mesh(
+        groundRibbon(w, len, ground, {
+          off: 0.08,
+          thick: 0.04,
+          y0: mid - RAIL_PLANK_H / 2,
+          y1: mid + RAIL_PLANK_H / 2,
+        }),
+        wood,
+      );
       plank.castShadow = true;
       plank.receiveShadow = true;
       plank.userData['pick'] = pick;
@@ -1369,8 +1867,14 @@ function buildLine(
     const leaf = material(w.color ?? def.color, { roughness: 1 });
     const dark = material(wild ? '#3a4a22' : '#33582c', { roughness: 1 });
     for (const [i, l] of hedgeLumps(len, w.a.x * 7.3 + w.a.z * 3.1, wild).entries()) {
-      const [cx, cz] = at(l.t), gy = ground.at(cx, cz), h = w.height * l.h, th = w.thick * l.w;
-      const m = new THREE.Mesh(new THREE.BoxGeometry(len / Math.max(1, Math.round(len)) + 0.25, h, th), i % 3 === 0 ? dark : leaf);
+      const [cx, cz] = at(l.t),
+        gy = ground.at(cx, cz),
+        h = w.height * l.h,
+        th = w.thick * l.w;
+      const m = new THREE.Mesh(
+        new THREE.BoxGeometry(len / Math.max(1, Math.round(len)) + 0.25, h, th),
+        i % 3 === 0 ? dark : leaf,
+      );
       m.position.set(cx, gy + h / 2, cz);
       m.rotation.y = rot + (wild ? (l.w - 1) * 0.6 : 0);
       m.castShadow = true;
@@ -1383,10 +1887,12 @@ function buildLine(
   }
   // a phone / power line: poles at the posts, wires from pole to pole
   const posts = postsAlong(len, w.material);
-  const poleMat = material(w.color ?? def.color), wireMat = material('#22272a', { roughness: 0.6 });
+  const poleMat = material(w.color ?? def.color),
+    wireMat = material('#22272a', { roughness: 0.6 });
   const tops: THREE.Vector3[] = [];
   for (const t of posts) {
-    const [cx, cz] = at(t), gy = ground.at(cx, cz);
+    const [cx, cz] = at(t),
+      gy = ground.at(cx, cz);
     const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.15, w.height, 8), poleMat);
     pole.position.set(cx, gy + w.height / 2, cz);
     pole.castShadow = true;
@@ -1403,18 +1909,35 @@ function buildLine(
   // three wires: the middle one on the pole's axis, the others at the ends of the cross-arm
   for (const off of [-0.7, 0, 0.7]) {
     for (const [s, span] of wireSag(len, posts).entries()) {
-      const a = tops[s]!, b = tops[s + 1]!;
+      const a = tops[s]!,
+        b = tops[s + 1]!;
       const pts = span.map((p, k) => {
         const u = k / (span.length - 1);
-        return new THREE.Vector3(a.x + (b.x - a.x) * u - uz * off, a.y + (b.y - a.y) * u - p.drop, a.z + (b.z - a.z) * u + ux * off);
+        return new THREE.Vector3(
+          a.x + (b.x - a.x) * u - uz * off,
+          a.y + (b.y - a.y) * u - p.drop,
+          a.z + (b.z - a.z) * u + ux * off,
+        );
       });
-      const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), pts.length * 2, 0.025, 4, false), wireMat);
+      const tube = new THREE.Mesh(
+        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), pts.length * 2, 0.025, 4, false),
+        wireMat,
+      );
       tube.userData['pick'] = pick;
       own.add(tube);
       // the drone hits the wires too: a short box every couple of metres along them
       for (let k = 0; k + 1 < pts.length; k++) {
-        const p = pts[k]!, q = pts[k + 1]!;
-        solids.push([Math.min(p.x, q.x) - 0.05, Math.max(p.x, q.x) + 0.05, Math.min(p.y, q.y) - 0.05, Math.max(p.y, q.y) + 0.05, Math.min(p.z, q.z) - 0.05, Math.max(p.z, q.z) + 0.05, false]);
+        const p = pts[k]!,
+          q = pts[k + 1]!;
+        solids.push([
+          Math.min(p.x, q.x) - 0.05,
+          Math.max(p.x, q.x) + 0.05,
+          Math.min(p.y, q.y) - 0.05,
+          Math.max(p.y, q.y) + 0.05,
+          Math.min(p.z, q.z) - 0.05,
+          Math.max(p.z, q.z) + 0.05,
+          false,
+        ]);
       }
     }
   }

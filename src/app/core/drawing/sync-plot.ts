@@ -16,7 +16,10 @@ export function drawSyncPlot(g: CanvasRenderingContext2D, w: number, h: number, 
     const V = f.V[f.videoFeature];
     const fa: number[] = [];
     const va: number[] = [];
-    let f0 = 1e9, f1 = -1e9, v0 = 1e9, v1 = -1e9;
+    let f0 = 1e9,
+      f1 = -1e9,
+      v0 = 1e9,
+      v1 = -1e9;
     for (let x = 0; x < w; x++) {
       const lt = f.L0 + (x / w) * SPAN;
       const k = Math.floor(lt / GRID_DT);
@@ -35,7 +38,10 @@ export function drawSyncPlot(g: CanvasRenderingContext2D, w: number, h: number, 
       }
     }
     g.lineWidth = 1.4;
-    const series: readonly (readonly [number[], number, number, string])[] = [[fa, f0, f1, '#6bb0ff'], [va, v0, v1, '#ff9a2e']];
+    const series: readonly (readonly [number[], number, number, string])[] = [
+      [fa, f0, f1, '#6bb0ff'],
+      [va, v0, v1, '#ff9a2e'],
+    ];
     for (const [arr, lo, hi, colour] of series) {
       g.strokeStyle = colour;
       g.beginPath();

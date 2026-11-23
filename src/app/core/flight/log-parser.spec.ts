@@ -9,14 +9,18 @@ describe('log parser', () => {
     const { pts, tel } = parseLog(betaflightCsv(1600));
     expect(pts.length).toBe(20);
     expect(pts[0]?.lat).toBeCloseTo(45.4642, 6);
-    expect(pts[0]?.lon).toBeCloseTo(9.1900, 6);
+    expect(pts[0]?.lon).toBeCloseTo(9.19, 6);
     expect(pts[0]?.alt).toBeCloseTo(13, 6);
     expect(pts[1]!.t - pts[0]!.t).toBeCloseTo(0.1, 6); // 80 rows x 1250 us
     expect(tel).toBeTruthy();
   });
 
   it('takes heights from the barometer when the log has it (GPS altitude wanders)', () => {
-    const csv = 'time,GPS_coord[0],GPS_coord[1],GPS_altitude,baroAlt\n' + [0, 1, 2].map((i) => `${i * 100000},${454642000 + i * 10},${91900000},${1300 + i * 200},${-60 + i * 200}`).join('\n');
+    const csv =
+      'time,GPS_coord[0],GPS_coord[1],GPS_altitude,baroAlt\n' +
+      [0, 1, 2]
+        .map((i) => `${i * 100000},${454642000 + i * 10},${91900000},${1300 + i * 200},${-60 + i * 200}`)
+        .join('\n');
     const { pts } = parseLog(csv);
     expect(pts.map((p) => +p.alt.toFixed(6))).toEqual([-0.6, 1.4, 3.4]); // baroAlt is cm; GPS would have said 130, 150, 170 m
   });
@@ -90,7 +94,10 @@ describe('log parser', () => {
   });
 
   it('reads JSON arrays and { points: [] } objects', () => {
-    const arr = JSON.stringify([{ lat: 45.46, lon: 9.19, alt: 5, t: 0 }, { latitude: 45.47, lng: 9.2, altitude: 6, time: 1 }]);
+    const arr = JSON.stringify([
+      { lat: 45.46, lon: 9.19, alt: 5, t: 0 },
+      { latitude: 45.47, lng: 9.2, altitude: 6, time: 1 },
+    ]);
     expect(parseLog(arr).pts.length).toBe(2);
     expect(parseLog(JSON.stringify({ points: JSON.parse(arr) as unknown[] })).pts[1]?.lon).toBe(9.2);
   });
@@ -102,7 +109,9 @@ describe('log parser', () => {
 });
 
 describe('flight preparation', () => {
-  const log = parseLog('time,lat,lon,alt\n0,45.4642,9.1900,10\n1,45.4643,9.1901,12\n2,45.4644,9.1902,14\n3,45.4645,9.1903,14');
+  const log = parseLog(
+    'time,lat,lon,alt\n0,45.4642,9.1900,10\n1,45.4643,9.1901,12\n2,45.4644,9.1902,14\n3,45.4645,9.1903,14',
+  );
 
   it('puts the lowest fix just above ground and computes the duration', () => {
     const f = createFlight('t', log.pts);

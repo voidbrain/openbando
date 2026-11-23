@@ -22,7 +22,11 @@ export class LibraryStore {
    * Where the library lives and whether writes are failing: `memory` = the browser keeps nothing (private window,
    * storage blocked); `failed` counts writes that did not reach the disk this visit, `problem` is the last kind.
    */
-  readonly health = signal<{ mode: 'indexeddb' | 'local' | 'memory'; failed: number; problem: StorageProblem | null }>({ mode: 'local', failed: 0, problem: null });
+  readonly health = signal<{ mode: 'indexeddb' | 'local' | 'memory'; failed: number; problem: StorageProblem | null }>({
+    mode: 'local',
+    failed: 0,
+    problem: null,
+  });
   private ready: Promise<void> | null = null;
 
   constructor() {
@@ -38,7 +42,9 @@ export class LibraryStore {
         this.health.update((h) => ({ ...h, mode: 'indexeddb' }));
         db.onversionchange = () => db.close(); // another tab upgrades the database: let it
         for (const c of COLLECTIONS) {
-          const rows = await req<{ key: string; value: unknown }[]>(db.transaction(c, 'readonly').objectStore(c).getAll());
+          const rows = await req<{ key: string; value: unknown }[]>(
+            db.transaction(c, 'readonly').objectStore(c).getAll(),
+          );
           for (const r of rows) this.mem.get(c)!.set(r.key, r.value);
         }
         this.revision.update((n) => n + 1);
@@ -62,7 +68,10 @@ export class LibraryStore {
   put(c: Collection, key: string, value: unknown, afterPersist?: () => void): void {
     this.mem.get(c)!.set(key, value);
     this.revision.update((n) => n + 1);
-    if (this.db) void this.write(c, (s) => s.put({ key, value })).then((saved) => { if (saved) afterPersist?.(); });
+    if (this.db)
+      void this.write(c, (s) => s.put({ key, value })).then((saved) => {
+        if (saved) afterPersist?.();
+      });
     else if (this.lsWrite(`${LS}${c}/${key}`, value)) afterPersist?.();
   }
 
@@ -82,7 +91,8 @@ export class LibraryStore {
     return new Promise((ok, ko) => {
       const r = indexedDB.open(DB, 1);
       r.onupgradeneeded = () => {
-        for (const c of COLLECTIONS) if (!r.result.objectStoreNames.contains(c)) r.result.createObjectStore(c, { keyPath: 'key' });
+        for (const c of COLLECTIONS)
+          if (!r.result.objectStoreNames.contains(c)) r.result.createObjectStore(c, { keyPath: 'key' });
       };
       r.onsuccess = () => ok(r.result);
       r.onerror = () => ko(r.error);
@@ -103,9 +113,17 @@ export class LibraryStore {
       try {
         const tx = this.db!.transaction(c, 'readwrite');
         fn(tx.objectStore(c));
-        tx.oncomplete = () => { if (!settled) { settled = true; ok(true); } };
+        tx.oncomplete = () => {
+          if (!settled) {
+            settled = true;
+            ok(true);
+          }
+        };
         // Error followed by abort is one failed write, not two. Keep recovery sources until commit.
-        tx.onerror = (e) => { e.preventDefault(); fail(tx.error); };
+        tx.onerror = (e) => {
+          e.preventDefault();
+          fail(tx.error);
+        };
         tx.onabort = () => fail(tx.error ?? { name: 'AbortError' });
       } catch (e) {
         fail(e);
@@ -133,7 +151,11 @@ export class LibraryStore {
       this.health.update((h) => ({ ...h, mode: 'local' }));
     } catch (e) {
       // no storage at all: memory only, and the pilot must know it
-      this.health.update((h) => ({ ...h, mode: 'memory', problem: storageProblem(e) === 'other' ? 'denied' : storageProblem(e) }));
+      this.health.update((h) => ({
+        ...h,
+        mode: 'memory',
+        problem: storageProblem(e) === 'other' ? 'denied' : storageProblem(e),
+      }));
     }
   }
 

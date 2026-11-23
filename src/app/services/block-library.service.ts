@@ -42,7 +42,10 @@ export class BlockLibraryService {
     try {
       const etag = this.store.get<string>('meta', 'catalog-etag');
       const url = new URL(CATALOG_PATH, document.baseURI).toString();
-      const res = await fetch(url, { headers: etag && this.catalog().length ? { 'If-None-Match': etag } : {}, cache: 'no-cache' });
+      const res = await fetch(url, {
+        headers: etag && this.catalog().length ? { 'If-None-Match': etag } : {},
+        cache: 'no-cache',
+      });
       if (res.status === 304) {
         this.status.set('idle');
         return;
@@ -51,10 +54,17 @@ export class BlockLibraryService {
       const { blocks } = sanitizeCatalog(await res.json());
       const m = mergeCatalog(this.catalog(), blocks);
       for (const id of m.removed) this.store.delete('catalog', id);
-      for (const b of m.blocks) if (m.added.includes(b.id) || m.updated.includes(b.id) || !this.store.get('catalog', b.id)) this.store.put('catalog', b.id, b);
+      for (const b of m.blocks)
+        if (m.added.includes(b.id) || m.updated.includes(b.id) || !this.store.get('catalog', b.id))
+          this.store.put('catalog', b.id, b);
       const tag = res.headers.get('ETag');
       if (tag) this.store.put('meta', 'catalog-etag', tag);
-      this.lastSync.set({ at: Date.now(), added: m.added.length, updated: m.updated.length, removed: m.removed.length });
+      this.lastSync.set({
+        at: Date.now(),
+        added: m.added.length,
+        updated: m.updated.length,
+        removed: m.removed.length,
+      });
       this.status.set('idle');
     } catch {
       this.status.set(navigator.onLine === false ? 'offline' : 'error');
@@ -102,7 +112,11 @@ export class BlockLibraryService {
     } catch {
       return { saved: [], rejected: 1 };
     }
-    const list: unknown[] = Array.isArray(raw) ? raw : raw && typeof raw === 'object' && Array.isArray((raw as { blocks?: unknown }).blocks) ? (raw as { blocks: unknown[] }).blocks : [raw];
+    const list: unknown[] = Array.isArray(raw)
+      ? raw
+      : raw && typeof raw === 'object' && Array.isArray((raw as { blocks?: unknown }).blocks)
+        ? (raw as { blocks: unknown[] }).blocks
+        : [raw];
     const saved: BlockSpec[] = [];
     let rejected = 0;
     for (const r of list.slice(0, 200)) {

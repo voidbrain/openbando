@@ -53,19 +53,32 @@ export class UndergroundTool {
   /** A finished drag: a tunnel from end to end, or a room over the rectangle (one undo step). */
   commit(a: Pt, b: Pt): void {
     const room = this.kind() === 'room';
-    if (room ? Math.abs(b.x - a.x) < 2 || Math.abs(b.z - a.z) < 2 : Math.hypot(b.x - a.x, b.z - a.z) < 3) return void this.h.toast.show(room ? 'Drag a rectangle at least 2 m each way.' : 'Drag from one end of the tunnel to the other.');
+    if (room ? Math.abs(b.x - a.x) < 2 || Math.abs(b.z - a.z) < 2 : Math.hypot(b.x - a.x, b.z - a.z) < 3)
+      return void this.h.toast.show(
+        room ? 'Drag a rectangle at least 2 m each way.' : 'Drag from one end of the tunnel to the other.',
+      );
     const n = (this.h.ed.draft().underground?.length ?? 0) + 1;
     const g = this.h.ground();
     const v: UndergroundSpec = room
       ? newRoom(a, b, g.at, { height: this.height(), depth: this.depth(), id: uid('ug'), name: `Room ${n}` })
-      : newTunnel(g.grid, a, b, { width: this.width(), height: this.height(), depth: this.depth(), shape: this.shape(), id: uid('ug'), name: `Tunnel ${n}` });
+      : newTunnel(g.grid, a, b, {
+          width: this.width(),
+          height: this.height(),
+          depth: this.depth(),
+          shape: this.shape(),
+          id: uid('ug'),
+          name: `Tunnel ${n}`,
+        });
     this.h.ed.commitSite((s) => {
       s.terrain ??= defaultTerrain(s.extent); // the ground must be a terrain to be cut where the tunnel opens
       (s.underground ??= []).push(v);
     });
     this.h.pick.set({ t: 'under', i: n - 1 });
     this.h.applyNow();
-    this.h.toast.show(`${v.name}: floor ${v.floor} m, ceiling ${v.ceiling} m. It is open where the ground is between them (dark on the plan); deeper ground covers it.`, 4000);
+    this.h.toast.show(
+      `${v.name}: floor ${v.floor} m, ceiling ${v.ceiling} m. It is open where the ground is between them (dark on the plan); deeper ground covers it.`,
+      4000,
+    );
   }
 
   /** Edit the selected volume (one undo step); the ceiling stays at least 0.8 m over the floor. */

@@ -47,7 +47,10 @@ export class FlightService {
   }
 
   get all(): Flight[] {
-    return this.store.flights().map((s) => this.byId.get(s.id)).filter((f): f is Flight => !!f);
+    return this.store
+      .flights()
+      .map((s) => this.byId.get(s.id))
+      .filter((f): f is Flight => !!f);
   }
 
   get active(): Flight | null {
@@ -67,7 +70,12 @@ export class FlightService {
   }
 
   /** Add a flight (becomes the active one). Returns it so callers (live link) can keep appending. */
-  add(name: string, pts: GeoSample[], tel: Telemetry | null = null, opts: { frame?: boolean; live?: boolean } = {}): Flight {
+  add(
+    name: string,
+    pts: GeoSample[],
+    tel: Telemetry | null = null,
+    opts: { frame?: boolean; live?: boolean } = {},
+  ): Flight {
     const f = createFlight(name, pts, tel, opts.live ?? false);
     prepareFlight(f, this.calibration.calibration(), activeGround() ?? undefined);
     // a bando shared without its place: the log is GPS, so its start goes onto the take-off pad (once; pins fine-tune)
@@ -77,7 +85,10 @@ export class FlightService {
       setAutoAlign(false);
       this.calibration.shift(s.dx, s.dz);
       prepareFlight(f, this.calibration.calibration(), activeGround() ?? undefined);
-      this.toast.show('This bando has no real place: the flight starts on its take-off pad. Pin start / end and the compass fine-tune it.', 4500);
+      this.toast.show(
+        'This bando has no real place: the flight starts on its take-off pad. Pin start / end and the compass fine-tune it.',
+        4500,
+      );
     }
     // Preserve the legacy start position while anchoring all subsequent points to one private local reference.
     if (hiddenSite() && !autoAlignFlights() && !this.calibration.calibration().reference && pts[0]) {
@@ -87,7 +98,11 @@ export class FlightService {
     // the pilot's pins at moments for this log on this bando (B-017)
     const saved = !opts.live ? this.storage.readRaw(this.pinsKey(f)) : null;
     if (saved) {
-      try { f.pins = sanitizePins(JSON.parse(saved)); } catch { f.pins = []; }
+      try {
+        f.pins = sanitizePins(JSON.parse(saved));
+      } catch {
+        f.pins = [];
+      }
       if (f.pins.length) prepareFlight(f, this.calibration.calibration(), activeGround() ?? undefined);
     }
     this.byId.set(f.id, f);
@@ -172,7 +187,12 @@ export class FlightService {
 
   private requestFrame(f: Flight): void {
     if (!f.loc.length) return;
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+    let x0 = Infinity,
+      x1 = -Infinity,
+      y0 = Infinity,
+      y1 = -Infinity,
+      z0 = Infinity,
+      z1 = -Infinity;
     for (const p of f.loc) {
       x0 = Math.min(x0, p.x);
       x1 = Math.max(x1, p.x);
@@ -183,7 +203,12 @@ export class FlightService {
     }
     const center = new Vec3((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
     const distanceFromOrigin = Math.hypot(center.x, center.z);
-    this.frameRequest.set({ center, radius: Math.min(500, Math.max(40, Math.max(x1 - x0, z1 - z0) * 1.6 + 20)), distanceFromOrigin });
-    if (distanceFromOrigin > 400) this.toast.show(`Path is ${distanceFromOrigin.toFixed(0)} m from the map origin — outside the modelled area`);
+    this.frameRequest.set({
+      center,
+      radius: Math.min(500, Math.max(40, Math.max(x1 - x0, z1 - z0) * 1.6 + 20)),
+      distanceFromOrigin,
+    });
+    if (distanceFromOrigin > 400)
+      this.toast.show(`Path is ${distanceFromOrigin.toFixed(0)} m from the map origin — outside the modelled area`);
   }
 }

@@ -282,7 +282,9 @@ export class ViewsPanel {
   protected readonly orbitLike = computed(() => this.view.cameraView() === 'orbit' || this.view.cameraView() === 'top');
   protected readonly follow = computed(() => (this.orbitLike() ? this.view.orbitFollow() : this.view.replayFollow()));
   protected readonly followHint = computed(() =>
-    this.orbitLike() ? 'Follow the drone (Orbit & Top; panning stops it, double-click recentres)' : 'Follow the replay (Chase & FPV)',
+    this.orbitLike()
+      ? 'Follow the drone (Orbit & Top; panning stops it, double-click recentres)'
+      : 'Follow the replay (Chase & FPV)',
   );
   /**
    * Show or hide a panel. The pilot's own click (not the guide's) while a guide or the Welcome showcase plays ends it first,
@@ -300,11 +302,22 @@ export class ViewsPanel {
 
   protected readonly groups = computed(() => {
     const vis = this.layout.panels();
-    return GROUPS.filter(g => g.key !== 'views' || this.view.mainSource() === '3d').map((g) => {
-      const all = g.subs.flatMap((s) => s.ids);
-      const shown = all.filter((id) => vis[id].visible).length;
-      return { ...g, ids: all, subs: g.subs.map((s) => ({ title: s.title, panels: s.ids.filter(id => !QUICK.includes(id)).map((id) => PANELS.find((p) => p.id === id)!) })), all: shown === all.length, some: shown > 0 };
-    }).filter((g) => g.ids.length);
+    return GROUPS.filter((g) => g.key !== 'views' || this.view.mainSource() === '3d')
+      .map((g) => {
+        const all = g.subs.flatMap((s) => s.ids);
+        const shown = all.filter((id) => vis[id].visible).length;
+        return {
+          ...g,
+          ids: all,
+          subs: g.subs.map((s) => ({
+            title: s.title,
+            panels: s.ids.filter((id) => !QUICK.includes(id)).map((id) => PANELS.find((p) => p.id === id)!),
+          })),
+          all: shown === all.length,
+          some: shown > 0,
+        };
+      })
+      .filter((g) => g.ids.length);
   });
 
   /** Folded sections, remembered (Reset UI restores the default folds). */
@@ -338,7 +351,10 @@ export class ViewsPanel {
 
   /** Every panel at once; Views itself always stays, or there would be no way back. */
   protected setAll(on: boolean): void {
-    if (!on) { this.layout.hideAll(); return; }
+    if (!on) {
+      this.layout.hideAll();
+      return;
+    }
     for (const p of PANELS) if (p.id !== 'views' && p.id !== 'features') this.layout.setVisible(p.id, on);
   }
 

@@ -7,14 +7,21 @@ type Which = 'pal' | 'opts';
 
 /** Where the palette is drawn: where it was dragged (kept inside the editor), else the top-left corner. */
 export function palettePlace(pos: XY | null, size: { w: number; h: number }): XY {
-  return pos ? { x: Math.max(0, Math.min(size.w - 46, pos.x)), y: Math.max(0, Math.min(size.h - 60, pos.y)) } : { x: 8, y: 8 };
+  return pos
+    ? { x: Math.max(0, Math.min(size.w - 46, pos.x)), y: Math.max(0, Math.min(size.h - 60, pos.y)) }
+    : { x: 8, y: 8 };
 }
 
 /**
  * Where the options bar is drawn: where it was dragged, else beside the active tool's button (`btn.top` from the
  * palette's top), on the side of the palette with more room (right by default). `max` = the width it may take.
  */
-export function optionsPlace(pos: XY | null, pal: XY, btn: { top: number; palW: number }, size: { w: number; h: number }): { left: number | null; right: number | null; top: number; max: number } {
+export function optionsPlace(
+  pos: XY | null,
+  pal: XY,
+  btn: { top: number; palW: number },
+  size: { w: number; h: number },
+): { left: number | null; right: number | null; top: number; max: number } {
   const { w, h } = size;
   if (pos) {
     const left = Math.max(0, Math.min(w - 120, pos.x));
@@ -74,7 +81,10 @@ export class ToolbarDock {
   measure(pal: HTMLElement | undefined): void {
     if (!pal) return;
     const btn = pal.querySelector<HTMLElement>('.pbtn.on');
-    const next = { top: btn ? btn.getBoundingClientRect().top - pal.getBoundingClientRect().top : 0, palW: pal.offsetWidth };
+    const next = {
+      top: btn ? btn.getBoundingClientRect().top - pal.getBoundingClientRect().top : 0,
+      palW: pal.offsetWidth,
+    };
     const cur = this.toolBtn();
     if (Math.abs(cur.top - next.top) > 0.5 || Math.abs(cur.palW - next.palW) > 0.5) this.toolBtn.set(next);
   }
@@ -84,7 +94,8 @@ export class ToolbarDock {
     e.preventDefault();
     e.stopPropagation();
     const el = (e.currentTarget as HTMLElement).parentElement!;
-    const box = el.getBoundingClientRect(), host = this.host().getBoundingClientRect();
+    const box = el.getBoundingClientRect(),
+      host = this.host().getBoundingClientRect();
     this.tb = { which, dx: e.clientX - box.left, dy: e.clientY - box.top };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     // the bar is about to be placed by hand: start from where it is drawn now

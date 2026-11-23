@@ -65,7 +65,8 @@ export class ReplayPose {
       // blend the two log samples around the moment: drawn at 60 frames a second, the nearest sample alone snaps
       const k = Math.min(lowerBound(T.t, replayTime), T.t.length - 1);
       const j = Math.max(0, k - 1);
-      const at = (q: Quat, i: number): Quat => q.setFromEuler(-T.att[i * 3 + 1]!, -(T.att[i * 3 + 2]! + T.yawOff + rot), -T.att[i * 3]!, 'YXZ');
+      const at = (q: Quat, i: number): Quat =>
+        q.setFromEuler(-T.att[i * 3 + 1]!, -(T.att[i * 3 + 2]! + T.yawOff + rot), -T.att[i * 3]!, 'YXZ');
       const span = T.t[k]! - T.t[j]!;
       const w = span > 0 ? clamp((replayTime - T.t[j]!) / span, 0, 1) : 1;
       this.q.copy(at(this.qa, j)).slerp(at(this.qb, k), w);

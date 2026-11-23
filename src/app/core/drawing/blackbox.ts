@@ -101,7 +101,7 @@ export function drawBlackbox(g: CanvasRenderingContext2D, T: Telemetry, t: numbe
     g.fillStyle = COLORS.text;
     g.fillText(`roll  ${(roll * 57.3).toFixed(0)}°`, 170, 156);
     g.fillText(`pitch ${(pitchUp * 57.3).toFixed(0)}°`, 170, 170);
-    g.fillText(`hdg   ${((((yaw + T.yawOff) * 57.3) % 360 + 360) % 360).toFixed(0)}°`, 170, 184);
+    g.fillText(`hdg   ${(((((yaw + T.yawOff) * 57.3) % 360) + 360) % 360).toFixed(0)}°`, 170, 184);
 
     // gyro, +-2 s around the cursor
     const a = lowerBound(T.t, t - 2);

@@ -15,14 +15,18 @@ export function snapBeside(a: BuildingSpec, b: BuildingSpec, maxGap = 3, edgeTol
   const rot = turned ? a.rotDeg + Math.round((b.rotDeg - a.rotDeg) / 90) * 90 : b.rotDeg;
   if (!turned && dev > 10) return null; // clearly not parallel: leave it
   const q = Math.round((rot - a.rotDeg) / 90) % 2 !== 0;
-  const ca = Math.cos(rad(-a.rotDeg)), sa = Math.sin(rad(-a.rotDeg));
-  const dx = b.pos.x - a.pos.x, dz = b.pos.z - a.pos.z;
+  const ca = Math.cos(rad(-a.rotDeg)),
+    sa = Math.sin(rad(-a.rotDeg));
+  const dx = b.pos.x - a.pos.x,
+    dz = b.pos.z - a.pos.z;
   const c = { x: dx * ca - dz * sa, z: dx * sa + dz * ca }; // b's centre in a's frame
   const ha = { x: a.length / 2, z: a.width / 2 };
   const hb = q ? { x: b.width / 2, z: b.length / 2 } : { x: b.length / 2, z: b.width / 2 };
-  const ox = ha.x + hb.x - Math.abs(c.x), oz = ha.z + hb.z - Math.abs(c.z); // >0 overlap, <0 gap
+  const ox = ha.x + hb.x - Math.abs(c.x),
+    oz = ha.z + hb.z - Math.abs(c.z); // >0 overlap, <0 gap
   // pushing out an overlap and closing a gap are the same move: `o` is positive for an overlap, negative for a gap
-  const sx = c.x >= 0 ? 1 : -1, sz = c.z >= 0 ? 1 : -1;
+  const sx = c.x >= 0 ? 1 : -1,
+    sz = c.z >= 0 ? 1 : -1;
   const n = { x: c.x, z: c.z };
   let main: 'x' | 'z';
   if (ox > 0 && oz > 0) main = ox < oz ? 'x' : 'z';
@@ -33,9 +37,11 @@ export function snapBeside(a: BuildingSpec, b: BuildingSpec, maxGap = 3, edgeTol
   else n.z += sz * oz;
   // line up almost-aligned edges along the other axis (only while the two still share a wall)
   const other = main === 'x' ? 'z' : 'x';
-  const lo = n[other] - hb[other] + ha[other], hi = n[other] + hb[other] - ha[other];
+  const lo = n[other] - hb[other] + ha[other],
+    hi = n[other] + hb[other] - ha[other];
   const adj = Math.abs(lo) <= Math.abs(hi) ? lo : hi;
-  if (Math.abs(adj) > 0.001 && Math.abs(adj) <= edgeTol && ha[other] + hb[other] - Math.abs(n[other] - adj) > 0.5) n[other] -= adj;
+  if (Math.abs(adj) > 0.001 && Math.abs(adj) <= edgeTol && ha[other] + hb[other] - Math.abs(n[other] - adj) > 0.5)
+    n[other] -= adj;
   const wx = n.x * Math.cos(rad(a.rotDeg)) - n.z * Math.sin(rad(a.rotDeg)) + a.pos.x;
   const wz = n.x * Math.sin(rad(a.rotDeg)) + n.z * Math.cos(rad(a.rotDeg)) + a.pos.z;
   const moved = Math.hypot(wx - b.pos.x, wz - b.pos.z);
@@ -46,7 +52,11 @@ export function snapBeside(a: BuildingSpec, b: BuildingSpec, maxGap = 3, edgeTol
 
 /** Align a (new) building to every neighbour that is close enough, nearest first. Returns how many it snapped to. */
 export function autoAlign(b: BuildingSpec, others: readonly BuildingSpec[], maxGap = 3): number {
-  const near = [...others].filter((o) => o.id !== b.id && !o.frame).sort((p, q) => Math.hypot(p.pos.x - b.pos.x, p.pos.z - b.pos.z) - Math.hypot(q.pos.x - b.pos.x, q.pos.z - b.pos.z));
+  const near = [...others]
+    .filter((o) => o.id !== b.id && !o.frame)
+    .sort(
+      (p, q) => Math.hypot(p.pos.x - b.pos.x, p.pos.z - b.pos.z) - Math.hypot(q.pos.x - b.pos.x, q.pos.z - b.pos.z),
+    );
   let n = 0;
   for (const o of near.slice(0, 4)) if (snapBeside(o, b, maxGap) !== null) n++;
   return n;
@@ -59,7 +69,8 @@ export function autoAlign(b: BuildingSpec, others: readonly BuildingSpec[], maxG
 export function magnetAngle(rotDeg: number, near: readonly BuildingSpec[], tol = 4): number {
   const norm = (v: number): number => ((v % 360) + 360) % 360;
   const targets = [0, ...near.map((o) => o.rotDeg)];
-  let best = rotDeg, bestD = tol;
+  let best = rotDeg,
+    bestD = tol;
   for (const t of targets) {
     for (let k = 0; k < 4; k++) {
       const c = norm(t + k * 90);

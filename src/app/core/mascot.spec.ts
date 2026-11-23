@@ -19,24 +19,26 @@ describe('mascot timeline', () => {
     expect(mascotFrame(3000).droneVisible).toBe(true);
     expect(mascotFrame(4300).droneX).toBeLessThan(mascotFrame(2600).droneX);
     expect(mascotFrame(8000).pose).toBe(16);
-    const pokes = timeline.phases.filter(p => p.name.startsWith('poke-'));
-    expect(pokes.map(p => p.poses[0])).toEqual([17, 17]);
+    const pokes = timeline.phases.filter((p) => p.name.startsWith('poke-'));
+    expect(pokes.map((p) => p.poses[0])).toEqual([17, 17]);
     for (const p of pokes) {
       const frame = mascotFrame(p.start);
       expect(frame.droneY).toBe(132);
       expect(frame.propellersSpinning).toBe(false);
     }
-    const middle = timeline.phases.find(p => p.name === 'pause-poke')!;
+    const middle = timeline.phases.find((p) => p.name === 'pause-poke')!;
     expect(mascotFrame(middle.start).pose).toBe(18);
     expect(mascotFrame(middle.start).droneY).toBe(132);
     expect(mascotFrame(middle.start).droneX).toBe(155);
-    const sit = timeline.phases.find(p => p.name === 'sit-before-takeoff')!;
+    const sit = timeline.phases.find((p) => p.name === 'sit-before-takeoff')!;
     expect(mascotFrame(sit.start).pose).toBe(9);
-    const takeoff=timeline.phases.find(p=>p.name==='takeoff')!;
-    const flight=timeline.phases.find(p=>p.name==='fly-out')!;
+    const takeoff = timeline.phases.find((p) => p.name === 'takeoff')!;
+    const flight = timeline.phases.find((p) => p.name === 'fly-out')!;
     expect(mascotFrame(takeoff.start).propellersSpinning).toBe(true);
     expect(mascotFrame(flight.start).droneRight).toBe(true);
     expect(mascotFrame(3000).propellersSpinning).toBe(false);
-    expect(timeline.phases.map(p=>p.name)).toEqual(expect.arrayContaining(['takeoff','rise','higher','look-up','jump','victory','fly-out']));
+    expect(timeline.phases.map((p) => p.name)).toEqual(
+      expect.arrayContaining(['takeoff', 'rise', 'higher', 'look-up', 'jump', 'victory', 'fly-out']),
+    );
   });
 });

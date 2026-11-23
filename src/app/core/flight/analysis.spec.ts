@@ -14,7 +14,16 @@ describe('flight analysis', () => {
   });
 
   it('detects rolls and flips, with the time of the inverted middle', () => {
-    const f = makeFlight(makeTelemetry({ duration: 30, liftoff: 3, flips: [{ at: 6, axis: 'roll' }, { at: 12, axis: 'pitch' }] }));
+    const f = makeFlight(
+      makeTelemetry({
+        duration: 30,
+        liftoff: 3,
+        flips: [
+          { at: 6, axis: 'roll' },
+          { at: 12, axis: 'pitch' },
+        ],
+      }),
+    );
     const ev = findFlips(f);
     expect(ev.length).toBe(2);
     expect(ev[0]?.kind).toBe('roll');

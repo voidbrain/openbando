@@ -1,5 +1,12 @@
 import { computed, signal } from '@angular/core';
-import { applyPattern, detachInstance, placeBlock, placedHead, removeInstance, updateInstance } from '../../../core/blocks';
+import {
+  applyPattern,
+  detachInstance,
+  placeBlock,
+  placedHead,
+  removeInstance,
+  updateInstance,
+} from '../../../core/blocks';
 import type { Pt } from '../../../core/footprint';
 import { expandShapes, shapesFootprint } from '../../../core/shapes';
 import type { StructureSpec } from '../../../core/site-spec';
@@ -71,20 +78,30 @@ export class BlockTool {
     });
     this.h.colSet.set([]);
     this.h.applyNow();
-    this.h.toast.show(done.length ? `“${a.block.name}” on floor ${this.h.levelName(level)}: ${done.join(', ')}.` : 'That pattern changed nothing here.');
+    this.h.toast.show(
+      done.length
+        ? `“${a.block.name}” on floor ${this.h.levelName(level)}: ${done.join(', ')}.`
+        : 'That pattern changed nothing here.',
+    );
   }
 
   /** The block a selected building or structure was placed from, and whether a newer version exists. */
   readonly sel = computed(() => {
     const p = this.h.pick();
-    const ref = p?.t === 'structure' ? this.h.structSel()?.block : p?.t === 'building' || !p ? this.h.building()?.block : undefined;
+    const ref =
+      p?.t === 'structure'
+        ? this.h.structSel()?.block
+        : p?.t === 'building' || !p
+          ? this.h.building()?.block
+          : undefined;
     if (!ref) return null;
     const lib = this.lib.get(ref.id);
     return { ref, name: lib?.name ?? ref.id, latest: lib && lib.version > ref.v ? lib.version : null };
   });
 
   update(): void {
-    const sb = this.sel(), lib = sb ? this.lib.get(sb.ref.id) : null;
+    const sb = this.sel(),
+      lib = sb ? this.lib.get(sb.ref.id) : null;
     if (!sb || !lib) return;
     this.h.ed.commitSite((s) => void updateInstance(s, sb.ref.inst, lib));
     this.h.applyNow();

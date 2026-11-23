@@ -1,7 +1,7 @@
 import { TourService } from '../../services/tour.service';
 import { CameraCompass } from '../widgets/camera-compass';
 import * as THREE from 'three';
-import {pickModel} from '../../three/site-pick';
+import { pickModel } from '../../three/site-pick';
 import { StudioService } from '../../services/studio.service';
 import { LayoutStore } from '../../state/layout.store';
 import { SAT_ATTRIBUTION } from '../../core/satellite';
@@ -76,7 +76,7 @@ export class Stage {
   protected orientCompass(angle: number): void {
     this.scene.autoOrbit.set(false);
     this.view.setCameraView('orbit');
-    this.scene.mainOrbit.th = (angle - this.cal.rot()) * Math.PI / 180;
+    this.scene.mainOrbit.th = ((angle - this.cal.rot()) * Math.PI) / 180;
     this.scene.noteInput();
   }
   protected readonly mainCamera = () => this.scene.host?.mainCamera ?? null;
@@ -107,14 +107,15 @@ export class Stage {
           if (!cam) return;
           // while the map panel's editor tools are armed, its surface owns the picking — never edit through the page
           if (this.scene.pickSurface()) return;
-          if (this.scene.pin()) this.scene.placePin(x, y, cam, { left: 0, top: 0, width: innerWidth, height: innerHeight });
+          if (this.scene.pin())
+            this.scene.placePin(x, y, cam, { left: 0, top: 0, width: innerWidth, height: innerHeight });
           else if (alt) void this.site.altClick(x, y);
           else if (this.layout.panels().studio.visible && this.studio.view() === 'zone') {
-            this.ray.setFromCamera(new THREE.Vector2(x / innerWidth * 2 - 1, 1 - y / innerHeight * 2), cam);
+            this.ray.setFromCamera(new THREE.Vector2((x / innerWidth) * 2 - 1, 1 - (y / innerHeight) * 2), cam);
             const model = this.scene.host?.site;
             if (!model) return;
-            const p=pickModel(this.ray,model,this.site.active());
-            if(p)this.studio.focus.set(p);
+            const p = pickModel(this.ray, model, this.site.active());
+            if (p) this.studio.focus.set(p);
           }
         },
       });

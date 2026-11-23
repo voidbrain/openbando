@@ -36,7 +36,9 @@ type Wall = ReturnType<typeof wallsOf>[number];
 export function clearWall(b: BuildingSpec, li: number, wall: Wall): number {
   let n = 0;
   for (let g = 0; g < 200; g++) {
-    const t = listOpenings(b, li).find((o) => o.axis === wall.axis && Math.abs(o.at - wall.at) < 0.1 && o.c >= wall.from - 0.01 && o.c <= wall.to + 0.01);
+    const t = listOpenings(b, li).find(
+      (o) => o.axis === wall.axis && Math.abs(o.at - wall.at) < 0.1 && o.c >= wall.from - 0.01 && o.c <= wall.to + 0.01,
+    );
     if (!t) break;
     removeOpening(b, li, t.id);
     n++;
@@ -107,11 +109,16 @@ export function setColumnRows(b: BuildingSpec, li: number, o: ColumnOpts = {}): 
   const size = o.size ?? 0.8;
   const inset = Math.min(Math.max(1, o.inset ?? 4), W / 2 - size);
   const given = (o.cross ?? []).filter((q) => q > size / 2 && q < W - size / 2);
-  const cross = given.length ? given : rows === 1 ? [W / 2] : Array.from({ length: rows }, (_, k) => inset + (k * (W - 2 * inset)) / (rows - 1));
+  const cross = given.length
+    ? given
+    : rows === 1
+      ? [W / 2]
+      : Array.from({ length: rows }, (_, k) => inset + (k * (W - 2 * inset)) / (rows - 1));
   lev.columns = [];
   for (const q of cross) {
     for (let a = step; a < L - 1; a += step) {
-      const x = along === 'x' ? a : q, z = along === 'x' ? q : a;
+      const x = along === 'x' ? a : q,
+        z = along === 'x' ? q : a;
       if (!insideBuilding(b, { x: x - b.length / 2, z: z - b.width / 2 })) continue;
       if (lev.columns.some((c) => Math.hypot(c.x - x, c.z - z) < 0.35)) continue;
       lev.columns.push({ x: Math.round(x * 100) / 100, z: Math.round(z * 100) / 100, size });
@@ -141,8 +148,11 @@ export function applyStore(b: BuildingSpec, li: number, o: StoreOpts = {}): stri
     out.push(`${setFacade(b, li, doorsOnMax ? first : last, 'panels', o)} panel bays on the other end wall`);
   }
   // unless told otherwise: the store's four rows (1 ——— 1 - 1 ——— 1), one column every three bays (on the piers)
-  const across = longX ? b.width : b.length, along = longX ? b.length : b.width;
+  const across = longX ? b.width : b.length,
+    along = longX ? b.length : b.width;
   const pitch = along / Math.max(1, Math.round(along / Math.max(2, o.bay ?? 5)));
-  out.push(`${setColumnRows(b, li, { ...o, rows: o.rows ?? 4, step: o.step ?? pitch * 3, ...((o.rows ?? 4) === 4 && !o.cross ? { cross: storeRows(across) } : {}) })} columns`);
+  out.push(
+    `${setColumnRows(b, li, { ...o, rows: o.rows ?? 4, step: o.step ?? pitch * 3, ...((o.rows ?? 4) === 4 && !o.cross ? { cross: storeRows(across) } : {}) })} columns`,
+  );
   return out;
 }

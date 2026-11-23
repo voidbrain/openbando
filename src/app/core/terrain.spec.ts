@@ -2,10 +2,36 @@ import { meshHeightAt } from './terrain';
 import { describe, expect, it } from 'vitest';
 import { siteGround, siteOutline } from './site-ground';
 import { emptySpec, sanitizeSpec, type BuildingSpec } from './site-spec';
-import { applyStroke, brushStroke, rampGuide, sculptStroke, buildHeights, contourPaths, heightColor, heightPixels, heightRange, defaultTerrain, emptyGrid, flattenPad, heightAt, rayGround, sanitizeTerrain, setTerrainBase, type TerrainSpec } from './terrain';
+import {
+  applyStroke,
+  brushStroke,
+  rampGuide,
+  sculptStroke,
+  buildHeights,
+  contourPaths,
+  heightColor,
+  heightPixels,
+  heightRange,
+  defaultTerrain,
+  emptyGrid,
+  flattenPad,
+  heightAt,
+  rayGround,
+  sanitizeTerrain,
+  setTerrainBase,
+  type TerrainSpec,
+} from './terrain';
 
 const flat = (half = 50): TerrainSpec => ({ cell: 1, half: { e: half, n: half }, strokes: [] });
-const bld = (x: number, z: number, l: number, w: number, rot = 0): BuildingSpec => ({ id: `b${x}`, name: 'b', pos: { x, z }, rotDeg: rot, length: l, width: w, levels: [] });
+const bld = (x: number, z: number, l: number, w: number, rot = 0): BuildingSpec => ({
+  id: `b${x}`,
+  name: 'b',
+  pos: { x, z },
+  rotDeg: rot,
+  length: l,
+  width: w,
+  levels: [],
+});
 
 describe('terrain grid', () => {
   it('is flat by default; outside the grid it continues at the nearest edge', () => {
@@ -41,7 +67,17 @@ describe('strokes', () => {
 
   it('a swept stroke changes the ground by the same amount along its path (no stacking)', () => {
     const g = emptyGrid(flat());
-    applyStroke(g, { op: 'raise', pts: [{ x: -10, z: 0 }, { x: -9, z: 0 }, { x: 0, z: 0 }, { x: 10, z: 0 }], radius: 3, strength: 2 });
+    applyStroke(g, {
+      op: 'raise',
+      pts: [
+        { x: -10, z: 0 },
+        { x: -9, z: 0 },
+        { x: 0, z: 0 },
+        { x: 10, z: 0 },
+      ],
+      radius: 3,
+      strength: 2,
+    });
     expect(heightAt(g, -5, 0)).toBeCloseTo(2);
     expect(heightAt(g, 5, 0)).toBeCloseTo(2);
   });
@@ -64,7 +100,15 @@ describe('strokes', () => {
     applyStroke(g, { op: 'crater', pts: [{ x: 20, z: 20 }], radius: 6, strength: 3 });
     expect(heightAt(g, 20, 20)).toBeCloseTo(-3);
     expect(heightAt(g, 25.7, 20)).toBeGreaterThan(0);
-    applyStroke(g, { op: 'ramp', pts: [{ x: 0, z: 10 }, { x: 0, z: 30 }], radius: 2, strength: 4 });
+    applyStroke(g, {
+      op: 'ramp',
+      pts: [
+        { x: 0, z: 10 },
+        { x: 0, z: 30 },
+      ],
+      radius: 2,
+      strength: 4,
+    });
     expect(heightAt(g, 0, 20)).toBeCloseTo(2, 1);
     expect(heightAt(g, 0, 29)).toBeGreaterThan(3.5);
   });
@@ -73,7 +117,16 @@ describe('strokes', () => {
 describe('buildHeights', () => {
   it('feathers the edges back to 0 and levels pads to the typical ground under them', () => {
     const t = flat();
-    t.strokes.push({ op: 'raise', pts: [{ x: -60, z: 0 }, { x: 60, z: 0 }], radius: 200, strength: 4, falloff: 'flat' });
+    t.strokes.push({
+      op: 'raise',
+      pts: [
+        { x: -60, z: 0 },
+        { x: 60, z: 0 },
+      ],
+      radius: 200,
+      strength: 4,
+      falloff: 'flat',
+    });
     const { grid } = buildHeights(t);
     expect(heightAt(grid, 0, 0)).toBeCloseTo(4);
     expect(heightAt(grid, 50, 0)).toBeCloseTo(0);
@@ -82,15 +135,32 @@ describe('buildHeights', () => {
     // the pad is levelled to the median height under it (it used to be the lowest, which buried long buildings on a
     // slope at their high end), and the ground around ramps to it
     const before = heightAt(slope, 11.5, 2.5);
-    const y = flattenPad(slope, { poly: [{ x: 0, z: 0 }, { x: 10, z: 0 }, { x: 10, z: 5 }, { x: 0, z: 5 }] });
+    const y = flattenPad(slope, {
+      poly: [
+        { x: 0, z: 0 },
+        { x: 10, z: 0 },
+        { x: 10, z: 5 },
+        { x: 0, z: 5 },
+      ],
+    });
     expect(y).toBeGreaterThan(5.3);
     expect(y).toBeLessThan(5.7);
-    for (const [x, z] of [[1, 1], [9, 1], [5, 2.5], [9, 4], [1, 4]] as const) expect(heightAt(slope, x, z)).toBeCloseTo(y, 6); // level inside
+    for (const [x, z] of [
+      [1, 1],
+      [9, 1],
+      [5, 2.5],
+      [9, 4],
+      [1, 4],
+    ] as const)
+      expect(heightAt(slope, x, z)).toBeCloseTo(y, 6); // level inside
     expect(Math.abs(heightAt(slope, 11.5, 2.5) - y)).toBeLessThan(Math.abs(before - y)); // just outside, closer to the pad than before
   });
 
   it('real ground keeps its slope up to the edge (it used to be forced down there, making walls and pits)', () => {
-    const t: TerrainSpec = { ...flat(30), base: { source: 'aws-terrarium', key: 'test-slope', fetchedAt: 1, datum: 100 } };
+    const t: TerrainSpec = {
+      ...flat(30),
+      base: { source: 'aws-terrarium', key: 'test-slope', fetchedAt: 1, datum: 100 },
+    };
     const g = emptyGrid(t);
     for (let j = 0; j < g.nz; j++) for (let i = 0; i < g.nx; i++) g.h[j * g.nx + i] = (i - 30) * 0.5; // 0.5 m per metre eastwards
     setTerrainBase('test-slope', g.h.slice());
@@ -101,7 +171,10 @@ describe('buildHeights', () => {
   });
 
   it('uses the registered base heights when present', () => {
-    const t: TerrainSpec = { ...flat(30), base: { source: 'aws-terrarium', key: 'test-base', fetchedAt: 1, datum: 100 } };
+    const t: TerrainSpec = {
+      ...flat(30),
+      base: { source: 'aws-terrarium', key: 'test-base', fetchedAt: 1, datum: 100 },
+    };
     const g = emptyGrid(t);
     setTerrainBase('test-base', new Float32Array(g.h.length).fill(3));
     expect(heightAt(buildHeights(t).grid, 0, 0)).toBeCloseTo(3);
@@ -124,7 +197,14 @@ describe('site ground', () => {
   });
 
   it('sanitizes saved terrain: clamps numbers, drops unknown ops, keeps old specs loading', () => {
-    const t = sanitizeTerrain({ cell: 99, half: { e: 9999, n: 10 }, strokes: [{ op: 'nuke', pts: [{ x: 0, z: 0 }] }, { op: 'raise', pts: [{ x: 0, z: 0 }], radius: 1e6, strength: 3 }] })!;
+    const t = sanitizeTerrain({
+      cell: 99,
+      half: { e: 9999, n: 10 },
+      strokes: [
+        { op: 'nuke', pts: [{ x: 0, z: 0 }] },
+        { op: 'raise', pts: [{ x: 0, z: 0 }], radius: 1e6, strength: 3 },
+      ],
+    })!;
     expect(t.cell).toBe(4);
     expect(t.half).toEqual({ e: 300, n: 20 });
     expect(t.strokes).toHaveLength(1);
@@ -174,16 +254,36 @@ describe('height map colours', () => {
 
 describe('brush strokes from a drag', () => {
   const o = { radius: 8, strength: 2, falloff: 'smooth' as const };
-  const drag = [{ x: 0, z: 0 }, { x: 5, z: 0 }, { x: 10, z: 0 }];
+  const drag = [
+    { x: 0, z: 0 },
+    { x: 5, z: 0 },
+    { x: 10, z: 0 },
+  ];
   it('stamps hills at the first point, sweeps brushes along the drag', () => {
-    expect(brushStroke('hill', drag, 0, { ...o, strength: -3 })).toEqual({ op: 'hill', pts: [{ x: 0, z: 0 }], radius: 8, strength: 3, falloff: 'smooth' });
+    expect(brushStroke('hill', drag, 0, { ...o, strength: -3 })).toEqual({
+      op: 'hill',
+      pts: [{ x: 0, z: 0 }],
+      radius: 8,
+      strength: 3,
+      falloff: 'smooth',
+    });
     expect(brushStroke('raise', drag, 0, o)!.pts).toHaveLength(3);
     expect(brushStroke('smooth', drag, 0, { ...o, strength: 50 })!.strength).toBe(0.5);
     expect(brushStroke('flatten', drag, 1.234, o)!.height).toBe(1.2);
   });
   it('a ramp runs first to last point at half the radius, and needs 2 m', () => {
     expect(brushStroke('ramp', drag, 0, o)).toEqual({ op: 'ramp', pts: [drag[0], drag[2]], radius: 4, strength: 2 });
-    expect(brushStroke('ramp', [{ x: 0, z: 0 }, { x: 1, z: 0 }], 0, o)).toBeNull();
+    expect(
+      brushStroke(
+        'ramp',
+        [
+          { x: 0, z: 0 },
+          { x: 1, z: 0 },
+        ],
+        0,
+        o,
+      ),
+    ).toBeNull();
   });
   it('a height map has one pixel per step cells', () => {
     const g = emptyGrid({ cell: 2, half: { e: 10, n: 6 } });
@@ -204,7 +304,11 @@ describe('sculpting and construction lines', () => {
     expect(b.strength).toBeGreaterThan(a.strength);
     expect(b.radius).toBeGreaterThan(a.radius);
     expect(b.pts).toEqual([{ x: 1.2, z: 4.6 }]);
-    expect(sculptStroke({ x: 0, z: 0 }, 60, true, { radius: 6, rate: 2 })).toMatchObject({ op: 'lower', radius: 24, strength: 40 });
+    expect(sculptStroke({ x: 0, z: 0 }, 60, true, { radius: 6, rate: 2 })).toMatchObject({
+      op: 'lower',
+      radius: 24,
+      strength: 40,
+    });
     const g = emptyGrid({ cell: 1, half: { e: 20, n: 20 } });
     applyStroke(g, b);
     expect(heightAt(g, 1.2, 4.6)).toBeCloseTo(6, 1);
@@ -213,11 +317,15 @@ describe('sculpting and construction lines', () => {
     const r = rampGuide({ x: 0, z: 0 }, { x: 20, z: 0 }, 3, 5);
     expect(r.len).toBe(20);
     expect(r.slope).toBe(25);
-    expect(r.outline).toEqual([{ x: 0, z: 3 }, { x: 20, z: 3 }, { x: 20, z: -3 }, { x: 0, z: -3 }]);
+    expect(r.outline).toEqual([
+      { x: 0, z: 3 },
+      { x: 20, z: 3 },
+      { x: 20, z: -3 },
+      { x: 0, z: -3 },
+    ]);
     expect(r.arrow[1]).toEqual({ x: 20, z: 0 });
   });
 });
-
 
 describe('rendered terrain height', () => {
   it('matches the two triangles instead of bilinear interpolation at a grid saddle', () => {

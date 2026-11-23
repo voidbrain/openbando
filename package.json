@@ -35,7 +35,9 @@
     "check:tooling": "node tools/check-tooling.mjs",
     "rule-load": "node tools/rule-load.mjs",
     "check:rule-load": "node tools/rule-load.mjs --check",
-    "verification:plan": "node tools/verification.mjs"
+    "verification:plan": "node tools/verification.mjs",
+    "format": "prettier --write \"src/**/*.{ts,scss,html}\" \"e2e/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.{ts,scss,html}\" \"e2e/**/*.ts\""
   },
   "private": true,
   "packageManager": "npm@11.17.0",
@@ -66,7 +68,7 @@
     "@vitest/coverage-v8": "^5.0.5",
     "axe-core": "~4.14.0",
     "jsdom": "^30.0.0",
-    "prettier": "^3.8.1",
+    "prettier": "3.9.10",
     "typescript": "~6.0.2",
     "vitest": "^5.0.0"
   },

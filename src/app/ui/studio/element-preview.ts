@@ -1,4 +1,17 @@
-import { Component, output, DestroyRef, ElementRef, afterNextRender, computed, effect, inject, input, signal, untracked, viewChild } from '@angular/core';
+import {
+  Component,
+  output,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core';
 import { PreviewRenderer, type PreviewTarget } from '../../three/element-preview';
 
 /**
@@ -250,14 +263,17 @@ export class ElementPreview {
     if (!this.renderer) return;
     const reframe = this.key() !== this.lastKey;
     clearTimeout(this.timer);
-    this.timer = setTimeout(() => {
-      try {
-        if (reframe) this.focusFix.set(null);
-        this.renderer?.show(this.shown(), reframe);
-        this.lastKey = this.key();
-      } catch {
-        this.failed.set(true);
-      }
-    }, reframe ? 0 : 150);
+    this.timer = setTimeout(
+      () => {
+        try {
+          if (reframe) this.focusFix.set(null);
+          this.renderer?.show(this.shown(), reframe);
+          this.lastKey = this.key();
+        } catch {
+          this.failed.set(true);
+        }
+      },
+      reframe ? 0 : 150,
+    );
   }
 }

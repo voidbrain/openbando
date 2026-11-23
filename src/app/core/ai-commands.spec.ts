@@ -7,8 +7,23 @@ import { ROOF_KINDS, emptySpec, type BuildingSpec, type SiteSpec } from './site-
 const site = (rot = 0): SiteSpec => {
   const s = emptySpec({ lat: 45, lon: 12 }, 'T');
   const b: BuildingSpec = {
-    id: 'w', name: 'Warehouse', pos: { x: 0, z: 0 }, rotDeg: rot, length: 30, width: 12,
-    levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'gable', roofRise: 2 }],
+    id: 'w',
+    name: 'Warehouse',
+    pos: { x: 0, z: 0 },
+    rotDeg: rot,
+    length: 30,
+    width: 12,
+    levels: [
+      {
+        baseY: 0,
+        height: 4,
+        sides: { n: true, s: true, e: true, w: true },
+        doors: {},
+        partitions: [],
+        roof: 'gable',
+        roofRise: 2,
+      },
+    ],
   };
   s.buildings = [b];
   return s;
@@ -84,7 +99,15 @@ describe('ai commands', () => {
 
   it('adds a wing, a floor and renames; reports unknown buildings and ops', () => {
     const s = site();
-    const r = runCommands(s, normalizeCommands([{ op: 'add_wing', side: 'north', size: 10, depth: 6 }, { op: 'add_floor' }, { op: 'rename', name: 'Hangar' }]).cmds, '');
+    const r = runCommands(
+      s,
+      normalizeCommands([
+        { op: 'add_wing', side: 'north', size: 10, depth: 6 },
+        { op: 'add_floor' },
+        { op: 'rename', name: 'Hangar' },
+      ]).cmds,
+      '',
+    );
     expect(r.errors).toEqual([]);
     expect(s.buildings[0]!.name).toBe('Hangar');
     expect(s.buildings[0]!.levels.length).toBe(2);
@@ -96,7 +119,9 @@ describe('ai commands', () => {
   });
 
   it('parses a reply wrapped in text and clamps absurd numbers', () => {
-    const p = parseReply('Sure!\n```json\n{"reply":"ok","commands":[{"op":"add_door","side":"south","width":900}]}\n```');
+    const p = parseReply(
+      'Sure!\n```json\n{"reply":"ok","commands":[{"op":"add_door","side":"south","width":900}]}\n```',
+    );
     expect(p.reply).toBe('ok');
     expect(p.commands[0]!.width).toBe(20);
     expect(parseReply('nonsense').errors.length).toBe(1);
@@ -106,7 +131,14 @@ describe('ai commands', () => {
 describe('ai commands: structures, openings state, columns, conversion', () => {
   it('adds a container and a crane beside the selected building, on a given floor', () => {
     const s = site();
-    const r = runCommands(s, normalizeCommands([{ op: 'add_structure', structure: 'container', east: 6, north: 4 }, { op: 'add_structure', structure: 'tower_crane' }]).cmds, 'w');
+    const r = runCommands(
+      s,
+      normalizeCommands([
+        { op: 'add_structure', structure: 'container', east: 6, north: 4 },
+        { op: 'add_structure', structure: 'tower_crane' },
+      ]).cmds,
+      'w',
+    );
     expect(r.errors).toEqual([]);
     expect(s.structures!.length).toBe(2);
     expect(s.structures![0]).toMatchObject({ kind: 'container', x: 6, z: -4, length: 12.2 }); // north is -z
@@ -114,14 +146,28 @@ describe('ai commands: structures, openings state, columns, conversion', () => {
     s.buildings[0]!.levels.push({ ...JSON.parse(JSON.stringify(s.buildings[0]!.levels[0]!)), baseY: 4 });
     runCommands(s, normalizeCommands([{ op: 'add_structure', structure: 'stairs', level: 2 }]).cmds, 'w');
     expect(s.structures![2]!.y).toBe(4);
-    expect(runCommands(s, normalizeCommands([{ op: 'remove_structure', name: 'container' }]).cmds, 'w').errors).toEqual([]);
+    expect(runCommands(s, normalizeCommands([{ op: 'remove_structure', name: 'container' }]).cmds, 'w').errors).toEqual(
+      [],
+    );
     expect(s.structures!.some((x) => x.kind === 'container')).toBe(false);
   });
 
   it('closes only the windows on a wall, then opens everything', () => {
     const s = site();
-    runCommands(s, normalizeCommands([{ op: 'add_door', side: 'south' }, { op: 'add_window', side: 'north' }, { op: 'add_window', side: 'south', position: 0.2 }]).cmds, 'w');
-    runCommands(s, normalizeCommands([{ op: 'set_openings', state: 'closed', what: 'window', side: 'north' }]).cmds, 'w');
+    runCommands(
+      s,
+      normalizeCommands([
+        { op: 'add_door', side: 'south' },
+        { op: 'add_window', side: 'north' },
+        { op: 'add_window', side: 'south', position: 0.2 },
+      ]).cmds,
+      'w',
+    );
+    runCommands(
+      s,
+      normalizeCommands([{ op: 'set_openings', state: 'closed', what: 'window', side: 'north' }]).cmds,
+      'w',
+    );
     const o = listOpenings(s.buildings[0]!, 0);
     expect(o.filter((x) => x.closed).length).toBe(1);
     expect(o.find((x) => x.closed)!.kind).toBe('window');
@@ -131,7 +177,9 @@ describe('ai commands: structures, openings state, columns, conversion', () => {
 
   it('puts columns in a row or a grid, and converts to a greenhouse', () => {
     const s = site();
-    expect(runCommands(s, normalizeCommands([{ op: 'add_columns', pattern: 'row', count: 5, spacing: 5 }]).cmds, 'w').errors).toEqual([]);
+    expect(
+      runCommands(s, normalizeCommands([{ op: 'add_columns', pattern: 'row', count: 5, spacing: 5 }]).cmds, 'w').errors,
+    ).toEqual([]);
     expect(s.buildings[0]!.levels[0]!.columns!.length).toBe(5);
     const g = site();
     runCommands(g, normalizeCommands([{ op: 'add_columns', pattern: 'grid', spacing: 5 }]).cmds, 'w');
@@ -142,9 +190,10 @@ describe('ai commands: structures, openings state, columns, conversion', () => {
 });
 
 describe('one list of roof kinds (F-037)', () => {
-  it('the assistant\'s schema offers every roof kind, and set_roof accepts each of them', () => {
+  it("the assistant's schema offers every roof kind, and set_roof accepts each of them", () => {
     expect(JSON.stringify(AI_SCHEMA)).toContain(JSON.stringify([...ROOF_KINDS]));
-    for (const roof of ROOF_KINDS) expect(normalizeCommands([{ op: 'set_roof', roof }]).cmds[0]).toMatchObject({ roof });
+    for (const roof of ROOF_KINDS)
+      expect(normalizeCommands([{ op: 'set_roof', roof }]).cmds[0]).toMatchObject({ roof });
     for (const roof of ROOF_KINDS) expect(SYSTEM_PROMPT, `the prompt explains ${roof}`).toContain(roof); // its prose cannot read the list
   });
 });

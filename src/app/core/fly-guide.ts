@@ -39,47 +39,123 @@ export const FLY_ROUTES: readonly { id: FlyRoute; label: string; hint: string }[
 ];
 
 const bando = (s: FlyState): FlyStep => ({
-  id: 'bando', title: 'Open a bando', hint: 'Create one or open a saved one; the model and your alignment stay as you move on.',
-  done: s.bando, skippable: false, action: { kind: 'bandos', label: 'Open the bandos' },
+  id: 'bando',
+  title: 'Open a bando',
+  hint: 'Create one or open a saved one; the model and your alignment stay as you move on.',
+  done: s.bando,
+  skippable: false,
+  action: { kind: 'bandos', label: 'Open the bandos' },
 });
 
 /** The steps of a route, in order. `skipped` holds the ids the pilot chose to skip. */
 export function flySteps(route: FlyRoute, s: FlyState, skipped: ReadonlySet<string>): FlyStep[] {
   if (route === 'replay') {
-    const log = s.logs > 0, both = log && s.video;
+    const log = s.logs > 0,
+      both = log && s.video;
     return [
       bando(s),
-      { id: 'log', title: 'Load the flight log', hint: 'A Betaflight Blackbox CSV, a GPX or a JSON. Skip it if you only have the DVR video.',
-        done: log, skippable: true, action: { kind: 'flights', label: 'Open Flights' } },
-      { id: 'video', title: 'Load its DVR video', hint: 'The video of the same flight; it stays on this computer. Skip it if you only have the log.',
-        done: s.video, skippable: true, action: { kind: 'video', label: 'Open Video' } },
-      { id: 'sync', title: 'Sync the video with the log', hint: 'Press Auto-sync in Video: it lines them up in time from how the picture moves.',
-        done: s.synced, skippable: true,
-        unavailable: both ? undefined : skipped.has('log') || skipped.has('video') ? 'Needs both the log and the video.' : undefined,
-        action: { kind: 'video', label: 'Open Video' } },
-      { id: 'align', title: 'Align the path with the model', hint: 'Time sync does not place the path: pin its start and end, or turn it, in Flight path.',
-        done: false, skippable: true, unavailable: log ? undefined : 'Needs a flight log.', action: { kind: 'path', label: 'Open Flight path' } },
-      { id: 'more', title: 'Compare more flights', hint: 'Load other logs of this bando to replay them together, or exchange race files in Flights.',
-        done: s.logs > 1, skippable: true, action: { kind: 'flights', label: 'Open Flights' } },
+      {
+        id: 'log',
+        title: 'Load the flight log',
+        hint: 'A Betaflight Blackbox CSV, a GPX or a JSON. Skip it if you only have the DVR video.',
+        done: log,
+        skippable: true,
+        action: { kind: 'flights', label: 'Open Flights' },
+      },
+      {
+        id: 'video',
+        title: 'Load its DVR video',
+        hint: 'The video of the same flight; it stays on this computer. Skip it if you only have the log.',
+        done: s.video,
+        skippable: true,
+        action: { kind: 'video', label: 'Open Video' },
+      },
+      {
+        id: 'sync',
+        title: 'Sync the video with the log',
+        hint: 'Press Auto-sync in Video: it lines them up in time from how the picture moves.',
+        done: s.synced,
+        skippable: true,
+        unavailable: both
+          ? undefined
+          : skipped.has('log') || skipped.has('video')
+            ? 'Needs both the log and the video.'
+            : undefined,
+        action: { kind: 'video', label: 'Open Video' },
+      },
+      {
+        id: 'align',
+        title: 'Align the path with the model',
+        hint: 'Time sync does not place the path: pin its start and end, or turn it, in Flight path.',
+        done: false,
+        skippable: true,
+        unavailable: log ? undefined : 'Needs a flight log.',
+        action: { kind: 'path', label: 'Open Flight path' },
+      },
+      {
+        id: 'more',
+        title: 'Compare more flights',
+        hint: 'Load other logs of this bando to replay them together, or exchange race files in Flights.',
+        done: s.logs > 1,
+        skippable: true,
+        action: { kind: 'flights', label: 'Open Flights' },
+      },
     ];
   }
-  if (route === 'sim') return [
-    bando(s),
-    { id: 'controller', title: 'Connect a controller', hint: 'A radio over USB or a gamepad; the keyboard works too (WASD, QE, arrows, space). Skip it to use the keyboard.',
-      done: s.controller, skippable: true, action: { kind: 'radio', label: 'Open Radio controller' } },
-    { id: 'simulator', title: 'Open the simulator', hint: 'Arming is up to you: nothing arms on its own. Collisions can be switched off in the Simulator panel.',
-      done: s.simulatorOpen, skippable: false, action: { kind: 'simulator', label: 'Open Simulator' } },
-    { id: 'arm', title: 'Arm and fly', hint: 'Arm with the switch or the button when you are ready; disarm to land.',
-      done: s.armed, skippable: true, unavailable: s.simulatorOpen ? undefined : 'Open the simulator first.' },
-  ];
+  if (route === 'sim')
+    return [
+      bando(s),
+      {
+        id: 'controller',
+        title: 'Connect a controller',
+        hint: 'A radio over USB or a gamepad; the keyboard works too (WASD, QE, arrows, space). Skip it to use the keyboard.',
+        done: s.controller,
+        skippable: true,
+        action: { kind: 'radio', label: 'Open Radio controller' },
+      },
+      {
+        id: 'simulator',
+        title: 'Open the simulator',
+        hint: 'Arming is up to you: nothing arms on its own. Collisions can be switched off in the Simulator panel.',
+        done: s.simulatorOpen,
+        skippable: false,
+        action: { kind: 'simulator', label: 'Open Simulator' },
+      },
+      {
+        id: 'arm',
+        title: 'Arm and fly',
+        hint: 'Arm with the switch or the button when you are ready; disarm to land.',
+        done: s.armed,
+        skippable: true,
+        unavailable: s.simulatorOpen ? undefined : 'Open the simulator first.',
+      },
+    ];
   return [
     bando(s),
-    { id: 'connect', title: 'Connect the live link', hint: 'Run the telemetry bridge (tools/elrs_bridge.py) and connect to its WebSocket or event stream.',
-      done: s.live === 'connected', skippable: false, action: { kind: 'live', label: 'Open Live link' } },
-    { id: 'watch', title: 'Watch the link', hint: 'The status line says when data goes stale, GPS is lost or the link drops; reconnect from Live link.',
-      done: false, skippable: true, unavailable: s.live === 'connected' ? undefined : 'Connect first.' },
-    { id: 'others', title: 'Fly with others', hint: 'Several live sources show as separate pilots in Flights; a relay is optional and only for people you trust.',
-      done: false, skippable: true, action: { kind: 'flights', label: 'Open Flights' } },
+    {
+      id: 'connect',
+      title: 'Connect the live link',
+      hint: 'Run the telemetry bridge (tools/elrs_bridge.py) and connect to its WebSocket or event stream.',
+      done: s.live === 'connected',
+      skippable: false,
+      action: { kind: 'live', label: 'Open Live link' },
+    },
+    {
+      id: 'watch',
+      title: 'Watch the link',
+      hint: 'The status line says when data goes stale, GPS is lost or the link drops; reconnect from Live link.',
+      done: false,
+      skippable: true,
+      unavailable: s.live === 'connected' ? undefined : 'Connect first.',
+    },
+    {
+      id: 'others',
+      title: 'Fly with others',
+      hint: 'Several live sources show as separate pilots in Flights; a relay is optional and only for people you trust.',
+      done: false,
+      skippable: true,
+      action: { kind: 'flights', label: 'Open Flights' },
+    },
   ];
 }
 

@@ -4,17 +4,31 @@ import { emptySpec, type BuildingSpec } from '../core/site-spec';
 import { floorPoint, indoorFloorHeight, indoorSourcePick, indoorViewSpec } from './indoor-view';
 
 const building: BuildingSpec = {
-  id: 'b', name: 'B', pos: { x: 0, z: 0 }, rotDeg: 0, length: 10, width: 8,
-  levels: [0, 4].map((baseY) => ({ baseY, height: 4, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'gable' as const, roofRise: 2 })),
+  id: 'b',
+  name: 'B',
+  pos: { x: 0, z: 0 },
+  rotDeg: 0,
+  length: 10,
+  width: 8,
+  levels: [0, 4].map((baseY) => ({
+    baseY,
+    height: 4,
+    sides: { n: true, s: true, e: true, w: true },
+    doors: {},
+    partitions: [],
+    roof: 'gable' as const,
+    roofRise: 2,
+  })),
   basement: { height: 3 },
 };
 
 describe('3D indoor floor', () => {
   it('uses the same upper-floor and basement height for placement and measures', () => {
-    const spec = emptySpec(); spec.buildings = [building];
-    expect(indoorFloorHeight(spec, {id: 'b', li: 1})).toBe(4);
-    expect(indoorFloorHeight(spec, {id: 'b', li: -1})).toBe(-3);
-    expect(indoorFloorHeight(spec, {id: 'b', li: 5})).toBeNull();
+    const spec = emptySpec();
+    spec.buildings = [building];
+    expect(indoorFloorHeight(spec, { id: 'b', li: 1 })).toBe(4);
+    expect(indoorFloorHeight(spec, { id: 'b', li: -1 })).toBe(-3);
+    expect(indoorFloorHeight(spec, { id: 'b', li: 5 })).toBeNull();
     expect(indoorFloorHeight(spec, null)).toBeNull();
   });
   it('isolates the chosen floor without changing the source and preserves the terrain cut', () => {
@@ -29,7 +43,8 @@ describe('3D indoor floor', () => {
     expect(building.levels[1]!.roof).toBe('gable');
   });
   it('isolates the basement with its own floor data and maps its picks to −1', () => {
-    const spec = emptySpec(); spec.extent = 60;
+    const spec = emptySpec();
+    spec.extent = 60;
     const b = { ...building, basement: { height: 3, columns: [{ x: 2, z: 2, size: 0.5 }] } };
     spec.buildings = [b];
     const result = indoorViewSpec(spec, { id: 'b', li: -1 });
@@ -37,11 +52,24 @@ describe('3D indoor floor', () => {
     expect(result.buildings[0]!.levels[0]!.baseY).toBe(-3);
     expect(result.buildings[0]!.levels[0]!.columns).toHaveLength(1);
     expect(result.buildings[0]!.basement).toBeUndefined();
-    expect(indoorSourcePick({ kind: 'column', id: 'b', li: 0, i: 0 }, { id: 'b', li: -1 })).toEqual({ kind: 'column', id: 'b', li: -1, i: 0 });
+    expect(indoorSourcePick({ kind: 'column', id: 'b', li: 0, i: 0 }, { id: 'b', li: -1 })).toEqual({
+      kind: 'column',
+      id: 'b',
+      li: -1,
+      i: 0,
+    });
   });
   it('maps isolated picks to their original level and projects onto the selected height', () => {
-    expect(indoorSourcePick({ kind: 'column', id: 'b', li: 0, i: 2 }, { id: 'b', li: 1 })).toEqual({ kind: 'column', id: 'b', li: 1, i: 2 });
-    expect(floorPoint(new THREE.Ray(new THREE.Vector3(2, 10, 3), new THREE.Vector3(0, -1, 0)), 4)).toEqual({ x: 2, z: 3 });
+    expect(indoorSourcePick({ kind: 'column', id: 'b', li: 0, i: 2 }, { id: 'b', li: 1 })).toEqual({
+      kind: 'column',
+      id: 'b',
+      li: 1,
+      i: 2,
+    });
+    expect(floorPoint(new THREE.Ray(new THREE.Vector3(2, 10, 3), new THREE.Vector3(0, -1, 0)), 4)).toEqual({
+      x: 2,
+      z: 3,
+    });
     expect(floorPoint(new THREE.Ray(new THREE.Vector3(2, 0, 3), new THREE.Vector3(0, -1, 0)), 4)).toBeNull();
   });
 });

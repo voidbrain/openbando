@@ -1,13 +1,13 @@
-import {expect, test} from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-test('example descriptions stay compact and work with hover, keyboard and tap', async ({page}) => {
-  await page.addInitScript(() => localStorage.setItem('openbando-welcome', JSON.stringify({completed: true})));
-  await page.emulateMedia({reducedMotion: 'reduce'});
+test('example descriptions stay compact and work with hover, keyboard and tap', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('openbando-welcome', JSON.stringify({ completed: true })));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await page.locator('app-welcome-panel footer .primary').click();
   const card = page.locator('app-studio-panel .card.ex').first();
-  const info = card.getByRole('button', {name: 'About this bando'});
+  const info = card.getByRole('button', { name: 'About this bando' });
   const tip = card.getByRole('tooltip');
   await expect(info).toBeVisible();
   await expect(tip).toBeHidden();
@@ -24,7 +24,10 @@ test('example descriptions stay compact and work with hover, keyboard and tap', 
   await expect(tip).toBeHidden();
   await info.click();
   await expect(tip).toBeVisible();
-  await expect(info).toHaveAttribute('aria-describedby', await tip.getAttribute('id') ?? '');
-  const a11y = await new AxeBuilder({page}).include('app-studio-panel').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+  await expect(info).toHaveAttribute('aria-describedby', (await tip.getAttribute('id')) ?? '');
+  const a11y = await new AxeBuilder({ page })
+    .include('app-studio-panel')
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+    .analyze();
   expect(a11y.violations).toEqual([]);
 });

@@ -8,7 +8,8 @@ describe('the local library', () => {
   beforeEach(() => localStorage.clear());
 
   it('moves bandos saved by older versions into the store once, newest first, and removes the old keys', () => {
-    const a = emptySpec({ lat: 1, lon: 2 }, 'Older'), b = emptySpec({ lat: 3, lon: 4 }, 'Newer');
+    const a = emptySpec({ lat: 1, lon: 2 }, 'Older'),
+      b = emptySpec({ lat: 3, lon: 4 }, 'Newer');
     a.id = 'a';
     b.id = 'b';
     localStorage.setItem('abando-ng-sites', JSON.stringify([{ id: 'b' }, { id: 'a' }, { id: 'gone' }]));
@@ -22,11 +23,12 @@ describe('the local library', () => {
   });
 
   it('keeps the legacy source when migration cannot persist its replacement, then retries safely', async () => {
-    const spec = emptySpec({lat: 1, lon: 1}, 'Legacy'); spec.id = 'legacy';
-    localStorage.setItem('abando-ng-sites', JSON.stringify([{id: spec.id}]));
+    const spec = emptySpec({ lat: 1, lon: 1 }, 'Legacy');
+    spec.id = 'legacy';
+    localStorage.setItem('abando-ng-sites', JSON.stringify([{ id: spec.id }]));
     localStorage.setItem('abando-ng-site-legacy', JSON.stringify(spec));
     const full = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-      throw Object.assign(new Error('full'), {name: 'QuotaExceededError'});
+      throw Object.assign(new Error('full'), { name: 'QuotaExceededError' });
     });
     try {
       const lib = TestBed.inject(SiteLibraryService);
@@ -34,7 +36,9 @@ describe('the local library', () => {
       expect(lib.load('legacy')?.name).toBe('Legacy');
       expect(localStorage.getItem('abando-ng-site-legacy')).not.toBeNull();
       expect(localStorage.getItem('abando-ng-sites')).not.toBeNull();
-    } finally { full.mockRestore(); }
+    } finally {
+      full.mockRestore();
+    }
     TestBed.resetTestingModule();
     const restored = TestBed.inject(SiteLibraryService);
     await Promise.resolve();
@@ -67,7 +71,18 @@ describe('the local library', () => {
 
 describe('the block library', () => {
   beforeEach(() => localStorage.clear());
-  const block = (id: string, version = 1): object => ({ schema: 1, id, version, name: 'Box', kind: 'structure', tags: [], author: 'a', licence: 'CC0', params: [], content: { shapes: [{ prim: 'box', at: { x: 0, y: 1, z: 0 }, size: { x: 1, y: 2, z: 1 }, color: '#123456' }] } });
+  const block = (id: string, version = 1): object => ({
+    schema: 1,
+    id,
+    version,
+    name: 'Box',
+    kind: 'structure',
+    tags: [],
+    author: 'a',
+    licence: 'CC0',
+    params: [],
+    content: { shapes: [{ prim: 'box', at: { x: 0, y: 1, z: 0 }, size: { x: 1, y: 2, z: 1 }, color: '#123456' }] },
+  });
 
   it("keeps the pilot's blocks under local/, bumps the version on a save, forks catalogue blocks", async () => {
     const { BlockLibraryService } = await import('./block-library.service');
@@ -86,7 +101,9 @@ describe('the block library', () => {
     const { BlockLibraryService } = await import('./block-library.service');
     const lib = TestBed.inject(BlockLibraryService);
     expect(lib.importJson(JSON.stringify(block('local/one'))).saved).toHaveLength(1);
-    expect(lib.importJson(JSON.stringify({ schema: 1, blocks: [block('abando/two'), { bad: true }] }))).toMatchObject({ rejected: 1 });
+    expect(lib.importJson(JSON.stringify({ schema: 1, blocks: [block('abando/two'), { bad: true }] }))).toMatchObject({
+      rejected: 1,
+    });
     expect(lib.importJson('not json').rejected).toBe(1);
     expect(lib.exportJson('local/two')).toContain('"local/two"');
   });
@@ -95,11 +112,18 @@ describe('the block library', () => {
     const { BlockLibraryService } = await import('./block-library.service');
     const lib = TestBed.inject(BlockLibraryService);
     const calls: (Record<string, string> | undefined)[] = [];
-    let reply: () => Response = () => new Response(JSON.stringify({ schema: 1, blocks: [block('abando/one'), block('abando/two')] }), { status: 200, headers: { ETag: '"v1"' } });
-    vi.stubGlobal('fetch', vi.fn(async (_u: string, o?: RequestInit) => {
-      calls.push(o?.headers as Record<string, string> | undefined);
-      return reply();
-    }));
+    let reply: () => Response = () =>
+      new Response(JSON.stringify({ schema: 1, blocks: [block('abando/one'), block('abando/two')] }), {
+        status: 200,
+        headers: { ETag: '"v1"' },
+      });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_u: string, o?: RequestInit) => {
+        calls.push(o?.headers as Record<string, string> | undefined);
+        return reply();
+      }),
+    );
     await lib.sync();
     expect(lib.catalog().map((b) => b.id)).toEqual(['abando/one', 'abando/two']);
     expect(lib.lastSync()).toMatchObject({ added: 2 });
@@ -107,7 +131,9 @@ describe('the block library', () => {
     await lib.sync();
     expect(calls[1]).toEqual({ 'If-None-Match': '"v1"' });
     expect(lib.catalog()).toHaveLength(2);
-    reply = () => { throw new TypeError('offline'); };
+    reply = () => {
+      throw new TypeError('offline');
+    };
     await lib.sync();
     expect(lib.status()).not.toBe('idle');
     expect(lib.catalog()).toHaveLength(2);
@@ -127,7 +153,12 @@ describe('sharing a bando without its place', () => {
     const site = TestBed.inject(SiteService);
     const spec = emptySpec({ lat: 45.47, lon: 9.2 }, 'Mill');
     spec.id = 'mill';
-    spec.terrain = { cell: 1, half: { e: 20, n: 20 }, base: { source: 'aws-terrarium', key: 'k-mill', fetchedAt: 1, datum: 18 }, strokes: [] };
+    spec.terrain = {
+      cell: 1,
+      half: { e: 20, n: 20 },
+      base: { source: 'aws-terrarium', key: 'k-mill', fetchedAt: 1, datum: 18 },
+      strokes: [],
+    };
     setTerrainBase('k-mill', new Float32Array(emptyGrid(spec.terrain).h.length).fill(2));
     TestBed.inject(SiteLibraryService).save(spec);
     const file = JSON.stringify(shareCopy(spec, 'hidden', getTerrainBase('k-mill')));
@@ -196,24 +227,29 @@ describe('the map search', () => {
 
 it('waits for the IndexedDB commit before deleting legacy recovery data; error plus abort counts once', async () => {
   for (const succeeds of [true, false]) {
-    TestBed.resetTestingModule(); localStorage.clear();
-    const spec = emptySpec({lat: 1, lon: 1}, 'Legacy'); spec.id = 'legacy-idb';
-    localStorage.setItem('abando-ng-sites', JSON.stringify([{id: spec.id}]));
+    TestBed.resetTestingModule();
+    localStorage.clear();
+    const spec = emptySpec({ lat: 1, lon: 1 }, 'Legacy');
+    spec.id = 'legacy-idb';
+    localStorage.setItem('abando-ng-sites', JSON.stringify([{ id: spec.id }]));
     localStorage.setItem('abando-ng-site-legacy-idb', JSON.stringify(spec));
     const store = TestBed.inject(LibraryStore);
     const tx = {
-      objectStore: () => ({put: vi.fn()}),
+      objectStore: () => ({ put: vi.fn() }),
       oncomplete: null as (() => void) | null,
-      onerror: null as ((event: {preventDefault: () => void}) => void) | null,
+      onerror: null as ((event: { preventDefault: () => void }) => void) | null,
       onabort: null as (() => void) | null,
-      error: {name: 'QuotaExceededError'},
+      error: { name: 'QuotaExceededError' },
     };
-    Object.assign(store, {db: {transaction: () => tx} as unknown as IDBDatabase});
+    Object.assign(store, { db: { transaction: () => tx } as unknown as IDBDatabase });
     const lib = TestBed.inject(SiteLibraryService);
     expect(lib.load(spec.id)?.name).toBe('Legacy');
     expect(localStorage.getItem('abando-ng-site-legacy-idb')).not.toBeNull();
     if (succeeds) tx.oncomplete!();
-    else { tx.onerror!({preventDefault: () => undefined}); tx.onabort!(); }
+    else {
+      tx.onerror!({ preventDefault: () => undefined });
+      tx.onabort!();
+    }
     await Promise.resolve();
     expect(localStorage.getItem('abando-ng-site-legacy-idb') === null).toBe(succeeds);
     expect(store.health().failed).toBe(succeeds ? 0 : 1);

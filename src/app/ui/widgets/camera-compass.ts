@@ -18,7 +18,8 @@ export class CameraCompass {
   readonly orient = output<number>();
   protected readonly angle = signal(0);
   private readonly cal = inject(CalibrationStore);
-  private start: { x: number; y: number; pointer: number; direction: number; angle: number; moved: boolean } | null = null;
+  private start: { x: number; y: number; pointer: number; direction: number; angle: number; moved: boolean } | null =
+    null;
   constructor() {
     const stop = inject(FrameLoopService).every(2, FrameOrder.widgets, () => {
       const camera = this.camera()?.();
@@ -30,31 +31,50 @@ export class CameraCompass {
   }
   private direction(e: PointerEvent): number {
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    return Math.atan2(e.clientY - r.top - r.height / 2, e.clientX - r.left - r.width / 2) * 180 / Math.PI;
+    return (Math.atan2(e.clientY - r.top - r.height / 2, e.clientX - r.left - r.width / 2) * 180) / Math.PI;
   }
   protected down(e: PointerEvent): void {
     if (e.button !== 0) return;
-    e.stopPropagation(); (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    this.start = { x: e.clientX, y: e.clientY, pointer: e.pointerId, direction: this.direction(e), angle: this.angle(), moved: false };
+    e.stopPropagation();
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    this.start = {
+      x: e.clientX,
+      y: e.clientY,
+      pointer: e.pointerId,
+      direction: this.direction(e),
+      angle: this.angle(),
+      moved: false,
+    };
   }
   protected move(e: PointerEvent): void {
-    const s = this.start; if (!s || s.pointer !== e.pointerId) return;
+    const s = this.start;
+    if (!s || s.pointer !== e.pointerId) return;
     e.stopPropagation();
     if (Math.hypot(e.clientX - s.x, e.clientY - s.y) > 3) s.moved = true;
     if (s.moved) this.orient.emit(s.angle + this.direction(e) - s.direction);
   }
   protected up(e: PointerEvent): void {
-    const s = this.start; if (!s || s.pointer !== e.pointerId) return;
-    e.stopPropagation(); this.start = null;
+    const s = this.start;
+    if (!s || s.pointer !== e.pointerId) return;
+    e.stopPropagation();
+    this.start = null;
     if (!s.moved) this.orient.emit(0);
   }
-  protected cancel(): void { this.start = null; }
-  protected click(e: MouseEvent): void { if (e.detail === 0) this.orient.emit(0); }
+  protected cancel(): void {
+    this.start = null;
+  }
+  protected click(e: MouseEvent): void {
+    if (e.detail === 0) this.orient.emit(0);
+  }
   protected key(e: KeyboardEvent): void {
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      e.preventDefault(); e.stopPropagation(); this.orient.emit(this.angle() + (e.key === 'ArrowRight' ? 5 : -5));
+      e.preventDefault();
+      e.stopPropagation();
+      this.orient.emit(this.angle() + (e.key === 'ArrowRight' ? 5 : -5));
     } else if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault(); e.stopPropagation(); this.orient.emit(0);
+      e.preventDefault();
+      e.stopPropagation();
+      this.orient.emit(0);
     }
   }
 }

@@ -70,7 +70,21 @@ export interface ColumnSpec {
   round?: boolean;
 }
 
-export type StructureKind = 'chimney' | 'silo' | 'tank' | 'water_tower' | 'lattice_tower' | 'bridge' | 'stairs' | 'ramp' | 'tower_crane' | 'container' | 'car' | 'truck' | 'excavator' | 'shapes';
+export type StructureKind =
+  | 'chimney'
+  | 'silo'
+  | 'tank'
+  | 'water_tower'
+  | 'lattice_tower'
+  | 'bridge'
+  | 'stairs'
+  | 'ramp'
+  | 'tower_crane'
+  | 'container'
+  | 'car'
+  | 'truck'
+  | 'excavator'
+  | 'shapes';
 
 /**
  * A free-standing structure that is not a building: towers (chimney, silo, storage tank, water tower, lattice mast
@@ -199,9 +213,20 @@ export interface BuildingSpec {
    */
   fixtures?: StructureSpec[];
   /** A basement under the ground floor, `height` metres deep inside (see core/underground.ts basementVolume). */
-  basement?: { height: number; outline?: Vec2[]; wallEdges?: boolean[]; sides?: Partial<Record<'n'|'s'|'e'|'w', boolean>>; partitions?: [Vec2,Vec2][]; doors?: LevelSpec['doors']; wallOpenings?: WallOpening[]; columns?: ColumnSpec[]; voids?: VoidSpec[];
+  basement?: {
+    height: number;
+    outline?: Vec2[];
+    wallEdges?: boolean[];
+    sides?: Partial<Record<'n' | 's' | 'e' | 'w', boolean>>;
+    partitions?: [Vec2, Vec2][];
+    doors?: LevelSpec['doors'];
+    wallOpenings?: WallOpening[];
+    columns?: ColumnSpec[];
+    voids?: VoidSpec[];
     /** Holes through the basement (drawn, ground kept) and further perimeters (not drawn yet); F-002, core/basement-rings.ts. */
-    courtyards?: BasementRing[]; pieces?: BasementRing[] };
+    courtyards?: BasementRing[];
+    pieces?: BasementRing[];
+  };
   /** Placed from a library block. */
   block?: BlockRef;
   /** Its name came from the map data (a shop, a hospital): a copy shared without its place drops it. */
@@ -365,11 +390,19 @@ export function roomsAt(b: BuildingSpec, level: number, v: number): RoomRect[] {
     for (const seg of l.partitions) {
       const [a, c] = seg;
       const vertical = Math.abs(a.x - c.x) < 0.01;
-      const lo = Math.min(a.z, c.z), hi = Math.max(a.z, c.z);
+      const lo = Math.min(a.z, c.z),
+        hi = Math.max(a.z, c.z);
       if (vertical && a.x >= xs[i] - 0.01 && a.x <= xs[i + 1] + 0.01 && lo <= v && hi >= v) {
         // split this strip at the crossing horizontal walls
         const cuts = l.partitions
-          .filter(([p, q]) => Math.abs(p.z - q.z) < 0.01 && p.z > lo + 0.01 && p.z < hi - 0.01 && Math.min(p.x, q.x) <= xs[i + 1] && Math.max(p.x, q.x) >= xs[i])
+          .filter(
+            ([p, q]) =>
+              Math.abs(p.z - q.z) < 0.01 &&
+              p.z > lo + 0.01 &&
+              p.z < hi - 0.01 &&
+              Math.min(p.x, q.x) <= xs[i + 1] &&
+              Math.max(p.x, q.x) >= xs[i],
+          )
           .map(([p]) => p.z)
           .sort((p, q) => p - q);
         let prev = lo;
@@ -396,7 +429,6 @@ export interface LocationInfo {
   footprintHeading?: number;
 }
 
-
 /** Park-Miller generator: the tree layout depends on its exact sequence, so it is part of the spec definition. */
 export function createRandom(seed = 7): () => number {
   let s = seed % 2147483647;
@@ -419,8 +451,10 @@ export const START_MARKER = { size: 4, color: '#e8c65a' } as const;
 export function takeoffPadIndex(s: Pick<SiteSpec, 'pads' | 'droneStart'>): number {
   const { x, z } = s.droneStart;
   for (let i = s.pads.length - 1; i >= 0; i--) {
-    const p = s.pads[i]!, a = ((p.rotDeg ?? 0) * Math.PI) / 180;
-    const u = (x - p.x) * Math.cos(a) + (z - p.z) * Math.sin(a), v = -(x - p.x) * Math.sin(a) + (z - p.z) * Math.cos(a);
+    const p = s.pads[i]!,
+      a = ((p.rotDeg ?? 0) * Math.PI) / 180;
+    const u = (x - p.x) * Math.cos(a) + (z - p.z) * Math.sin(a),
+      v = -(x - p.x) * Math.sin(a) + (z - p.z) * Math.cos(a);
     if (Math.abs(u) <= p.w / 2 + 0.5 && Math.abs(v) <= p.d / 2 + 0.5) return i;
   }
   return -1;
@@ -463,40 +497,133 @@ export function emptySpec(origin: { lat: number; lon: number } = { lat: 0, lon: 
   };
 }
 
-
 /** Keep only the fields we understand (localStorage content may be old or corrupt). */
-const cleanStructures = (list: readonly StructureSpec[]): StructureSpec[] => list.filter((x) => x && typeof x.kind === 'string').map((x) => (x.kind === 'shapes' ? { ...x, shapes: sanitizeShapes(x.shapes) } : x));
+const cleanStructures = (list: readonly StructureSpec[]): StructureSpec[] =>
+  list
+    .filter((x) => x && typeof x.kind === 'string')
+    .map((x) => (x.kind === 'shapes' ? { ...x, shapes: sanitizeShapes(x.shapes) } : x));
 
 /** A building's fixtures in site coordinates (their frame turned and moved with the building). */
 export function fixturesInSite(b: BuildingSpec): StructureSpec[] {
-  const a = (b.rotDeg * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a);
-  return (b.fixtures ?? []).map((f) => ({ ...f, x: b.pos.x + f.x * c - f.z * s, z: b.pos.z + f.x * s + f.z * c, rotDeg: (((f.rotDeg + b.rotDeg) % 360) + 360) % 360 }));
+  const a = (b.rotDeg * Math.PI) / 180,
+    c = Math.cos(a),
+    s = Math.sin(a);
+  return (b.fixtures ?? []).map((f) => ({
+    ...f,
+    x: b.pos.x + f.x * c - f.z * s,
+    z: b.pos.z + f.x * s + f.z * c,
+    rotDeg: (((f.rotDeg + b.rotDeg) % 360) + 360) % 360,
+  }));
 }
 
 function cleanBasement(raw: BuildingSpec['basement']): BuildingSpec['basement'] {
   if (!raw || !Number.isFinite(raw.height)) return undefined;
-  const point=(p:Vec2):boolean=>!!p && Number.isFinite(p.x) && Number.isFinite(p.z) && Math.abs(p.x)<=BASEMENT_COORD_LIMIT && Math.abs(p.z)<=BASEMENT_COORD_LIMIT;
-  const outline=Array.isArray(raw.outline) && raw.outline.every(point) && validOutline(raw.outline) ? raw.outline.map(p=>({x:p.x,z:p.z})) : undefined;
-  const wallEdges = outline && Array.isArray(raw.wallEdges) && raw.wallEdges.length === outline.length && raw.wallEdges.every(v => typeof v === 'boolean') ? [...raw.wallEdges] : undefined;
-  const sides=raw.sides ? Object.fromEntries((['n','s','e','w'] as const).map(k=>[k,raw.sides?.[k]!==false])) : undefined;
-  const partitions=Array.isArray(raw.partitions) ? raw.partitions.filter(w=>Array.isArray(w) && w.length===2 && w.every(point)).slice(0,100).map(([a,b])=>[{x:a.x,z:a.z},{x:b.x,z:b.z}] as [Vec2,Vec2]) : undefined;
-  const validOpening = (o: OpeningSpec): boolean => !!o && (o.kind === 'door' || o.kind === 'window') && Number.isFinite(o.c) && Number.isFinite(o.w) && Number.isFinite(o.h) && o.w > 0 && o.h > 0 && (o.sill === undefined || Number.isFinite(o.sill));
+  const point = (p: Vec2): boolean =>
+    !!p &&
+    Number.isFinite(p.x) &&
+    Number.isFinite(p.z) &&
+    Math.abs(p.x) <= BASEMENT_COORD_LIMIT &&
+    Math.abs(p.z) <= BASEMENT_COORD_LIMIT;
+  const outline =
+    Array.isArray(raw.outline) && raw.outline.every(point) && validOutline(raw.outline)
+      ? raw.outline.map((p) => ({ x: p.x, z: p.z }))
+      : undefined;
+  const wallEdges =
+    outline &&
+    Array.isArray(raw.wallEdges) &&
+    raw.wallEdges.length === outline.length &&
+    raw.wallEdges.every((v) => typeof v === 'boolean')
+      ? [...raw.wallEdges]
+      : undefined;
+  const sides = raw.sides
+    ? Object.fromEntries((['n', 's', 'e', 'w'] as const).map((k) => [k, raw.sides?.[k] !== false]))
+    : undefined;
+  const partitions = Array.isArray(raw.partitions)
+    ? raw.partitions
+        .filter((w) => Array.isArray(w) && w.length === 2 && w.every(point))
+        .slice(0, 100)
+        .map(
+          ([a, b]) =>
+            [
+              { x: a.x, z: a.z },
+              { x: b.x, z: b.z },
+            ] as [Vec2, Vec2],
+        )
+    : undefined;
+  const validOpening = (o: OpeningSpec): boolean =>
+    !!o &&
+    (o.kind === 'door' || o.kind === 'window') &&
+    Number.isFinite(o.c) &&
+    Number.isFinite(o.w) &&
+    Number.isFinite(o.h) &&
+    o.w > 0 &&
+    o.h > 0 &&
+    (o.sill === undefined || Number.isFinite(o.sill));
   const doors: LevelSpec['doors'] = {};
   for (const k of ['n', 's', 'e', 'w'] as const) {
     const list = raw.doors?.[k];
-    if (Array.isArray(list)) doors[k] = list.filter(validOpening).slice(0, 100).map(o => ({ ...o }));
+    if (Array.isArray(list))
+      doors[k] = list
+        .filter(validOpening)
+        .slice(0, 100)
+        .map((o) => ({ ...o }));
   }
-  const wallOpenings = Array.isArray(raw.wallOpenings) ? raw.wallOpenings.filter(o => !!o && point(o) && (o.kind === 'door' || o.kind === 'window') && Number.isFinite(o.w) && o.w > 0 && Number.isFinite(o.h) && o.h > 0 && (o.sill === undefined || Number.isFinite(o.sill))).slice(0, 100).map(o => ({ ...o })) : undefined;
-  const columns = Array.isArray(raw.columns) ? raw.columns.filter(c => !!c && point(c) && Number.isFinite(c.size) && c.size > 0 && c.size <= 50).slice(0, 500).map(c => ({ ...c })) : undefined;
-  const voids = Array.isArray(raw.voids) ? raw.voids.filter(v => !!v && [v.x0, v.z0, v.x1, v.z1].every(n => Number.isFinite(n) && Math.abs(n) <= BASEMENT_COORD_LIMIT) && v.x1 > v.x0 && v.z1 > v.z0).slice(0, 100).map(v => ({ ...v, water: false })) : undefined;
-  const courtyards = cleanRings(raw.courtyards, MAX_COURTYARDS), pieces = cleanRings(raw.pieces, MAX_PIECES);
-  return {height:Math.min(12,Math.max(2,raw.height)),...(outline?{outline}:{}),...(wallEdges?{wallEdges}:{}),...(sides?{sides}:{}),...(partitions?{partitions}:{}),...(Object.keys(doors).length?{doors}:{}),...(wallOpenings?{wallOpenings}:{}),...(columns?{columns}:{}),...(voids?{voids}:{}),...(courtyards?{courtyards}:{}),...(pieces?{pieces}:{})};
+  const wallOpenings = Array.isArray(raw.wallOpenings)
+    ? raw.wallOpenings
+        .filter(
+          (o) =>
+            !!o &&
+            point(o) &&
+            (o.kind === 'door' || o.kind === 'window') &&
+            Number.isFinite(o.w) &&
+            o.w > 0 &&
+            Number.isFinite(o.h) &&
+            o.h > 0 &&
+            (o.sill === undefined || Number.isFinite(o.sill)),
+        )
+        .slice(0, 100)
+        .map((o) => ({ ...o }))
+    : undefined;
+  const columns = Array.isArray(raw.columns)
+    ? raw.columns
+        .filter((c) => !!c && point(c) && Number.isFinite(c.size) && c.size > 0 && c.size <= 50)
+        .slice(0, 500)
+        .map((c) => ({ ...c }))
+    : undefined;
+  const voids = Array.isArray(raw.voids)
+    ? raw.voids
+        .filter(
+          (v) =>
+            !!v &&
+            [v.x0, v.z0, v.x1, v.z1].every((n) => Number.isFinite(n) && Math.abs(n) <= BASEMENT_COORD_LIMIT) &&
+            v.x1 > v.x0 &&
+            v.z1 > v.z0,
+        )
+        .slice(0, 100)
+        .map((v) => ({ ...v, water: false }))
+    : undefined;
+  const courtyards = cleanRings(raw.courtyards, MAX_COURTYARDS),
+    pieces = cleanRings(raw.pieces, MAX_PIECES);
+  return {
+    height: Math.min(12, Math.max(2, raw.height)),
+    ...(outline ? { outline } : {}),
+    ...(wallEdges ? { wallEdges } : {}),
+    ...(sides ? { sides } : {}),
+    ...(partitions ? { partitions } : {}),
+    ...(Object.keys(doors).length ? { doors } : {}),
+    ...(wallOpenings ? { wallOpenings } : {}),
+    ...(columns ? { columns } : {}),
+    ...(voids ? { voids } : {}),
+    ...(courtyards ? { courtyards } : {}),
+    ...(pieces ? { pieces } : {}),
+  };
 }
 
 export function sanitizeSpec(raw: unknown): SiteSpec | null {
   if (!raw || typeof raw !== 'object') return null;
   const s = raw as Partial<SiteSpec>;
-  if (typeof s.id !== 'string' || !Array.isArray(s.buildings) || !s.origin || typeof s.origin.lat !== 'number') return null;
+  if (typeof s.id !== 'string' || !Array.isArray(s.buildings) || !s.origin || typeof s.origin.lat !== 'number')
+    return null;
   return {
     version: 1,
     id: s.id,
@@ -504,18 +631,44 @@ export function sanitizeSpec(raw: unknown): SiteSpec | null {
     createdAt: typeof s.createdAt === 'number' ? s.createdAt : Date.now(),
     origin: { lat: s.origin.lat, lon: typeof s.origin.lon === 'number' ? s.origin.lon : 0 },
     calibration:
-      s.calibration && [s.calibration.rot, s.calibration.dx, s.calibration.dz].every((v) => typeof v === 'number' && isFinite(v))
-        ? { rot: s.calibration.rot, dx: s.calibration.dx, dz: s.calibration.dz, ...(s.calibration.reference && Number.isFinite(s.calibration.reference.lat) && Number.isFinite(s.calibration.reference.lon) && Math.abs(s.calibration.reference.lat) <= 90 && Math.abs(s.calibration.reference.lon) <= 180 ? { reference: { lat: s.calibration.reference.lat, lon: s.calibration.reference.lon } } : {}) }
+      s.calibration &&
+      [s.calibration.rot, s.calibration.dx, s.calibration.dz].every((v) => typeof v === 'number' && isFinite(v))
+        ? {
+            rot: s.calibration.rot,
+            dx: s.calibration.dx,
+            dz: s.calibration.dz,
+            ...(s.calibration.reference &&
+            Number.isFinite(s.calibration.reference.lat) &&
+            Number.isFinite(s.calibration.reference.lon) &&
+            Math.abs(s.calibration.reference.lat) <= 90 &&
+            Math.abs(s.calibration.reference.lon) <= 180
+              ? { reference: { lat: s.calibration.reference.lat, lon: s.calibration.reference.lon } }
+              : {}),
+          }
         : undefined,
     zone:
       s.zone && [s.zone.lat, s.zone.lon, s.zone.halfE, s.zone.halfN].every((v) => typeof v === 'number' && isFinite(v))
-        ? { lat: s.zone.lat, lon: s.zone.lon, halfE: s.zone.halfE, halfN: s.zone.halfN, ...(typeof s.zone.rotDeg === 'number' && isFinite(s.zone.rotDeg) && s.zone.rotDeg ? { rotDeg: s.zone.rotDeg } : {}) }
+        ? {
+            lat: s.zone.lat,
+            lon: s.zone.lon,
+            halfE: s.zone.halfE,
+            halfN: s.zone.halfN,
+            ...(typeof s.zone.rotDeg === 'number' && isFinite(s.zone.rotDeg) && s.zone.rotDeg
+              ? { rotDeg: s.zone.rotDeg }
+              : {}),
+          }
         : undefined,
     areas: Array.isArray(s.areas)
       ? s.areas
           .filter((a) => a && [a.lat, a.lon, a.halfE, a.halfN].every((v) => typeof v === 'number' && isFinite(v)))
           .slice(0, 12)
-          .map((a) => ({ lat: a.lat, lon: a.lon, halfE: a.halfE, halfN: a.halfN, ...(typeof a.rotDeg === 'number' && isFinite(a.rotDeg) && a.rotDeg ? { rotDeg: a.rotDeg } : {}) }))
+          .map((a) => ({
+            lat: a.lat,
+            lon: a.lon,
+            halfE: a.halfE,
+            halfN: a.halfN,
+            ...(typeof a.rotDeg === 'number' && isFinite(a.rotDeg) && a.rotDeg ? { rotDeg: a.rotDeg } : {}),
+          }))
       : undefined,
     fillGaps: typeof s.fillGaps === 'boolean' ? s.fillGaps : undefined,
     // 'rounded' (place ~1 km) is no longer offered: files saved with it open as hidden
@@ -524,7 +677,17 @@ export function sanitizeSpec(raw: unknown): SiteSpec | null {
     bearingDeg: typeof s.bearingDeg === 'number' ? s.bearingDeg : 0,
     genScale: typeof s.genScale === 'number' ? s.genScale : 1,
     groundColor: typeof s.groundColor === 'string' ? s.groundColor : '#789b52',
-    buildings: (s.buildings.filter((b) => b && typeof b.length === 'number') as BuildingSpec[]).map((b) => {const {basement,...rest}=b;const clean=cleanBasement(basement);const valid=clean&&keepValidRings({...rest,basement:clean} as BuildingSpec);const kept=valid&&migrateCompassDoors({...rest,basement:valid} as BuildingSpec);return {...rest,...(kept?{basement:kept}:{}),...(Array.isArray(b.fixtures)?{fixtures:cleanStructures(b.fixtures)}:{})};}),
+    buildings: (s.buildings.filter((b) => b && typeof b.length === 'number') as BuildingSpec[]).map((b) => {
+      const { basement, ...rest } = b;
+      const clean = cleanBasement(basement);
+      const valid = clean && keepValidRings({ ...rest, basement: clean } as BuildingSpec);
+      const kept = valid && migrateCompassDoors({ ...rest, basement: valid } as BuildingSpec);
+      return {
+        ...rest,
+        ...(kept ? { basement: kept } : {}),
+        ...(Array.isArray(b.fixtures) ? { fixtures: cleanStructures(b.fixtures) } : {}),
+      };
+    }),
     pads: Array.isArray(s.pads) ? (s.pads as PadSpec[]) : [],
     walls: Array.isArray(s.walls) ? (s.walls as WallSpec[]) : [],
     // a 'shapes' structure carries primitives from files or AI output: they are checked and capped like the rest
@@ -533,13 +696,22 @@ export function sanitizeSpec(raw: unknown): SiteSpec | null {
     seed: typeof s.seed === 'number' ? s.seed : 7,
     extent: typeof s.extent === 'number' ? s.extent : 500,
     droneStart: s.droneStart && typeof s.droneStart.x === 'number' ? s.droneStart : { x: 0, z: 0 },
-    takeoffOn: s.takeoffOn && typeof s.takeoffOn.building === 'string' && Number.isInteger(s.takeoffOn.level) && s.takeoffOn.level > 0 ? { building: s.takeoffOn.building, level: s.takeoffOn.level } : undefined,
+    takeoffOn:
+      s.takeoffOn &&
+      typeof s.takeoffOn.building === 'string' &&
+      Number.isInteger(s.takeoffOn.level) &&
+      s.takeoffOn.level > 0
+        ? { building: s.takeoffOn.building, level: s.takeoffOn.level }
+        : undefined,
     terrain: sanitizeTerrain(s.terrain),
     ...sanitizeLayers(s),
     calibCorners: s.calibCorners ?? { p1: { x: -100, z: -100 }, p2: { x: 100, z: 100 } },
     geoCorners:
       s.geoCorners && typeof s.geoCorners.p1?.lat === 'number' && typeof s.geoCorners.p2?.lat === 'number'
-        ? { p1: { lat: s.geoCorners.p1.lat, lon: s.geoCorners.p1.lon }, p2: { lat: s.geoCorners.p2.lat, lon: s.geoCorners.p2.lon } }
+        ? {
+            p1: { lat: s.geoCorners.p1.lat, lon: s.geoCorners.p1.lon },
+            p2: { lat: s.geoCorners.p2.lat, lon: s.geoCorners.p2.lon },
+          }
         : undefined,
   };
 }
@@ -553,5 +725,8 @@ export function cloneSpec(spec: SiteSpec): SiteSpec {
 function sanitizeDerived(raw: unknown): SiteSpec['derivedFrom'] {
   const d = raw as { example?: unknown; release?: unknown } | null | undefined;
   if (!d || typeof d.example !== 'string' || !/^bandos\/[a-z0-9-]{1,64}\.json$/.test(d.example)) return undefined;
-  return { example: d.example, release: typeof d.release === 'number' && isFinite(d.release) ? Math.max(1, Math.round(d.release)) : 1 };
+  return {
+    example: d.example,
+    release: typeof d.release === 'number' && isFinite(d.release) ? Math.max(1, Math.round(d.release)) : 1,
+  };
 }

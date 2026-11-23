@@ -32,19 +32,11 @@ describe('exact underground cuts', () => {
   });
   it('preserves the hill crest and cuts a road at the same opening with its decal offset', () => {
     expect(
-      area(
-        cutUnderground(new THREE.PlaneGeometry(20, 20).rotateX(-Math.PI / 2).translate(0, 3, 0), [
-          volume(),
-        ]),
-      ),
+      area(cutUnderground(new THREE.PlaneGeometry(20, 20).rotateX(-Math.PI / 2).translate(0, 3, 0), [volume()])),
     ).toBeCloseTo(400);
     expect(
       area(
-        cutUnderground(
-          new THREE.PlaneGeometry(20, 20).rotateX(-Math.PI / 2).translate(0, 0.06, 0),
-          [volume()],
-          0.06,
-        ),
+        cutUnderground(new THREE.PlaneGeometry(20, 20).rotateX(-Math.PI / 2).translate(0, 0.06, 0), [volume()], 0.06),
       ),
     ).toBeCloseTo(376, 4);
   });

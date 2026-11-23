@@ -49,7 +49,15 @@ export class SiteLibraryService {
       .all<SiteRecord>('sites')
       .filter((r) => r && r.spec && typeof r.spec.id === 'string')
       .sort((a, b) => b.savedAt - a.savedAt)
-      .map(({ spec }) => ({ id: spec.id, name: spec.name, createdAt: spec.createdAt, origin: spec.origin, buildings: spec.buildings?.length ?? 0, ...(spec.privacy ? { privacy: spec.privacy } : {}), ...(spec.derivedFrom ? { derivedFrom: spec.derivedFrom } : {}) }));
+      .map(({ spec }) => ({
+        id: spec.id,
+        name: spec.name,
+        createdAt: spec.createdAt,
+        origin: spec.origin,
+        buildings: spec.buildings?.length ?? 0,
+        ...(spec.privacy ? { privacy: spec.privacy } : {}),
+        ...(spec.derivedFrom ? { derivedFrom: spec.derivedFrom } : {}),
+      }));
   }
 
   load(id: string): SiteSpec | null {
@@ -89,7 +97,9 @@ export class SiteLibraryService {
     let ids: string[] = [];
     try {
       const arr = JSON.parse(raw) as unknown;
-      ids = Array.isArray(arr) ? (arr as { id?: unknown }[]).map((e) => e?.id).filter((x): x is string => typeof x === 'string') : [];
+      ids = Array.isArray(arr)
+        ? (arr as { id?: unknown }[]).map((e) => e?.id).filter((x): x is string => typeof x === 'string')
+        : [];
     } catch {
       /* corrupt index: nothing to move */
     }
@@ -97,7 +107,10 @@ export class SiteLibraryService {
     const now = Date.now(); // once: a clock tick between two bandos must not swap their order
     ids.forEach((id, i) => {
       const t = this.storage.readRaw(legacyKey(id));
-      if (!t) { this.finishLegacy(id); return; }
+      if (!t) {
+        this.finishLegacy(id);
+        return;
+      }
       try {
         const spec = sanitizeSpec(JSON.parse(t) as unknown);
         if (spec) {
@@ -122,10 +135,12 @@ export class SiteLibraryService {
     try {
       const rows: unknown = JSON.parse(raw);
       if (!Array.isArray(rows)) return;
-      const left = rows.filter((row: {id?: unknown} | null) => row?.id !== id);
+      const left = rows.filter((row: { id?: unknown } | null) => row?.id !== id);
       if (left.length) this.storage.write(LEGACY_INDEX, left);
       else this.storage.remove(LEGACY_INDEX);
-    } catch { /* keep a malformed recovery index for inspection */ }
+    } catch {
+      /* keep a malformed recovery index for inspection */
+    }
   }
 
   /** Store a copy of a site under a new id; returns it (null when the source is missing). */

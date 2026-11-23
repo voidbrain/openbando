@@ -3,7 +3,13 @@ import { areaCorners, boundingZone, insideArea, keepInsideAreas, sameArea } from
 import { emptySpec, type ZoneSpec } from './site-spec';
 
 const M_LAT = 111132;
-const at = (lat: number, lon: number, e: number, n: number, rotDeg = 0): ZoneSpec => ({ lat, lon, halfE: e, halfN: n, ...(rotDeg ? { rotDeg } : {}) });
+const at = (lat: number, lon: number, e: number, n: number, rotDeg = 0): ZoneSpec => ({
+  lat,
+  lon,
+  halfE: e,
+  halfN: n,
+  ...(rotDeg ? { rotDeg } : {}),
+});
 
 describe('map areas', () => {
   const a = at(45, 12, 50, 40);
@@ -31,7 +37,11 @@ describe('map areas', () => {
   it('keeps only what is in an area, never the take-off pad', () => {
     const z = boundingZone([a, b]);
     const spec = emptySpec({ lat: z.lat, lon: z.lon });
-    spec.trees = [{ x: 0, z: -100, h: 8, r: 2, kind: 'd' }, { x: 0, z: 0, h: 8, r: 2, kind: 'd' }, { x: 0, z: 100, h: 8, r: 2, kind: 'd' }];
+    spec.trees = [
+      { x: 0, z: -100, h: 8, r: 2, kind: 'd' },
+      { x: 0, z: 0, h: 8, r: 2, kind: 'd' },
+      { x: 0, z: 100, h: 8, r: 2, kind: 'd' },
+    ];
     spec.buildings = [{ id: 'gap', name: '', pos: { x: 0, z: 0 }, rotDeg: 0, length: 10, width: 10, levels: [] }];
     spec.pads = [{ x: 0, z: 0, w: 6, d: 6 }];
     spec.droneStart = { x: 0, z: 0 }; // the take-off pad is the one under the start (F-021)

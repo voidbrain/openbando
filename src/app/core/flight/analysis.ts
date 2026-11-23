@@ -12,7 +12,8 @@ export function findLiftoff(f: Flight): number | null {
   const T = f.tel;
   if (T) {
     const n = T.t.length;
-    const pct = (i: number): number => ((T.mot[i * 4]! + T.mot[i * 4 + 1]! + T.mot[i * 4 + 2]! + T.mot[i * 4 + 3]!) / 4 - MOTOR_MIN) / MOTOR_SPAN;
+    const pct = (i: number): number =>
+      ((T.mot[i * 4]! + T.mot[i * 4 + 1]! + T.mot[i * 4 + 2]! + T.mot[i * 4 + 3]!) / 4 - MOTOR_MIN) / MOTOR_SPAN;
     const sm = new Float32Array(n);
     for (let i = 0; i < n; i++) {
       let s = 0;
@@ -87,7 +88,13 @@ export function findFlips(f: Flight): FlipEvent[] {
     while (c < n - 1 && Math.abs(acc[c]! - acc[s]!) < 180) c++;
     let e = c;
     while (e < n - 1 && Math.abs(acc[e]! - acc[s]!) < 330 && T.t[e]! - T.t[s]! < 2) e++;
-    events.push({ t: T.t[c]!, start: T.t[s]!, end: T.t[e]!, kind: hit === 1 ? 'flip' : 'roll', deg: Math.abs(acc[e]! - acc[s]!) });
+    events.push({
+      t: T.t[c]!,
+      start: T.t[s]!,
+      end: T.t[e]!,
+      kind: hit === 1 ? 'flip' : 'roll',
+      deg: Math.abs(acc[e]! - acc[s]!),
+    });
     i = e + 1;
   }
   return events;

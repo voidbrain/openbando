@@ -5,7 +5,8 @@ export const RAD = Math.PI / 180;
 export const clamp = (v: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, v));
 
 /** Wrap an angle to [-PI, PI). */
-export const wrapPi = (a: number): number => ((((a + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) - Math.PI;
+export const wrapPi = (a: number): number =>
+  ((((a + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)) - Math.PI;
 /** Degrees wrapped into -180..180. */
 export const wrapDeg = (d: number): number => ((((d + 180) % 360) + 360) % 360) - 180;
 /** Speed colour scale used by every widget: blue (slow) -> red (fast). `t` is 0..1. */

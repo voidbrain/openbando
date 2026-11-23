@@ -62,10 +62,11 @@ export class SiteCollider implements CollisionWorld {
     if (floor !== null) return floor;
     let g = heightAt(this.ground, x / k, z / k);
     // a floor or flat roof under the drone (at most a few centimetres above it: it is resting there) is its ground
-    if (y !== undefined) for (const s of this.standing) {
-      if (s.roof && this.roofHidden) continue;
-      if (s.top > g && s.top <= y / k + 0.05 && insidePolygon(s.pts, x / k, z / k)) g = s.top;
-    }
+    if (y !== undefined)
+      for (const s of this.standing) {
+        if (s.roof && this.roofHidden) continue;
+        if (s.top > g && s.top <= y / k + 0.05 && insidePolygon(s.pts, x / k, z / k)) g = s.top;
+      }
     return g * k;
   }
 
@@ -76,19 +77,28 @@ export class SiteCollider implements CollisionWorld {
 
   private undergroundFloor(x: number, z: number, y?: number): number | null {
     if (y === undefined || !this.underground.length) return null;
-    const k = this.scale, floor = floorUnder(this.underground, x / k, z / k, y / k);
+    const k = this.scale,
+      floor = floorUnder(this.underground, x / k, z / k, y / k);
     return floor === null ? null : floor * k;
   }
 
   hit(p: Vec3): boolean {
     const k = this.scale;
-    const x = p.x / k, y = p.y / k, z = p.z / k;
+    const x = p.x / k,
+      y = p.y / k,
+      z = p.z / k;
     const m = this.margin / k;
     for (const b of this.solids) {
       if (b[6] && this.roofHidden) continue;
       // The lower room's ceiling is tiled as boxes. Ignore a tile only inside its linked opening, with clearance
       // for the drone radius; walls and other solids spanning a wider vertical range are unaffected.
-      const openCeiling = this.ceilingTiles.some(({ box, volume: v }) => box === b && y >= tunnelOpeningBottom(v) - m && y <= v.ceiling + v.wall + m && v.ceilingHoles?.some(h => clearInside(h, x, z, m)));
+      const openCeiling = this.ceilingTiles.some(
+        ({ box, volume: v }) =>
+          box === b &&
+          y >= tunnelOpeningBottom(v) - m &&
+          y <= v.ceiling + v.wall + m &&
+          v.ceilingHoles?.some((h) => clearInside(h, x, z, m)),
+      );
       if (openCeiling) continue;
       if (x > b[0] - m && x < b[1] + m && y > b[2] - m && y < b[3] + m && z > b[4] - m && z < b[5] + m) return true;
     }
@@ -103,7 +113,9 @@ export class SiteCollider implements CollisionWorld {
 function clearInside(poly: readonly { x: number; z: number }[], x: number, z: number, margin: number): boolean {
   if (!insidePolygon(poly, x, z)) return false;
   return poly.every((a, i) => {
-    const b = poly[(i + 1) % poly.length]!, dx = b.x - a.x, dz = b.z - a.z;
+    const b = poly[(i + 1) % poly.length]!,
+      dx = b.x - a.x,
+      dz = b.z - a.z;
     const t = Math.max(0, Math.min(1, ((x - a.x) * dx + (z - a.z) * dz) / (dx * dx + dz * dz || 1)));
     return Math.hypot(x - a.x - t * dx, z - a.z - t * dz) >= margin;
   });

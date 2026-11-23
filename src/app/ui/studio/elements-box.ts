@@ -7,7 +7,19 @@ import { FloatBox } from '../float-box';
 
 /** Where a click in the list should take the editor. */
 export interface ElementGo {
-  kind: 'building' | 'structure' | 'fence' | 'trees' | 'floor' | 'columns' | 'wall' | 'void' | 'opening' | 'water' | 'road' | 'surface';
+  kind:
+    | 'building'
+    | 'structure'
+    | 'fence'
+    | 'trees'
+    | 'floor'
+    | 'columns'
+    | 'wall'
+    | 'void'
+    | 'opening'
+    | 'water'
+    | 'road'
+    | 'surface';
   /** building id (floor, columns, wall, void, opening) */
   id?: string;
   /** index into structures / walls / partitions / voids; for an opening, see `opening`. */
@@ -25,17 +37,51 @@ export interface ElementGo {
 }
 
 const GLYPH: Record<StructureKind, string> = {
-  chimney: '🏭', silo: '🛢', tank: '⛽', water_tower: '🗼', lattice_tower: '📡', bridge: '🌉', stairs: '🪜', ramp: '📐',
-  tower_crane: '🏗', container: '📦', car: '🚗', truck: '🚚', excavator: '🚜', shapes: '◆',
+  chimney: '🏭',
+  silo: '🛢',
+  tank: '⛽',
+  water_tower: '🗼',
+  lattice_tower: '📡',
+  bridge: '🌉',
+  stairs: '🪜',
+  ramp: '📐',
+  tower_crane: '🏗',
+  container: '📦',
+  car: '🚗',
+  truck: '🚚',
+  excavator: '🚜',
+  shapes: '◆',
 };
 
-interface BRow { id: string; name: string; levels: number; size: string; points: string; frame: boolean; x: number; z: number; big: number }
-interface ColRow { key: string; id: string; li: number; label: string; n: number; idx: number[]; x: number; z: number; size: number }
+interface BRow {
+  id: string;
+  name: string;
+  levels: number;
+  size: string;
+  points: string;
+  frame: boolean;
+  x: number;
+  z: number;
+  big: number;
+}
+interface ColRow {
+  key: string;
+  id: string;
+  li: number;
+  label: string;
+  n: number;
+  idx: number[];
+  x: number;
+  z: number;
+  size: number;
+}
 
 const levelName = (li: number): string => (li === 0 ? 'G' : `L${li}`);
 /** A building-local point (from its min corner) in site coordinates. */
 const toSite = (b: BuildingSpec, x: number, z: number): Pt => {
-  const a = (b.rotDeg * Math.PI) / 180, lx = x - b.length / 2, lz = z - b.width / 2;
+  const a = (b.rotDeg * Math.PI) / 180,
+    lx = x - b.length / 2,
+    lz = z - b.width / 2;
   return { x: b.pos.x + lx * Math.cos(a) - lz * Math.sin(a), z: b.pos.z + lx * Math.sin(a) + lz * Math.cos(a) };
 };
 
@@ -226,41 +272,115 @@ export class ElementsBox {
   private readonly match = (name: string): boolean => !this.q() || name.toLowerCase().includes(this.q());
 
   protected readonly buildings = computed<BRow[]>(() =>
-    this.spec().buildings.filter((b) => this.match(b.name)).map((b) => {
-      const poly = outlineOf(b);
-      const xs = poly.map((p) => p.x), zs = poly.map((p) => p.z);
-      const x0 = Math.min(...xs), x1 = Math.max(...xs), z0 = Math.min(...zs), z1 = Math.max(...zs);
-      const k = 32 / Math.max(1, x1 - x0, z1 - z0);
-      const points = poly.map((p) => `${(4 + (p.x - x0) * k + (32 - (x1 - x0) * k) / 2).toFixed(1)},${(4 + (p.z - z0) * k + (32 - (z1 - z0) * k) / 2).toFixed(1)}`).join(' ');
-      return { id: b.id, name: b.name, levels: b.levels.length, size: `${b.length.toFixed(0)}×${b.width.toFixed(0)} m`, points, frame: !!b.frame, x: b.pos.x, z: b.pos.z, big: Math.max(b.length, b.width) };
-    }),
+    this.spec()
+      .buildings.filter((b) => this.match(b.name))
+      .map((b) => {
+        const poly = outlineOf(b);
+        const xs = poly.map((p) => p.x),
+          zs = poly.map((p) => p.z);
+        const x0 = Math.min(...xs),
+          x1 = Math.max(...xs),
+          z0 = Math.min(...zs),
+          z1 = Math.max(...zs);
+        const k = 32 / Math.max(1, x1 - x0, z1 - z0);
+        const points = poly
+          .map(
+            (p) =>
+              `${(4 + (p.x - x0) * k + (32 - (x1 - x0) * k) / 2).toFixed(1)},${(4 + (p.z - z0) * k + (32 - (z1 - z0) * k) / 2).toFixed(1)}`,
+          )
+          .join(' ');
+        return {
+          id: b.id,
+          name: b.name,
+          levels: b.levels.length,
+          size: `${b.length.toFixed(0)}×${b.width.toFixed(0)} m`,
+          points,
+          frame: !!b.frame,
+          x: b.pos.x,
+          z: b.pos.z,
+          big: Math.max(b.length, b.width),
+        };
+      }),
   );
   private readonly allStructures = computed(() =>
-    (this.spec().structures ?? []).map((s, i) => ({ i, name: s.name, kind: s.kind.replace('_', ' '), glyph: GLYPH[s.kind] ?? '▲', x: s.x, z: s.z, size: Math.max(s.size, s.length ?? 0, 10) })).filter((s) => this.match(s.name)),
+    (this.spec().structures ?? [])
+      .map((s, i) => ({
+        i,
+        name: s.name,
+        kind: s.kind.replace('_', ' '),
+        glyph: GLYPH[s.kind] ?? '▲',
+        x: s.x,
+        z: s.z,
+        size: Math.max(s.size, s.length ?? 0, 10),
+      }))
+      .filter((s) => this.match(s.name)),
   );
   /** The category view lists every structure; the tree view nests stairs under their building. */
   protected readonly structures = this.allStructures;
-  private readonly nested = computed(() => new Set(this.spec().buildings.flatMap((b) => stairsIn(this.spec(), b).map((s) => s.i))));
+  private readonly nested = computed(
+    () => new Set(this.spec().buildings.flatMap((b) => stairsIn(this.spec(), b).map((s) => s.i))),
+  );
   protected readonly looseStructures = computed(() => this.allStructures().filter((s) => !this.nested().has(s.i)));
   protected readonly fences = computed(() =>
-    (this.spec().walls ?? []).map((w, i) => ({ i, x: (w.a.x + w.b.x) / 2, z: (w.a.z + w.b.z) / 2, len: Math.hypot(w.b.x - w.a.x, w.b.z - w.a.z) })).filter(() => this.match('wall')),
+    (this.spec().walls ?? [])
+      .map((w, i) => ({
+        i,
+        x: (w.a.x + w.b.x) / 2,
+        z: (w.a.z + w.b.z) / 2,
+        len: Math.hypot(w.b.x - w.a.x, w.b.z - w.a.z),
+      }))
+      .filter(() => this.match('wall')),
   );
 
   /** Water, roads and ground surfaces, each with a small outline (roads as their centre line). */
   protected readonly ground = computed(() => {
     const s = this.spec();
     const thumb = (pts: readonly Vec2[]): { points: string; x: number; z: number; size: number } => {
-      const xs = pts.map((p) => p.x), zs = pts.map((p) => p.z);
-      const x0 = Math.min(...xs), x1 = Math.max(...xs), z0 = Math.min(...zs), z1 = Math.max(...zs);
+      const xs = pts.map((p) => p.x),
+        zs = pts.map((p) => p.z);
+      const x0 = Math.min(...xs),
+        x1 = Math.max(...xs),
+        z0 = Math.min(...zs),
+        z1 = Math.max(...zs);
       const k = 32 / Math.max(1, x1 - x0, z1 - z0);
-      const points = pts.map((p) => `${(4 + (p.x - x0) * k + (32 - (x1 - x0) * k) / 2).toFixed(1)},${(4 + (p.z - z0) * k + (32 - (z1 - z0) * k) / 2).toFixed(1)}`).join(' ');
+      const points = pts
+        .map(
+          (p) =>
+            `${(4 + (p.x - x0) * k + (32 - (x1 - x0) * k) / 2).toFixed(1)},${(4 + (p.z - z0) * k + (32 - (z1 - z0) * k) / 2).toFixed(1)}`,
+        )
+        .join(' ');
       return { points, x: (x0 + x1) / 2, z: (z0 + z1) / 2, size: Math.max(10, x1 - x0, z1 - z0) };
     };
-    const len = (pts: readonly Vec2[]): number => pts.slice(1).reduce((a, p, i) => a + Math.hypot(p.x - pts[i]!.x, p.z - pts[i]!.z), 0);
+    const len = (pts: readonly Vec2[]): number =>
+      pts.slice(1).reduce((a, p, i) => a + Math.hypot(p.x - pts[i]!.x, p.z - pts[i]!.z), 0);
     const rows = [
-      ...(s.waters ?? []).map((w, i) => ({ key: `w${i}`, kind: 'water' as const, i, name: `Water ${i + 1}`, info: `${Math.round(polygonArea(w.pts))} m² · ${w.depth} m deep`, color: WATER_COLOR, ...thumb(w.pts) })),
-      ...(s.roads ?? []).map((r, i) => ({ key: `r${i}`, kind: 'road' as const, i, name: `${roadDef(r.kind).label} ${i + 1}`, info: `${Math.round(len(r.pts))} m · ${r.width} m wide`, color: roadDef(r.kind).color, ...thumb(r.pts) })),
-      ...(s.surfaces ?? []).map((x, i) => ({ key: `s${i}`, kind: 'surface' as const, i, name: `${surfaceDef(x.kind).label} ${i + 1}`, info: `${Math.round(polygonArea(x.pts))} m²`, color: surfaceDef(x.kind).color, ...thumb(x.pts) })),
+      ...(s.waters ?? []).map((w, i) => ({
+        key: `w${i}`,
+        kind: 'water' as const,
+        i,
+        name: `Water ${i + 1}`,
+        info: `${Math.round(polygonArea(w.pts))} m² · ${w.depth} m deep`,
+        color: WATER_COLOR,
+        ...thumb(w.pts),
+      })),
+      ...(s.roads ?? []).map((r, i) => ({
+        key: `r${i}`,
+        kind: 'road' as const,
+        i,
+        name: `${roadDef(r.kind).label} ${i + 1}`,
+        info: `${Math.round(len(r.pts))} m · ${r.width} m wide`,
+        color: roadDef(r.kind).color,
+        ...thumb(r.pts),
+      })),
+      ...(s.surfaces ?? []).map((x, i) => ({
+        key: `s${i}`,
+        kind: 'surface' as const,
+        i,
+        name: `${surfaceDef(x.kind).label} ${i + 1}`,
+        info: `${Math.round(polygonArea(x.pts))} m²`,
+        color: surfaceDef(x.kind).color,
+        ...thumb(x.pts),
+      })),
     ];
     return rows.filter((r) => r.points && this.match(r.name));
   });
@@ -272,10 +392,24 @@ export class ElementsBox {
       b.levels.forEach((l, li) => {
         const cols = l.columns ?? [];
         const rows = columnGroups(cols).map((g, gi): ColRow => {
-          const first = cols[g.idx[0]!]!, last = cols[g.idx[g.idx.length - 1]!]!;
+          const first = cols[g.idx[0]!]!,
+            last = cols[g.idx[g.idx.length - 1]!]!;
           const mid = toSite(b, (first.x + last.x) / 2, (first.z + last.z) / 2);
-          const label = g.axis === 'loose' ? `${b.name} · ${levelName(li)} · other columns` : `${b.name} · ${levelName(li)} · row ${gi + 1} (${g.axis === 'x' ? 'z' : 'x'} ${g.at.toFixed(1)} m)`;
-          return { key: `${b.id}/${li}/${gi}`, id: b.id, li, label, n: g.idx.length, idx: g.idx, x: mid.x, z: mid.z, size: Math.max(b.length, b.width) };
+          const label =
+            g.axis === 'loose'
+              ? `${b.name} · ${levelName(li)} · other columns`
+              : `${b.name} · ${levelName(li)} · row ${gi + 1} (${g.axis === 'x' ? 'z' : 'x'} ${g.at.toFixed(1)} m)`;
+          return {
+            key: `${b.id}/${li}/${gi}`,
+            id: b.id,
+            li,
+            label,
+            n: g.idx.length,
+            idx: g.idx,
+            x: mid.x,
+            z: mid.z,
+            size: Math.max(b.length, b.width),
+          };
         });
         if (rows.length) m.set(`${b.id}/${li}`, rows);
       });
@@ -286,18 +420,32 @@ export class ElementsBox {
   protected readonly colTotal = computed(() => this.colRows().reduce((a, c) => a + c.n, 0));
 
   /** What is on each floor, for the tree view. */
-  protected floorsOf(id: string): { li: number; name: string; doors: number; windows: number; parts: number[]; voids: number[]; cols: ColRow[]; stairs: { i: number; name: string; kind: string; glyph: string; x: number; z: number }[] }[] {
+  protected floorsOf(id: string): {
+    li: number;
+    name: string;
+    doors: number;
+    windows: number;
+    parts: number[];
+    voids: number[];
+    cols: ColRow[];
+    stairs: { i: number; name: string; kind: string; glyph: string; x: number; z: number }[];
+  }[] {
     const b = this.spec().buildings.find((x) => x.id === id);
     if (!b) return [];
     const stairs = stairsIn(this.spec(), b);
     return b.levels.map((l, li) => {
       const ops = listOpenings(b, li);
       return {
-        li, name: levelName(li),
-        doors: ops.filter((o) => o.kind === 'door').length, windows: ops.filter((o) => o.kind === 'window').length,
-        parts: l.partitions.map((_, i) => i), voids: (l.voids ?? []).map((_, i) => i),
+        li,
+        name: levelName(li),
+        doors: ops.filter((o) => o.kind === 'door').length,
+        windows: ops.filter((o) => o.kind === 'window').length,
+        parts: l.partitions.map((_, i) => i),
+        voids: (l.voids ?? []).map((_, i) => i),
         cols: this.floorCols().get(`${b.id}/${li}`) ?? [],
-        stairs: stairs.filter((s) => s.level === li).map((s) => ({ i: s.i, name: s.s.name, kind: s.s.kind, glyph: GLYPH[s.s.kind] ?? '▲', x: s.s.x, z: s.s.z })),
+        stairs: stairs
+          .filter((s) => s.level === li)
+          .map((s) => ({ i: s.i, name: s.s.name, kind: s.s.kind, glyph: GLYPH[s.s.kind] ?? '▲', x: s.s.x, z: s.s.z })),
       };
     });
   }
@@ -307,11 +455,21 @@ export class ElementsBox {
   protected readonly zoneRows = computed(() => {
     const trees = this.spec().trees;
     return treeZones(trees).map((z) => {
-      const x0 = z.x - z.size / 2, z0 = z.z - z.size / 2;
+      const x0 = z.x - z.size / 2,
+        z0 = z.z - z.size / 2;
       return {
-        n: z.idx.length, x: z.x, z: z.z, size: z.size, hull: z.hull,
+        n: z.idx.length,
+        x: z.x,
+        z: z.z,
+        size: z.size,
+        hull: z.hull,
         where: `${Math.round(z.x)} E · ${Math.round(-z.z)} N`,
-        dots: z.idx.slice(0, 16).map((i): [number, number] => [4 + ((trees[i]!.x - x0) / z.size) * 32, 4 + ((trees[i]!.z - z0) / z.size) * 32]),
+        dots: z.idx
+          .slice(0, 16)
+          .map((i): [number, number] => [
+            4 + ((trees[i]!.x - x0) / z.size) * 32,
+            4 + ((trees[i]!.z - z0) / z.size) * 32,
+          ]),
       };
     });
   });

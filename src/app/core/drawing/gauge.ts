@@ -22,7 +22,9 @@ export function drawGauge(g: CanvasRenderingContext2D, { speed, scaleMax: M, sou
     const k = Math.min(kmh, M);
     const a0 = Math.PI * 0.75;
     const sw = Math.PI * 1.5;
-    const cx = 75, cy = 64, R = 46;
+    const cx = 75,
+      cy = 64,
+      R = 46;
     g.clearRect(0, 0, GAUGE_SIZE.w, GAUGE_SIZE.h);
     g.lineCap = 'butt';
     for (let i = 0; i < 60; i++) {
@@ -42,7 +44,8 @@ export function drawGauge(g: CanvasRenderingContext2D, { speed, scaleMax: M, sou
     for (let s = 0; s <= M; s += 10) {
       const a = a0 + (sw * s) / M;
       const major = s % 20 === 0;
-      const c = Math.cos(a), n = Math.sin(a);
+      const c = Math.cos(a),
+        n = Math.sin(a);
       g.beginPath();
       g.moveTo(cx + c * R, cy + n * R);
       g.lineTo(cx + c * (R + (major ? 7 : 4)), cy + n * (R + (major ? 7 : 4)));

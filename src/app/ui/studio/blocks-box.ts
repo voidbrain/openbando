@@ -1,6 +1,16 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { tr } from '../../services/i18n.service';
-import { blockFrom, detachInstance, outdated, paramValues, removeInstance, updateInstance, type BlockKind, type BlockSpec, type ParamValue } from '../../core/blocks';
+import {
+  blockFrom,
+  detachInstance,
+  outdated,
+  paramValues,
+  removeInstance,
+  updateInstance,
+  type BlockKind,
+  type BlockSpec,
+  type ParamValue,
+} from '../../core/blocks';
 import { groupBlocks, searchBlocks } from '../../core/catalog';
 import { blockSize, sizeText } from '../../three/block-size';
 import type { BuildingSpec, StructureSpec } from '../../core/site-spec';
@@ -203,7 +213,9 @@ export class BlocksBox {
 
   protected readonly shown = computed(() => searchBlocks(this.lib.all(), this.q(), this.kind()));
   /** Under their sub-category headings; a search keeps its own order (best match first). */
-  protected readonly groups = computed(() => (this.q().trim() ? [{ id: 'found', label: '', blocks: this.shown() }] : groupBlocks(this.shown())));
+  protected readonly groups = computed(() =>
+    this.q().trim() ? [{ id: 'found', label: '', blocks: this.shown() }] : groupBlocks(this.shown()),
+  );
   protected size = (b: BlockSpec): string | null => {
     const s = blockSize(b);
     return s ? sizeText(s) : null;
@@ -217,7 +229,9 @@ export class BlocksBox {
   protected readonly updates = computed(() => outdated(this.site.editor.draft(), this.lib.latest()));
   protected readonly syncTitle = computed(() => {
     const s = this.lib.lastSync();
-    return s ? `Check the online catalogue · last change: ${s.added} new, ${s.updated} updated` : 'Check the online catalogue for new blocks';
+    return s
+      ? `Check the online catalogue · last change: ${s.added} new, ${s.updated} updated`
+      : 'Check the online catalogue for new blocks';
   });
 
   constructor() {
@@ -227,8 +241,18 @@ export class BlocksBox {
   protected val = (e: Event): string => (e.target as HTMLInputElement).value;
   protected num = (e: Event): number => Number((e.target as HTMLInputElement).value) || 0;
   protected checked = (e: Event): boolean => (e.target as HTMLInputElement).checked;
-  protected iconOf = (b: BlockSpec): string | null => (b.thumbnail?.startsWith('icon:') ? b.thumbnail.slice(5) : b.thumbnail ? null : b.kind === 'pattern' ? 'wall' : b.kind === 'building' ? 'building' : 'blocks');
-  protected kindLabel = (k: BlockKind): string => ({ structure: 'Object', building: 'Building', group: 'Group', pattern: 'Pattern (applies to a floor)' })[k];
+  protected iconOf = (b: BlockSpec): string | null =>
+    b.thumbnail?.startsWith('icon:')
+      ? b.thumbnail.slice(5)
+      : b.thumbnail
+        ? null
+        : b.kind === 'pattern'
+          ? 'wall'
+          : b.kind === 'building'
+            ? 'building'
+            : 'blocks';
+  protected kindLabel = (k: BlockKind): string =>
+    ({ structure: 'Object', building: 'Building', group: 'Group', pattern: 'Pattern (applies to a floor)' })[k];
   protected nameOf = (id: string): string => this.lib.get(id)?.name ?? id;
 
   protected pick(b: BlockSpec): void {
@@ -264,17 +288,28 @@ export class BlocksBox {
     input.value = '';
     if (!f) return;
     const r = this.lib.importJson(await f.text());
-    this.toast.show(r.saved.length ? `${r.saved.length} block${r.saved.length > 1 ? 's' : ''} imported${r.rejected ? `, ${r.rejected} refused` : ''}.` : 'Nothing usable in that file.');
+    this.toast.show(
+      r.saved.length
+        ? `${r.saved.length} block${r.saved.length > 1 ? 's' : ''} imported${r.rejected ? `, ${r.rejected} refused` : ''}.`
+        : 'Nothing usable in that file.',
+    );
     if (r.saved[0]) this.selId.set(r.saved[0].id);
   }
 
   protected saveSelection(): void {
-    const b = this.building(), s = this.structure();
+    const b = this.building(),
+      s = this.structure();
     const anchor = b ? b.pos : s ? { x: s.x, z: s.z } : null;
     if (!anchor) return;
     const name = prompt(tr('Name of the new block'), b?.name ?? s?.name ?? 'My block');
     if (!name?.trim()) return;
-    const made = blockFrom(name.trim(), 'me', { buildings: b ? [b] : [], structures: s ? [s] : [] }, anchor, b?.rotDeg ?? s?.rotDeg ?? 0);
+    const made = blockFrom(
+      name.trim(),
+      'me',
+      { buildings: b ? [b] : [], structures: s ? [s] : [] },
+      anchor,
+      b?.rotDeg ?? s?.rotDeg ?? 0,
+    );
     const saved = made ? this.lib.saveOwn(made) : null;
     this.toast.show(saved ? `Saved as “${saved.name}” (${saved.id}).` : 'That selection cannot be made into a block.');
     if (saved) this.selId.set(saved.id);

@@ -10,7 +10,9 @@ test('the showcase link plays to the end', async ({ page }) => {
   await expect(bar).toBeVisible({ timeout: 20_000 });
   await expect(bar).toContainText('Welcome'); // persistent tour title; the opening caption is intentionally brief
   await expect(bar).toBeHidden({ timeout: 300_000 });
-  const shown = await page.locator('app-panel:not([hidden])').evaluateAll((els) => els.map((e) => `${e.getAttribute('data-id')}${e.classList.contains('ghost') ? '*' : ''}`));
+  const shown = await page
+    .locator('app-panel:not([hidden])')
+    .evaluateAll((els) => els.map((e) => `${e.getAttribute('data-id')}${e.classList.contains('ghost') ? '*' : ''}`));
   expect(shown).toEqual(['welcome']);
   await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'OpenBando', exact: true })).toBeVisible();
@@ -20,23 +22,63 @@ test('the showcase link plays to the end', async ({ page }) => {
   await page.waitForTimeout(2000);
   await expect(bar).toBeHidden();
   await expect(page.locator('app-panel[data-id=welcome]')).toBeVisible();
-  const media = await replayVideo.evaluate(video => ({time: (video as HTMLVideoElement).currentTime, duration: (video as HTMLVideoElement).duration}));
+  const media = await replayVideo.evaluate((video) => ({
+    time: (video as HTMLVideoElement).currentTime,
+    duration: (video as HTMLVideoElement).duration,
+  }));
   expect(media.time).toBeGreaterThan(media.duration - 1);
   await page.locator('[data-tour=close-welcome]').click();
   const views = page.locator('app-views-panel');
   await expect(views.locator('.cams .seg button').first()).toHaveAttribute('aria-pressed', 'true');
   await views.locator('.options > summary').click();
-  await expect(views.locator('button.btn.ib').filter({has: page.locator('app-tool-icon[name="follow"]')})).toHaveAttribute('aria-pressed', 'false');
+  await expect(
+    views.locator('button.btn.ib').filter({ has: page.locator('app-tool-icon[name="follow"]') }),
+  ).toHaveAttribute('aria-pressed', 'false');
   await views.locator('button.vis[data-panel=studio]').click();
   const studio = page.locator('app-studio-panel');
   // The showcase model is deliberately temporary; load a real saved fixture for this continuation.
-  const fixture = {version: 1, id: 'after-showcase', name: 'After showcase', createdAt: 0,
-    privacy: 'hidden', origin: {lat: 0, lon: 0}, bearingDeg: 0, genScale: 1, extent: 40, seed: 1,
-    droneStart: {x: -12, z: 0}, calibCorners: {p1: {x: -20, z: -20}, p2: {x: 20, z: 20}},
-    trees: [], pads: [], buildings: [{id: 'b', name: 'Shed', pos: {x: 0, z: 0}, rotDeg: 0, length: 10, width: 8,
-      levels: [{baseY: 0, height: 4, sides: {n: true, s: true, e: true, w: true}, doors: {}, partitions: [], roof: 'flat', roofRise: 0}]}]};
-  await studio.locator('input[type=file]').first().setInputFiles({name: 'after.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture))});
-  await studio.locator('.card:not(.ex)').filter({hasText: fixture.name}).locator('button.title').click();
+  const fixture = {
+    version: 1,
+    id: 'after-showcase',
+    name: 'After showcase',
+    createdAt: 0,
+    privacy: 'hidden',
+    origin: { lat: 0, lon: 0 },
+    bearingDeg: 0,
+    genScale: 1,
+    extent: 40,
+    seed: 1,
+    droneStart: { x: -12, z: 0 },
+    calibCorners: { p1: { x: -20, z: -20 }, p2: { x: 20, z: 20 } },
+    trees: [],
+    pads: [],
+    buildings: [
+      {
+        id: 'b',
+        name: 'Shed',
+        pos: { x: 0, z: 0 },
+        rotDeg: 0,
+        length: 10,
+        width: 8,
+        levels: [
+          {
+            baseY: 0,
+            height: 4,
+            sides: { n: true, s: true, e: true, w: true },
+            doors: {},
+            partitions: [],
+            roof: 'flat',
+            roofRise: 0,
+          },
+        ],
+      },
+    ],
+  };
+  await studio
+    .locator('input[type=file]')
+    .first()
+    .setInputFiles({ name: 'after.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture)) });
+  await studio.locator('.card:not(.ex)').filter({ hasText: fixture.name }).locator('button.title').click();
   await expect(page.locator('app-stage app-camera-compass')).toBeVisible();
   expect(errors).toEqual([]);
 });
@@ -48,12 +90,16 @@ test('showcase keeps Welcome open for a complete mascot loop', async ({ page }) 
     const actions: string[] = [];
     const films: Record<string, number> = {};
     Object.assign(window, { welcomeActions: actions, welcomeFilmProgress: films });
-    document.addEventListener('timeupdate', event => {
-      const film = event.target;
-      if (film instanceof HTMLVideoElement && film.closest('app-welcome-panel') && film.dataset['id'])
-        films[film.dataset['id']] = Math.max(films[film.dataset['id']] ?? 0, film.currentTime);
-    }, true);
-    new MutationObserver(records => {
+    document.addEventListener(
+      'timeupdate',
+      (event) => {
+        const film = event.target;
+        if (film instanceof HTMLVideoElement && film.closest('app-welcome-panel') && film.dataset['id'])
+          films[film.dataset['id']] = Math.max(films[film.dataset['id']] ?? 0, film.currentTime);
+      },
+      true,
+    );
+    new MutationObserver((records) => {
       for (const record of records) {
         if (!(record.target instanceof Element) || !record.target.matches('app-tour-overlay .bar')) continue;
         const action = record.target.getAttribute('data-action');
@@ -67,12 +113,12 @@ test('showcase keeps Welcome open for a complete mascot loop', async ({ page }) 
   await expect(countdown).toBeVisible();
   // Observe each distributed gate; there is no long, separate gate after Share.
   for (const part of ['build', 'fly', 'share']) {
-    await expect(bar).toHaveAttribute('data-action', `hook:welcomePart:${part}`, {timeout: 90_000});
+    await expect(bar).toHaveAttribute('data-action', `hook:welcomePart:${part}`, { timeout: 90_000 });
     const offset = Number(await countdown.getAttribute('stroke-dashoffset'));
     expect(offset).toBeGreaterThanOrEqual(0);
     expect(offset).toBeLessThanOrEqual(1);
     if (part === 'fly') {
-      await bar.getByRole('button', {name: /Pause/}).click();
+      await bar.getByRole('button', { name: /Pause/ }).click();
       // A frame already in flight when Pause lands may still draw once: read the ring after it has settled.
       let held = await countdown.getAttribute('stroke-dashoffset');
       for (let settled = false, tries = 0; !settled && tries < 10; tries++) {
@@ -83,16 +129,18 @@ test('showcase keeps Welcome open for a complete mascot loop', async ({ page }) 
       }
       await page.waitForTimeout(500);
       await expect(countdown).toHaveAttribute('stroke-dashoffset', held!);
-      await bar.getByRole('button', {name: /Resume/}).click();
+      await bar.getByRole('button', { name: /Resume/ }).click();
     }
     await expect(page.locator('app-panel[data-id="welcome"]')).toBeVisible();
     await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
   }
-  await expect(bar).not.toHaveAttribute('data-action', 'hook:welcomePart:share', {timeout: 90_000});
-  const actions = await page.evaluate(() => (window as unknown as {welcomeActions: string[]}).welcomeActions);
+  await expect(bar).not.toHaveAttribute('data-action', 'hook:welcomePart:share', { timeout: 90_000 });
+  const actions = await page.evaluate(() => (window as unknown as { welcomeActions: string[] }).welcomeActions);
   for (const part of ['build', 'fly', 'share']) expect(actions).toContain(`hook:welcomePart:${part}`);
   expect(actions).not.toContain('hook:mascotLoop');
-  const films = await page.evaluate(() => (window as unknown as {welcomeFilmProgress: Record<string, number>}).welcomeFilmProgress);
+  const films = await page.evaluate(
+    () => (window as unknown as { welcomeFilmProgress: Record<string, number> }).welcomeFilmProgress,
+  );
   // The packaged films last eight seconds; check real media progress rather than a nominal wait.
   for (const part of ['build', 'fly', 'share']) expect(films[part], part).toBeGreaterThan(7.5);
   await bar.getByRole('button', { name: /Stop/ }).click();
@@ -116,7 +164,9 @@ test('stopping the showcase returns to Welcome', async ({ page }) => {
   await bar.getByRole('button', { name: /Stop/ }).click();
   await expect(bar).toBeHidden();
   await expect(page.locator('app-panel[data-id="welcome"]')).toBeVisible();
-  const shown = await page.locator('app-panel:not([hidden])').evaluateAll((els) => els.map((e) => e.getAttribute('data-id')));
+  const shown = await page
+    .locator('app-panel:not([hidden])')
+    .evaluateAll((els) => els.map((e) => e.getAttribute('data-id')));
   expect(shown).toEqual(['welcome']);
   await expect(page.locator('app-stage app-camera-compass')).toHaveCount(0);
 });
@@ -139,7 +189,8 @@ test('the showcase offset is what Auto-sync finds', async ({ page }) => {
     );
   };
   await page.evaluate(() => {
-    for (const id of ['flights', 'video']) document.querySelector<HTMLElement>(`app-panel[data-id="${id}"]`)!.hidden = false;
+    for (const id of ['flights', 'video'])
+      document.querySelector<HTMLElement>(`app-panel[data-id="${id}"]`)!.hidden = false;
   });
   await load('flights', 'guide-demo/flight.csv', 'demo.csv', 'text/csv');
   await load('video', 'guide-demo/flight.mp4', 'demo.mp4', 'video/mp4');
@@ -150,23 +201,31 @@ test('the showcase offset is what Auto-sync finds', async ({ page }) => {
   const text = (await status.textContent()) ?? '';
   const found = Number(/offset (-?\d+\.\d+) s/.exec(text)![1]);
   // Record what this machine found (B-025): the scan's spread is part of the evidence, not just pass / fail.
-  test.info().annotations.push({ type: 'auto-sync', description: /offset .*?confidence/.exec(text)?.[0] ?? String(found) });
-  console.log(`auto-sync found ${found} s: ${/whole-flight match \([^)]*\)|lift-off onset only/.exec(text)?.[0] ?? '?'}`);
+  test
+    .info()
+    .annotations.push({ type: 'auto-sync', description: /offset .*?confidence/.exec(text)?.[0] ?? String(found) });
+  console.log(
+    `auto-sync found ${found} s: ${/whole-flight match \([^)]*\)|lift-off onset only/.exec(text)?.[0] ?? '?'}`,
+  );
   expect(Math.abs(found - -0.69)).toBeLessThan(0.15); // DEMO_OFFSET in services/tour.service.ts
 });
 
-test('Welcome navigation cancels the tour overlays and keeps the requested destination', async ({page}) => {
+test('Welcome navigation cancels the tour overlays and keeps the requested destination', async ({ page }) => {
   await page.goto('/?tour=showcase&lang=en');
   const bar = page.locator('app-tour-overlay .bar');
-  await expect(bar).toHaveAttribute('data-action', 'hook:welcomePart:build', {timeout: 30_000});
-  await bar.getByRole('button', {name: /Pause/}).click();
-  await page.setViewportSize({width: 1100, height: 850});
-  await expect.poll(async () => {
-    const target = await page.locator('[data-tour=welcome-build]').boundingBox();
-    const focus = await page.locator('app-tour-overlay .focus').boundingBox();
-    return !!target && !!focus && Math.abs(focus.x - (target.x - 4)) < 1 && Math.abs(focus.width - (target.width + 8)) < 1;
-  }).toBe(true);
-  await page.getByRole('button', {name: 'Open the bandos', exact: true}).first().click();
+  await expect(bar).toHaveAttribute('data-action', 'hook:welcomePart:build', { timeout: 30_000 });
+  await bar.getByRole('button', { name: /Pause/ }).click();
+  await page.setViewportSize({ width: 1100, height: 850 });
+  await expect
+    .poll(async () => {
+      const target = await page.locator('[data-tour=welcome-build]').boundingBox();
+      const focus = await page.locator('app-tour-overlay .focus').boundingBox();
+      return (
+        !!target && !!focus && Math.abs(focus.x - (target.x - 4)) < 1 && Math.abs(focus.width - (target.width + 8)) < 1
+      );
+    })
+    .toBe(true);
+  await page.getByRole('button', { name: 'Open the bandos', exact: true }).first().click();
   await expect(bar).toBeHidden();
   await expect(page.locator('app-tour-overlay .focus, app-tour-overlay .cursor')).toHaveCount(0);
   await expect(page.locator('app-panel[data-id=studio]')).toBeVisible();
@@ -174,29 +233,33 @@ test('Welcome navigation cancels the tour overlays and keeps the requested desti
 });
 
 /** The pilot taking over during the showcase replay ends it, with its replay and video: opening another bando (the pilot's report, 2026-10-30) or a panel from Views (B-042). */
-test('the pilot opening a panel from Views during the showcase stops it and its replay, and keeps the panel', async ({page}) => {
+test('the pilot opening a panel from Views during the showcase stops it and its replay, and keeps the panel', async ({
+  page,
+}) => {
   test.setTimeout(240_000);
   await page.goto('/?tour=showcase&lang=en');
   const bar = page.locator('app-tour-overlay .bar');
   const replayVideo = page.locator('app-video-panel video');
   // wait for the replay itself (the timeline's Play is on), not only an unpaused video: loading primes the video with a
   // short muted play, and a click then lands while the showcase is still arranging its panels
-  await expect(page.locator('app-timeline-panel [data-tour=play].on')).toBeVisible({timeout: 180_000});
-  await expect.poll(() => replayVideo.evaluate((v) => !(v as HTMLVideoElement).paused).catch(() => false), {timeout: 30_000}).toBe(true);
+  await expect(page.locator('app-timeline-panel [data-tour=play].on')).toBeVisible({ timeout: 180_000 });
+  await expect
+    .poll(() => replayVideo.evaluate((v) => !(v as HTMLVideoElement).paused).catch(() => false), { timeout: 30_000 })
+    .toBe(true);
   await expect(bar).toBeVisible();
   // the pilot opens Views, then the Bandos: the showcase ends there (its next step would close the panel again).
   // Keyboard presses are trusted clicks too, and a panel the replay moves cannot intercept them.
-  const menu = page.getByRole('button', {name: 'Open the Views panel', exact: true});
+  const menu = page.getByRole('button', { name: 'Open the Views panel', exact: true });
   if (await menu.count()) await menu.press('Enter');
   await page.locator('app-views-panel button.vis[data-panel=studio]').press('Enter');
   await expect(bar).toBeHidden();
   // software WebGL in CI can hold a frame for seconds while the Bandos editor builds: allow it
-  await expect.poll(() => replayVideo.evaluate((v) => (v as HTMLVideoElement).paused), {timeout: 30_000}).toBe(true);
+  await expect.poll(() => replayVideo.evaluate((v) => (v as HTMLVideoElement).paused), { timeout: 30_000 }).toBe(true);
   // nothing restarts it or moves the panels: a moment later the replay is still paused and the Bandos still open
   await page.waitForTimeout(1500);
   expect(await replayVideo.evaluate((v) => (v as HTMLVideoElement).paused)).toBe(true);
   const example = page.locator('app-studio-panel button[data-tour^="example-"]').first();
-  await expect(example).toBeVisible({timeout: 30_000});
+  await expect(example).toBeVisible({ timeout: 30_000 });
   await example.click();
   await expect(page.locator('app-panel[data-id=studio]')).toBeVisible();
 });

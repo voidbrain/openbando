@@ -3,8 +3,24 @@ import { placeColumn } from './placement';
 import type { BuildingSpec } from './site-spec';
 
 const hall = (cols: { x: number; z: number }[] = []): BuildingSpec => ({
-  id: 'h', name: 'Hall', pos: { x: 0, z: 0 }, rotDeg: 20, length: 30, width: 12,
-  levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'flat', roofRise: 0, columns: cols.map((c) => ({ ...c, size: 0.6 })) }],
+  id: 'h',
+  name: 'Hall',
+  pos: { x: 0, z: 0 },
+  rotDeg: 20,
+  length: 30,
+  width: 12,
+  levels: [
+    {
+      baseY: 0,
+      height: 4,
+      sides: { n: true, s: true, e: true, w: true },
+      doors: {},
+      partitions: [],
+      roof: 'flat',
+      roofRise: 0,
+      columns: cols.map((c) => ({ ...c, size: 0.6 })),
+    },
+  ],
 });
 
 describe('column placement helpers', () => {
@@ -12,7 +28,10 @@ describe('column placement helpers', () => {
     const p = placeColumn(hall(), 0, { x: 7.1, z: 4.9 });
     expect([p.x, p.z]).toEqual([7, 5]);
     expect(p.valid).toBe(true);
-    const walls = p.labels.filter((l) => l.kind === 'wall').map((l) => l.text).sort();
+    const walls = p.labels
+      .filter((l) => l.kind === 'wall')
+      .map((l) => l.text)
+      .sort();
     expect(walls).toEqual(['12 m'.replace('12', '7'), '23 m', '5 m', '7 m'].sort()); // west 7, east 23, north 5, south 7
   });
 
@@ -25,11 +44,27 @@ describe('column placement helpers', () => {
   });
 
   it('finds equal spacing between two columns, and continues the rhythm of two', () => {
-    const mid = placeColumn(hall([{ x: 4, z: 6 }, { x: 14, z: 6 }]), 0, { x: 8.7, z: 6 }, { tol: 0.5 });
+    const mid = placeColumn(
+      hall([
+        { x: 4, z: 6 },
+        { x: 14, z: 6 },
+      ]),
+      0,
+      { x: 8.7, z: 6 },
+      { tol: 0.5 },
+    );
     expect(mid.x).toBe(9);
     expect(mid.snapped.x).toBe('equal');
     expect(mid.labels.filter((l) => l.kind === 'equal').length).toBe(2); // 5 m | 5 m
-    const next = placeColumn(hall([{ x: 4, z: 6 }, { x: 10, z: 6 }]), 0, { x: 15.8, z: 6 }, { tol: 0.5 });
+    const next = placeColumn(
+      hall([
+        { x: 4, z: 6 },
+        { x: 10, z: 6 },
+      ]),
+      0,
+      { x: 15.8, z: 6 },
+      { tol: 0.5 },
+    );
     expect(next.x).toBe(16);
     expect(next.snapped.x).toBe('rhythm');
   });

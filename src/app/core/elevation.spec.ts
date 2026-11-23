@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { baseKey, lonLatToPixel, resampleToGrid, siteToLonLat, terrainBox, terrariumHeight, tileSampler, tilesFor } from './elevation';
+import {
+  baseKey,
+  lonLatToPixel,
+  resampleToGrid,
+  siteToLonLat,
+  terrainBox,
+  terrariumHeight,
+  tileSampler,
+  tilesFor,
+} from './elevation';
 
 describe('elevation tiles', () => {
   it('decodes terrarium pixels', () => {
@@ -32,7 +41,8 @@ describe('elevation tiles', () => {
       px[k] = 128;
       px[k + 1] = 20;
     }
-    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) tiles.set(`${Math.floor(p.x / 256) + dx}/${Math.floor(p.y / 256) + dy}`, px);
+    for (let dx = -1; dx <= 1; dx++)
+      for (let dy = -1; dy <= 1; dy++) tiles.set(`${Math.floor(p.x / 256) + dx}/${Math.floor(p.y / 256) + dy}`, px);
     expect(tileSampler(tiles)(o.lat, o.lon)).toBeCloseTo(20);
     expect(tileSampler(new Map())(o.lat, o.lon)).toBeNaN();
   });
@@ -41,7 +51,8 @@ describe('elevation tiles', () => {
     const o = { lat: 45, lon: 12 };
     const t = { cell: 1, half: { e: 20, n: 20 } };
     // 1 m per 10 m eastwards, 300 m at the origin
-    const slope = (lat: number, lon: number): number => 300 + ((lon - o.lon) * 111320 * Math.cos((o.lat * Math.PI) / 180)) / 10;
+    const slope = (lat: number, lon: number): number =>
+      300 + ((lon - o.lon) * 111320 * Math.cos((o.lat * Math.PI) / 180)) / 10;
     const { heights, datum } = resampleToGrid(t, o, slope);
     expect(datum).toBeCloseTo(300);
     expect(heights[20 * 41 + 20]).toBeCloseTo(0, 3); // the origin

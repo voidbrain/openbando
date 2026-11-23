@@ -7,7 +7,15 @@ import { makeFlight, makeTelemetry } from '../testing/fixtures';
 import { createBlackboxState, drawBlackbox, inDroneDragArea } from './blackbox';
 import { cameraUpAngle } from './camera-compass';
 import { drawDroneModel, DEFAULT_DRONE_VIEW, heatRGB } from './drone-model';
-import { createPathView, dragPathView, drawFlightPath, niceStep, resetPathView, zoomPathView, type PathViewMode } from './flight-path';
+import {
+  createPathView,
+  dragPathView,
+  drawFlightPath,
+  niceStep,
+  resetPathView,
+  zoomPathView,
+  type PathViewMode,
+} from './flight-path';
 import { drawGauge, replayScaleMax } from './gauge';
 import { drawInstruments } from './instruments';
 import { drawSyncPlot } from './sync-plot';
@@ -64,7 +72,9 @@ describe('drone model', () => {
   it('knows whether it is upright or upside down', () => {
     const c = fakeContext();
     expect(drawDroneModel(c.g, 0, 0, 160, 120, new Quat(), mot, DEFAULT_DRONE_VIEW).up).toBeCloseTo(1, 6);
-    expect(drawDroneModel(c.g, 0, 0, 160, 120, attitudeQuat(new Quat(), 0, 0, Math.PI), mot, DEFAULT_DRONE_VIEW).up).toBeCloseTo(-1, 6);
+    expect(
+      drawDroneModel(c.g, 0, 0, 160, 120, attitudeQuat(new Quat(), 0, 0, Math.PI), mot, DEFAULT_DRONE_VIEW).up,
+    ).toBeCloseTo(-1, 6);
   });
 
   it('paints the battery (orange top) over the stack when seen from above', () => {
@@ -126,7 +136,16 @@ describe('flight-path card', () => {
       const c = fakeContext();
       const view = createPathView();
       view.mode = mode;
-      const label = drawFlightPath(c.g, 300, 220, [f], view, DEFAULT_CALIBRATION, 10, new Vec3(f.loc[10]!.x, f.loc[10]!.y, f.loc[10]!.z));
+      const label = drawFlightPath(
+        c.g,
+        300,
+        220,
+        [f],
+        view,
+        DEFAULT_CALIBRATION,
+        10,
+        new Vec3(f.loc[10]!.x, f.loc[10]!.y, f.loc[10]!.z),
+      );
       expect(label).toBe('0 – 36 km/h');
       expect(c.count('arc')).toBeGreaterThan(3); // start, end, replay ring x2
       expect(c.texts().length).toBeGreaterThan(2); // axis labels
@@ -170,7 +189,14 @@ describe('timeline', () => {
 
   it('draws the markers and returns the caption', () => {
     const c = fakeContext();
-    const cap = drawTimeline(c.g, 520, 46, { flight: f, times: pointTimes(f), time: 5, liftoff: findLiftoff(f), firstFlip: findFlips(f)[0]?.t ?? null, speedMax: flightSpeedMax(f) });
+    const cap = drawTimeline(c.g, 520, 46, {
+      flight: f,
+      times: pointTimes(f),
+      time: 5,
+      liftoff: findLiftoff(f),
+      firstFlip: findFlips(f)[0]?.t ?? null,
+      speedMax: flightSpeedMax(f),
+    });
     expect(c.texts()).toContain('T/O');
     expect(c.texts()).toContain('F');
     expect(cap.startsWith('0:05.0 / 0:30.0 · max ')).toBe(true);
@@ -187,9 +213,20 @@ describe('timeline', () => {
 
 describe('sync plot', () => {
   it('plots both curves from the matcher features', () => {
-    const tel = makeTelemetry({ duration: 60, liftoff: 3, flips: [{ at: 11, axis: 'roll' }], flicks: [5, 8, 14, 17, 22] });
+    const tel = makeTelemetry({
+      duration: 60,
+      liftoff: 3,
+      flips: [{ at: 11, axis: 'roll' }],
+      flicks: [5, 8, 14, 17, 22],
+    });
     const flight = makeFlight(tel, 60);
-    const samples = Array.from({ length: 1000 }, (_, i) => ({ t: i * 0.05, pan: Math.sin(i / 7) + 1, diff: 0.01, mag: 0.01, tb: 0.1 }));
+    const samples = Array.from({ length: 1000 }, (_, i) => ({
+      t: i * 0.05,
+      pan: Math.sin(i / 7) + 1,
+      diff: 0.01,
+      mag: 0.01,
+      tb: 0.1,
+    }));
     const r = matchVideoToLog(samples, flight);
     expect(r.features).toBeTruthy();
     const c = fakeContext();
@@ -204,7 +241,8 @@ describe('replay pose', () => {
     const f = makeFlight(null, 10);
     const pose = new ReplayPose();
     pose.update(f, 2.25, DEFAULT_CALIBRATION, 0.016);
-    const a = f.loc[22]!, b = f.loc[23]!;
+    const a = f.loc[22]!,
+      b = f.loc[23]!;
     expect(pose.p.x).toBeCloseTo((a.x + b.x) / 2, 6);
     expect(pose.p.y).toBeCloseTo((a.y + b.y) / 2, 6);
   });

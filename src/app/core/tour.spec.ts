@@ -2,16 +2,28 @@ import { describe, expect, it } from 'vitest';
 import { cloneSpec, emptySpec } from './site-spec';
 import { parseReply } from './ai-prompt';
 import { runCommands } from './ai-commands';
-import { backTarget, showcaseLink, SHOWCASE, AI_SCRIPTS, SNIPPETS, TOURS, checkGuide, playTime, snippetForMark, tourBeats } from './tour';
+import {
+  backTarget,
+  showcaseLink,
+  SHOWCASE,
+  AI_SCRIPTS,
+  SNIPPETS,
+  TOURS,
+  checkGuide,
+  playTime,
+  snippetForMark,
+  tourBeats,
+} from './tour';
 
 describe('guided tour', () => {
   it('every tour uses known snippets, every snippet has captions and known hooks', () => {
     expect(checkGuide()).toEqual([]);
-    expect(checkGuide([{ id: 'x', section: 'bandos', title: 'X', beats: [{ actions: [{ do: 'hook', hook: 'nope' as never }] }] }], [{ id: 't', title: 'T', about: '', snippets: ['x', 'y'] }])).toEqual([
-      'x: needs at least one beat with a caption',
-      'x: unknown hook nope',
-      't: unknown snippet y',
-    ]);
+    expect(
+      checkGuide(
+        [{ id: 'x', section: 'bandos', title: 'X', beats: [{ actions: [{ do: 'hook', hook: 'nope' as never }] }] }],
+        [{ id: 't', title: 'T', about: '', snippets: ['x', 'y'] }],
+      ),
+    ).toEqual(['x: needs at least one beat with a caption', 'x: unknown hook nope', 't: unknown snippet y']);
   });
 
   it('the full tour plays every snippet once, in a few minutes', () => {
@@ -29,15 +41,41 @@ describe('guided tour', () => {
 
   it('the scripted AI answer really changes the building', () => {
     const spec = emptySpec({ lat: 45, lon: 12 });
-    spec.buildings.push({ id: 'b1', name: 'Barrel-vault shed', pos: { x: 0, z: 0 }, rotDeg: 0, length: 60, width: 30, levels: [{ baseY: 0, height: 6, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'flat', roofRise: 1 }] });
+    spec.buildings.push({
+      id: 'b1',
+      name: 'Barrel-vault shed',
+      pos: { x: 0, z: 0 },
+      rotDeg: 0,
+      length: 60,
+      width: 30,
+      levels: [
+        {
+          baseY: 0,
+          height: 6,
+          sides: { n: true, s: true, e: true, w: true },
+          doors: {},
+          partitions: [],
+          roof: 'flat',
+          roofRise: 1,
+        },
+      ],
+    });
     const parsed = parseReply(AI_SCRIPTS['door']!);
     expect(parsed.errors).toEqual([]);
     const s = cloneSpec(spec);
     const r = runCommands(s, parsed.commands, 'b1');
     expect(r.changed).toBe(true);
     const l = s.buildings[0]!.levels[0]!;
-    expect(Object.values(l.doors).flat().filter((o) => o.kind === 'window').length).toBe(8);
-    expect(Object.values(l.doors).flat().some((o) => o.kind === 'door')).toBe(true);
+    expect(
+      Object.values(l.doors)
+        .flat()
+        .filter((o) => o.kind === 'window').length,
+    ).toBe(8);
+    expect(
+      Object.values(l.doors)
+        .flat()
+        .some((o) => o.kind === 'door'),
+    ).toBe(true);
   });
 });
 
@@ -52,7 +90,6 @@ describe('guide Back', () => {
   });
 });
 
-
 describe('the showcase', () => {
   it('plays from a link, in the language it asks for', () => {
     expect(showcaseLink('?tour=showcase&lang=it')).toEqual({ lang: 'it' });
@@ -64,9 +101,15 @@ describe('the showcase', () => {
     expect(SHOWCASE.returnToWelcome).toBe(true);
     const intro = SNIPPETS.find((snippet) => snippet.id === 'sc-welcome')!;
     expect(intro.beats[0]!.actions).not.toContainEqual({ do: 'hook', hook: 'mascotLoop' });
-    expect(intro.beats[1]!.actions.filter(a => a.do === 'hook')).toEqual(['build', 'fly', 'share'].map(arg => ({do: 'hook', hook: 'welcomePart', arg})));
-    expect(intro.beats[1]!.actions.filter(a => a.do === 'wait')).toHaveLength(0);
-    expect(SNIPPETS.find(s => s.id === 'sc-replay')!.beats.at(-1)!.actions.at(-1)).toEqual({do: 'hook', hook: 'replayEnd'});
+    expect(intro.beats[1]!.actions.filter((a) => a.do === 'hook')).toEqual(
+      ['build', 'fly', 'share'].map((arg) => ({ do: 'hook', hook: 'welcomePart', arg })),
+    );
+    expect(intro.beats[1]!.actions.filter((a) => a.do === 'wait')).toHaveLength(0);
+    expect(
+      SNIPPETS.find((s) => s.id === 'sc-replay')!
+        .beats.at(-1)!
+        .actions.at(-1),
+    ).toEqual({ do: 'hook', hook: 'replayEnd' });
     expect(SHOWCASE.snippets.every((id) => SNIPPETS.find((s) => s.id === id)?.section === 'showcase')).toBe(true);
     expect(checkGuide()).toEqual([]);
   });

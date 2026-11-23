@@ -7,15 +7,20 @@ import { buildSiteFromSpec, type GroundStyle, type SiteModel } from './site-mode
 import { rayGround } from '../core/terrain';
 import { buildMeasureView, type MeasureViewItem } from './measure-view';
 
-import {pickModel,type SitePick} from './site-pick';
+import { pickModel, type SitePick } from './site-pick';
 import { floorPoint, indoorFloorHeight, indoorSourcePick, indoorViewSpec, type IndoorFloor } from './indoor-view';
 import { basementHandles, buildingHandles, type BuildingHandle } from './building-handles';
 import { siteGround } from '../core/site-ground';
 import { keepAbove } from './camera-rig';
 
 /** A gesture preview on the ground: a line through `pts`, closed into a ring for an area. */
-export interface DrawLine { pts: readonly { x: number; z: number }[]; closed?: boolean; color: string; height?: number }
-export type {SitePick} from './site-pick';
+export interface DrawLine {
+  pts: readonly { x: number; z: number }[];
+  closed?: boolean;
+  color: string;
+  height?: number;
+}
+export type { SitePick } from './site-pick';
 
 /**
  * The whole bando in 3D inside the editor: the same model the main view builds, with a mouse-orbit camera.
@@ -26,8 +31,12 @@ export class SiteViewRenderer {
   private readonly renderer: THREE.WebGLRenderer;
   private readonly scene = new THREE.Scene();
   private readonly camera = new THREE.PerspectiveCamera(50, 1, 0.02, 6000);
-  get compassCamera(): THREE.Camera { return this.camera; }
-  orientCompass(angle: number, calibration: number): void { this.yaw = (angle - calibration) * Math.PI / 180; }
+  get compassCamera(): THREE.Camera {
+    return this.camera;
+  }
+  orientCompass(angle: number, calibration: number): void {
+    this.yaw = ((angle - calibration) * Math.PI) / 180;
+  }
   private model: SiteModel | null = null;
   private yaw = 0.6;
   private pitch = 0.75;
@@ -76,7 +85,11 @@ export class SiteViewRenderer {
     Object.assign(sun.shadow.camera, { left: -200, right: 200, top: 200, bottom: -200, near: 10, far: 700 });
     this.scene.add(sun);
     this.paths = new PathRenderer(this.scene);
-    const on = <K extends keyof HTMLElementEventMap>(t: K, f: (e: HTMLElementEventMap[K]) => void, o?: AddEventListenerOptions): void => {
+    const on = <K extends keyof HTMLElementEventMap>(
+      t: K,
+      f: (e: HTMLElementEventMap[K]) => void,
+      o?: AddEventListenerOptions,
+    ): void => {
       canvas.addEventListener(t, f as EventListener, o);
       this.off.push(() => canvas.removeEventListener(t, f as EventListener));
     };
@@ -84,8 +97,15 @@ export class SiteViewRenderer {
     const handleAt = (e: PointerEvent): BuildingHandle | undefined => {
       if (this.mode !== 'select' || !this.handles) return undefined;
       const rect = canvas.getBoundingClientRect();
-      this.ray.setFromCamera(new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1), this.camera);
-      return this.ray.intersectObjects(this.handles.children)[0]?.object.userData['handle'] as BuildingHandle | undefined;
+      this.ray.setFromCamera(
+        new THREE.Vector2(
+          ((e.clientX - rect.left) / rect.width) * 2 - 1,
+          -((e.clientY - rect.top) / rect.height) * 2 + 1,
+        ),
+        this.camera,
+      );
+      return this.ray.intersectObjects(this.handles.children)[0]?.object.userData['handle'] as
+        BuildingHandle | undefined;
     };
     on('pointerdown', (e) => {
       if (e.button === 0 && !e.shiftKey) {
@@ -131,7 +151,8 @@ export class SiteViewRenderer {
       }
       const d = this.drag;
       if (!d) return;
-      const dx = e.clientX - d.x, dy = e.clientY - d.y;
+      const dx = e.clientX - d.x,
+        dy = e.clientY - d.y;
       if (d.pan) {
         const k = this.dist * 0.0016;
         const right = new THREE.Vector3(Math.cos(this.yaw), 0, -Math.sin(this.yaw));
@@ -169,10 +190,14 @@ export class SiteViewRenderer {
     on('pointerup', release);
     on('pointercancel', release);
     on('contextmenu', (e) => e.preventDefault());
-    on('wheel', (e) => {
-      e.preventDefault();
-      this.dist = Math.min(2500, Math.max(0.25, this.dist * (1 + e.deltaY * 0.001)));
-    }, { passive: false });
+    on(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        this.dist = Math.min(2500, Math.max(0.25, this.dist * (1 + e.deltaY * 0.001)));
+      },
+      { passive: false },
+    );
     this.raf = requestAnimationFrame(this.tick);
   }
 
@@ -188,13 +213,18 @@ export class SiteViewRenderer {
       return;
     }
     if (!this.cursor) {
-      this.cursor = new THREE.LineLoop(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: c.color, depthTest: false, transparent: true }));
+      this.cursor = new THREE.LineLoop(
+        new THREE.BufferGeometry(),
+        new THREE.LineBasicMaterial({ color: c.color, depthTest: false, transparent: true }),
+      );
       this.cursor.renderOrder = 10;
       this.scene.add(this.cursor);
     }
     const pts: number[] = [];
     for (let i = 0; i < 64; i++) {
-      const a = (i / 64) * Math.PI * 2, x = c.x + Math.cos(a) * c.r, z = c.z + Math.sin(a) * c.r;
+      const a = (i / 64) * Math.PI * 2,
+        x = c.x + Math.cos(a) * c.r,
+        z = c.z + Math.sin(a) * c.r;
       pts.push(x, this.model.ground.at(x, z) + 0.3, z);
     }
     this.cursor.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
@@ -209,16 +239,23 @@ export class SiteViewRenderer {
       return;
     }
     if (!this.drawLine) {
-      this.drawLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: line.color, depthTest: false }));
+      this.drawLine = new THREE.Line(
+        new THREE.BufferGeometry(),
+        new THREE.LineBasicMaterial({ color: line.color, depthTest: false }),
+      );
       this.drawLine.renderOrder = 10;
       this.scene.add(this.drawLine);
     }
-    const pts: number[] = [], ring = line.closed && line.pts.length > 2 ? [...line.pts, line.pts[0]!] : line.pts;
+    const pts: number[] = [],
+      ring = line.closed && line.pts.length > 2 ? [...line.pts, line.pts[0]!] : line.pts;
     const steps = Math.max(2, Math.ceil(32 / Math.max(1, ring.length - 1))); // follow the ground along each edge
     for (let k = 0; k + 1 < ring.length; k++) {
-      const a = ring[k]!, b = ring[k + 1]!;
+      const a = ring[k]!,
+        b = ring[k + 1]!;
       for (let i = k ? 1 : 0; i <= steps; i++) {
-        const u = i / steps, x = a.x + (b.x - a.x) * u, z = a.z + (b.z - a.z) * u;
+        const u = i / steps,
+          x = a.x + (b.x - a.x) * u,
+          z = a.z + (b.z - a.z) * u;
         pts.push(x, (line.height ?? this.model.ground.at(x, z)) + 0.3, z);
       }
     }
@@ -239,8 +276,13 @@ export class SiteViewRenderer {
     if (!this.measures) return;
     this.scene.remove(this.measures);
     this.measures.traverse((o) => {
-      if (o instanceof THREE.Sprite) { o.material.map?.dispose(); o.material.dispose(); }
-      else if (o instanceof THREE.Line) { o.geometry.dispose(); (o.material as THREE.Material).dispose(); }
+      if (o instanceof THREE.Sprite) {
+        o.material.map?.dispose();
+        o.material.dispose();
+      } else if (o instanceof THREE.Line) {
+        o.geometry.dispose();
+        (o.material as THREE.Material).dispose();
+      }
     });
     this.measures = null;
   }
@@ -248,21 +290,37 @@ export class SiteViewRenderer {
   private measureAt(e: { clientX: number; clientY: number }): { index: number; label: boolean } | null {
     if (!this.measures) return null;
     const r = this.canvas.getBoundingClientRect();
-    this.ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
+    this.ray.setFromCamera(
+      new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1),
+      this.camera,
+    );
     this.ray.params.Line = { threshold: Math.max(0.2, this.dist * 0.004) };
-    const hit = this.ray.intersectObjects(this.measures.children).find((h) => typeof h.object.userData['measureIndex'] === 'number' && h.object.userData['measureIndex'] >= 0);
-    return hit ? { index: hit.object.userData['measureIndex'] as number, label: !!hit.object.userData['measureLabel'] } : null;
+    const hit = this.ray
+      .intersectObjects(this.measures.children)
+      .find((h) => typeof h.object.userData['measureIndex'] === 'number' && h.object.userData['measureIndex'] >= 0);
+    return hit
+      ? { index: hit.object.userData['measureIndex'] as number, label: !!hit.object.userData['measureLabel'] }
+      : null;
   }
 
   /** Rebuild from the spec. The camera re-frames only when `frameKey` changes (a different bando). */
-  show(spec: SiteSpec, roofHidden: boolean, frameKey: string, focus: { id: string; li: number } | null = null, indoorFloor: IndoorFloor | null = null): void {
+  show(
+    spec: SiteSpec,
+    roofHidden: boolean,
+    frameKey: string,
+    focus: { id: string; li: number } | null = null,
+    indoorFloor: IndoorFloor | null = null,
+  ): void {
     if (this.model) {
       this.scene.remove(this.model.group);
       dispose(this.model.group);
     }
     this.spec = spec;
     this.indoorFloor = indoorFloor;
-    this.model = buildSiteFromSpec(indoorFloor ? indoorViewSpec(spec, indoorFloor) : spec, { merge: true, bare: indoorFloor?.li === -1 });
+    this.model = buildSiteFromSpec(indoorFloor ? indoorViewSpec(spec, indoorFloor) : spec, {
+      merge: true,
+      bare: indoorFloor?.li === -1,
+    });
     this.model.setRoofHidden?.(roofHidden);
     this.model.setGroundStyle(this.groundStyle);
     if (focus && !indoorFloor) this.focusFloor(spec, focus);
@@ -292,14 +350,20 @@ export class SiteViewRenderer {
 
   private pointAtHeight(e: { clientX: number; clientY: number }, height: number): { x: number; z: number } | null {
     const r = this.canvas.getBoundingClientRect();
-    this.ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
+    this.ray.setFromCamera(
+      new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1),
+      this.camera,
+    );
     return floorPoint(this.ray.ray, height);
   }
 
   /** The point on the ground (the terrain, or y = 0) under the pointer, in site coordinates. */
   private groundPoint(e: { clientX: number; clientY: number }): { x: number; z: number } | null {
     const r = this.canvas.getBoundingClientRect();
-    this.ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
+    this.ray.setFromCamera(
+      new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1),
+      this.camera,
+    );
     if (!this.debugGround && this.drawPlaneY !== null) return floorPoint(this.ray.ray, this.drawPlaneY);
     const grid = this.debugGround && this.spec ? siteGround(this.spec).grid : this.model?.ground.grid;
     if (grid) return rayGround(grid, this.ray.ray.origin, this.ray.ray.direction);
@@ -311,10 +375,11 @@ export class SiteViewRenderer {
   private pickAt(e: { clientX: number; clientY: number }): SitePick | null {
     if (!this.model || !this.spec) return null;
     const r = this.canvas.getBoundingClientRect();
-    this.ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
-    return indoorSourcePick(pickModel(this.ray,this.model,this.spec), this.indoorFloor);
-
-
+    this.ray.setFromCamera(
+      new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1),
+      this.camera,
+    );
+    return indoorSourcePick(pickModel(this.ray, this.model, this.spec), this.indoorFloor);
   }
 
   setSelection(sel: SitePick | null): void {
@@ -322,13 +387,17 @@ export class SiteViewRenderer {
     this.refreshSelection();
     if (this.box && !this.transform) {
       this.box.box.getCenter(this.target);
-      this.dist=Math.max(25,Math.min(300,this.box.box.getSize(new THREE.Vector3()).length()*2));
+      this.dist = Math.max(25, Math.min(300, this.box.box.getSize(new THREE.Vector3()).length() * 2));
     }
   }
 
   /** A yellow box and draggable handles around the selected thing. */
   private refreshSelection(): void {
-    if (this.handles) { this.scene.remove(this.handles); dispose(this.handles); this.handles = null; }
+    if (this.handles) {
+      this.scene.remove(this.handles);
+      dispose(this.handles);
+      this.handles = null;
+    }
     if (this.box) {
       this.scene.remove(this.box);
       this.box.geometry.dispose();
@@ -344,7 +413,17 @@ export class SiteViewRenderer {
     } else {
       this.model.group.traverse((o) => {
         const p = indoorSourcePick((o.userData['pick'] as SitePick | undefined) ?? null, this.indoorFloor);
-        if (p && p.kind === sel.kind && (p.kind === 'pad' || ('id' in p && 'id' in sel && p.id === sel.id && (!('li' in p) || ('li' in sel && p.li === sel.li && p.i === sel.i))) || ('i' in p && 'i' in sel && !('id' in p) && p.i === sel.i))) b.expandByObject(o);
+        if (
+          p &&
+          p.kind === sel.kind &&
+          (p.kind === 'pad' ||
+            ('id' in p &&
+              'id' in sel &&
+              p.id === sel.id &&
+              (!('li' in p) || ('li' in sel && p.li === sel.li && p.i === sel.i))) ||
+            ('i' in p && 'i' in sel && !('id' in p) && p.i === sel.i))
+        )
+          b.expandByObject(o);
       });
     }
     if (b.isEmpty()) return;
@@ -353,14 +432,15 @@ export class SiteViewRenderer {
     if (this.handlesEnabled) {
       const basementId = this.indoorFloor?.li === -1 ? this.indoorFloor.id : null;
       const id = basementId ?? (sel.kind === 'building' && !this.indoorFloor ? sel.id : null);
-      const building = id ? this.spec.buildings.find(item => item.id === id) : undefined;
+      const building = id ? this.spec.buildings.find((item) => item.id === id) : undefined;
       if (sel.kind === 'pad' && !this.indoorFloor) {
         // one move handle over the take-off pad: dragged like a building's, it moves the pad on the ground
         const c = b.getCenter(new THREE.Vector3());
         this.addHandles([{ kind: 'move', sx: 0, sz: 0, x: c.x, y: b.max.y + 0.5, z: c.z }], 0.8);
       } else if (building) {
         const size = Math.max(0.6, Math.min(2, Math.max(building.length, building.width) * 0.035));
-        const items = basementId ? basementHandles(building, siteGround(this.spec).building.get(building.id) ?? 0)
+        const items = basementId
+          ? basementHandles(building, siteGround(this.spec).building.get(building.id) ?? 0)
           : buildingHandles(building, this.model.ground.building.get(building.id) ?? 0);
         this.addHandles(items, size);
       }
@@ -371,8 +451,14 @@ export class SiteViewRenderer {
   private addHandles(items: readonly BuildingHandle[], size: number): void {
     this.handles = new THREE.Group();
     for (const handle of items) {
-      const geometry = handle.kind === 'basementVertex' ? new THREE.SphereGeometry(size * 0.6, 12, 8) : new THREE.BoxGeometry(size, size, size);
-      const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: handle.kind === 'move' ? 0x38d6ff : 0xffd166, depthTest: false }));
+      const geometry =
+        handle.kind === 'basementVertex'
+          ? new THREE.SphereGeometry(size * 0.6, 12, 8)
+          : new THREE.BoxGeometry(size, size, size);
+      const mesh = new THREE.Mesh(
+        geometry,
+        new THREE.MeshBasicMaterial({ color: handle.kind === 'move' ? 0x38d6ff : 0xffd166, depthTest: false }),
+      );
       mesh.position.set(handle.x, handle.y, handle.z);
       mesh.renderOrder = 20;
       mesh.userData['handle'] = handle;
@@ -389,7 +475,8 @@ export class SiteViewRenderer {
     this.raf = requestAnimationFrame(this.tick);
     const c = this.canvas;
     if (!c.isConnected || c.clientWidth < 8 || c.clientHeight < 8 || document.hidden || !c.offsetParent) return;
-    const w = c.clientWidth, h = c.clientHeight;
+    const w = c.clientWidth,
+      h = c.clientHeight;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) {
       this.renderer.setPixelRatio(dpr);
@@ -398,7 +485,11 @@ export class SiteViewRenderer {
       this.camera.updateProjectionMatrix();
     }
     const cp = Math.cos(this.pitch);
-    this.camera.position.set(this.target.x + this.dist * cp * Math.sin(this.yaw), this.target.y + this.dist * Math.sin(this.pitch), this.target.z + this.dist * cp * Math.cos(this.yaw));
+    this.camera.position.set(
+      this.target.x + this.dist * cp * Math.sin(this.yaw),
+      this.target.y + this.dist * Math.sin(this.pitch),
+      this.target.z + this.dist * cp * Math.cos(this.yaw),
+    );
     this.camera.lookAt(this.target);
     // never inside a hill; the indoor and basement views look from below the ground on purpose
     const collider = this.indoorFloor ? null : this.model?.collider;

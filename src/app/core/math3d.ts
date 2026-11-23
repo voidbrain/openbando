@@ -113,8 +113,12 @@ export class Quat {
     );
   }
   setFromEuler(x: number, y: number, z: number, order: EulerOrder = 'XYZ'): this {
-    const c1 = Math.cos(x / 2), c2 = Math.cos(y / 2), c3 = Math.cos(z / 2);
-    const s1 = Math.sin(x / 2), s2 = Math.sin(y / 2), s3 = Math.sin(z / 2);
+    const c1 = Math.cos(x / 2),
+      c2 = Math.cos(y / 2),
+      c3 = Math.cos(z / 2);
+    const s1 = Math.sin(x / 2),
+      s2 = Math.sin(y / 2),
+      s3 = Math.sin(z / 2);
     if (order === 'YXZ') {
       return this.set(
         s1 * c2 * c3 + c1 * s2 * s3,
@@ -131,7 +135,8 @@ export class Quat {
     );
   }
   setFromAxisAngle(axis: Vec3, angle: number): this {
-    const h = angle / 2, s = Math.sin(h);
+    const h = angle / 2,
+      s = Math.sin(h);
     return this.set(axis.x * s, axis.y * s, axis.z * s, Math.cos(h));
   }
   /** Spherical interpolation towards q (shortest path). */
@@ -162,11 +167,23 @@ export class Quat {
 
 /** Euler angles (order YXZ) of a quaternion. */
 export function eulerYXZ(q: Quat): EulerAngles {
-  const x2 = q.x + q.x, y2 = q.y + q.y, z2 = q.z + q.z;
-  const xx = q.x * x2, xy = q.x * y2, xz = q.x * z2;
-  const yy = q.y * y2, yz = q.y * z2, zz = q.z * z2;
-  const wx = q.w * x2, wy = q.w * y2, wz = q.w * z2;
-  const m13 = xz + wy, m33 = 1 - (xx + yy), m21 = xy + wz, m22 = 1 - (xx + zz), m23 = yz - wx;
+  const x2 = q.x + q.x,
+    y2 = q.y + q.y,
+    z2 = q.z + q.z;
+  const xx = q.x * x2,
+    xy = q.x * y2,
+    xz = q.x * z2;
+  const yy = q.y * y2,
+    yz = q.y * z2,
+    zz = q.z * z2;
+  const wx = q.w * x2,
+    wy = q.w * y2,
+    wz = q.w * z2;
+  const m13 = xz + wy,
+    m33 = 1 - (xx + yy),
+    m21 = xy + wz,
+    m22 = 1 - (xx + zz),
+    m23 = yz - wx;
   const x = Math.asin(-Math.max(-1, Math.min(1, m23)));
   if (Math.abs(m23) < 0.9999999) return { x, y: Math.atan2(m13, m33), z: Math.atan2(m21, m22) };
   return { x, y: Math.atan2(-(xz - wy), 1 - (yy + zz)), z: 0 };

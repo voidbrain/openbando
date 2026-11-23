@@ -46,12 +46,24 @@ Example: "a picnic table" ->
 {"name":"Picnic table","description":"Wooden table with two benches","tags":["park","wood"],"shapes":[{"prim":"box","at":{"x":0,"y":0.74,"z":0},"size":{"x":1.8,"y":0.06,"z":0.8},"color":"#8a6440"},{"prim":"box","at":{"x":0,"y":0.45,"z":-0.65},"size":{"x":1.8,"y":0.05,"z":0.3},"color":"#8a6440"},{"prim":"box","at":{"x":0,"y":0.45,"z":0.65},"size":{"x":1.8,"y":0.05,"z":0.3},"color":"#8a6440"},{"prim":"array","of":{"prim":"box","at":{"x":-0.75,"y":0.36,"z":0},"size":{"x":0.08,"y":0.72,"z":1.6},"color":"#6e4f33"},"count":2,"step":{"x":1.5,"y":0,"z":0}}]}`;
 
 /** A file-safe slug of a name ("Rusty water tower!" -> "rusty-water-tower"). */
-export const slug = (s: string): string => s.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'block';
+export const slug = (s: string): string =>
+  s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40) || 'block';
 
 /** The model's answer as one of the pilot's own blocks (`local/ai-...`), or the reasons it could not be used. */
 export function parseBlockReply(text: string, author = 'AI'): { block: BlockSpec | null; error?: string } {
-  let body = text.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
-  const a = body.indexOf('{'), b = body.lastIndexOf('}');
+  let body = text
+    .trim()
+    .replace(/^```(?:json)?/i, '')
+    .replace(/```$/, '')
+    .trim();
+  const a = body.indexOf('{'),
+    b = body.lastIndexOf('}');
   if (a >= 0 && b > a) body = body.slice(a, b + 1);
   let o: { name?: unknown; description?: unknown; tags?: unknown; shapes?: unknown };
   try {

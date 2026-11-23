@@ -49,7 +49,8 @@ export function treeZones(trees: readonly TreeSpec[], link = 14): TreeZone[] {
   const grid = new Map<string, number[]>();
   const key = (cx: number, cz: number): string => `${cx}/${cz}`;
   trees.forEach((t, i) => {
-    const cx = Math.floor(t.x / link), cz = Math.floor(t.z / link);
+    const cx = Math.floor(t.x / link),
+      cz = Math.floor(t.z / link);
     for (let dx = -1; dx <= 1; dx++) {
       for (let dz = -1; dz <= 1; dz++) {
         for (const j of grid.get(key(cx + dx, cz + dz)) ?? []) {
@@ -74,11 +75,16 @@ export function treeZones(trees: readonly TreeSpec[], link = 14): TreeZone[] {
       const pts: Pt[] = [];
       for (const i of idx) {
         const t = trees[i]!;
-        for (let k = 0; k < 8; k++) pts.push({ x: t.x + Math.cos((k * Math.PI) / 4) * t.r, z: t.z + Math.sin((k * Math.PI) / 4) * t.r });
+        for (let k = 0; k < 8; k++)
+          pts.push({ x: t.x + Math.cos((k * Math.PI) / 4) * t.r, z: t.z + Math.sin((k * Math.PI) / 4) * t.r });
       }
       const hull = convexHull(pts);
-      const xs = hull.map((q) => q.x), zs = hull.map((q) => q.z);
-      const x0 = Math.min(...xs), x1 = Math.max(...xs), z0 = Math.min(...zs), z1 = Math.max(...zs);
+      const xs = hull.map((q) => q.x),
+        zs = hull.map((q) => q.z);
+      const x0 = Math.min(...xs),
+        x1 = Math.max(...xs),
+        z0 = Math.min(...zs),
+        z1 = Math.max(...zs);
       return { idx, x: (x0 + x1) / 2, z: (z0 + z1) / 2, hull, size: Math.max(x1 - x0, z1 - z0, 8) };
     })
     .sort((a, b) => b.idx.length - a.idx.length);
@@ -106,8 +112,12 @@ export function columnGroups(cols: readonly ColumnSpec[], tol = 0.6): ColumnGrou
     }
     return out.map((r) => r.sort((a, b) => cols[a]![k] - cols[b]![k]));
   };
-  const byZ = rows('x'), byX = rows('z');
-  const pick = byZ.length <= byX.length ? { axis: 'x' as const, list: byZ, other: 'z' as const } : { axis: 'z' as const, list: byX, other: 'x' as const };
+  const byZ = rows('x'),
+    byX = rows('z');
+  const pick =
+    byZ.length <= byX.length
+      ? { axis: 'x' as const, list: byZ, other: 'z' as const }
+      : { axis: 'z' as const, list: byX, other: 'x' as const };
   const lines = pick.list.filter((r) => r.length > 1);
   const loose = pick.list.filter((r) => r.length === 1).map((r) => r[0]!);
   const out: ColumnGroup[] = lines.map((r) => ({ axis: pick.axis, at: cols[r[0]!]![pick.other], idx: r }));
@@ -122,12 +132,17 @@ export function stairsIn(spec: SiteSpec, b: BuildingSpec): { i: number; s: Struc
   const out: { i: number; s: StructureSpec; level: number }[] = [];
   (spec.structures ?? []).forEach((s, i) => {
     if (s.kind !== 'stairs' && s.kind !== 'ramp') return;
-    const dx = s.x - b.pos.x, dz = s.z - b.pos.z;
+    const dx = s.x - b.pos.x,
+      dz = s.z - b.pos.z;
     if (!contains(poly, dx * Math.cos(a) + dz * Math.sin(a), -dx * Math.sin(a) + dz * Math.cos(a))) return;
-    let level = 0, best = Infinity;
+    let level = 0,
+      best = Infinity;
     b.levels.forEach((l, li) => {
       const d = Math.abs(l.baseY - (s.y ?? 0));
-      if (d < best) { best = d; level = li; }
+      if (d < best) {
+        best = d;
+        level = li;
+      }
     });
     out.push({ i, s, level });
   });
@@ -144,14 +159,21 @@ export function columnsInLine(cols: readonly ColumnSpec[], i: number, along: 'x'
   const out: number[] = [];
   cols.forEach((o, k) => {
     const hit =
-      along === 'x' ? Math.abs(o.z - c.z) <= tol : along === 'z' ? Math.abs(o.x - c.x) <= tol : Math.abs(o.size - c.size) < 0.01 && !!o.round === !!c.round;
+      along === 'x'
+        ? Math.abs(o.z - c.z) <= tol
+        : along === 'z'
+          ? Math.abs(o.x - c.x) <= tol
+          : Math.abs(o.size - c.size) < 0.01 && !!o.round === !!c.round;
     if (hit) out.push(k);
   });
   return out;
 }
 
 /** Indices of the points inside a selection outline (a box's four corners or a hand-drawn lasso). */
-export function pointsInside<T extends { x: number; z: number }>(pts: readonly T[], outline: readonly { x: number; z: number }[]): number[] {
+export function pointsInside<T extends { x: number; z: number }>(
+  pts: readonly T[],
+  outline: readonly { x: number; z: number }[],
+): number[] {
   if (outline.length < 3) return [];
   const poly = outline.map((p) => ({ x: p.x, z: p.z }));
   const out: number[] = [];

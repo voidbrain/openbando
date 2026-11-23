@@ -201,7 +201,8 @@ export class WelcomePanel {
   constructor() {
     // the film in focus plays, the others rest
     effect(() => {
-      const id = this.focus(), visible = this.layout.panels().welcome.visible;
+      const id = this.focus(),
+        visible = this.layout.panels().welcome.visible;
       for (const f of this.films()) {
         const v = f.nativeElement;
         if (visible && v.dataset['id'] === id) void v.play().catch(() => undefined);
@@ -216,7 +217,6 @@ export class WelcomePanel {
       was = on;
     });
   }
-
 
   /** A link: close Welcome, open the panels for that job (the Bandos panel on its list) side by side, on top. */
   protected async go(open: readonly PanelId[], list: boolean): Promise<void> {

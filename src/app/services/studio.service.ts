@@ -129,7 +129,12 @@ export class StudioService {
     }
     const id = this.editingId();
     const existing = id ? this.site.peek(id) : null;
-    if (existing && existing.buildings.length > 0 && !confirm(tr('Regenerating replaces this bando\'s model, including your manual edits. Continue?'))) return;
+    if (
+      existing &&
+      existing.buildings.length > 0 &&
+      !confirm(tr("Regenerating replaces this bando's model, including your manual edits. Continue?"))
+    )
+      return;
     const label = this.name().trim() || 'New bando';
     // several areas: one request for the rectangle around them all, then (without fill) only what is inside each
     const all = this.areas().some((a) => sameArea(a, z)) ? this.areas() : [...this.areas(), z];

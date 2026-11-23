@@ -11,13 +11,28 @@ import { Vec3 } from '../core/math3d';
 const spec = (): SiteSpec => {
   const s = emptySpec({ lat: 45.46, lon: 9.19 }, 'Test site');
   s.extent = 240;
-  const level = { baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'gable' as const, roofRise: 2 };
+  const level = {
+    baseY: 0,
+    height: 4,
+    sides: { n: true, s: true, e: true, w: true },
+    doors: {},
+    partitions: [],
+    roof: 'gable' as const,
+    roofRise: 2,
+  };
   s.buildings = [
     { id: 'a', name: 'A', pos: { x: 0, z: 0 }, rotDeg: 0, length: 40, width: 14, levels: [{ ...level }] },
     { id: 'b', name: 'B', pos: { x: 60, z: 20 }, rotDeg: 30, length: 18, width: 10, levels: [{ ...level }] },
   ];
-  s.pads = [{ x: 0, z: 30, w: 30, d: 8, color: '#555' }, { x: 40, z: -30, w: 12, d: 12 }, { x: -50, z: 10, w: 20, d: 20, rotDeg: 20 }];
-  s.structures = [{ id: 't', kind: 'chimney', name: 'C', x: -30, z: -30, rotDeg: 0, height: 30, size: 1.8 }, { id: 'br', kind: 'bridge', name: 'B', x: 20, z: 60, rotDeg: 0, height: 5, size: 7, length: 30 }];
+  s.pads = [
+    { x: 0, z: 30, w: 30, d: 8, color: '#555' },
+    { x: 40, z: -30, w: 12, d: 12 },
+    { x: -50, z: 10, w: 20, d: 20, rotDeg: 20 },
+  ];
+  s.structures = [
+    { id: 't', kind: 'chimney', name: 'C', x: -30, z: -30, rotDeg: 0, height: 30, size: 1.8 },
+    { id: 'br', kind: 'bridge', name: 'B', x: 20, z: 60, rotDeg: 0, height: 5, size: 7, length: 30 },
+  ];
   return s;
 };
 
@@ -40,11 +55,14 @@ describe('site model terrain', () => {
 
   it('draws the ground before every patch, and the patches in creation order', () => {
     const all = meshes();
-    const ground = all.find((m) => m.geometry.type === 'BoxGeometry' && (m.geometry as THREE.BoxGeometry).parameters.width === 528);
+    const ground = all.find(
+      (m) => m.geometry.type === 'BoxGeometry' && (m.geometry as THREE.BoxGeometry).parameters.width === 528,
+    );
     const patches = all.filter((m) => m.geometry.type === 'CircleGeometry');
     expect(ground).toBeTruthy();
     for (const p of patches) expect(p.renderOrder).toBeGreaterThan(ground!.renderOrder);
-    for (let i = 1; i < patches.length; i++) expect(patches[i]!.renderOrder).toBeGreaterThan(patches[i - 1]!.renderOrder);
+    for (let i = 1; i < patches.length; i++)
+      expect(patches[i]!.renderOrder).toBeGreaterThan(patches[i - 1]!.renderOrder);
   });
 
   it('patches ignore the depth buffer, so they can neither flicker nor show through concrete, and still receive shadows', () => {
@@ -60,7 +78,11 @@ describe('site model terrain', () => {
   it('draws every concrete / building mesh after every patch, so the patches are always covered', () => {
     const all = meshes();
     const lastPatch = Math.max(...all.filter((m) => m.geometry.type === 'CircleGeometry').map((m) => m.renderOrder));
-    const others = all.filter((m) => m.geometry.type !== 'CircleGeometry' && !(m.geometry.type === 'BoxGeometry' && (m.geometry as THREE.BoxGeometry).parameters.width === 528));
+    const others = all.filter(
+      (m) =>
+        m.geometry.type !== 'CircleGeometry' &&
+        !(m.geometry.type === 'BoxGeometry' && (m.geometry as THREE.BoxGeometry).parameters.width === 528),
+    );
     expect(others.length).toBeGreaterThan(20);
     for (const m of others) expect(m.renderOrder).toBeGreaterThan(lastPatch);
   });
@@ -73,7 +95,6 @@ describe('site model terrain', () => {
   });
 });
 
-
 describe('open and closed doors and windows', () => {
   it('an open door is a hole you can fly through; a closed one is solid; a closed window is solid too', async () => {
     const { buildSiteFromSpec } = await import('./site-model');
@@ -81,10 +102,27 @@ describe('open and closed doors and windows', () => {
     const { Vec3 } = await import('../core/math3d');
     const mkSpec = (closed: boolean, kind: 'door' | 'window'): ReturnType<typeof emptySpec> => {
       const s = emptySpec({ lat: 0, lon: 0 }, 't');
-      s.buildings = [{
-        id: 'b', name: 'B', pos: { x: 0, z: 0 }, rotDeg: 0, length: 20, width: 10,
-        levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, roof: 'flat', roofRise: 0, partitions: [], doors: { s: [{ kind, c: 10, w: 2, h: 2.2, closed: closed || undefined }] } }],
-      }];
+      s.buildings = [
+        {
+          id: 'b',
+          name: 'B',
+          pos: { x: 0, z: 0 },
+          rotDeg: 0,
+          length: 20,
+          width: 10,
+          levels: [
+            {
+              baseY: 0,
+              height: 4,
+              sides: { n: true, s: true, e: true, w: true },
+              roof: 'flat',
+              roofRise: 0,
+              partitions: [],
+              doors: { s: [{ kind, c: 10, w: 2, h: 2.2, closed: closed || undefined }] },
+            },
+          ],
+        },
+      ];
       return s;
     };
     const through = new Vec3(0, 1.0, 5); // in the south wall, at the door
@@ -96,19 +134,41 @@ describe('open and closed doors and windows', () => {
   });
 });
 
-
 describe('outer walls', () => {
   it('each of the four walls covers its whole side, on a building that is not square', async () => {
     const { buildSiteFromSpec } = await import('./site-model');
     const { emptySpec } = await import('../core/site-spec');
     const s = emptySpec({ lat: 0, lon: 0 }, 't');
-    s.buildings = [{
-      id: 'b', name: 'B', pos: { x: 0, z: 0 }, rotDeg: 0, length: 30, width: 12,
-      levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, roof: 'flat', roofRise: 0, partitions: [], doors: { s: [{ kind: 'door', c: 15, w: 2, h: 2.2 }], w: [{ kind: 'door', c: 6, w: 2, h: 2.2 }] } }],
-    }];
-    const solids = buildSiteFromSpec(s, { bare: true }).collider.solids.filter((b) => b[2] === 0 && b[3] === 4 || (b[2] === 0 && Math.abs(b[3] - 4) < 0.01) || (b[2] === 2.2));
+    s.buildings = [
+      {
+        id: 'b',
+        name: 'B',
+        pos: { x: 0, z: 0 },
+        rotDeg: 0,
+        length: 30,
+        width: 12,
+        levels: [
+          {
+            baseY: 0,
+            height: 4,
+            sides: { n: true, s: true, e: true, w: true },
+            roof: 'flat',
+            roofRise: 0,
+            partitions: [],
+            doors: { s: [{ kind: 'door', c: 15, w: 2, h: 2.2 }], w: [{ kind: 'door', c: 6, w: 2, h: 2.2 }] },
+          },
+        ],
+      },
+    ];
+    const solids = buildSiteFromSpec(s, { bare: true }).collider.solids.filter(
+      (b) => (b[2] === 0 && b[3] === 4) || (b[2] === 0 && Math.abs(b[3] - 4) < 0.01) || b[2] === 2.2,
+    );
     const covered = (axis: 'x' | 'z', at: number): number => {
-      const pieces = solids.filter((b) => (axis === 'x' ? b[4] < at + 0.3 && b[5] > at - 0.3 && b[1] - b[0] > b[5] - b[4] : b[0] < at + 0.3 && b[1] > at - 0.3 && b[5] - b[4] > b[1] - b[0]));
+      const pieces = solids.filter((b) =>
+        axis === 'x'
+          ? b[4] < at + 0.3 && b[5] > at - 0.3 && b[1] - b[0] > b[5] - b[4]
+          : b[0] < at + 0.3 && b[1] > at - 0.3 && b[5] - b[4] > b[1] - b[0],
+      );
       return pieces.reduce((n, b) => n + (axis === 'x' ? b[1] - b[0] : b[5] - b[4]), 0);
     };
     expect(covered('x', -6)).toBeCloseTo(30, 1); // north: the whole length
@@ -124,23 +184,46 @@ describe('roofs sit on top of the walls', () => {
     const { buildSiteFromSpec, GAMBREL_KNEE } = await import('./site-model');
     const { emptySpec } = await import('../core/site-spec');
     const s = emptySpec({ lat: 0, lon: 0 }, 't');
-    s.buildings = [{ id: 'b', name: 'B', pos: { x: 0, z: 0 }, rotDeg: 0, length: 20, width: 10, levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, roof: 'gambrel', roofRise: 4, partitions: [], doors: {} }] }];
+    s.buildings = [
+      {
+        id: 'b',
+        name: 'B',
+        pos: { x: 0, z: 0 },
+        rotDeg: 0,
+        length: 20,
+        width: 10,
+        levels: [
+          {
+            baseY: 0,
+            height: 4,
+            sides: { n: true, s: true, e: true, w: true },
+            roof: 'gambrel',
+            roofRise: 4,
+            partitions: [],
+            doors: {},
+          },
+        ],
+      },
+    ];
     const model = buildSiteFromSpec(s, { bare: true });
     // the roof's outline across the ridge (z), at the knee height
     const pts: { y: number; z: number }[] = [];
     model.roof.updateMatrixWorld(true);
     model.roof.traverse((o) => {
       if (!(o instanceof THREE.Mesh)) return;
-      const pos = o.geometry.getAttribute('position'), v = new THREE.Vector3();
+      const pos = o.geometry.getAttribute('position'),
+        v = new THREE.Vector3();
       for (let i = 0; i < pos.count; i++) {
         v.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld);
         pts.push({ y: v.y, z: v.z });
       }
     });
-    const kneeY = 4 + 4 * GAMBREL_KNEE.rise, kneeZ = 5 - 5 * GAMBREL_KNEE.inset;
+    const kneeY = 4 + 4 * GAMBREL_KNEE.rise,
+      kneeZ = 5 - 5 * GAMBREL_KNEE.inset;
     expect(pts.some((p) => Math.abs(p.y - kneeY) < 0.01 && Math.abs(Math.abs(p.z) - kneeZ) < 0.01)).toBe(true);
     // steeper below the knee than above it
-    const lower = (kneeY - 4) / (5.3 - kneeZ), upper = (8 - kneeY) / kneeZ;
+    const lower = (kneeY - 4) / (5.3 - kneeZ),
+      upper = (8 - kneeY) / kneeZ;
     expect(lower).toBeGreaterThan(upper * 2);
     expect(model.collider.solids.some((b) => Math.abs(b[2] - 4) < 0.01 && Math.abs(b[3] - 8) < 0.01)).toBe(true);
   });
@@ -149,9 +232,34 @@ describe('roofs sit on top of the walls', () => {
     const THREE = await import('three');
     const { buildSiteFromSpec } = await import('./site-model');
     const { emptySpec } = await import('../core/site-spec');
-    for (const [roof, up] of [['gable', 3], ['gambrel', 3], ['vault', 5.8], ['flat', 0.3]] as const) {
+    for (const [roof, up] of [
+      ['gable', 3],
+      ['gambrel', 3],
+      ['vault', 5.8],
+      ['flat', 0.3],
+    ] as const) {
       const s = emptySpec({ lat: 0, lon: 0 }, 't');
-      s.buildings = [{ id: 'b', name: 'B', pos: { x: 0, z: 0 }, rotDeg: 0, length: 20, width: 10, levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, roof, roofRise: 3, partitions: [], doors: {} }] }];
+      s.buildings = [
+        {
+          id: 'b',
+          name: 'B',
+          pos: { x: 0, z: 0 },
+          rotDeg: 0,
+          length: 20,
+          width: 10,
+          levels: [
+            {
+              baseY: 0,
+              height: 4,
+              sides: { n: true, s: true, e: true, w: true },
+              roof,
+              roofRise: 3,
+              partitions: [],
+              doors: {},
+            },
+          ],
+        },
+      ];
       const box = new THREE.Box3().setFromObject(buildSiteFromSpec(s, { bare: true }).roof);
       expect(box.min.y, `${roof} starts at the wall top`).toBeCloseTo(4, 1);
       expect(box.max.y - 4, `${roof} height above the walls`).toBeCloseTo(up, 1);
@@ -162,7 +270,27 @@ describe('roofs sit on top of the walls', () => {
     const { buildSiteFromSpec } = await import('./site-model');
     const { emptySpec } = await import('../core/site-spec');
     const s = emptySpec({ lat: 0, lon: 0 }, 't');
-    s.buildings = [{ id: 'b', name: 'B', pos: { x: 0, z: 0 }, rotDeg: 0, length: 10, width: 8, levels: [{ baseY: 0, height: 3, sides: { n: true, s: true, e: true, w: true }, roof: 'gable', roofRise: 2, partitions: [], doors: {} }] }];
+    s.buildings = [
+      {
+        id: 'b',
+        name: 'B',
+        pos: { x: 0, z: 0 },
+        rotDeg: 0,
+        length: 10,
+        width: 8,
+        levels: [
+          {
+            baseY: 0,
+            height: 3,
+            sides: { n: true, s: true, e: true, w: true },
+            roof: 'gable',
+            roofRise: 2,
+            partitions: [],
+            doors: {},
+          },
+        ],
+      },
+    ];
     s.structures = [{ id: 'st1', kind: 'chimney', name: 'C', x: 20, z: 0, rotDeg: 0, height: 20, size: 1.5 }];
     s.walls = [{ a: { x: -20, z: 0 }, b: { x: -10, z: 0 }, height: 2, thick: 0.3 }];
     const picks: string[] = [];
@@ -178,7 +306,33 @@ describe('roofs sit on top of the walls', () => {
 describe('walls with several openings', () => {
   it('stay inside the building outline', () => {
     const s = emptySpec({ lat: 45, lon: 12 }, 'T');
-    s.buildings = [{ id: 'b', name: 'B', pos: { x: 0, z: 0 }, rotDeg: 0, length: 30, width: 12, levels: [{ baseY: 0, height: 5, sides: { n: true, s: true, e: true, w: true }, doors: { n: [{ kind: 'door', c: 5, w: 3, h: 4 }, { kind: 'door', c: 15, w: 3, h: 4 }, { kind: 'window', c: 25, w: 3, h: 1.5, sill: 1 }] }, partitions: [], roof: 'flat', roofRise: 0 }] }];
+    s.buildings = [
+      {
+        id: 'b',
+        name: 'B',
+        pos: { x: 0, z: 0 },
+        rotDeg: 0,
+        length: 30,
+        width: 12,
+        levels: [
+          {
+            baseY: 0,
+            height: 5,
+            sides: { n: true, s: true, e: true, w: true },
+            doors: {
+              n: [
+                { kind: 'door', c: 5, w: 3, h: 4 },
+                { kind: 'door', c: 15, w: 3, h: 4 },
+                { kind: 'window', c: 25, w: 3, h: 1.5, sill: 1 },
+              ],
+            },
+            partitions: [],
+            roof: 'flat',
+            roofRise: 0,
+          },
+        ],
+      },
+    ];
     s.trees = [];
     s.pads = [];
     const box = new THREE.Box3().setFromObject(buildSiteFromSpec(s, { bare: true }).group);
@@ -192,7 +346,14 @@ describe('walls with several openings', () => {
 describe('site model on a terrain', () => {
   const hilly = (): SiteSpec => {
     const s = spec();
-    s.terrain = { cell: 1, half: { e: 120, n: 120 }, strokes: [{ op: 'hill', pts: [{ x: 60, z: 20 }], radius: 40, strength: 8 }, { op: 'hill', pts: [{ x: -30, z: -30 }], radius: 20, strength: 5 }] };
+    s.terrain = {
+      cell: 1,
+      half: { e: 120, n: 120 },
+      strokes: [
+        { op: 'hill', pts: [{ x: 60, z: 20 }], radius: 40, strength: 8 },
+        { op: 'hill', pts: [{ x: -30, z: -30 }], radius: 20, strength: 5 },
+      ],
+    };
     s.walls = [{ a: { x: 40, z: -10 }, b: { x: 80, z: -10 }, height: 2, thick: 0.3 }];
     s.trees = [{ x: 70, z: 40, h: 8, r: 2, kind: 'd' }];
     return s;
@@ -220,7 +381,8 @@ describe('site model on a terrain', () => {
     const m = buildSiteFromSpec(s);
     const meshes: THREE.Mesh[] = [];
     m.group.traverse((o) => {
-      if (o instanceof THREE.Mesh && (o.userData['pick'] as { kind?: string } | undefined)?.kind === 'fence') meshes.push(o);
+      if (o instanceof THREE.Mesh && (o.userData['pick'] as { kind?: string } | undefined)?.kind === 'fence')
+        meshes.push(o);
     });
     expect(meshes.filter((x) => x.geometry instanceof THREE.BoxGeometry)).toHaveLength(6); // posts every 2.4 m, ends included
     expect(meshes.filter((x) => !(x.geometry instanceof THREE.BoxGeometry))).toHaveLength(3); // the planks
@@ -235,7 +397,13 @@ describe('site model on a terrain', () => {
     expect(m.ground.grid).not.toBeNull();
     let terrain = 0;
     m.group.traverse((o) => {
-      if (o instanceof THREE.Mesh && o.geometry.getAttribute('color') && o.geometry.index && o.geometry.index.count > 100_000) terrain++;
+      if (
+        o instanceof THREE.Mesh &&
+        o.geometry.getAttribute('color') &&
+        o.geometry.index &&
+        o.geometry.index.count > 100_000
+      )
+        terrain++;
     });
     expect(terrain).toBe(1);
   });
@@ -266,9 +434,39 @@ describe('site model ground layers', () => {
   it('draws roads, surfaces and water, flat or on a terrain', () => {
     for (const withTerrain of [false, true]) {
       const s = spec();
-      s.roads = [{ pts: [{ x: -80, z: 50 }, { x: 0, z: 60 }, { x: 80, z: 50 }], width: 6, kind: 'road' }];
-      s.surfaces = [{ pts: [{ x: 70, z: -70 }, { x: 100, z: -70 }, { x: 100, z: -40 }, { x: 70, z: -40 }], kind: 'sand' }];
-      s.waters = [{ pts: [{ x: -100, z: -100 }, { x: -70, z: -100 }, { x: -70, z: -70 }, { x: -100, z: -70 }], depth: 2 }];
+      s.roads = [
+        {
+          pts: [
+            { x: -80, z: 50 },
+            { x: 0, z: 60 },
+            { x: 80, z: 50 },
+          ],
+          width: 6,
+          kind: 'road',
+        },
+      ];
+      s.surfaces = [
+        {
+          pts: [
+            { x: 70, z: -70 },
+            { x: 100, z: -70 },
+            { x: 100, z: -40 },
+            { x: 70, z: -40 },
+          ],
+          kind: 'sand',
+        },
+      ];
+      s.waters = [
+        {
+          pts: [
+            { x: -100, z: -100 },
+            { x: -70, z: -100 },
+            { x: -70, z: -70 },
+            { x: -100, z: -70 },
+          ],
+          depth: 2,
+        },
+      ];
       if (withTerrain) s.terrain = { cell: 1, half: { e: 120, n: 120 }, strokes: [] };
       const m = buildSiteFromSpec(s);
       let water = 0;
@@ -283,9 +481,33 @@ describe('site model ground layers', () => {
 });
 
 it('builds a raised greenhouse floor as a solid platform', () => {
-  const s = emptySpec(); s.extent = 20; s.pads = [];
-  s.buildings = [{ id: 'raised', name: 'Raised greenhouse', pos: {x: 0, z: 0}, rotDeg: 0, length: 10, width: 6, frame: 'greenhouse', glass: false,
-    levels: [{ baseY: 0.35, height: 3, sides: {n: true, s: true, e: true, w: true}, doors: {}, partitions: [], roof: 'vault', roofRise: 3, vaultK: 1 }] }];
+  const s = emptySpec();
+  s.extent = 20;
+  s.pads = [];
+  s.buildings = [
+    {
+      id: 'raised',
+      name: 'Raised greenhouse',
+      pos: { x: 0, z: 0 },
+      rotDeg: 0,
+      length: 10,
+      width: 6,
+      frame: 'greenhouse',
+      glass: false,
+      levels: [
+        {
+          baseY: 0.35,
+          height: 3,
+          sides: { n: true, s: true, e: true, w: true },
+          doors: {},
+          partitions: [],
+          roof: 'vault',
+          roofRise: 3,
+          vaultK: 1,
+        },
+      ],
+    },
+  ];
   const model = buildSiteFromSpec(s);
   expect(model.collider.hit(new Vec3(0, 0.2, 0))).toBe(true);
   expect(model.collider.hit(new Vec3(0, 1, 0))).toBe(false);
@@ -294,10 +516,23 @@ it('builds a raised greenhouse floor as a solid platform', () => {
 describe('site model underground', () => {
   it('draws only the slab at the vault floor while retaining the arch above', () => {
     // Exercise the actual vault geometry without constructing an entire site and its meadow.
-    const group = buildUnderground({ id: 'vault', name: 'Vault', outline: [{x:-10,z:-4},{x:10,z:-4},{x:10,z:4},{x:-10,z:4}], floor: 0, ceiling: 4.5, shape: 'vault', wall: 0.6 });
+    const group = buildUnderground({
+      id: 'vault',
+      name: 'Vault',
+      outline: [
+        { x: -10, z: -4 },
+        { x: 10, z: -4 },
+        { x: 10, z: 4 },
+        { x: -10, z: 4 },
+      ],
+      floor: 0,
+      ceiling: 4.5,
+      shape: 'vault',
+      wall: 0.6,
+    });
     group.updateMatrixWorld(true);
     const down = new THREE.Raycaster(new THREE.Vector3(2, 1, 0.5), new THREE.Vector3(0, -1, 0));
-    const floor = down.intersectObject(group, true).filter(hit => Math.abs(hit.point.y) < 0.001);
+    const floor = down.intersectObject(group, true).filter((hit) => Math.abs(hit.point.y) < 0.001);
     expect(floor).toHaveLength(1);
     const up = new THREE.Raycaster(new THREE.Vector3(2, 1, 0.5), new THREE.Vector3(0, 1, 0));
     expect(up.intersectObject(group, true).length).toBeGreaterThan(0);
@@ -307,14 +542,32 @@ describe('site model underground', () => {
     s.buildings = [];
     s.structures = [];
     // The smaller grid still contains the complete hill and both tunnel ends.
-    s.terrain = { cell: 1, half: { e: 55, n: 100 }, strokes: [{ op: 'hill', pts: [{ x: 0, z: -60 }], radius: 35, strength: 10 }] };
-    const outline = [{ x: -45, z: -62 }, { x: 45, z: -62 }, { x: 45, z: -58 }, { x: -45, z: -58 }];
+    s.terrain = {
+      cell: 1,
+      half: { e: 55, n: 100 },
+      strokes: [{ op: 'hill', pts: [{ x: 0, z: -60 }], radius: 35, strength: 10 }],
+    };
+    const outline = [
+      { x: -45, z: -62 },
+      { x: 45, z: -62 },
+      { x: 45, z: -58 },
+      { x: -45, z: -58 },
+    ];
     const terrainArea = (model: ReturnType<typeof buildSiteFromSpec>): number => {
       let area = 0;
-      model.group.traverse(o => {
+      model.group.traverse((o) => {
         if (!(o instanceof THREE.Mesh) || !o.geometry.getAttribute('color')) return;
-        const g=o.geometry,p=g.getAttribute('position'),count=g.index?.count ?? p.count;
-        for(let i=0;i<count;i+=3){const ids=[0,1,2].map(j=>g.index?g.index.getX(i+j):i+j);const [a,b,c]=ids as [number,number,number];area+=Math.abs((p.getX(b)-p.getX(a))*(p.getZ(c)-p.getZ(a))-(p.getZ(b)-p.getZ(a))*(p.getX(c)-p.getX(a)))/2;}
+        const g = o.geometry,
+          p = g.getAttribute('position'),
+          count = g.index?.count ?? p.count;
+        for (let i = 0; i < count; i += 3) {
+          const ids = [0, 1, 2].map((j) => (g.index ? g.index.getX(i + j) : i + j));
+          const [a, b, c] = ids as [number, number, number];
+          area +=
+            Math.abs(
+              (p.getX(b) - p.getX(a)) * (p.getZ(c) - p.getZ(a)) - (p.getZ(b) - p.getZ(a)) * (p.getX(c) - p.getX(a)),
+            ) / 2;
+        }
       });
       return area;
     };
@@ -355,7 +608,13 @@ describe('ruined buildings', () => {
     const count = (ruin?: number): { roofs: number; solids: number } => {
       const s = spec();
       s.structures = [];
-      s.buildings = [{ ...s.buildings[0]!, levels: [s.buildings[0]!.levels[0]!, { ...s.buildings[0]!.levels[0]!, baseY: 4 }], ...(ruin ? { ruin } : {}) }];
+      s.buildings = [
+        {
+          ...s.buildings[0]!,
+          levels: [s.buildings[0]!.levels[0]!, { ...s.buildings[0]!.levels[0]!, baseY: 4 }],
+          ...(ruin ? { ruin } : {}),
+        },
+      ];
       const m = buildSiteFromSpec(s);
       let roofs = 0;
       m.roof.traverse((o) => {
@@ -363,7 +622,8 @@ describe('ruined buildings', () => {
       });
       return { roofs, solids: m.collider.solids.length };
     };
-    const intact = count(), ruined = count(0.7);
+    const intact = count(),
+      ruined = count(0.7);
     expect(intact.roofs).toBeGreaterThan(0);
     expect(ruined.roofs).toBe(0);
     expect(ruined.solids).toBeGreaterThan(intact.solids); // the walls are in pieces now
@@ -379,7 +639,8 @@ describe('building colour', () => {
     const m = buildSiteFromSpec(s);
     const colours = new Set<number>();
     m.group.traverse((o) => {
-      if (o instanceof THREE.Mesh && o.material instanceof THREE.MeshStandardMaterial) colours.add(o.material.color.getHex());
+      if (o instanceof THREE.Mesh && o.material instanceof THREE.MeshStandardMaterial)
+        colours.add(o.material.color.getHex());
     });
     expect(colours.has(new THREE.Color('#123456').getHex())).toBe(true);
   });
@@ -390,7 +651,16 @@ describe('open shells and battlements', () => {
     const s = spec();
     s.structures = [];
     const b0 = s.buildings[0]!;
-    s.buildings = [{ ...b0, levels: [{ ...b0.levels[0]!, roof: 'none' }, { ...b0.levels[0]!, baseY: 4, roof: 'flat' }], ...extra }];
+    s.buildings = [
+      {
+        ...b0,
+        levels: [
+          { ...b0.levels[0]!, roof: 'none' },
+          { ...b0.levels[0]!, baseY: 4, roof: 'flat' },
+        ],
+        ...extra,
+      },
+    ];
     const m = buildSiteFromSpec(s);
     let roofs = 0;
     m.roof.traverse((o) => {
@@ -399,7 +669,8 @@ describe('open shells and battlements', () => {
     return { roofs, solids: m.collider.solids.length };
   };
   it('an open shell has no roof and no upper slab, but all its walls', () => {
-    const whole = build({}), shell = build({ roofless: true });
+    const whole = build({}),
+      shell = build({ roofless: true });
     expect(whole.roofs).toBeGreaterThan(0);
     expect(shell.roofs).toBe(0);
     expect(shell.solids).toBe(whole.solids - 1); // only the roof's collider is gone
@@ -414,10 +685,13 @@ describe('ruin by wall', () => {
     const count = (extra: Partial<BuildingSpec>): number => {
       const s = spec();
       s.structures = [];
-      s.buildings = [{ ...s.buildings[0]!, levels: [{ ...s.buildings[0]!.levels[0]!, roof: 'flat' }], crenels: true, ...extra }];
+      s.buildings = [
+        { ...s.buildings[0]!, levels: [{ ...s.buildings[0]!.levels[0]!, roof: 'flat' }], crenels: true, ...extra },
+      ];
       return buildSiteFromSpec(s).collider.solids.length;
     };
-    const intact = count({ roofless: true }), fallen = count({ roofless: true, ruinWalls: { s: 0.8 } });
+    const intact = count({ roofless: true }),
+      fallen = count({ roofless: true, ruinWalls: { s: 0.8 } });
     expect(fallen).not.toBe(intact); // the south wall is broken at the top and has lost merlons
     expect(count({ roofless: true, ruinWalls: { s: 0.8 } })).toBe(fallen); // the same every time
     expect(count({ ruinWalls: { s: 0.8 } })).toBe(count({})); // under a roof the walls stand whole
@@ -429,7 +703,14 @@ describe('barrel vault ends', () => {
     const caps = (sides: { n: boolean; s: boolean; e: boolean; w: boolean }): number => {
       const s = spec();
       s.structures = [];
-      const l = { ...s.buildings[0]!.levels[0]!, roof: 'vault' as const, roofTurn: true, roofCount: 3, vaultK: 0.58, sides };
+      const l = {
+        ...s.buildings[0]!.levels[0]!,
+        roof: 'vault' as const,
+        roofTurn: true,
+        roofCount: 3,
+        vaultK: 0.58,
+        sides,
+      };
       s.buildings = [{ ...s.buildings[0]!, levels: [l] }];
       let n = 0;
       buildSiteFromSpec(s).roof.traverse((o) => {
@@ -447,14 +728,22 @@ describe('building fixtures', () => {
     const s = spec();
     s.structures = [];
     const b0 = s.buildings[0]!;
-    s.buildings = [{ ...b0, pos: { x: 100, z: 0 }, rotDeg: 90, fixtures: [{ id: 'f', kind: 'silo', name: 'Ladder', x: 10, z: 0, rotDeg: 0, height: 8, size: 0.5 }] }];
+    s.buildings = [
+      {
+        ...b0,
+        pos: { x: 100, z: 0 },
+        rotDeg: 90,
+        fixtures: [{ id: 'f', kind: 'silo', name: 'Ladder', x: 10, z: 0, rotDeg: 0, height: 8, size: 0.5 }],
+      },
+    ];
     const m = buildSiteFromSpec(s);
     m.group.updateMatrixWorld(true);
     // the fixture is a group of its own, tagged with the building (not with a structure)
     const tagged: THREE.Vector3[] = [];
     m.group.traverse((o) => {
       const p = o.userData['pick'] as { kind: string; id: string } | undefined;
-      if (p?.kind === 'building' && p.id === b0.id && o.parent === m.group) tagged.push(o.getWorldPosition(new THREE.Vector3()));
+      if (p?.kind === 'building' && p.id === b0.id && o.parent === m.group)
+        tagged.push(o.getWorldPosition(new THREE.Vector3()));
     });
     const at = tagged.find((v) => Math.hypot(v.x - 100, v.z - 10) < 1) ?? null;
     // turned a quarter: local +x (10 m) points to site +z
@@ -465,41 +754,71 @@ describe('building fixtures', () => {
 });
 
 describe('road overlap rendering', () => {
-  for (const terrain of [false, true]) it(`orders crossing roads and drapes their full width (terrain=${terrain})`, () => {
-    const s = emptySpec();
-    if (terrain) s.terrain = { cell: 1, half: { e: 30, n: 30 }, strokes: [{ op: 'hill', pts: [{ x: 0, z: 0 }], radius: 25, strength: 8 }] };
-    s.roads = [
-      { kind: 'road', width: 8, pts: [{ x: -20, z: 0 }, { x: 20, z: 0 }] },
-      { kind: 'path', width: 2, pts: [{ x: 0, z: -20 }, { x: 0, z: 20 }] },
-      { kind: 'track', width: 4, pts: [{ x: -20, z: -10 }, { x: 20, z: 10 }] },
-    ];
-    const check = () => {
-      const m = buildSiteFromSpec(s);
-      const roads = m.group.children.filter((o) => o.userData['roadKind']) as THREE.Mesh[];
-      expect(roads.map((r) => r.userData['roadKind'])).toEqual(['path', 'track', 'road']);
-      for (let i = 0; i < roads.length; i++) {
-        const r = roads[i]!, mat = r.material as THREE.MeshStandardMaterial;
-        expect(mat.polygonOffset).toBe(true);
-        expect(mat.depthWrite).toBe(false); // overlap cannot reject the higher-class road
-        expect(mat.depthTest).toBe(terrain); // hills still occlude roads
-        if (terrain) expect(r.renderOrder).toBeGreaterThan(0); // after the terrain depth pass
-        if (i) expect(r.renderOrder).toBeGreaterThan(roads[i - 1]!.renderOrder);
-        const p = r.geometry.getAttribute('position');
-        for (let j = 0; j < p.count; j++) expect(p.getY(j)).toBeCloseTo(meshHeightAt(m.ground.grid, p.getX(j), p.getZ(j)) + 0.06, 4);
-      }
-      return roads.map((r) => Array.from(r.geometry.getAttribute('position').array));
-    };
-    const first = check();
-    s.roads.reverse();
-    expect(check()).toEqual(first);
-  });
+  for (const terrain of [false, true])
+    it(`orders crossing roads and drapes their full width (terrain=${terrain})`, () => {
+      const s = emptySpec();
+      if (terrain)
+        s.terrain = {
+          cell: 1,
+          half: { e: 30, n: 30 },
+          strokes: [{ op: 'hill', pts: [{ x: 0, z: 0 }], radius: 25, strength: 8 }],
+        };
+      s.roads = [
+        {
+          kind: 'road',
+          width: 8,
+          pts: [
+            { x: -20, z: 0 },
+            { x: 20, z: 0 },
+          ],
+        },
+        {
+          kind: 'path',
+          width: 2,
+          pts: [
+            { x: 0, z: -20 },
+            { x: 0, z: 20 },
+          ],
+        },
+        {
+          kind: 'track',
+          width: 4,
+          pts: [
+            { x: -20, z: -10 },
+            { x: 20, z: 10 },
+          ],
+        },
+      ];
+      const check = () => {
+        const m = buildSiteFromSpec(s);
+        const roads = m.group.children.filter((o) => o.userData['roadKind']) as THREE.Mesh[];
+        expect(roads.map((r) => r.userData['roadKind'])).toEqual(['path', 'track', 'road']);
+        for (let i = 0; i < roads.length; i++) {
+          const r = roads[i]!,
+            mat = r.material as THREE.MeshStandardMaterial;
+          expect(mat.polygonOffset).toBe(true);
+          expect(mat.depthWrite).toBe(false); // overlap cannot reject the higher-class road
+          expect(mat.depthTest).toBe(terrain); // hills still occlude roads
+          if (terrain) expect(r.renderOrder).toBeGreaterThan(0); // after the terrain depth pass
+          if (i) expect(r.renderOrder).toBeGreaterThan(roads[i - 1]!.renderOrder);
+          const p = r.geometry.getAttribute('position');
+          for (let j = 0; j < p.count; j++)
+            expect(p.getY(j)).toBeCloseTo(meshHeightAt(m.ground.grid, p.getX(j), p.getZ(j)) + 0.06, 4);
+        }
+        return roads.map((r) => Array.from(r.geometry.getAttribute('position').array));
+      };
+      const first = check();
+      s.roads.reverse();
+      expect(check()).toEqual(first);
+    });
 });
 
 describe('Villetta measured frame and ladder', () => {
   it('places four barrel roofs around the one-metre central strip', () => {
     const s = sanitizeSpec(villetta)!;
     const store = s.buildings.find((b) => b.name === 'Main store')!;
-    store.pos = { x: 0, z: 0 }; store.rotDeg = 0;
+    store.pos = { x: 0, z: 0 };
+    store.rotDeg = 0;
     const m = buildSiteFromSpec({ ...s, buildings: [store] }, { bare: true });
     const barrels: THREE.Mesh[] = [];
     const strips: THREE.Mesh[] = [];
@@ -510,23 +829,26 @@ describe('Villetta measured frame and ladder', () => {
     expect(barrels).toHaveLength(4);
     expect(strips).toHaveLength(1);
     expect(new THREE.Box3().setFromObject(strips[0]!).getSize(new THREE.Vector3()).z).toBeCloseTo(1);
-    const centres = barrels.map(b => b.position.z).sort((a, b) => a - b);
+    const centres = barrels.map((b) => b.position.z).sort((a, b) => a - b);
     const width = (store.width - 1) / 4;
     expect(centres[2]! - centres[1]! - width).toBeCloseTo(1);
-    expect(store.levels[0]!.height + width / 2 * store.levels[0]!.vaultK!).toBeCloseTo(8);
+    expect(store.levels[0]!.height + (width / 2) * store.levels[0]!.vaultK!).toBeCloseTo(8);
   });
   it('builds the parabolic ribs at the measured pitch and crown, including the last end', () => {
     const s = sanitizeSpec(villetta)!;
     const b = s.buildings.find((b) => b.frame === 'greenhouse')!;
-    b.pos = { x: 0, z: 0 }; b.rotDeg = 0;
+    b.pos = { x: 0, z: 0 };
+    b.rotDeg = 0;
     const m = buildSiteFromSpec({ ...s, buildings: [b] }, { bare: true });
     const ribs: THREE.Mesh[] = [];
-    m.group.traverse((o) => { if (o instanceof THREE.Mesh && o.userData['greenhouseRib']) ribs.push(o); });
+    m.group.traverse((o) => {
+      if (o instanceof THREE.Mesh && o.userData['greenhouseRib']) ribs.push(o);
+    });
     expect(ribs.length).toBe(Math.ceil(b.length / 4.61) + 1);
     expect(ribs[1]!.position.x - ribs[0]!.position.x).toBeCloseTo(4.61);
     expect(ribs.at(-1)!.position.x).toBeCloseTo(b.length / 2);
     const path = (ribs[0]!.geometry as THREE.TubeGeometry).parameters.path;
-    const crown = 20.289 / 2 * 1.1; // ratio 1.1 (the owner, 2026-10-30; was 9.3 m estimated from below)
+    const crown = (20.289 / 2) * 1.1; // ratio 1.1 (the owner, 2026-10-30; was 9.3 m estimated from below)
     expect(path.getPoint(0.5).y).toBeCloseTo(crown, 1);
     expect(path.getPoint(0.25).y).toBeCloseTo(crown * 0.75, 1);
     expect(ribs.every((r) => r.scale.y === ribs[0]!.scale.y)).toBe(true); // bare steel is not randomly torn down
@@ -549,10 +871,26 @@ describe('buildings snapped flush (B-035)', () => {
   it('draws no two wall boxes in the same place', () => {
     const s = emptySpec();
     s.pads = [];
-    const level = { baseY: 0, height: 3, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'flat' as const, roofRise: 0 };
+    const level = {
+      baseY: 0,
+      height: 3,
+      sides: { n: true, s: true, e: true, w: true },
+      doors: {},
+      partitions: [],
+      roof: 'flat' as const,
+      roofRise: 0,
+    };
     s.buildings = [
       { id: 'house', name: 'House', pos: { x: 0, z: 0 }, rotDeg: 20, length: 10, width: 8, levels: [level] },
-      { id: 'shed', name: 'Shed', pos: { x: 8 * Math.cos(Math.PI / 9), z: 8 * Math.sin(Math.PI / 9) }, rotDeg: 20, length: 6, width: 8, levels: [level] },
+      {
+        id: 'shed',
+        name: 'Shed',
+        pos: { x: 8 * Math.cos(Math.PI / 9), z: 8 * Math.sin(Math.PI / 9) },
+        rotDeg: 20,
+        length: 6,
+        width: 8,
+        levels: [level],
+      },
     ];
     const model = buildSiteFromSpec(s);
     model.group.updateMatrixWorld(true);

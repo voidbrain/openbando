@@ -7,9 +7,11 @@ export type StorageProblem = 'quota' | 'denied' | 'interrupted' | 'other';
 export function storageProblem(e: unknown): StorageProblem {
   const name = (e as { name?: unknown } | null)?.name;
   const code = (e as { code?: unknown } | null)?.code;
-  if (name === 'QuotaExceededError' || name === 'NS_ERROR_DOM_QUOTA_REACHED' || code === 22 || code === 1014) return 'quota';
+  if (name === 'QuotaExceededError' || name === 'NS_ERROR_DOM_QUOTA_REACHED' || code === 22 || code === 1014)
+    return 'quota';
   if (name === 'SecurityError' || name === 'NotAllowedError' || name === 'InvalidAccessError') return 'denied';
-  if (name === 'AbortError' || name === 'InvalidStateError' || name === 'TransactionInactiveError') return 'interrupted';
+  if (name === 'AbortError' || name === 'InvalidStateError' || name === 'TransactionInactiveError')
+    return 'interrupted';
   return 'other';
 }
 

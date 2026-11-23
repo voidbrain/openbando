@@ -111,7 +111,7 @@ export class SimulatorService {
   /** Heading of the simulator drone in the geographic frame (degrees, [0, 360)). */
   headingDegrees(): number {
     const yaw = eulerYXZ(this.state.q).y;
-    return ((((-yaw - (this.calibration.rot() * Math.PI) / 180) * 180) / Math.PI) % 360 + 360) % 360;
+    return (((((-yaw - (this.calibration.rot() * Math.PI) / 180) * 180) / Math.PI) % 360) + 360) % 360;
   }
 
   private step(dt: number): void {
@@ -122,7 +122,13 @@ export class SimulatorService {
     if (actions.armRefused) this.toast.show('Arm switch ignored: lower the throttle first');
     if (actions.mode && s.mode !== actions.mode) this.toggleMode();
 
-    const result = stepDrone(s, dt, input, { rate: this.radioSettings.rate(), expo: this.radioSettings.expo() }, this.view.collisions() ? this.world : null);
+    const result = stepDrone(
+      s,
+      dt,
+      input,
+      { rate: this.radioSettings.rate(), expo: this.radioSettings.expo() },
+      this.view.collisions() ? this.world : null,
+    );
     if (result.crashed && s.armed) {
       this.toast.show('Crash — motors off');
       this.setArmed(false);
@@ -137,7 +143,8 @@ export class SimulatorService {
         status: s.armed ? `REC ${(this.recorder.length / 10).toFixed(0)}s` : 'Disarmed',
       };
       const cur = this.hud();
-      if (cur.speedKmh !== next.speedKmh || cur.altitude !== next.altitude || cur.status !== next.status) this.hud.set(next);
+      if (cur.speedKmh !== next.speedKmh || cur.altitude !== next.altitude || cur.status !== next.status)
+        this.hud.set(next);
     }
   }
 }

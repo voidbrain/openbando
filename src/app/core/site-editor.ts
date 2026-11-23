@@ -9,7 +9,11 @@ export interface RoomInfo {
   rect: { x0: number; z0: number; x1: number; z1: number };
 }
 
-const sameRect = (a: RoomInfo['rect'], b: RoomInfo['rect']): boolean => Math.abs(a.x0 - b.x0) < 0.01 && Math.abs(a.z0 - b.z0) < 0.01 && Math.abs(a.x1 - b.x1) < 0.01 && Math.abs(a.z1 - b.z1) < 0.01;
+const sameRect = (a: RoomInfo['rect'], b: RoomInfo['rect']): boolean =>
+  Math.abs(a.x0 - b.x0) < 0.01 &&
+  Math.abs(a.z0 - b.z0) < 0.01 &&
+  Math.abs(a.x1 - b.x1) < 0.01 &&
+  Math.abs(a.z1 - b.z1) < 0.01;
 
 /**
  * The editor draft: a mutable copy of the active spec plus an undo/redo stack. Every committed change goes through
@@ -79,7 +83,18 @@ export class SiteEditor {
       length: 20,
       width: 12,
       color: '#d7d0bd',
-      levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'gable', roofRise: 2.5, roofColor: '#b5683f' }],
+      levels: [
+        {
+          baseY: 0,
+          height: 4,
+          sides: { n: true, s: true, e: true, w: true },
+          doors: {},
+          partitions: [],
+          roof: 'gable',
+          roofRise: 2.5,
+          roofColor: '#b5683f',
+        },
+      ],
       ...preset,
     };
     this.commit((s) => s.buildings.push(b));
@@ -97,7 +112,23 @@ export class SiteEditor {
   duplicateSelected(): void {
     const src = this.building();
     if (!src) return;
-    const copy = cloneSpec({ version: 1, id: '', name: '', createdAt: 0, origin: { lat: 0, lon: 0 }, bearingDeg: 0, genScale: 1, groundColor: '', buildings: [src], pads: [], trees: [], seed: 0, extent: 0, droneStart: { x: 0, z: 0 }, calibCorners: { p1: { x: 0, z: 0 }, p2: { x: 0, z: 0 } } }).buildings[0]!;
+    const copy = cloneSpec({
+      version: 1,
+      id: '',
+      name: '',
+      createdAt: 0,
+      origin: { lat: 0, lon: 0 },
+      bearingDeg: 0,
+      genScale: 1,
+      groundColor: '',
+      buildings: [src],
+      pads: [],
+      trees: [],
+      seed: 0,
+      extent: 0,
+      droneStart: { x: 0, z: 0 },
+      calibCorners: { p1: { x: 0, z: 0 }, p2: { x: 0, z: 0 } },
+    }).buildings[0]!;
     copy.id = uid('bld');
     copy.name = `${src.name} copy`;
     copy.pos = { x: src.pos.x + 8, z: src.pos.z + 8 };
@@ -105,7 +136,11 @@ export class SiteEditor {
     this.selectedId.set(copy.id);
   }
 
-  patchBuilding(patch: Partial<Pick<BuildingSpec, 'name' | 'rotDeg' | 'length' | 'width' | 'color' | 'floorColor'>> & { pos?: BuildingSpec['pos'] }): void {
+  patchBuilding(
+    patch: Partial<Pick<BuildingSpec, 'name' | 'rotDeg' | 'length' | 'width' | 'color' | 'floorColor'>> & {
+      pos?: BuildingSpec['pos'];
+    },
+  ): void {
     this.commit((s) => {
       const b = s.buildings.find((x) => x.id === this.selectedId());
       if (b) Object.assign(b, patch);
@@ -194,16 +229,30 @@ export class SiteEditor {
       const l = b?.levels[level];
       if (!b || !l) return;
       const run = side === 'n' || side === 'w' ? b.length : b.width;
-      (l.doors[side] ??= []).push({ kind, c: run / 2, w: kind === 'door' ? 2.2 : 1.2, h: kind === 'door' ? Math.min(2.6, l.height * 0.8) : 1 });
+      (l.doors[side] ??= []).push({
+        kind,
+        c: run / 2,
+        w: kind === 'door' ? 2.2 : 1.2,
+        h: kind === 'door' ? Math.min(2.6, l.height * 0.8) : 1,
+      });
     });
   }
 
-  patchOpening(side: 'n' | 's' | 'e' | 'w', index: number, patch: Partial<{ kind: 'door' | 'window'; c: number; w: number; h: number }>): void {
+  patchOpening(
+    side: 'n' | 's' | 'e' | 'w',
+    index: number,
+    patch: Partial<{ kind: 'door' | 'window'; c: number; w: number; h: number }>,
+  ): void {
     this.patchOpeningAt(side, undefined, index, patch);
   }
 
   /** Patch one opening (`level` undefined = every level, as before). */
-  patchOpeningAt(side: 'n' | 's' | 'e' | 'w', level: number | undefined, index: number, patch: Partial<{ kind: 'door' | 'window'; c: number; w: number; h: number }>): void {
+  patchOpeningAt(
+    side: 'n' | 's' | 'e' | 'w',
+    level: number | undefined,
+    index: number,
+    patch: Partial<{ kind: 'door' | 'window'; c: number; w: number; h: number }>,
+  ): void {
     this.commit((s) => {
       for (const b of s.buildings) {
         if (b.id !== this.selectedId()) continue;
@@ -242,8 +291,14 @@ export class SiteEditor {
       for (const l of b.levels) {
         if (l.partitions.length) continue;
         l.partitions = [
-          [{ x: b.length / 2, z: 0 }, { x: b.length / 2, z: b.width * 0.6 }],
-          [{ x: 0, z: b.width * 0.6 }, { x: b.length, z: b.width * 0.6 }],
+          [
+            { x: b.length / 2, z: 0 },
+            { x: b.length / 2, z: b.width * 0.6 },
+          ],
+          [
+            { x: 0, z: b.width * 0.6 },
+            { x: b.length, z: b.width * 0.6 },
+          ],
         ];
       }
     });

@@ -1,7 +1,22 @@
 import { Service } from '@angular/core';
-import { ELEVATION_ZOOM, TERRARIUM_URL, baseKey, resampleToGrid, terrainBox, tileSampler, tilesFor } from '../core/elevation';
+import {
+  ELEVATION_ZOOM,
+  TERRARIUM_URL,
+  baseKey,
+  resampleToGrid,
+  terrainBox,
+  tileSampler,
+  tilesFor,
+} from '../core/elevation';
 import type { SiteSpec } from '../core/site-spec';
-import { MAX_HALF, defaultTerrain, hasTerrainBase, setTerrainBase, type TerrainBase, type TerrainSpec } from '../core/terrain';
+import {
+  MAX_HALF,
+  defaultTerrain,
+  hasTerrainBase,
+  setTerrainBase,
+  type TerrainBase,
+  type TerrainSpec,
+} from '../core/terrain';
 
 const DB = 'abando-terrain';
 const STORE = 'bases';
@@ -29,7 +44,9 @@ export class ElevationService {
     const tiles = new Map<string, Uint8ClampedArray>();
     await Promise.all(
       tilesFor(box.south, box.west, box.north, box.east, ELEVATION_ZOOM).map(async (t) => {
-        const url = TERRARIUM_URL.replace('{z}', String(ELEVATION_ZOOM)).replace('{x}', String(t.x)).replace('{y}', String(t.y));
+        const url = TERRARIUM_URL.replace('{z}', String(ELEVATION_ZOOM))
+          .replace('{x}', String(t.x))
+          .replace('{y}', String(t.y));
         const res = await fetch(url);
         if (!res.ok) throw new Error(`Elevation tile ${t.x}/${t.y}: HTTP ${res.status}`);
         tiles.set(`${t.x}/${t.y}`, await decode(await res.blob()));

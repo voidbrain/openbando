@@ -1,6 +1,15 @@
 import { computed, signal } from '@angular/core';
 import type { Pt } from '../../../core/footprint';
-import { brushStroke, contourPaths, defaultTerrain, heightPixels, rampGuide, sculptStroke, type Falloff, type TerrainOp } from '../../../core/terrain';
+import {
+  brushStroke,
+  contourPaths,
+  defaultTerrain,
+  heightPixels,
+  rampGuide,
+  sculptStroke,
+  type Falloff,
+  type TerrainOp,
+} from '../../../core/terrain';
 import { polyPts } from './editor-host';
 import type { GroundStyle } from '../../../three/site-model';
 import type { PickOption } from '../pick-menu';
@@ -19,7 +28,7 @@ const TERRAIN_OPS: readonly { op: Brush; icon: string; hint?: string }[] = [
   { op: 'hill', icon: 'terrainHill' },
   { op: 'crater', icon: 'terrainCrater' },
   { op: 'ramp', icon: 'ramp' },
-]
+];
 
 /** The Terrain tool: brush options, how the ground is drawn (contours, height map, 3D style) and the strokes. */
 export class TerrainTool {
@@ -35,7 +44,12 @@ export class TerrainTool {
   readonly radius = signal(8);
   readonly strength = signal(2);
   readonly falloff = signal<Falloff>('smooth');
-  readonly opOptions: readonly PickOption[] = TERRAIN_OPS.map((t) => ({ id: t.op, label: t.op[0]!.toUpperCase() + t.op.slice(1), icon: t.icon, hint: t.hint }));
+  readonly opOptions: readonly PickOption[] = TERRAIN_OPS.map((t) => ({
+    id: t.op,
+    label: t.op[0]!.toUpperCase() + t.op.slice(1),
+    icon: t.icon,
+    hint: t.hint,
+  }));
   readonly falloffOptions: readonly PickOption[] = [
     { id: 'smooth', label: 'Soft edge', icon: 'terrainHill', hint: 'Rounded, natural' },
     { id: 'linear', label: 'Straight edge', icon: 'ramp', hint: 'A steady slope to the rim' },
@@ -44,7 +58,19 @@ export class TerrainTool {
   readonly asOp = (v: string): Brush => TERRAIN_OPS.find((t) => t.op === v)?.op ?? 'sculpt';
   readonly asFalloff = (v: string): Falloff => (v === 'linear' || v === 'flat' ? v : 'smooth');
   /** What "strength" means for the current operation, for its label. */
-  readonly strengthLabel = computed(() => ({ sculpt: 'speed', raise: 'up', lower: 'down', smooth: 'amount %', flatten: '', hill: 'height', crater: 'depth', ramp: 'rise' })[this.op()]);
+  readonly strengthLabel = computed(
+    () =>
+      ({
+        sculpt: 'speed',
+        raise: 'up',
+        lower: 'down',
+        smooth: 'amount %',
+        flatten: '',
+        hill: 'height',
+        crater: 'depth',
+        ramp: 'rise',
+      })[this.op()],
+  );
   /** The radius of the brush ring (a ramp's radius is its half width). */
   readonly ring = computed(() => (this.op() === 'ramp' ? this.radius() / 2 : this.radius()));
 
@@ -95,13 +121,22 @@ export class TerrainTool {
       return s ? { kind: 'ring' as const, at: s.at, r: s.r, label: `${s.lower ? '−' : '+'}${s.k.toFixed(1)} m` } : null;
     }
     if (d?.t !== 'terrain' || !d.pts.length) return null;
-    const a = d.pts[0]!, k = Math.abs(this.strength());
+    const a = d.pts[0]!,
+      k = Math.abs(this.strength());
     if (op === 'ramp' && d.pts.length > 1) {
       const g = rampGuide(a, d.pts[d.pts.length - 1]!, this.radius() / 2, this.strength());
-      return { kind: 'ramp' as const, outline: polyPts(g.outline), arrow: polyPts(g.arrow), at: d.pts[d.pts.length - 1]!, label: `${this.strength() >= 0 ? '+' : ''}${this.strength()} m over ${g.len.toFixed(1)} m · ${g.slope.toFixed(0)} %` };
+      return {
+        kind: 'ramp' as const,
+        outline: polyPts(g.outline),
+        arrow: polyPts(g.arrow),
+        at: d.pts[d.pts.length - 1]!,
+        label: `${this.strength() >= 0 ? '+' : ''}${this.strength()} m over ${g.len.toFixed(1)} m · ${g.slope.toFixed(0)} %`,
+      };
     }
-    if (op === 'hill' || op === 'crater') return { kind: 'ring' as const, at: a, r: this.radius(), label: `${op === 'hill' ? '+' : '−'}${k} m` };
-    if (op === 'flatten') return { kind: 'ring' as const, at: a, r: this.radius(), label: `level ${d.h0.toFixed(1)} m` };
+    if (op === 'hill' || op === 'crater')
+      return { kind: 'ring' as const, at: a, r: this.radius(), label: `${op === 'hill' ? '+' : '−'}${k} m` };
+    if (op === 'flatten')
+      return { kind: 'ring' as const, at: a, r: this.radius(), label: `level ${d.h0.toFixed(1)} m` };
     return null;
   });
 
@@ -119,7 +154,8 @@ export class TerrainTool {
 
   /** The pointer moved while held: past half the radius a new stroke starts there (the hold keeps some of its growth). */
   sculptMove(p: Pt): void {
-    const h = this.hold, s = this.sculpting();
+    const h = this.hold,
+      s = this.sculpting();
     if (!h || !s || Math.hypot(p.x - h.at.x, p.z - h.at.z) < s.r * 0.5) return;
     this.startHold(p, h.lower, performance.now() - 300);
   }
@@ -146,7 +182,10 @@ export class TerrainTool {
   private grow(): void {
     const h = this.hold;
     if (!h) return;
-    const st = sculptStroke(h.at, (performance.now() - h.t0) / 1000, h.lower, { radius: this.radius(), rate: this.strength() });
+    const st = sculptStroke(h.at, (performance.now() - h.t0) / 1000, h.lower, {
+      radius: this.radius(),
+      rate: this.strength(),
+    });
     this.h.ed.live((s) => {
       if (s.terrain?.strokes[h.idx]) s.terrain.strokes[h.idx] = st;
     });
@@ -164,7 +203,11 @@ export class TerrainTool {
   commit(pts: Pt[], h0: number): void {
     const op = this.op();
     if (op === 'sculpt') return;
-    const stroke = brushStroke(op, pts, h0, { radius: this.radius(), strength: this.strength(), falloff: this.falloff() });
+    const stroke = brushStroke(op, pts, h0, {
+      radius: this.radius(),
+      strength: this.strength(),
+      falloff: this.falloff(),
+    });
     if (!stroke) return void this.h.toast.show('Drag from the foot of the ramp to its top.');
     this.h.ed.commitSite((s) => {
       s.terrain ??= defaultTerrain(s.extent);

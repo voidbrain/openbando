@@ -11,8 +11,10 @@ export interface Catalog {
 
 /** Every block of a downloaded catalogue that passes the same check as everywhere else; `local/` ids are the pilot's, never the catalogue's. */
 export function sanitizeCatalog(raw: unknown): { blocks: BlockSpec[]; rejected: string[] } {
-  const list = raw && typeof raw === 'object' && Array.isArray((raw as Partial<Catalog>).blocks) ? (raw as Catalog).blocks : [];
-  const blocks: BlockSpec[] = [], rejected: string[] = [];
+  const list =
+    raw && typeof raw === 'object' && Array.isArray((raw as Partial<Catalog>).blocks) ? (raw as Catalog).blocks : [];
+  const blocks: BlockSpec[] = [],
+    rejected: string[] = [];
   const seen = new Set<string>();
   for (const b of list.slice(0, 500)) {
     const ok = sanitizeBlock(b);
@@ -28,7 +30,10 @@ export function sanitizeCatalog(raw: unknown): { blocks: BlockSpec[]; rejected: 
 }
 
 /** The new cached catalogue: the published one wins (Stage 1 has no local edits to catalogue entries). Reports what changed. */
-export function mergeCatalog(cached: readonly BlockSpec[], incoming: readonly BlockSpec[]): { blocks: BlockSpec[]; added: string[]; updated: string[]; removed: string[] } {
+export function mergeCatalog(
+  cached: readonly BlockSpec[],
+  incoming: readonly BlockSpec[],
+): { blocks: BlockSpec[]; added: string[]; updated: string[]; removed: string[] } {
   const old = new Map(cached.map((b) => [b.id, b]));
   const now = new Set(incoming.map((b) => b.id));
   return {
@@ -94,8 +99,18 @@ export function blockCategory(b: Pick<BlockSpec, 'id' | 'kind' | 'tags'>): strin
 
 /** A list of blocks under their sub-category headings, in Library order, each group by name. */
 export function groupBlocks(list: readonly BlockSpec[]): { id: string; label: string; blocks: BlockSpec[] }[] {
-  const order = [{ id: 'mine', label: 'My blocks' }, ...BLOCK_CATEGORIES, { id: 'buildings', label: 'Buildings' }, { id: 'patterns', label: 'Patterns' }, { id: 'other', label: 'Other' }];
+  const order = [
+    { id: 'mine', label: 'My blocks' },
+    ...BLOCK_CATEGORIES,
+    { id: 'buildings', label: 'Buildings' },
+    { id: 'patterns', label: 'Patterns' },
+    { id: 'other', label: 'Other' },
+  ];
   return order
-    .map((c) => ({ id: c.id, label: c.label, blocks: list.filter((b) => blockCategory(b) === c.id).sort((a, b) => a.name.localeCompare(b.name)) }))
+    .map((c) => ({
+      id: c.id,
+      label: c.label,
+      blocks: list.filter((b) => blockCategory(b) === c.id).sort((a, b) => a.name.localeCompare(b.name)),
+    }))
     .filter((g) => g.blocks.length);
 }

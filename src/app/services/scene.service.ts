@@ -12,7 +12,15 @@ import { FlightStore } from '../state/flight.store';
 import { LayoutStore } from '../state/layout.store';
 import { ViewStore } from '../state/view.store';
 import type { PanelId } from '../ui/panel-defs';
-import { createOrbitState, fovFor, orbitFromCamera, placeCamera, type FollowSubject, type OrbitState, type PlaceOptions } from '../three/camera-rig';
+import {
+  createOrbitState,
+  fovFor,
+  orbitFromCamera,
+  placeCamera,
+  type FollowSubject,
+  type OrbitState,
+  type PlaceOptions,
+} from '../three/camera-rig';
 import type { RigContext } from '../three/drone-rig';
 import { SceneHost } from '../three/scene-host';
 import { XRay } from '../three/xray';
@@ -37,7 +45,12 @@ export interface Viewport {
   canvas: HTMLCanvasElement | null;
 }
 
-const VIEWPORT_PANELS: Record<ViewportType, PanelId> = { orbit: 'vpOrbit', chase: 'vpChase', fpv: 'vpFpv', top: 'vpTop' };
+const VIEWPORT_PANELS: Record<ViewportType, PanelId> = {
+  orbit: 'vpOrbit',
+  chase: 'vpChase',
+  fpv: 'vpFpv',
+  top: 'vpTop',
+};
 const PANEL_MAX_PIXELS = 650_000;
 
 /** A surface that can receive "pick the ground / a building" clicks while an editor tool is armed. */
@@ -131,10 +144,16 @@ export class SceneService {
     });
     effect(() => {
       const welcome = this.layout.panels().welcome.visible;
-      const on=this.race.enabled() && !welcome,tracks=on?this.race.tracks():[],gate=on?this.race.gate():null,speedTrails=this.race.speedTrails();
+      const on = this.race.enabled() && !welcome,
+        tracks = on ? this.race.tracks() : [],
+        gate = on ? this.race.gate() : null,
+        speedTrails = this.race.speedTrails();
       this.ready();
-      if(this.raceRenderer) {this.raceRenderer.group.visible=on;this.raceRenderer.synchronize(on?tracks:[],on?gate:null,speedTrails);}
-      if(this.host)this.host.paths.group.visible=!on && !welcome;
+      if (this.raceRenderer) {
+        this.raceRenderer.group.visible = on;
+        this.raceRenderer.synchronize(on ? tracks : [], on ? gate : null, speedTrails);
+      }
+      if (this.host) this.host.paths.group.visible = !on && !welcome;
     });
     effect(() => {
       const v = this.view.cameraView();
@@ -168,7 +187,12 @@ export class SceneService {
     this.raceRenderer = new RaceRenderer(host.scene);
     // The canvas must fill its container: three.js' default style is "display:block" without width/height, so on
     // HiDPI screens it renders at device pixels and covers only a top-left part of the page — the rest stays black.
-    Object.assign(host.canvas.style, { position: 'absolute', inset: '0', width: '100%', height: '100%' } as CSSStyleDeclaration);
+    Object.assign(host.canvas.style, {
+      position: 'absolute',
+      inset: '0',
+      width: '100%',
+      height: '100%',
+    } as CSSStyleDeclaration);
     this.xray = new XRay(host.site);
     this.xray.enabled = this.view.xray();
     this.sim.world = host.site.collider;
@@ -209,7 +233,7 @@ export class SceneService {
     if (this.resizeHandler) removeEventListener('resize', this.resizeHandler);
     this.xray?.reset();
     this.raceRenderer?.dispose();
-    this.raceRenderer=null;
+    this.raceRenderer = null;
     this.host?.dispose();
     this.host = null;
     this.xray = null;
@@ -219,19 +243,32 @@ export class SceneService {
 
   /** True when chase / FPV / orbit-follow track the replayed drone instead of the simulator drone. */
   followingReplay(): boolean {
-    return !this.layout.panels().welcome.visible && this.view.replayFollow() && !!this.flights.active && !this.sim.state.armed;
+    return (
+      !this.layout.panels().welcome.visible &&
+      this.view.replayFollow() &&
+      !!this.flights.active &&
+      !this.sim.state.armed
+    );
   }
 
   subject(): FollowSubject {
-    return this.followingReplay() ? { p: this.playback.pose.p, q: this.playback.pose.q } : { p: this.sim.state.p, q: this.sim.state.q };
+    return this.followingReplay()
+      ? { p: this.playback.pose.p, q: this.playback.pose.q }
+      : { p: this.sim.state.p, q: this.sim.state.q };
   }
 
   rigContext(): RigContext {
-    return { followingReplay: this.followingReplay(), flight: this.race.enabled() || this.layout.panels().welcome.visible ? null : this.flights.active, simPosition: this.sim.state.p, replayPosition: this.playback.pose.p };
+    return {
+      followingReplay: this.followingReplay(),
+      flight: this.race.enabled() || this.layout.panels().welcome.visible ? null : this.flights.active,
+      simPosition: this.sim.state.p,
+      replayPosition: this.playback.pose.p,
+    };
   }
 
   /** Camera ground only (scene units): terrain and underground floors, excluding aircraft standing surfaces. */
-  private readonly groundAt = (x: number, z: number, y?: number): number => this.host?.site.collider.cameraGroundAt(x, z, y) ?? 0;
+  private readonly groundAt = (x: number, z: number, y?: number): number =>
+    this.host?.site.collider.cameraGroundAt(x, z, y) ?? 0;
 
   private placeOptions(): PlaceOptions {
     const f = this.flights.active;
@@ -285,7 +322,13 @@ export class SceneService {
    * Render an orthographic top-down overlay (no fog) for the Map panel into `canvas`. The map has its own camera:
    * the caller positions it.
    */
-  renderOverlay(camera: THREE.OrthographicCamera, canvas: HTMLCanvasElement, cssW: number, cssH: number, maxPixels: number): void {
+  renderOverlay(
+    camera: THREE.OrthographicCamera,
+    canvas: HTMLCanvasElement,
+    cssW: number,
+    cssH: number,
+    maxPixels: number,
+  ): void {
     const host = this.host;
     if (!host) return;
     const fog = host.scene.fog;
@@ -300,7 +343,14 @@ export class SceneService {
   // ---- Adjust position (F-040): a move control on the replay drone, height included ----
   /** The control is out: the moment it pins and the pins it started from (Esc puts them back). */
   readonly adjusting = signal<{ t: number } | null>(null);
-  private adjust: { gizmo: AdjustGizmo; t: number; from: THREE.Vector3; before: MomentPin[]; pins: MomentPin[]; keys: (e: KeyboardEvent) => void } | null = null;
+  private adjust: {
+    gizmo: AdjustGizmo;
+    t: number;
+    from: THREE.Vector3;
+    before: MomentPin[];
+    pins: MomentPin[];
+    keys: (e: KeyboardEvent) => void;
+  } | null = null;
 
   /** A press on the main view the camera must leave alone: it drags the Adjust position control. */
   adjustBlocks(): boolean {
@@ -308,21 +358,42 @@ export class SceneService {
   }
 
   startAdjust(): void {
-    const f = this.flights.active, host = this.host;
+    const f = this.flights.active,
+      host = this.host;
     if (!f || !host) return void this.toast.show('Load a log first');
     if (this.adjust) return this.endAdjust(true);
     this.endPin();
     this.playback.pause();
-    const t = this.playback.time, from = positionAt(f, t);
+    const t = this.playback.time,
+      from = positionAt(f, t);
     if (!from) return;
     const before = f.pins ?? [];
-    const gizmo = new AdjustGizmo(host.mainCamera, host.canvas, host.scene, new THREE.Vector3(from.x, from.y, from.z), (p) => this.adjustTo(p));
+    const gizmo = new AdjustGizmo(
+      host.mainCamera,
+      host.canvas,
+      host.scene,
+      new THREE.Vector3(from.x, from.y, from.z),
+      (p) => this.adjustTo(p),
+    );
     // while it is out the arrow keys nudge the drone (Shift: up and down), Enter keeps it, Esc puts it back
     const keys = (e: KeyboardEvent): void => {
       if (!this.adjust || (e.target as HTMLElement | null)?.closest?.('input, textarea, select')) return;
       const step = 0.5;
       const k = e.key;
-      const d = k === 'ArrowLeft' ? [-step, 0, 0] : k === 'ArrowRight' ? [step, 0, 0] : k === 'ArrowUp' ? (e.shiftKey ? [0, step, 0] : [0, 0, -step]) : k === 'ArrowDown' ? (e.shiftKey ? [0, -step, 0] : [0, 0, step]) : null;
+      const d =
+        k === 'ArrowLeft'
+          ? [-step, 0, 0]
+          : k === 'ArrowRight'
+            ? [step, 0, 0]
+            : k === 'ArrowUp'
+              ? e.shiftKey
+                ? [0, step, 0]
+                : [0, 0, -step]
+              : k === 'ArrowDown'
+                ? e.shiftKey
+                  ? [0, -step, 0]
+                  : [0, 0, step]
+                : null;
       if (d) this.adjustTo(gizmo.nudge(d[0]!, d[1]!, d[2]!));
       else if (k === 'Enter') this.endAdjust(true);
       else if (k === 'Escape') this.endAdjust(false);
@@ -333,11 +404,15 @@ export class SceneService {
     addEventListener('keydown', keys, { capture: true });
     this.adjust = { gizmo, t, from: from.clone() as unknown as THREE.Vector3, before, pins: before, keys };
     this.adjusting.set({ t });
-    this.toast.show('Drag the arrows (or a square) to where the drone is at this moment; arrows nudge, Shift+↑↓ up and down. Enter keeps it, Esc puts it back.', 6000);
+    this.toast.show(
+      'Drag the arrows (or a square) to where the drone is at this moment; arrows nudge, Shift+↑↓ up and down. Enter keeps it, Esc puts it back.',
+      6000,
+    );
   }
 
   private adjustTo(p: THREE.Vector3): void {
-    const a = this.adjust, f = this.flights.active;
+    const a = this.adjust,
+      f = this.flights.active;
     if (!a || !f) return;
     a.pins = addPin(a.before, a.t, { x: a.from.x, y: a.from.y, z: a.from.z }, { x: p.x, y: p.y, z: p.z });
     this.flights.previewPins(f, a.pins);
@@ -345,7 +420,8 @@ export class SceneService {
 
   /** Put the control away: keep the moved position as a pin, or put the path back as it was. */
   endAdjust(keep: boolean): void {
-    const a = this.adjust, f = this.flights.active;
+    const a = this.adjust,
+      f = this.flights.active;
     if (!a) return;
     this.adjust = null;
     this.adjusting.set(null);
@@ -354,7 +430,9 @@ export class SceneService {
     if (!f) return;
     if (keep && a.pins !== a.before) {
       this.flights.setPins(f, a.pins);
-      this.toast.show(`Pinned at ${formatClock(a.t)}: the drone stays where you put it, the path blends to the next pin.`);
+      this.toast.show(
+        `Pinned at ${formatClock(a.t)}: the drone stays where you put it, the path blends to the next pin.`,
+      );
     } else this.flights.previewPins(f, a.before);
   }
 
@@ -370,14 +448,25 @@ export class SceneService {
       return;
     }
     this.pin.set(which);
-    if (which === 'm') this.toast.show('Click the ground where the drone is at this moment (the video shows it) — in any 3D view or panel. Esc cancels.');
-    else this.toast.show(`Click the ground where the flight ${which === 's' ? 'started' : 'ended'} — in any 3D view or panel. Esc cancels; your view is not changed.`);
+    if (which === 'm')
+      this.toast.show(
+        'Click the ground where the drone is at this moment (the video shows it) — in any 3D view or panel. Esc cancels.',
+      );
+    else
+      this.toast.show(
+        `Click the ground where the flight ${which === 's' ? 'started' : 'ended'} — in any 3D view or panel. Esc cancels; your view is not changed.`,
+      );
   }
   endPin(): void {
     this.pin.set(null);
   }
   /** Move the active flight so its start / end lands where the user clicked on the ground. */
-  placePin(clientX: number, clientY: number, camera: THREE.PerspectiveCamera, rect: { left: number; top: number; width: number; height: number }): void {
+  placePin(
+    clientX: number,
+    clientY: number,
+    camera: THREE.PerspectiveCamera,
+    rect: { left: number; top: number; width: number; height: number },
+  ): void {
     const which = this.pin();
     const f = this.flights.active;
     if (!which || !f || !this.host) return;
@@ -398,13 +487,17 @@ export class SceneService {
   private pinTo(x: number, z: number): void {
     const which = this.pin();
     const f = this.flights.active;
-    const start = f?.loc[0], end = f?.loc[f.loc.length - 1];
+    const start = f?.loc[0],
+      end = f?.loc[f.loc.length - 1];
     if (!which || !f || !start || !end) return;
     if (which === 'm') {
-      const t = this.playback.time, from = positionAt(f, t);
+      const t = this.playback.time,
+        from = positionAt(f, t);
       if (!from) return;
       this.flights.setPins(f, addPin(f.pins ?? [], t, from, { x, z }));
-      this.toast.show(`Pinned at ${formatClock(t)}: the path around this moment moves there, blending to the next pin.`);
+      this.toast.show(
+        `Pinned at ${formatClock(t)}: the path around this moment moves there, blending to the next pin.`,
+      );
       return;
     }
     if (which === 's') {
@@ -412,7 +505,9 @@ export class SceneService {
       this.startFixed.set(true);
       this.toast.show('Start placed. Pin the end to turn the path about it, or use the compass.');
     } else if (this.startFixed() && Math.hypot(end.x - start.x, end.z - start.z) > 1) {
-      this.calibration.apply(rotateCalibrationAbout(this.calibration.calibration(), start, turnTowards(start, end, { x, z })));
+      this.calibration.apply(
+        rotateCalibrationAbout(this.calibration.calibration(), start, turnTowards(start, end, { x, z })),
+      );
       this.toast.show('Path turned about its start toward the end you pinned.');
     } else {
       this.calibration.shift(x - end.x, z - end.z);
@@ -440,12 +535,19 @@ export class SceneService {
     const host = this.host;
     if (!host) return;
     host.drones.syncSim(this.sim.state, dt);
-    host.drones.syncGhost(this.playback.pose.p, this.playback.pose.q, this.race.enabled() || this.layout.panels().welcome.visible ? null : this.flights.active);
-    this.raceRenderer?.update(this.race.time,host.mainCamera,id=>this.race.stale(id));
+    host.drones.syncGhost(
+      this.playback.pose.p,
+      this.playback.pose.q,
+      this.race.enabled() || this.layout.panels().welcome.visible ? null : this.flights.active,
+    );
+    this.raceRenderer?.update(this.race.time, host.mainCamera, (id) => this.race.stale(id));
     if (this.autoOrbit() && this.view.cameraView() === 'orbit') this.mainOrbit.th += dt * 0.07;
     // a look-around the pilot started from the chase camera ends by itself: idle for a moment, back to the chase
     // (its camera glides from where the orbit left it). A camera chosen in Views ends it too, and stays.
-    if (this.lookingAround && (this.view.cameraView() !== 'orbit' || performance.now() - this.lastLook > LOOK_AROUND_IDLE_MS)) {
+    if (
+      this.lookingAround &&
+      (this.view.cameraView() !== 'orbit' || performance.now() - this.lastLook > LOOK_AROUND_IDLE_MS)
+    ) {
       if (this.view.cameraView() === 'orbit') this.view.setCameraView('chase');
       this.lookingAround = false;
     }
@@ -456,7 +558,13 @@ export class SceneService {
     const host = this.host;
     if (!host || !this.xray || !this.view.xray()) return;
     const view = this.view.cameraView();
-    const tracked = xraySubject(view, this.view.orbitFollow(), !!this.mainOrbit.manual, this.sim.state.armed, this.followingReplay());
+    const tracked = xraySubject(
+      view,
+      this.view.orbitFollow(),
+      !!this.mainOrbit.manual,
+      this.sim.state.armed,
+      this.followingReplay(),
+    );
     const p = tracked === 'simulator' ? this.sim.state.p : tracked === 'replay' ? this.playback.pose.p : null;
     const targets = p ? [new THREE.Vector3(p.x, p.y, p.z)] : [];
     this.xray.step(dt, host.mainCamera, targets, this.calibration.modelScale(), view !== 'fpv');
@@ -497,7 +605,8 @@ export class SceneService {
   private solidly(draw: () => void): void {
     const host = this.host;
     if (!host) return;
-    const roof = host.site.roof, shown = roof.visible;
+    const roof = host.site.roof,
+      shown = roof.visible;
     roof.visible = true;
     try {
       if (this.xray) this.xray.solid(draw);
@@ -509,7 +618,13 @@ export class SceneService {
 
   private makeViewport(type: ViewportType): Viewport {
     const panel = VIEWPORT_PANELS[type];
-    return { type, panel, camera: new THREE.PerspectiveCamera(fovFor(type), 1, 0.05, 1200), state: createOrbitState(type === 'top' ? 'top' : 'default'), canvas: null };
+    return {
+      type,
+      panel,
+      camera: new THREE.PerspectiveCamera(fovFor(type), 1, 0.05, 1200),
+      state: createOrbitState(type === 'top' ? 'top' : 'default'),
+      canvas: null,
+    };
   }
 }
 

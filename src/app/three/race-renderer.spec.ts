@@ -33,9 +33,7 @@ describe('simultaneous racing ghosts', () => {
     r.update(1, camera, () => false);
     const ghosts = r.group.children.filter((o) => o.userData['raceId']);
     expect(ghosts.map((g) => g.position.x)).toEqual([5, 0]);
-    const materials = ghosts.map(
-      (g) => (g.children[0] as THREE.Mesh).material as THREE.MeshBasicMaterial,
-    );
+    const materials = ghosts.map((g) => (g.children[0] as THREE.Mesh).material as THREE.MeshBasicMaterial);
     expect(materials.map((m) => `#${m.color.getHexString()}`)).toEqual([a.color, b.color]);
     r.update(1, camera, (id) => id === 'b');
     expect(ghosts[1]!.visible).toBe(false);

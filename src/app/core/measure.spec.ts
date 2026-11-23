@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { anglesAt, arcOf, chainClick, fmtLength, groundProfile, measureLabel, nearestSnap, orthoSnap, shiftEnds, snapTargets } from './measure';
+import {
+  anglesAt,
+  arcOf,
+  chainClick,
+  fmtLength,
+  groundProfile,
+  measureLabel,
+  nearestSnap,
+  orthoSnap,
+  shiftEnds,
+  snapTargets,
+} from './measure';
 import { emptySpec } from './site-spec';
 
 describe('measure helpers', () => {
@@ -14,12 +25,19 @@ describe('measure helpers', () => {
   });
   it('shows the angle where two measures share a point', () => {
     const o = { x: 0, z: 0 };
-    const r = anglesAt([{ a: o, b: { x: 10, z: 0 } }, { a: { x: 0, z: 0 }, b: { x: 0, z: 5 } }, { a: { x: 50, z: 50 }, b: { x: 60, z: 50 } }]);
+    const r = anglesAt([
+      { a: o, b: { x: 10, z: 0 } },
+      { a: { x: 0, z: 0 }, b: { x: 0, z: 5 } },
+      { a: { x: 50, z: 50 }, b: { x: 60, z: 50 } },
+    ]);
     expect(r.length).toBe(1);
     expect(r[0]!.deg).toBeCloseTo(90);
   });
   it('draws the angle arc between the two arms, label on the bisector', () => {
-    const r = anglesAt([{ a: { x: 0, z: 0 }, b: { x: 10, z: 0 } }, { a: { x: 0, z: 0 }, b: { x: 0, z: 5 } }])[0]!;
+    const r = anglesAt([
+      { a: { x: 0, z: 0 }, b: { x: 10, z: 0 } },
+      { a: { x: 0, z: 0 }, b: { x: 0, z: 5 } },
+    ])[0]!;
     const arc = arcOf(r.at, r.d1, r.d2, 4);
     expect(arc.path).toMatch(/^M 4 0 A 4 4 0 0 1 /);
     expect(arc.label.x).toBeGreaterThan(0);
@@ -47,12 +65,17 @@ describe('measures over the ground', () => {
 });
 
 describe('measure chains', () => {
-  const o = { x: 0, z: 0 }, e = { x: 10, z: 0 }, n = { x: 10, z: -5 };
+  const o = { x: 0, z: 0 },
+    e = { x: 10, z: 0 },
+    n = { x: 10, z: -5 };
   it('every click continues the chain; the same point twice ends it', () => {
     let m = chainClick({ segs: [], a: null, start: null }, o).chain;
     m = chainClick(m, e).chain;
     m = chainClick(m, n).chain;
-    expect(m.segs).toEqual([{ a: o, b: e }, { a: e, b: n }]);
+    expect(m.segs).toEqual([
+      { a: o, b: e },
+      { a: e, b: n },
+    ]);
     const end = chainClick(m, n);
     expect(end.ended).toBe(true);
     expect(end.chain.a).toBeNull();
@@ -67,7 +90,15 @@ describe('measure chains', () => {
     expect(r.chain.segs).toHaveLength(3);
   });
   it('moving a shared point moves every end on it', () => {
-    const segs = shiftEnds([{ a: o, b: e }, { a: e, b: n }], [e], 1, 2);
+    const segs = shiftEnds(
+      [
+        { a: o, b: e },
+        { a: e, b: n },
+      ],
+      [e],
+      1,
+      2,
+    );
     expect(segs[0]!.b).toEqual({ x: 11, z: 2 });
     expect(segs[1]!.a).toEqual({ x: 11, z: 2 });
     expect(segs[1]!.b).toEqual(n);

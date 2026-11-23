@@ -64,7 +64,8 @@ export const FEATHER = 20;
 export const MAX_HALF = 300;
 const OPS: readonly TerrainOp[] = ['raise', 'lower', 'smooth', 'flatten', 'hill', 'crater', 'ramp'];
 const clamp = (v: number, a: number, b: number): number => Math.min(b, Math.max(a, v));
-const num = (v: unknown, d: number, a: number, b: number): number => (typeof v === 'number' && isFinite(v) ? clamp(v, a, b) : d);
+const num = (v: unknown, d: number, a: number, b: number): number =>
+  typeof v === 'number' && isFinite(v) ? clamp(v, a, b) : d;
 
 /** A fresh flat terrain covering the site (capped at 600 × 600 m). */
 export function defaultTerrain(extent: number): TerrainSpec {
@@ -81,14 +82,23 @@ export function sanitizeTerrain(raw: unknown): TerrainSpec | undefined {
   const b = t.base;
   const base: TerrainBase | undefined =
     b && typeof b.key === 'string' && (b.source === 'aws-terrarium' || b.source === 'flat' || b.source === 'embedded')
-      ? { source: b.source, key: b.key.slice(0, 120), fetchedAt: num(b.fetchedAt, 0, 0, 1e15), datum: num(b.datum, 0, -500, 9000), ...(typeof b.data === 'string' && b.data.length < 4_000_000 ? { data: b.data } : {}) }
+      ? {
+          source: b.source,
+          key: b.key.slice(0, 120),
+          fetchedAt: num(b.fetchedAt, 0, 0, 1e15),
+          datum: num(b.datum, 0, -500, 9000),
+          ...(typeof b.data === 'string' && b.data.length < 4_000_000 ? { data: b.data } : {}),
+        }
       : undefined;
   const strokes = (Array.isArray(t.strokes) ? t.strokes : [])
     .filter((s): s is TerrainStroke => !!s && OPS.includes(s.op) && Array.isArray(s.pts))
     .slice(0, 2000)
     .map((s) => ({
       op: s.op,
-      pts: s.pts.filter((p) => p && isFinite(p.x) && isFinite(p.z)).slice(0, 4000).map((p) => ({ x: clamp(p.x, -1000, 1000), z: clamp(p.z, -1000, 1000) })),
+      pts: s.pts
+        .filter((p) => p && isFinite(p.x) && isFinite(p.z))
+        .slice(0, 4000)
+        .map((p) => ({ x: clamp(p.x, -1000, 1000), z: clamp(p.z, -1000, 1000) })),
       radius: num(s.radius, 5, 0.5, 200),
       strength: num(s.strength, 1, -100, 100),
       ...(s.falloff === 'linear' || s.falloff === 'flat' || s.falloff === 'smooth' ? { falloff: s.falloff } : {}),
@@ -127,10 +137,14 @@ export function emptyGrid(t: Pick<TerrainSpec, 'cell' | 'half'>): HeightGrid {
 /** Ground height at (x, z), bilinear; outside the grid, the height of the nearest edge. */
 export function heightAt(g: HeightGrid | null | undefined, x: number, z: number): number {
   if (!g) return 0;
-  const fx = Math.min(g.nx - 1, Math.max(0, (x - g.x0) / g.cell)), fz = Math.min(g.nz - 1, Math.max(0, (z - g.z0) / g.cell));
-  const i = Math.min(g.nx - 2, Math.floor(fx)), j = Math.min(g.nz - 2, Math.floor(fz));
-  const u = fx - i, v = fz - j;
-  const h = g.h, k = j * g.nx + i;
+  const fx = Math.min(g.nx - 1, Math.max(0, (x - g.x0) / g.cell)),
+    fz = Math.min(g.nz - 1, Math.max(0, (z - g.z0) / g.cell));
+  const i = Math.min(g.nx - 2, Math.floor(fx)),
+    j = Math.min(g.nz - 2, Math.floor(fz));
+  const u = fx - i,
+    v = fz - j;
+  const h = g.h,
+    k = j * g.nx + i;
   return (h[k]! * (1 - u) + h[k + 1]! * u) * (1 - v) + (h[k + g.nx]! * (1 - u) + h[k + g.nx + 1]! * u) * v;
 }
 
@@ -138,17 +152,27 @@ export function heightAt(g: HeightGrid | null | undefined, x: number, z: number)
 export function meshHeightAt(g: HeightGrid | null | undefined, x: number, z: number): number {
   if (!g) return 0;
   const step = g.nx * g.nz > 250_000 ? 2 : 1;
-  const nx = Math.floor((g.nx - 1) / step) + 1, nz = Math.floor((g.nz - 1) / step) + 1;
+  const nx = Math.floor((g.nx - 1) / step) + 1,
+    nz = Math.floor((g.nz - 1) / step) + 1;
   const fx = Math.min(nx - 1, Math.max(0, (x - g.x0) / (g.cell * step)));
   const fz = Math.min(nz - 1, Math.max(0, (z - g.z0) / (g.cell * step)));
-  const i = Math.min(nx - 2, Math.floor(fx)), j = Math.min(nz - 2, Math.floor(fz));
-  const u = fx - i, v = fz - j, k = j * step * g.nx + i * step;
-  const a = g.h[k]!, b = g.h[k + step]!, c = g.h[k + step * g.nx]!, d = g.h[k + step * g.nx + step]!;
+  const i = Math.min(nx - 2, Math.floor(fx)),
+    j = Math.min(nz - 2, Math.floor(fz));
+  const u = fx - i,
+    v = fz - j,
+    k = j * step * g.nx + i * step;
+  const a = g.h[k]!,
+    b = g.h[k + step]!,
+    c = g.h[k + step * g.nx]!,
+    d = g.h[k + step * g.nx + step]!;
   return u + v <= 1 ? a * (1 - u - v) + b * u + c * v : b * (1 - v) + c * (1 - u) + d * (u + v - 1);
 }
 
 function bbox(pts: readonly Vec2[], r: number): { x0: number; z0: number; x1: number; z1: number } {
-  let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity;
+  let x0 = Infinity,
+    z0 = Infinity,
+    x1 = -Infinity,
+    z1 = -Infinity;
   for (const p of pts) {
     x0 = Math.min(x0, p.x - r);
     z0 = Math.min(z0, p.z - r);
@@ -158,16 +182,23 @@ function bbox(pts: readonly Vec2[], r: number): { x0: number; z0: number; x1: nu
   return { x0, z0, x1, z1 };
 }
 
-function forCells(g: HeightGrid, b: { x0: number; z0: number; x1: number; z1: number }, fn: (k: number, x: number, z: number) => void): void {
-  const i0 = Math.max(0, Math.floor((b.x0 - g.x0) / g.cell)), i1 = Math.min(g.nx - 1, Math.ceil((b.x1 - g.x0) / g.cell));
-  const j0 = Math.max(0, Math.floor((b.z0 - g.z0) / g.cell)), j1 = Math.min(g.nz - 1, Math.ceil((b.z1 - g.z0) / g.cell));
+function forCells(
+  g: HeightGrid,
+  b: { x0: number; z0: number; x1: number; z1: number },
+  fn: (k: number, x: number, z: number) => void,
+): void {
+  const i0 = Math.max(0, Math.floor((b.x0 - g.x0) / g.cell)),
+    i1 = Math.min(g.nx - 1, Math.ceil((b.x1 - g.x0) / g.cell));
+  const j0 = Math.max(0, Math.floor((b.z0 - g.z0) / g.cell)),
+    j1 = Math.min(g.nz - 1, Math.ceil((b.z1 - g.z0) / g.cell));
   for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) fn(j * g.nx + i, g.x0 + i * g.cell, g.z0 + j * g.cell);
 }
 
 export function insidePoly(poly: readonly Vec2[], x: number, z: number): boolean {
   let inside = false;
   for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    const a = poly[i]!, b = poly[j]!;
+    const a = poly[i]!,
+      b = poly[j]!;
     if (a.z > z !== b.z > z && x < ((b.x - a.x) * (z - a.z)) / (b.z - a.z) + a.x) inside = !inside;
   }
   return inside;
@@ -178,8 +209,11 @@ function distToPath(pts: readonly Vec2[], x: number, z: number): number {
   if (pts.length === 1) return Math.hypot(x - pts[0]!.x, z - pts[0]!.z);
   let d = Infinity;
   for (let i = 1; i < pts.length; i++) {
-    const a = pts[i - 1]!, b = pts[i]!;
-    const dx = b.x - a.x, dz = b.z - a.z, l2 = dx * dx + dz * dz;
+    const a = pts[i - 1]!,
+      b = pts[i]!;
+    const dx = b.x - a.x,
+      dz = b.z - a.z,
+      l2 = dx * dx + dz * dz;
     const t = l2 ? clamp(((x - a.x) * dx + (z - a.z) * dz) / l2, 0, 1) : 0;
     d = Math.min(d, Math.hypot(x - a.x - dx * t, z - a.z - dz * t));
   }
@@ -213,14 +247,18 @@ export function applyStroke(g: HeightGrid, s: TerrainStroke): void {
     forCells(g, bbox(s.pts, r), (k, x, z) => {
       const w = falloffAt(f, distToPath(s.pts, x, z) / r) * blend;
       if (w <= 0) return;
-      const i = k % g.nx, j = (k - i) / g.nx;
-      let sum = 0, c = 0;
-      for (let b = -n; b <= n; b++) for (let a = -n; a <= n; a++) {
-        const ii = i + a, jj = j + b;
-        if (ii < 0 || jj < 0 || ii >= g.nx || jj >= g.nz) continue;
-        sum += src[jj * g.nx + ii]!;
-        c++;
-      }
+      const i = k % g.nx,
+        j = (k - i) / g.nx;
+      let sum = 0,
+        c = 0;
+      for (let b = -n; b <= n; b++)
+        for (let a = -n; a <= n; a++) {
+          const ii = i + a,
+            jj = j + b;
+          if (ii < 0 || jj < 0 || ii >= g.nx || jj >= g.nz) continue;
+          sum += src[jj * g.nx + ii]!;
+          c++;
+        }
       g.h[k] = src[k]! + (sum / c - src[k]!) * w;
     });
   } else if (s.op === 'hill' || s.op === 'crater') {
@@ -229,14 +267,19 @@ export function applyStroke(g: HeightGrid, s: TerrainStroke): void {
     forCells(g, bbox([c], r * 1.25), (k, x, z) => {
       const d = Math.hypot(x - c.x, z - c.z) / r;
       if (s.op === 'hill') g.h[k] = g.h[k]! + depth * falloffAt(f, d);
-      else if (d < 1) g.h[k] = g.h[k]! - depth * (1 - d * d) + depth * 0.15 * Math.max(0, 1 - Math.abs(d - 0.95) / 0.15);
+      else if (d < 1)
+        g.h[k] = g.h[k]! - depth * (1 - d * d) + depth * 0.15 * Math.max(0, 1 - Math.abs(d - 0.95) / 0.15);
       else g.h[k] = g.h[k]! + depth * 0.15 * Math.max(0, 1 - Math.abs(d - 0.95) / 0.3);
     });
   } else if (s.op === 'ramp') {
     // a ramp from pts[0] (foot) to pts[1] (top), `radius` = half width, rising `strength` metres
-    const a = s.pts[0]!, b = s.pts[1] ?? { x: a.x + 10, z: a.z };
-    const dx = b.x - a.x, dz = b.z - a.z, len = Math.hypot(dx, dz) || 1;
-    const ux = dx / len, uz = dz / len;
+    const a = s.pts[0]!,
+      b = s.pts[1] ?? { x: a.x + 10, z: a.z };
+    const dx = b.x - a.x,
+      dz = b.z - a.z,
+      len = Math.hypot(dx, dz) || 1;
+    const ux = dx / len,
+      uz = dz / len;
     forCells(g, bbox([a, b], r + 2), (k, x, z) => {
       const along = (x - a.x) * ux + (z - a.z) * uz;
       const across = Math.abs(-(x - a.x) * uz + (z - a.z) * ux);
@@ -297,15 +340,23 @@ export function buildHeights(t: TerrainSpec, pads: readonly FlatPad[] = []): { g
 }
 
 /** First point where a ray meets the terrain (or y = 0 outside it), marching in ~cell steps; null if it never does. */
-export function rayGround(g: HeightGrid | null | undefined, o: { x: number; y: number; z: number }, d: { x: number; y: number; z: number }, maxDist = 5000): Vec2 | null {
+export function rayGround(
+  g: HeightGrid | null | undefined,
+  o: { x: number; y: number; z: number },
+  d: { x: number; y: number; z: number },
+  maxDist = 5000,
+): Vec2 | null {
   const step = Math.max(0.25, (g?.cell ?? 1) * 0.5);
   let prev = 0;
   if (o.y < heightAt(g, o.x, o.z)) return null;
   for (let t = step; t < maxDist; t += step) {
-    const x = o.x + d.x * t, y = o.y + d.y * t, z = o.z + d.z * t;
+    const x = o.x + d.x * t,
+      y = o.y + d.y * t,
+      z = o.z + d.z * t;
     if (y - heightAt(g, x, z) < 0) {
       // refine between prev and t
-      let lo = prev, hi = t;
+      let lo = prev,
+        hi = t;
       for (let k = 0; k < 12; k++) {
         const m = (lo + hi) / 2;
         if (o.y + d.y * m - heightAt(g, o.x + d.x * m, o.z + d.z * m) < 0) hi = m;
@@ -323,28 +374,40 @@ export function rayGround(g: HeightGrid | null | undefined, o: { x: number; y: n
  * Contour lines of a grid as SVG path data in site metres: `minor` every `step` metres, `major` every 5 steps (the
  * plan view draws the major ones bolder). Marching squares; a big grid is sampled every `stride` cells. Flat ground = ''.
  */
-export function contourPaths(g: HeightGrid, step = 1, stride = g.nx * g.nz > 90_000 ? 2 : 1): { minor: string; major: string } {
-  let lo = Infinity, hi = -Infinity;
+export function contourPaths(
+  g: HeightGrid,
+  step = 1,
+  stride = g.nx * g.nz > 90_000 ? 2 : 1,
+): { minor: string; major: string } {
+  let lo = Infinity,
+    hi = -Infinity;
   for (let k = 0; k < g.h.length; k++) {
     lo = Math.min(lo, g.h[k]!);
     hi = Math.max(hi, g.h[k]!);
   }
   if (!(hi - lo >= step * 0.5)) return { minor: '', major: '' };
-  const minor: string[] = [], major: string[] = [];
+  const minor: string[] = [],
+    major: string[] = [];
   const at = (i: number, j: number): number => g.h[j * g.nx + i]!;
   const f = (n: number): string => n.toFixed(2);
   for (let j = 0; j + stride < g.nz; j += stride) {
     for (let i = 0; i + stride < g.nx; i += stride) {
-      const a = at(i, j), b = at(i + stride, j), c = at(i + stride, j + stride), d = at(i, j + stride);
-      const cmin = Math.min(a, b, c, d), cmax = Math.max(a, b, c, d);
+      const a = at(i, j),
+        b = at(i + stride, j),
+        c = at(i + stride, j + stride),
+        d = at(i, j + stride);
+      const cmin = Math.min(a, b, c, d),
+        cmax = Math.max(a, b, c, d);
       if (cmax - cmin < 1e-6) continue;
-      const x0 = g.x0 + i * g.cell, z0 = g.z0 + j * g.cell, s = stride * g.cell;
+      const x0 = g.x0 + i * g.cell,
+        z0 = g.z0 + j * g.cell,
+        s = stride * g.cell;
       for (let lv = Math.ceil(cmin / step) * step; lv <= cmax; lv += step) {
         if (lv === cmin && lv === cmax) continue;
         // crossing points on the four edges (top, right, bottom, left)
         const pts: [number, number][] = [];
         const edge = (p: number, q: number, xa: number, za: number, xb: number, zb: number): void => {
-          if ((p < lv) !== (q < lv)) {
+          if (p < lv !== q < lv) {
             const t = (lv - p) / (q - p);
             pts.push([xa + (xb - xa) * t, za + (zb - za) * t]);
           }
@@ -354,7 +417,8 @@ export function contourPaths(g: HeightGrid, step = 1, stride = g.nx * g.nz > 90_
         edge(c, d, x0 + s, z0 + s, x0, z0 + s);
         edge(d, a, x0, z0 + s, x0, z0);
         const out = Math.round(lv / step) % 5 === 0 ? major : minor;
-        for (let k = 0; k + 1 < pts.length; k += 2) out.push(`M${f(pts[k]![0])} ${f(pts[k]![1])}L${f(pts[k + 1]![0])} ${f(pts[k + 1]![1])}`);
+        for (let k = 0; k + 1 < pts.length; k += 2)
+          out.push(`M${f(pts[k]![0])} ${f(pts[k]![1])}L${f(pts[k + 1]![0])} ${f(pts[k + 1]![1])}`);
       }
     }
   }
@@ -374,14 +438,17 @@ const RAMP: readonly [number, number, number][] = [
 export function heightColor(h: number, lo: number, hi: number): [number, number, number] {
   if (hi - lo < 0.5) return RAMP[1]!;
   const t = Math.min(1, Math.max(0, (h - lo) / (hi - lo))) * (RAMP.length - 1);
-  const i = Math.min(RAMP.length - 2, Math.floor(t)), f = t - i;
-  const a = RAMP[i]!, b = RAMP[i + 1]!;
+  const i = Math.min(RAMP.length - 2, Math.floor(t)),
+    f = t - i;
+  const a = RAMP[i]!,
+    b = RAMP[i + 1]!;
   return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
 }
 
 /** Lowest and highest height of a grid. */
 export function heightRange(g: HeightGrid): { lo: number; hi: number } {
-  let lo = Infinity, hi = -Infinity;
+  let lo = Infinity,
+    hi = -Infinity;
   for (let k = 0; k < g.h.length; k++) {
     lo = Math.min(lo, g.h[k]!);
     hi = Math.max(hi, g.h[k]!);
@@ -393,7 +460,12 @@ export function heightRange(g: HeightGrid): { lo: number; hi: number } {
  * The stroke a finished brush drag makes (`h0`: the ground height where it started, the level of a flatten). Hills and
  * craters are stamped at the first point; a ramp runs from the first point to the last, and is null when shorter than 2 m.
  */
-export function brushStroke(op: TerrainOp, pts: readonly Vec2[], h0: number, o: { radius: number; strength: number; falloff: Falloff }): TerrainStroke | null {
+export function brushStroke(
+  op: TerrainOp,
+  pts: readonly Vec2[],
+  h0: number,
+  o: { radius: number; strength: number; falloff: Falloff },
+): TerrainStroke | null {
   const { radius, strength: k, falloff } = o;
   if (op === 'hill' || op === 'crater') return { op, pts: [pts[0]!], radius, strength: Math.abs(k), falloff };
   if (op === 'ramp') {
@@ -407,7 +479,8 @@ export function brushStroke(op: TerrainOp, pts: readonly Vec2[], h0: number, o: 
 
 /** A height map of the grid as RGBA pixels (alpha 170), one pixel every `step` grid cells: for the plan under the 2D editor. */
 export function heightPixels(g: HeightGrid, step = 2): { w: number; h: number; data: Uint8ClampedArray<ArrayBuffer> } {
-  const w = Math.ceil(g.nx / step), h = Math.ceil(g.nz / step);
+  const w = Math.ceil(g.nx / step),
+    h = Math.ceil(g.nz / step);
   const data = new Uint8ClampedArray(w * h * 4);
   const { lo, hi } = heightRange(g);
   for (let j = 0; j < h; j++) {
@@ -428,7 +501,12 @@ export function heightPixels(g: HeightGrid, step = 2): { w: number; h: number; d
  * higher and wider the longer it is held: `rate` metres a second, the radius growing by a third of itself a second
  * (up to four times). Rounded, so the saved stroke stays short.
  */
-export function sculptStroke(at: Vec2, held: number, lower: boolean, o: { radius: number; rate: number }): TerrainStroke {
+export function sculptStroke(
+  at: Vec2,
+  held: number,
+  lower: boolean,
+  o: { radius: number; rate: number },
+): TerrainStroke {
   const t = Math.max(0, Math.min(held, 20));
   return {
     op: lower ? 'lower' : 'raise',
@@ -440,15 +518,35 @@ export function sculptStroke(at: Vec2, held: number, lower: boolean, o: { radius
 }
 
 /** The construction lines of a ramp being drawn from `a` (foot) to `b` (top), `half` metres either side, rising `rise`. */
-export function rampGuide(a: Vec2, b: Vec2, half: number, rise: number): { outline: Vec2[]; len: number; slope: number; arrow: Vec2[] } {
-  const dx = b.x - a.x, dz = b.z - a.z, len = Math.hypot(dx, dz);
-  const ux = len ? dx / len : 1, uz = len ? dz / len : 0, nx = -uz * half, nz = ux * half;
-  const tip = { x: b.x, z: b.z }, back = Math.min(len / 3, Math.max(1.5, half));
+export function rampGuide(
+  a: Vec2,
+  b: Vec2,
+  half: number,
+  rise: number,
+): { outline: Vec2[]; len: number; slope: number; arrow: Vec2[] } {
+  const dx = b.x - a.x,
+    dz = b.z - a.z,
+    len = Math.hypot(dx, dz);
+  const ux = len ? dx / len : 1,
+    uz = len ? dz / len : 0,
+    nx = -uz * half,
+    nz = ux * half;
+  const tip = { x: b.x, z: b.z },
+    back = Math.min(len / 3, Math.max(1.5, half));
   return {
-    outline: [{ x: a.x + nx, z: a.z + nz }, { x: b.x + nx, z: b.z + nz }, { x: b.x - nx, z: b.z - nz }, { x: a.x - nx, z: a.z - nz }],
+    outline: [
+      { x: a.x + nx, z: a.z + nz },
+      { x: b.x + nx, z: b.z + nz },
+      { x: b.x - nx, z: b.z - nz },
+      { x: a.x - nx, z: a.z - nz },
+    ],
     len,
     slope: len ? (rise / len) * 100 : 0,
     // an arrowhead at the top end, pointing uphill
-    arrow: [{ x: tip.x - ux * back + nx * 0.6, z: tip.z - uz * back + nz * 0.6 }, tip, { x: tip.x - ux * back - nx * 0.6, z: tip.z - uz * back - nz * 0.6 }],
+    arrow: [
+      { x: tip.x - ux * back + nx * 0.6, z: tip.z - uz * back + nz * 0.6 },
+      tip,
+      { x: tip.x - ux * back - nx * 0.6, z: tip.z - uz * back - nz * 0.6 },
+    ],
   };
 }

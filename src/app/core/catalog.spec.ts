@@ -4,12 +4,30 @@ import { applyPattern, placeBlock, type BlockSpec } from './blocks';
 import { blockCategory, groupBlocks, latestVersions, mergeCatalog, sanitizeCatalog, searchBlocks } from './catalog';
 import { emptySpec, type BuildingSpec } from './site-spec';
 
-const hall = (): BuildingSpec => ({ id: 'h', name: 'Hall', pos: { x: 0, z: 0 }, rotDeg: 0, length: 40, width: 20, levels: [{ baseY: 0, height: 6, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'flat', roofRise: 0 }] });
+const hall = (): BuildingSpec => ({
+  id: 'h',
+  name: 'Hall',
+  pos: { x: 0, z: 0 },
+  rotDeg: 0,
+  length: 40,
+  width: 20,
+  levels: [
+    {
+      baseY: 0,
+      height: 6,
+      sides: { n: true, s: true, e: true, w: true },
+      doors: {},
+      partitions: [],
+      roof: 'flat',
+      roofRise: 0,
+    },
+  ],
+});
 
 describe('the published catalogue (public/library/catalog.json, built from library/blocks)', () => {
   const { blocks, rejected } = sanitizeCatalog(published);
 
-  it('every block passes the app\'s own check', () => {
+  it("every block passes the app's own check", () => {
     expect(rejected).toEqual([]);
     expect(blocks.length).toBe((published as { blocks: unknown[] }).blocks.length);
     expect(blocks.length).toBeGreaterThan(0);
@@ -29,7 +47,19 @@ describe('the published catalogue (public/library/catalog.json, built from libra
 });
 
 describe('catalogue sync and search', () => {
-  const mk = (id: string, version = 1, o: Partial<BlockSpec> = {}): BlockSpec => ({ schema: 1, id, version, name: id, kind: 'structure', tags: [], author: 't', licence: 'CC0', params: [], content: { shapes: [{ prim: 'box', at: { x: 0, y: 1, z: 0 }, size: { x: 1, y: 2, z: 1 }, color: '#123456' }] }, ...o });
+  const mk = (id: string, version = 1, o: Partial<BlockSpec> = {}): BlockSpec => ({
+    schema: 1,
+    id,
+    version,
+    name: id,
+    kind: 'structure',
+    tags: [],
+    author: 't',
+    licence: 'CC0',
+    params: [],
+    content: { shapes: [{ prim: 'box', at: { x: 0, y: 1, z: 0 }, size: { x: 1, y: 2, z: 1 }, color: '#123456' }] },
+    ...o,
+  });
 
   it('refuses local/ ids, duplicates and broken entries', () => {
     const r = sanitizeCatalog({ blocks: [mk('a/one'), mk('local/mine'), mk('a/one'), { id: 'a/broken' }] });
@@ -47,7 +77,15 @@ describe('catalogue sync and search', () => {
   });
 
   it('searches names first, then tags and descriptions; every word must match', () => {
-    const list = [mk('a/water-tower', 1, { name: 'Water tower', tags: ['steel'] }), mk('a/silo', 1, { name: 'Silo', tags: ['water'], description: 'grain' }), mk('a/pat', 1, { name: 'Rows', kind: 'pattern', content: { pattern: { columns: { rows: 2, step: 10, inset: 4 } } } })];
+    const list = [
+      mk('a/water-tower', 1, { name: 'Water tower', tags: ['steel'] }),
+      mk('a/silo', 1, { name: 'Silo', tags: ['water'], description: 'grain' }),
+      mk('a/pat', 1, {
+        name: 'Rows',
+        kind: 'pattern',
+        content: { pattern: { columns: { rows: 2, step: 10, inset: 4 } } },
+      }),
+    ];
     expect(searchBlocks(list, 'water').map((b) => b.id)).toEqual(['a/water-tower', 'a/silo']);
     expect(searchBlocks(list, 'water steel').map((b) => b.id)).toEqual(['a/water-tower']);
     expect(searchBlocks(list, '', 'pattern').map((b) => b.id)).toEqual(['a/pat']);
@@ -75,7 +113,8 @@ describe('Library sub-categories', () => {
   it('list groups in order, names sorted inside each', () => {
     const g = groupBlocks(blocks as never);
     expect(g[0]!.id).toBe('fpv');
-    for (const x of g) expect(x.blocks.map((b) => b.name)).toEqual([...x.blocks.map((b) => b.name)].sort((a, b) => a.localeCompare(b)));
+    for (const x of g)
+      expect(x.blocks.map((b) => b.name)).toEqual([...x.blocks.map((b) => b.name)].sort((a, b) => a.localeCompare(b)));
     expect(blockCategory({ id: 'local/x', kind: 'structure', tags: ['fpv'] })).toBe('mine');
   });
 });

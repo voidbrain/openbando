@@ -25,12 +25,7 @@ function prisms(v: UndergroundSpec, lift: number): Plane[][] {
       const ex = b.x - a.x,
         ey = b.y - a.y;
       // CCW polygon: interior lies left of each edge.
-      p.push([
-        ey * nx,
-        -ex,
-        ey * nz,
-        -ey * (nx * axis.a.x + nz * axis.a.z + a.x) + ex * (a.y + lift),
-      ]);
+      p.push([ey * nx, -ex, ey * nz, -ey * (nx * axis.a.x + nz * axis.a.z + a.x) + ex * (a.y + lift)]);
     }
     return [p];
   }
@@ -73,9 +68,7 @@ export function cutUnderground(
     )
     .reduce((n, [, a]) => n + a.itemSize, 0);
   const source = (i: number): number[] =>
-    attrs.flatMap(([, a]) =>
-      Array.from({ length: a.itemSize }, (_, j) => a.array[i * a.itemSize + j]!),
-    );
+    attrs.flatMap(([, a]) => Array.from({ length: a.itemSize }, (_, j) => a.array[i * a.itemSize + j]!));
   let polygons: number[][][] = [];
   const count = geo.index?.count ?? geo.getAttribute('position').count;
   for (let i = 0; i < count; i += 3)
@@ -88,9 +81,7 @@ export function cutUnderground(
         if (
           planes.some((p) =>
             original.every(
-              (q) =>
-                p[0] * q[posOffset]! + p[1] * q[posOffset + 1]! + p[2] * q[posOffset + 2]! + p[3] >
-                1e-7,
+              (q) => p[0] * q[posOffset]! + p[1] * q[posOffset + 1]! + p[2] * q[posOffset + 2]! + p[3] > 1e-7,
             ),
           )
         ) {
@@ -120,7 +111,7 @@ export function cutUnderground(
           }
           // A polygon entirely on this plane belongs to the interior; duplicating it as
           // an outside fragment leaves terrain across a basement ceiling.
-          if (outside.length >= 3 && inside.some(q => distance(q) > 1e-7)) result.push(outside);
+          if (outside.length >= 3 && inside.some((q) => distance(q) > 1e-7)) result.push(outside);
           inside = keep;
         }
       }
@@ -137,9 +128,7 @@ export function cutUnderground(
         }
       }
   const out = new THREE.BufferGeometry();
-  attrs.forEach(([name], i) =>
-    out.setAttribute(name, new THREE.Float32BufferAttribute(data[i]!, sizes[i]!)),
-  );
+  attrs.forEach(([name], i) => out.setAttribute(name, new THREE.Float32BufferAttribute(data[i]!, sizes[i]!)));
   out.computeVertexNormals();
   geo.dispose();
   return out;

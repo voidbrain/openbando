@@ -12,7 +12,29 @@ const DIR = 'public/welcome';
 mkdirSync(DIR, { recursive: true });
 
 function cut(raw: string, out: string, from: number, len: number): void {
-  const ff = spawnSync('ffmpeg', ['-v', 'error', '-y', '-ss', from.toFixed(2), '-t', String(len), '-i', raw, '-vf', 'scale=720:-2,fps=24', '-c:v', 'libvpx-vp9', '-crf', '38', '-b:v', '0', '-row-mt', '1', '-an', out]);
+  const ff = spawnSync('ffmpeg', [
+    '-v',
+    'error',
+    '-y',
+    '-ss',
+    from.toFixed(2),
+    '-t',
+    String(len),
+    '-i',
+    raw,
+    '-vf',
+    'scale=720:-2,fps=24',
+    '-c:v',
+    'libvpx-vp9',
+    '-crf',
+    '38',
+    '-b:v',
+    '0',
+    '-row-mt',
+    '1',
+    '-an',
+    out,
+  ]);
   expect(ff.status, String(ff.stderr)).toBe(0);
 }
 
@@ -28,7 +50,11 @@ test('film: build', async ({ page }) => {
   const t0 = Date.now();
   await page.goto('/');
   await page.getByRole('button', { name: 'Open the bandos' }).click();
-  await page.locator('app-studio-panel .card.ex').filter({ hasText: /^Chiari e Forti/ }).getByRole('button', { name: 'Open a copy' }).click();
+  await page
+    .locator('app-studio-panel .card.ex')
+    .filter({ hasText: /^Chiari e Forti/ })
+    .getByRole('button', { name: 'Open a copy' })
+    .click();
   await page.waitForTimeout(3500);
   await page.getByRole('button', { name: 'Hide every panel but this one' }).click();
   // Views has no ×: for the film it simply is not drawn
@@ -40,7 +66,17 @@ test('film: build', async ({ page }) => {
   await page.locator('app-stage .gl').evaluate(
     (el) =>
       new Promise<void>((done) => {
-        const fire = (type: string, x: number): boolean => el.dispatchEvent(new PointerEvent(type, { bubbles: true, pointerId: 7, clientX: x, clientY: 450, button: 0, buttons: type === 'pointerup' ? 0 : 1 }));
+        const fire = (type: string, x: number): boolean =>
+          el.dispatchEvent(
+            new PointerEvent(type, {
+              bubbles: true,
+              pointerId: 7,
+              clientX: x,
+              clientY: 450,
+              button: 0,
+              buttons: type === 'pointerup' ? 0 : 1,
+            }),
+          );
         fire('pointerdown', 900);
         const t0 = performance.now();
         const step = (): void => {
@@ -64,11 +100,13 @@ test('film: fly (from the showcase)', async ({ page }) => {
   const t0 = Date.now();
   // the films have no caption or drawn cursor: they play under any language. Inject before the page loads: a style
   // added after goto came too late in a parallel run and the caption was filmed.
-  await page.addInitScript(() => document.addEventListener('DOMContentLoaded', () => {
-    const style = document.createElement('style');
-    style.textContent = 'app-tour-overlay { visibility: hidden !important; }';
-    document.head.append(style);
-  }));
+  await page.addInitScript(() =>
+    document.addEventListener('DOMContentLoaded', () => {
+      const style = document.createElement('style');
+      style.textContent = 'app-tour-overlay { visibility: hidden !important; }';
+      document.head.append(style);
+    }),
+  );
   await page.goto('/?tour=showcase&lang=en');
   const say = page.locator('app-tour-overlay .bar .say');
   await expect(say).toContainText('every number of the flight', { timeout: 120_000 });
@@ -83,9 +121,18 @@ test('film: share (the bando editor)', async ({ page }) => {
   const t0 = Date.now();
   await page.goto('/');
   await page.getByRole('button', { name: 'Open the bandos' }).click();
-  await page.locator('app-studio-panel .card.ex').filter({ hasText: /^Chiari e Forti/ }).getByRole('button', { name: 'Open a copy' }).click();
+  await page
+    .locator('app-studio-panel .card.ex')
+    .filter({ hasText: /^Chiari e Forti/ })
+    .getByRole('button', { name: 'Open a copy' })
+    .click();
   await page.waitForTimeout(2500);
-  await page.locator('app-studio-panel .card').filter({ hasText: /^Chiari e Forti/ }).first().getByRole('button', { name: 'Edit area' }).click();
+  await page
+    .locator('app-studio-panel .card')
+    .filter({ hasText: /^Chiari e Forti/ })
+    .first()
+    .getByRole('button', { name: 'Edit area' })
+    .click();
   await page.waitForTimeout(3000);
   // the editor alone, over the model (Views is not drawn for the film)
   await page.locator('app-panel[data-id="views"]').evaluate((el) => ((el as HTMLElement).hidden = true));
@@ -96,7 +143,9 @@ test('film: share (the bando editor)', async ({ page }) => {
   if (hb && sb) {
     await page.mouse.move(hb.x + 60, hb.y + hb.height / 2);
     await page.mouse.down();
-    await page.mouse.move(hb.x + 60 - Math.max(0, sb.x + sb.width - 1280 + 60), hb.y + hb.height / 2 + 20, { steps: 12 });
+    await page.mouse.move(hb.x + 60 - Math.max(0, sb.x + sb.width - 1280 + 60), hb.y + hb.height / 2 + 20, {
+      steps: 12,
+    });
     await page.mouse.up();
   }
   await page.waitForTimeout(800);

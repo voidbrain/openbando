@@ -1,18 +1,50 @@
 import { describe, expect, it } from 'vitest';
-import { stairsFor, addFloor, buildingsOverlap, columnGrid, columnRow, convertBuilding, duplicateColumn, duplicateColumns, fillModule, mergeBuildings, overlapsOthers, removeFloor, repeatOpening } from './building-ops';
+import {
+  stairsFor,
+  addFloor,
+  buildingsOverlap,
+  columnGrid,
+  columnRow,
+  convertBuilding,
+  duplicateColumn,
+  duplicateColumns,
+  fillModule,
+  mergeBuildings,
+  overlapsOthers,
+  removeFloor,
+  repeatOpening,
+} from './building-ops';
 import { addOpening, listOpenings, patchOpening } from './openings';
 import { emptySpec, type BuildingSpec } from './site-spec';
 
 const mk = (id: string, x: number, z: number, L: number, W: number, rot = 0): BuildingSpec => ({
-  id, name: id, pos: { x, z }, rotDeg: rot, length: L, width: W,
-  levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'gable', roofRise: 2 }],
+  id,
+  name: id,
+  pos: { x, z },
+  rotDeg: rot,
+  length: L,
+  width: W,
+  levels: [
+    {
+      baseY: 0,
+      height: 4,
+      sides: { n: true, s: true, e: true, w: true },
+      doors: {},
+      partitions: [],
+      roof: 'gable',
+      roofRise: 2,
+    },
+  ],
 });
 
 describe('building ops', () => {
   it('adds a floor that copies the last one and moves the roof up', () => {
     const b = mk('a', 0, 0, 20, 10);
     addOpening(b, 0, { x: 0, z: 5 }, 'door', 2);
-    b.levels[0]!.partitions.push([{ x: 10, z: 0 }, { x: 10, z: 10 }]);
+    b.levels[0]!.partitions.push([
+      { x: 10, z: 0 },
+      { x: 10, z: 10 },
+    ]);
     b.levels[0]!.voids = [{ x0: 2, z0: 2, x1: 4, z1: 4, water: true }];
     addFloor(b);
     expect(b.levels.length).toBe(2);
@@ -38,8 +70,12 @@ describe('building ops', () => {
 
   it('merges two touching buildings into one shaped building and carries the interior', () => {
     const s = emptySpec();
-    const a = mk('a', 0, 0, 20, 10), b = mk('b', 0, 10, 10, 10);
-    b.levels[0]!.partitions.push([{ x: 0, z: 5 }, { x: 10, z: 5 }]);
+    const a = mk('a', 0, 0, 20, 10),
+      b = mk('b', 0, 10, 10, 10);
+    b.levels[0]!.partitions.push([
+      { x: 0, z: 5 },
+      { x: 10, z: 5 },
+    ]);
     s.buildings = [a, b];
     expect(mergeBuildings(s, 'a', 'b')).toBeNull();
     expect(s.buildings.length).toBe(1);
@@ -83,7 +119,8 @@ describe('repeating and converting', () => {
     const n = columnGrid(b, 0, 0, 5, 4, 0.8);
     const cols = b.levels[0]!.columns!;
     expect(cols.length).toBe(n);
-    const xs = [...new Set(cols.map((c) => c.x))].sort((p, q) => p - q), zs = [...new Set(cols.map((c) => c.z))].sort((p, q) => p - q);
+    const xs = [...new Set(cols.map((c) => c.x))].sort((p, q) => p - q),
+      zs = [...new Set(cols.map((c) => c.z))].sort((p, q) => p - q);
     // symmetric: the first and last rows are the same distance from their walls
     expect(xs[0]!).toBeCloseTo(20 - xs[xs.length - 1]!, 2);
     expect(zs[0]!).toBeCloseTo(10 - zs[zs.length - 1]!, 2);
@@ -108,7 +145,10 @@ describe('repeating and converting', () => {
   it('converts a building to a greenhouse and back, dropping the interior', () => {
     const b = room();
     b.width = 30;
-    b.levels[0]!.partitions.push([{ x: 1, z: 1 }, { x: 5, z: 1 }]);
+    b.levels[0]!.partitions.push([
+      { x: 1, z: 1 },
+      { x: 5, z: 1 },
+    ]);
     convertBuilding(b, 'greenhouse');
     expect(b.frame).toBe('greenhouse');
     expect(b.length).toBe(30); // the tunnel follows the long side
@@ -139,15 +179,41 @@ describe('stairs on a floor', () => {
 
 describe('column modules', () => {
   const hall = (): BuildingSpec => ({
-    id: 'h', name: 'H', pos: { x: 0, z: 0 }, rotDeg: 0, length: 40, width: 20,
-    levels: [{ baseY: 0, height: 5, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'flat', roofRise: 0, columns: [{ x: 10, z: 10, size: 0.6 }, { x: 15, z: 10, size: 0.6 }] }],
+    id: 'h',
+    name: 'H',
+    pos: { x: 0, z: 0 },
+    rotDeg: 0,
+    length: 40,
+    width: 20,
+    levels: [
+      {
+        baseY: 0,
+        height: 5,
+        sides: { n: true, s: true, e: true, w: true },
+        doors: {},
+        partitions: [],
+        roof: 'flat',
+        roofRise: 0,
+        columns: [
+          { x: 10, z: 10, size: 0.6 },
+          { x: 15, z: 10, size: 0.6 },
+        ],
+      },
+    ],
   });
   it('fills the floor on the lattice of the selected columns and keeps clear of the walls', () => {
     const b = hall();
     const n = fillModule(b, 0, [0, 1], 4);
     expect(n).toBeGreaterThan(5);
     const cols = b.levels[0]!.columns!;
-    expect(cols.every((c) => (c.x - 10) % 5 === 0 || Math.abs(((c.x - 10) % 5 + 5) % 5) < 0.01 || Math.abs(((c.x - 10) % 5 + 5) % 5 - 5) < 0.01)).toBe(true);
+    expect(
+      cols.every(
+        (c) =>
+          (c.x - 10) % 5 === 0 ||
+          Math.abs((((c.x - 10) % 5) + 5) % 5) < 0.01 ||
+          Math.abs(((((c.x - 10) % 5) + 5) % 5) - 5) < 0.01,
+      ),
+    ).toBe(true);
     expect(cols.every((c) => c.x > 1 && c.x < 39 && c.z > 1 && c.z < 19)).toBe(true);
     expect(new Set(cols.map((c) => `${c.x}/${c.z}`)).size).toBe(cols.length);
   });

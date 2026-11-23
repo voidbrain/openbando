@@ -13,7 +13,14 @@ export function mergeUnit(unit: THREE.Object3D): Map<THREE.Mesh, THREE.Mesh> {
   const buckets = new Map<string, { mat: THREE.Material; cast: boolean; receive: boolean; meshes: THREE.Mesh[] }>();
   unit.traverse((o) => {
     const m = o as THREE.Mesh;
-    if (!m.isMesh || (m as unknown as THREE.InstancedMesh).isInstancedMesh || Array.isArray(m.material) || m.material.transparent || !m.visible) return;
+    if (
+      !m.isMesh ||
+      (m as unknown as THREE.InstancedMesh).isInstancedMesh ||
+      Array.isArray(m.material) ||
+      m.material.transparent ||
+      !m.visible
+    )
+      return;
     if (m !== unit && m.userData['pick']) return;
     if (!m.geometry.getAttribute('position')) return;
     const key = `${m.material.uuid}|${m.castShadow ? 1 : 0}${m.receiveShadow ? 1 : 0}`;
@@ -25,7 +32,8 @@ export function mergeUnit(unit: THREE.Object3D): Map<THREE.Mesh, THREE.Mesh> {
     if (b.meshes.length < 2) continue;
     const geos = b.meshes.map((m) => {
       let g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone();
-      for (const name of Object.keys(g.attributes)) if (name !== 'position' && name !== 'normal') g.deleteAttribute(name);
+      for (const name of Object.keys(g.attributes))
+        if (name !== 'position' && name !== 'normal') g.deleteAttribute(name);
       if (!g.getAttribute('normal')) g.computeVertexNormals();
       g.clearGroups();
       g = g.applyMatrix4(new THREE.Matrix4().multiplyMatrices(toUnit, m.matrixWorld));

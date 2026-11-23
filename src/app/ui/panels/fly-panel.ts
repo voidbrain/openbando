@@ -96,7 +96,14 @@ export class FlyPanel {
       controller: !!this.radio.padName(),
       simulatorOpen: this.layout.panels().simulator.visible,
       armed: this.sim.armed(),
-      live: status === 'connected' || status === 'receiving' ? 'connected' : status === 'connecting' ? 'connecting' : status === 'idle' ? 'idle' : 'error',
+      live:
+        status === 'connected' || status === 'receiving'
+          ? 'connected'
+          : status === 'connecting'
+            ? 'connecting'
+            : status === 'idle'
+              ? 'idle'
+              : 'error',
     };
   });
   protected readonly steps = computed(() => flySteps(this.route(), this.state(), this.skipped()));
@@ -130,7 +137,14 @@ export class FlyPanel {
       this.layout.setVisible('studio', true);
       return;
     }
-    const panel: Record<Exclude<FlyAction, 'bandos'>, PanelId> = { flights: 'flights', video: 'video', path: 'path', radio: 'radio', simulator: 'simulator', live: 'live' };
+    const panel: Record<Exclude<FlyAction, 'bandos'>, PanelId> = {
+      flights: 'flights',
+      video: 'video',
+      path: 'path',
+      radio: 'radio',
+      simulator: 'simulator',
+      live: 'live',
+    };
     this.layout.setVisible(panel[kind], true);
   }
 

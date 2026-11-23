@@ -20,24 +20,39 @@ export const MIN_COURTYARD = 1;
 
 /** The basement's own perimeter: its outline, else the building's footprint, else its rectangle (as basementVolume). */
 export function mainBasementOutline(b: BuildingSpec): Vec2[] {
-  return b.basement?.outline ?? b.footprint ?? [
-    { x: -b.length / 2, z: -b.width / 2 }, { x: b.length / 2, z: -b.width / 2 },
-    { x: b.length / 2, z: b.width / 2 }, { x: -b.length / 2, z: b.width / 2 },
-  ];
+  return (
+    b.basement?.outline ??
+    b.footprint ?? [
+      { x: -b.length / 2, z: -b.width / 2 },
+      { x: b.length / 2, z: -b.width / 2 },
+      { x: b.length / 2, z: b.width / 2 },
+      { x: -b.length / 2, z: b.width / 2 },
+    ]
+  );
 }
 
 /** Shape-only cleaning of a ring list from a file (finite, inside the coordinate limit, simple, flags matching). */
 export function cleanRings(raw: unknown, max: number): BasementRing[] | undefined {
   if (!Array.isArray(raw)) return undefined;
-  const point = (p: unknown): p is Vec2 => !!p && typeof p === 'object' && Number.isFinite((p as Vec2).x) && Number.isFinite((p as Vec2).z)
-    && Math.abs((p as Vec2).x) <= BASEMENT_COORD_LIMIT && Math.abs((p as Vec2).z) <= BASEMENT_COORD_LIMIT;
+  const point = (p: unknown): p is Vec2 =>
+    !!p &&
+    typeof p === 'object' &&
+    Number.isFinite((p as Vec2).x) &&
+    Number.isFinite((p as Vec2).z) &&
+    Math.abs((p as Vec2).x) <= BASEMENT_COORD_LIMIT &&
+    Math.abs((p as Vec2).z) <= BASEMENT_COORD_LIMIT;
   const out: BasementRing[] = [];
   for (const r of raw) {
     const ring = r as Partial<BasementRing> | null;
     if (!ring || !Array.isArray(ring.outline) || !ring.outline.every(point) || !validOutline(ring.outline)) continue;
-    const outline = ring.outline.map(p => ({ x: p.x, z: p.z }));
-    const flags = Array.isArray(ring.wallEdges) && ring.wallEdges.length === outline.length && ring.wallEdges.every(v => typeof v === 'boolean') ? [...ring.wallEdges] : undefined;
-    out.push({ outline, ...(flags && flags.some(v => !v) ? { wallEdges: flags } : {}) });
+    const outline = ring.outline.map((p) => ({ x: p.x, z: p.z }));
+    const flags =
+      Array.isArray(ring.wallEdges) &&
+      ring.wallEdges.length === outline.length &&
+      ring.wallEdges.every((v) => typeof v === 'boolean')
+        ? [...ring.wallEdges]
+        : undefined;
+    out.push({ outline, ...(flags && flags.some((v) => !v) ? { wallEdges: flags } : {}) });
     if (out.length >= max) break;
   }
   return out.length ? out : undefined;
@@ -46,9 +61,21 @@ export function cleanRings(raw: unknown, max: number): BasementRing[] | undefine
 const cross = (a: Vec2, b: Vec2, c: Vec2): number => (b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x);
 /** Whether two segments touch or cross (shared points count). */
 function segmentsMeet(a: Vec2, b: Vec2, c: Vec2, d: Vec2): boolean {
-  const d1 = cross(c, d, a), d2 = cross(c, d, b), d3 = cross(a, b, c), d4 = cross(a, b, d);
-  if (((d1 > 1e-9 && d2 < -1e-9) || (d1 < -1e-9 && d2 > 1e-9)) && ((d3 > 1e-9 && d4 < -1e-9) || (d3 < -1e-9 && d4 > 1e-9))) return true;
-  const on = (p: Vec2, q: Vec2, r: Vec2): boolean => Math.abs(cross(p, q, r)) < 1e-9 && r.x >= Math.min(p.x, q.x) - 1e-9 && r.x <= Math.max(p.x, q.x) + 1e-9 && r.z >= Math.min(p.z, q.z) - 1e-9 && r.z <= Math.max(p.z, q.z) + 1e-9;
+  const d1 = cross(c, d, a),
+    d2 = cross(c, d, b),
+    d3 = cross(a, b, c),
+    d4 = cross(a, b, d);
+  if (
+    ((d1 > 1e-9 && d2 < -1e-9) || (d1 < -1e-9 && d2 > 1e-9)) &&
+    ((d3 > 1e-9 && d4 < -1e-9) || (d3 < -1e-9 && d4 > 1e-9))
+  )
+    return true;
+  const on = (p: Vec2, q: Vec2, r: Vec2): boolean =>
+    Math.abs(cross(p, q, r)) < 1e-9 &&
+    r.x >= Math.min(p.x, q.x) - 1e-9 &&
+    r.x <= Math.max(p.x, q.x) + 1e-9 &&
+    r.z >= Math.min(p.z, q.z) - 1e-9 &&
+    r.z <= Math.max(p.z, q.z) + 1e-9;
   return on(c, d, a) || on(c, d, b) || on(a, b, c) || on(a, b, d);
 }
 const edges = (poly: readonly Vec2[]): [Vec2, Vec2][] => poly.map((p, i) => [p, poly[(i + 1) % poly.length]!]);
@@ -58,7 +85,7 @@ export function ringsMeet(a: readonly Vec2[], b: readonly Vec2[]): boolean {
 }
 /** `inner` lies strictly inside `outer`: no shared boundary point, every vertex inside. */
 export function strictlyInside(inner: readonly Vec2[], outer: Vec2[]): boolean {
-  return !ringsMeet(inner, outer) && inner.every(p => contains(outer, p.x, p.z));
+  return !ringsMeet(inner, outer) && inner.every((p) => contains(outer, p.x, p.z));
 }
 /** Two rings share no area and no boundary point. */
 export function disjoint(a: Vec2[], b: Vec2[]): boolean {
@@ -74,24 +101,25 @@ export function disjoint(a: Vec2[], b: Vec2[]): boolean {
 export function keepValidRings(b: BuildingSpec): BuildingSpec['basement'] {
   const basement = b.basement;
   if (!basement || (!basement.courtyards && !basement.pieces)) return basement;
-  const main = mainBasementOutline(b), box = bounds(main);
+  const main = mainBasementOutline(b),
+    box = bounds(main);
   const local = (p: Vec2): Vec2 => ({ x: p.x + box.x0, z: p.z + box.z0 }); // floor items → outline frame
   const items: Vec2[] = [
-    ...(basement.columns ?? []).map(c => local(c)),
-    ...(basement.partitions ?? []).flatMap(w => w.map(local)),
-    ...(basement.voids ?? []).flatMap(v => [local({ x: v.x0, z: v.z0 }), local({ x: v.x1, z: v.z1 })]),
+    ...(basement.columns ?? []).map((c) => local(c)),
+    ...(basement.partitions ?? []).flatMap((w) => w.map(local)),
+    ...(basement.voids ?? []).flatMap((v) => [local({ x: v.x0, z: v.z0 }), local({ x: v.x1, z: v.z1 })]),
   ];
   const courtyards: BasementRing[] = [];
   for (const c of basement.courtyards ?? []) {
     const r = bounds(c.outline);
     if (r.x1 - r.x0 < MIN_COURTYARD || r.z1 - r.z0 < MIN_COURTYARD) continue;
-    if (!strictlyInside(c.outline, main) || courtyards.some(o => !disjoint(o.outline, c.outline))) continue;
-    if (items.some(p => contains(c.outline, p.x, p.z))) continue;
+    if (!strictlyInside(c.outline, main) || courtyards.some((o) => !disjoint(o.outline, c.outline))) continue;
+    if (items.some((p) => contains(c.outline, p.x, p.z))) continue;
     courtyards.push(c);
   }
   const pieces: BasementRing[] = [];
   for (const p of basement.pieces ?? []) {
-    if (!disjoint(p.outline, main) || pieces.some(o => !disjoint(o.outline, p.outline))) continue;
+    if (!disjoint(p.outline, main) || pieces.some((o) => !disjoint(o.outline, p.outline))) continue;
     pieces.push(p);
   }
   const { courtyards: _courtyards, pieces: _pieces, ...rest } = basement;
@@ -103,24 +131,36 @@ export function keepValidRings(b: BuildingSpec): BuildingSpec['basement'] {
  * edits keep floor items where they are in the world, so their relation to a courtyard does not change.
  */
 export function ringsFit(basement: NonNullable<BuildingSpec['basement']>, outline: Vec2[]): boolean {
-  return (basement.courtyards ?? []).every(c => strictlyInside(c.outline, outline)) && (basement.pieces ?? []).every(p => disjoint(p.outline, outline));
+  return (
+    (basement.courtyards ?? []).every((c) => strictlyInside(c.outline, outline)) &&
+    (basement.pieces ?? []).every((p) => disjoint(p.outline, outline))
+  );
 }
 
 /** Whether a saved basement keeps every courtyard and piece it had (none would be dropped as invalid). */
 export function ringsKept(b: BuildingSpec, basement: NonNullable<BuildingSpec['basement']>): boolean {
   const kept = keepValidRings({ ...b, basement });
-  return (kept?.courtyards?.length ?? 0) === (basement.courtyards?.length ?? 0) && (kept?.pieces?.length ?? 0) === (basement.pieces?.length ?? 0);
+  return (
+    (kept?.courtyards?.length ?? 0) === (basement.courtyards?.length ?? 0) &&
+    (kept?.pieces?.length ?? 0) === (basement.pieces?.length ?? 0)
+  );
 }
 
 /** Turn one wall of a courtyard or a separate piece on or off (flags stored only while one edge is open). */
-export function setRingWall(b: BuildingSpec, kind: 'courtyards' | 'pieces', ring: number, edge: number, on: boolean): boolean {
+export function setRingWall(
+  b: BuildingSpec,
+  kind: 'courtyards' | 'pieces',
+  ring: number,
+  edge: number,
+  on: boolean,
+): boolean {
   const list = b.basement?.[kind];
   const item = list?.[ring];
   if (!list || !item || !Number.isInteger(edge) || edge < 0 || edge >= item.outline.length) return false;
   const walls = item.wallEdges ? [...item.wallEdges] : item.outline.map(() => true);
   walls[edge] = on;
   const { wallEdges: _old, ...rest } = item;
-  const next = walls.some(v => !v) ? { ...rest, wallEdges: walls } : rest;
+  const next = walls.some((v) => !v) ? { ...rest, wallEdges: walls } : rest;
   b.basement = { ...b.basement!, [kind]: list.map((x, i) => (i === ring ? next : x)) };
   return true;
 }

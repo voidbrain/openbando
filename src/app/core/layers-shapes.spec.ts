@@ -1,11 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import { insidePolygon, mergeWaters, polygonArea, polygonsTouch, stripOutline, unionOutline } from './layers';
 
-const square = (x: number, z: number, s: number) => [{ x, z }, { x: x + s, z }, { x: x + s, z: z + s }, { x, z: z + s }];
+const square = (x: number, z: number, s: number) => [
+  { x, z },
+  { x: x + s, z },
+  { x: x + s, z: z + s },
+  { x, z: z + s },
+];
 
 describe('water shapes', () => {
   it('a strip along a line is as wide as asked and covers the line', () => {
-    const o = stripOutline([{ x: 0, z: 0 }, { x: 20, z: 0 }], 6);
+    const o = stripOutline(
+      [
+        { x: 0, z: 0 },
+        { x: 20, z: 0 },
+      ],
+      6,
+    );
     expect(polygonArea(o)).toBeCloseTo(120);
     expect(insidePolygon(o, 10, 0)).toBe(true);
     expect(insidePolygon(o, 10, 4)).toBe(false);

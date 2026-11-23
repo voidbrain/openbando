@@ -10,8 +10,10 @@ describe('ruined walls', () => {
   });
 
   it('a ruined wall loses only its upper part, along a smooth line, more with more ruin', () => {
-    const lost = (ruin: number): number[] => Array.from({ length: 60 }, (_, i) => 12 - wallTop(60, 12, ruin, ruinRandom('b'))(i));
-    const light = lost(0.2), heavy = lost(0.8);
+    const lost = (ruin: number): number[] =>
+      Array.from({ length: 60 }, (_, i) => 12 - wallTop(60, 12, ruin, ruinRandom('b'))(i));
+    const light = lost(0.2),
+      heavy = lost(0.8);
     expect(Math.max(...light)).toBeLessThan(5);
     expect(heavy.reduce((a, x) => a + x, 0)).toBeGreaterThan(light.reduce((a, x) => a + x, 0) * 2);
     // smooth: neighbouring metres differ by little (no jagged teeth)
@@ -20,7 +22,8 @@ describe('ruined walls', () => {
 
   it('the pieces of a stretch stop at the broken line and never leave a hole lower down', () => {
     const standing = wallTop(40, 20, 0.7, ruinRandom('c'));
-    const lower = wallPieces(0, 40, 0, 4, standing), upper = wallPieces(0, 40, 16, 20, standing);
+    const lower = wallPieces(0, 40, 0, 4, standing),
+      upper = wallPieces(0, 40, 16, 20, standing);
     expect(lower.reduce((a, p) => a + p.len, 0)).toBeCloseTo(40); // the ground floor stands all along
     expect(upper.length).toBeLessThan(lower.length); // the top floor has fallen in places
     for (const p of upper) expect(p.top).toBeLessThanOrEqual(20);

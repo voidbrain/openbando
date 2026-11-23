@@ -21,7 +21,9 @@ export function wallTop(len: number, h: number, ruin: number, rnd: () => number)
   const phase = rnd() * 100;
   return (x: number): number => {
     const u = Math.min(n - 1, Math.max(0, (x / len) * (n - 1)));
-    const i = Math.floor(u), f = u - i, c = (1 - Math.cos(Math.PI * f)) / 2;
+    const i = Math.floor(u),
+      f = u - i,
+      c = (1 - Math.cos(Math.PI * f)) / 2;
     const smooth = knots[i]! * (1 - c) + knots[Math.min(i + 1, n - 1)]! * c;
     const lost = Math.min(0.95, ruin * (0.35 + 0.9 * smooth)); // the share of the height that has fallen
     const rough = 0.25 * Math.sin(x * 2.3 + phase) * Math.sin(x * 0.9 + phase * 0.7);
@@ -33,12 +35,19 @@ export function wallTop(len: number, h: number, ruin: number, rnd: () => number)
  * The standing pieces of one stretch of wall, from `from` to `from + len` along it (metres), between heights
  * `bottom` and `top` of the building, cut to the broken line `standing` (absent = the wall is whole).
  */
-export function wallPieces(from: number, len: number, bottom: number, top: number, standing?: (x: number) => number): { from: number; len: number; top: number }[] {
+export function wallPieces(
+  from: number,
+  len: number,
+  bottom: number,
+  top: number,
+  standing?: (x: number) => number,
+): { from: number; len: number; top: number }[] {
   if (!standing) return [{ from, len, top }];
   const n = Math.max(1, Math.round(len / 1.5));
   const out: { from: number; len: number; top: number }[] = [];
   for (let i = 0; i < n; i++) {
-    const a = from + (len * i) / n, t = Math.min(top, standing(a + len / n / 2));
+    const a = from + (len * i) / n,
+      t = Math.min(top, standing(a + len / n / 2));
     if (t - bottom > 0.05) out.push({ from: a, len: len / n, top: t });
   }
   return out;
@@ -62,7 +71,8 @@ export function roofRuns(len: number, ruin: number, rnd: () => number): { from: 
     // a hole tends to carry on into the next segment
     gone = rnd() < (gone ? Math.min(0.9, loss + 0.3) : loss * 0.7);
     if (gone) continue;
-    const from = (len * i) / n, last = out[out.length - 1];
+    const from = (len * i) / n,
+      last = out[out.length - 1];
     if (last && Math.abs(last.from + last.len - from) < 1e-6) last.len += len / n;
     else out.push({ from, len: len / n });
   }
@@ -70,15 +80,24 @@ export function roofRuns(len: number, ruin: number, rnd: () => number): { from: 
 }
 
 /** What is left of a flat roof over a rectangle: kept cells (about 3 m), merged along x. */
-export function roofCells(x0: number, x1: number, z0: number, z1: number, ruin: number, rnd: () => number): { x0: number; x1: number; z0: number; z1: number }[] {
+export function roofCells(
+  x0: number,
+  x1: number,
+  z0: number,
+  z1: number,
+  ruin: number,
+  rnd: () => number,
+): { x0: number; x1: number; z0: number; z1: number }[] {
   const loss = roofLoss(ruin);
   if (loss === 0) return [{ x0, x1, z0, z1 }];
   if (loss === 1) return [];
   const rows = Math.max(1, Math.round((z1 - z0) / 3));
   const out: { x0: number; x1: number; z0: number; z1: number }[] = [];
   for (let r = 0; r < rows; r++) {
-    const za = z0 + ((z1 - z0) * r) / rows, zb = z0 + ((z1 - z0) * (r + 1)) / rows;
-    for (const run of roofRuns(x1 - x0, ruin, rnd)) out.push({ x0: x0 + run.from, x1: x0 + run.from + run.len, z0: za, z1: zb });
+    const za = z0 + ((z1 - z0) * r) / rows,
+      zb = z0 + ((z1 - z0) * (r + 1)) / rows;
+    for (const run of roofRuns(x1 - x0, ruin, rnd))
+      out.push({ x0: x0 + run.from, x1: x0 + run.from + run.len, z0: za, z1: zb });
   }
   return out;
 }

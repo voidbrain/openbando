@@ -19,7 +19,9 @@ for (const s of SNIPPETS.filter((x) => x.section !== 'showcase')) {
     await page.locator('app-panel[data-id="views"]').evaluate((el) => ((el as HTMLElement).hidden = true)); // the step opens what it needs
     await page.evaluate((title) => {
       // the Play buttons live in the Guide panel, closed here: press the one of this step directly
-      const b = [...document.querySelectorAll<HTMLButtonElement>('app-guide-panel button')].find((x) => x.getAttribute('aria-label') === `Play: ${title}`);
+      const b = [...document.querySelectorAll<HTMLButtonElement>('app-guide-panel button')].find(
+        (x) => x.getAttribute('aria-label') === `Play: ${title}`,
+      );
       b?.click();
     }, s.title);
     const bar = page.locator('app-tour-overlay .bar');
@@ -31,7 +33,27 @@ for (const s of SNIPPETS.filter((x) => x.section !== 'showcase')) {
     await page.close();
     const raw = `${DIR}/${s.id}.raw.webm`;
     await video?.saveAs(raw);
-    const ff = spawnSync('ffmpeg', ['-v', 'error', '-y', '-ss', from.toFixed(2), '-i', raw, '-vf', 'scale=960:-2,fps=24', '-c:v', 'libvpx-vp9', '-crf', '40', '-b:v', '0', '-row-mt', '1', '-an', `${DIR}/${s.id}.webm`]);
+    const ff = spawnSync('ffmpeg', [
+      '-v',
+      'error',
+      '-y',
+      '-ss',
+      from.toFixed(2),
+      '-i',
+      raw,
+      '-vf',
+      'scale=960:-2,fps=24',
+      '-c:v',
+      'libvpx-vp9',
+      '-crf',
+      '40',
+      '-b:v',
+      '0',
+      '-row-mt',
+      '1',
+      '-an',
+      `${DIR}/${s.id}.webm`,
+    ]);
     rmSync(raw);
     expect(ff.status, String(ff.stderr)).toBe(0);
   });

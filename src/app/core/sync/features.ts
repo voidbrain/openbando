@@ -45,7 +45,12 @@ export function smooth(a: Float32Array, window: number): Float32Array {
  * itself. Dating motion at the later frame put it dt / 2 late, so the offset moved with how many frames the machine
  * decoded, and disagreed with the brightness match.
  */
-export function gridFromSamples(samples: readonly VideoSample[], field: NumericVideoField, t0: number, t1: number): Float32Array {
+export function gridFromSamples(
+  samples: readonly VideoSample[],
+  field: NumericVideoField,
+  t0: number,
+  t1: number,
+): Float32Array {
   const n = Math.max(2, Math.ceil((t1 - t0) / GRID_DT) + 1);
   const sum = new Float32Array(n);
   const cnt = new Uint16Array(n);
@@ -112,7 +117,9 @@ export const FRAME_H = 36;
 
 /** Global image shift between two 64x36 grayscale frames (block matching, +-8 px). Only the magnitude is used. */
 export function shiftXY(a: Uint8Array, b: Uint8Array): [number, number] {
-  const W = FRAME_W, H = FRAME_H, R = 8;
+  const W = FRAME_W,
+    H = FRAME_H,
+    R = 8;
   const sad = (dx: number, dy: number): number => {
     let s = 0;
     for (let y = R; y < H - R; y++) {
@@ -151,7 +158,15 @@ export interface Correlation {
  * Normalised cross-correlation of the log feature F (log time = index * dt) with the video feature V
  * (video time = vt0 + index * dt) for every offset in [offLo, offHi]; sub-sample peak by parabolic interpolation.
  */
-export function crossCorrelate(F: Float32Array, V: Float32Array, vt0: number, L0: number, L1: number, offLo: number, offHi: number): Correlation {
+export function crossCorrelate(
+  F: Float32Array,
+  V: Float32Array,
+  vt0: number,
+  L0: number,
+  L1: number,
+  offLo: number,
+  offHi: number,
+): Correlation {
   const k0 = Math.max(0, Math.floor(L0 / GRID_DT));
   const k1 = Math.min(F.length - 1, Math.floor(L1 / GRID_DT));
   const n0 = k1 - k0 + 1;
@@ -160,7 +175,12 @@ export function crossCorrelate(F: Float32Array, V: Float32Array, vt0: number, L0
   if (sHi < sLo || n0 < 10) return { off: 0, r1: -1, r2: -1 };
   const r = new Float32Array(sHi - sLo + 1);
   for (let s = sLo; s <= sHi; s++) {
-    let n = 0, sa = 0, sb = 0, saa = 0, sbb = 0, sab = 0;
+    let n = 0,
+      sa = 0,
+      sb = 0,
+      saa = 0,
+      sbb = 0,
+      sab = 0;
     for (let k = k0; k <= k1; k++) {
       const j = k + s;
       if (j < 0 || j >= V.length) continue;
@@ -186,7 +206,9 @@ export function crossCorrelate(F: Float32Array, V: Float32Array, vt0: number, L0
   for (let i = 0; i < r.length; i++) if (Math.abs(i - ib) > 20 && r[i]! > r2) r2 = r[i]!;
   let d = 0;
   if (ib > 0 && ib < r.length - 1) {
-    const a = r[ib - 1]!, b = r[ib]!, c = r[ib + 1]!;
+    const a = r[ib - 1]!,
+      b = r[ib]!,
+      c = r[ib + 1]!;
     const den = a - 2 * b + c;
     if (den < 0) d = (0.5 * (a - c)) / den;
   }

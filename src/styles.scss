@@ -15,8 +15,8 @@
   --field: #161425;
   --map-ground: #0c0b17;
   --overlay: rgba(15, 13, 28, 0.96);
-  --overlay-soft: rgba(15, 13, 28, 0.90);
-  --badge: rgba(15, 13, 28, 0.90);
+  --overlay-soft: rgba(15, 13, 28, 0.9);
+  --badge: rgba(15, 13, 28, 0.9);
   --badge-ink: #f1eff8;
   --frame-shade: rgba(12, 10, 25, 0.5);
   --radius: 10px;
@@ -35,7 +35,12 @@ body {
   overflow: hidden;
   background: var(--bg);
   color: var(--text);
-  font: 12px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font:
+    12px/1.4 system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 

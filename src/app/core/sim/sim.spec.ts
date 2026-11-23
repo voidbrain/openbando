@@ -1,13 +1,26 @@
 import { Vec3, eulerYXZ } from '../math3d';
 import { SiteCollider, type SolidBox } from './collider';
-import { applyExpo, createDroneState, resetDroneState, stepDrone, toggleMode, type ControlSettings, type PilotInput } from './drone-physics';
+import {
+  applyExpo,
+  createDroneState,
+  resetDroneState,
+  stepDrone,
+  toggleMode,
+  type ControlSettings,
+  type PilotInput,
+} from './drone-physics';
 import { SimRecorder } from './recorder';
 import { buildHeights } from '../terrain';
 import { DEFAULT_CALIBRATION } from '../constants';
 
 const CFG: ControlSettings = { rate: 400, expo: 0.3 };
 const neutral = (): PilotInput => ({ roll: 0, pitch: 0, yaw: 0, throttle: 0, gamepad: false, spring: false });
-const run = (d: ReturnType<typeof createDroneState>, seconds: number, input: PilotInput, world: SiteCollider | null = null) => {
+const run = (
+  d: ReturnType<typeof createDroneState>,
+  seconds: number,
+  input: PilotInput,
+  world: SiteCollider | null = null,
+) => {
   let crashed = false;
   for (let i = 0; i < seconds * 120; i++) crashed = stepDrone(d, 1 / 120, input, CFG, world).crashed || crashed;
   return crashed;
@@ -205,7 +218,11 @@ describe('simulator recorder', () => {
 
 describe('drone on a terrain', () => {
   it('rests on the pad height and cannot sink into a hill', () => {
-    const grid = buildHeights({ cell: 1, half: { e: 60, n: 60 }, strokes: [{ op: 'hill', pts: [{ x: 0, z: 0 }], radius: 30, strength: 10 }] }).grid;
+    const grid = buildHeights({
+      cell: 1,
+      half: { e: 60, n: 60 },
+      strokes: [{ op: 'hill', pts: [{ x: 0, z: 0 }], radius: 30, strength: 10 }],
+    }).grid;
     const world = new SiteCollider([], [], grid);
     const d = createDroneState(1, { x: 0, z: 0, y: world.groundAt(0, 0) });
     expect(d.p.y).toBeGreaterThan(9);
@@ -225,7 +242,12 @@ describe('drone on a terrain', () => {
 
 describe('drone and water', () => {
   it('touching the water surface is a crash; flying over it is not', () => {
-    const pond = [{ x: -10, z: -10 }, { x: 10, z: -10 }, { x: 10, z: 10 }, { x: -10, z: 10 }];
+    const pond = [
+      { x: -10, z: -10 },
+      { x: 10, z: -10 },
+      { x: 10, z: 10 },
+      { x: -10, z: 10 },
+    ];
     const world = new SiteCollider([], [], null, [{ pts: pond, level: 0.5 }]);
     expect(world.waterAt(0, 0)).toBeCloseTo(0.5);
     expect(world.waterAt(20, 0)).toBeNull();
@@ -241,8 +263,25 @@ describe('drone and water', () => {
 
 describe('drone in a tunnel', () => {
   it('rests on the tunnel floor under a hill instead of being pushed up onto the hill', () => {
-    const grid = buildHeights({ cell: 1, half: { e: 60, n: 60 }, strokes: [{ op: 'hill', pts: [{ x: 0, z: 0 }], radius: 35, strength: 10 }] }).grid;
-    const tunnel = { id: 't', name: 'T', outline: [{ x: -45, z: -2 }, { x: 45, z: -2 }, { x: 45, z: 2 }, { x: -45, z: 2 }], floor: -0.5, ceiling: 3, shape: 'box' as const, wall: 0.4 };
+    const grid = buildHeights({
+      cell: 1,
+      half: { e: 60, n: 60 },
+      strokes: [{ op: 'hill', pts: [{ x: 0, z: 0 }], radius: 35, strength: 10 }],
+    }).grid;
+    const tunnel = {
+      id: 't',
+      name: 'T',
+      outline: [
+        { x: -45, z: -2 },
+        { x: 45, z: -2 },
+        { x: 45, z: 2 },
+        { x: -45, z: 2 },
+      ],
+      floor: -0.5,
+      ceiling: 3,
+      shape: 'box' as const,
+      wall: 0.4,
+    };
     const world = new SiteCollider([], [], grid, [], [tunnel]);
     const d = createDroneState(1, { x: 0, z: 0, y: -0.5 });
     run(d, 1, neutral(), world);

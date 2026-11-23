@@ -1,43 +1,76 @@
-import {expect, test} from '@playwright/test';
-import {readFile} from 'node:fs/promises';
-import type {SiteSpec} from '../src/app/core/site-spec';
+import { expect, test } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
+import type { SiteSpec } from '../src/app/core/site-spec';
 
 /** The take-off pad is picked and dragged with Select, and moved from the ground's right-click menu (pad and start together). */
-test('the take-off pad can be selected, dragged and moved from the ground menu', async ({page}) => {
-  await page.emulateMedia({reducedMotion: 'reduce'});
+test('the take-off pad can be selected, dragged and moved from the ground menu', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await page.getByRole('button', {name: 'Open the bandos', exact: true}).click();
+  await page.getByRole('button', { name: 'Open the bandos', exact: true }).click();
   const fixture = {
-    version: 1, id: 'pad', name: 'Pad yard', createdAt: 0, privacy: 'hidden',
-    origin: {lat: 0, lon: 0}, bearingDeg: 0, genScale: 1, extent: 60, seed: 1, trees: [],
-    pads: [{x: -14, z: 0, w: 8, d: 8, color: '#a9aaa0'}], droneStart: {x: -14, z: 0},
-    buildings: [{id: 'b', name: 'Shed', pos: {x: 10, z: 0}, rotDeg: 0, length: 8, width: 6,
-      levels: [{baseY: 0, height: 4, sides: {n: true, s: true, e: true, w: true}, doors: {}, partitions: [], roof: 'flat', roofRise: 0}]}],
+    version: 1,
+    id: 'pad',
+    name: 'Pad yard',
+    createdAt: 0,
+    privacy: 'hidden',
+    origin: { lat: 0, lon: 0 },
+    bearingDeg: 0,
+    genScale: 1,
+    extent: 60,
+    seed: 1,
+    trees: [],
+    pads: [{ x: -14, z: 0, w: 8, d: 8, color: '#a9aaa0' }],
+    droneStart: { x: -14, z: 0 },
+    buildings: [
+      {
+        id: 'b',
+        name: 'Shed',
+        pos: { x: 10, z: 0 },
+        rotDeg: 0,
+        length: 8,
+        width: 6,
+        levels: [
+          {
+            baseY: 0,
+            height: 4,
+            sides: { n: true, s: true, e: true, w: true },
+            doors: {},
+            partitions: [],
+            roof: 'flat',
+            roofRise: 0,
+          },
+        ],
+      },
+    ],
   };
   const studio = page.locator('app-studio-panel');
-  await studio.locator('input[type=file]').first().setInputFiles({name: 'pad.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture))});
-  const card = studio.locator('.card').filter({hasText: fixture.name});
-  await card.getByRole('button', {name: 'Edit', exact: true}).click();
+  await studio
+    .locator('input[type=file]')
+    .first()
+    .setInputFiles({ name: 'pad.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture)) });
+  const card = studio.locator('.card').filter({ hasText: fixture.name });
+  await card.getByRole('button', { name: 'Edit', exact: true }).click();
   const bar = page.locator('app-bando-editor > .bar');
   const pad = page.locator('app-bando-editor [data-pk="pad"]');
   const shed = page.locator('[data-pk="building:b"]').first();
   await expect(pad).toBeVisible();
   const exported = async (): Promise<SiteSpec> => {
-    await bar.getByRole('button', {name: 'Save', exact: true}).click();
-    await bar.getByRole('button', {name: '← Bandos', exact: true}).click();
+    await bar.getByRole('button', { name: 'Save', exact: true }).click();
+    await bar.getByRole('button', { name: '← Bandos', exact: true }).click();
     const downloading = page.waitForEvent('download');
-    await card.getByRole('button', {name: 'Export', exact: true}).click();
+    await card.getByRole('button', { name: 'Export', exact: true }).click();
     const spec = JSON.parse((await readFile((await (await downloading).path())!)).toString()) as SiteSpec;
-    await card.getByRole('button', {name: 'Edit', exact: true}).click();
+    await card.getByRole('button', { name: 'Edit', exact: true }).click();
     return spec;
   };
 
   // drag it with Select: the inspector names it, pad and start move together
-  const a = (await pad.boundingBox())!, b = (await shed.boundingBox())!;
+  const a = (await pad.boundingBox())!,
+    b = (await shed.boundingBox())!;
   const metre = b.width / 8; // the shed is 8 m long
   await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
   await page.mouse.down();
-  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2 + 10 * metre, {steps: 6});
+  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2 + 10 * metre, { steps: 6 });
   await page.mouse.up();
   await expect(page.locator('[data-tour="inspector"]')).toContainText('Take-off pad');
   let spec = await exported();
@@ -47,70 +80,134 @@ test('the take-off pad can be selected, dragged and moved from the ground menu',
 
   // right-click the ground north of the shed: Move the take-off pad here; the pad lands under the click
   const s2 = (await shed.boundingBox())!;
-  const here = {x: s2.x + s2.width / 2, y: s2.y - 40};
-  await page.mouse.click(here.x, here.y, {button: 'right'});
-  await page.getByRole('button', {name: 'Move the take-off pad here', exact: true}).click();
+  const here = { x: s2.x + s2.width / 2, y: s2.y - 40 };
+  await page.mouse.click(here.x, here.y, { button: 'right' });
+  await page.getByRole('button', { name: 'Move the take-off pad here', exact: true }).click();
   const moved = (await pad.boundingBox())!;
   expect(Math.abs(moved.x + moved.width / 2 - here.x)).toBeLessThan(6); // the click snaps to whole metres
   expect(Math.abs(moved.y + moved.height / 2 - here.y)).toBeLessThan(6);
   spec = await exported();
   expect(spec.droneStart.x).toBeCloseTo(10, 0);
   expect(spec.droneStart.z).toBeLessThan(-3);
-  expect(spec.pads.at(-1)).toMatchObject({x: spec.droneStart.x, z: spec.droneStart.z});
+  expect(spec.pads.at(-1)).toMatchObject({ x: spec.droneStart.x, z: spec.droneStart.z });
 });
 
 /** Inside a building the pad can stand on an upper floor or a flat roof (F-024): the inspector offers them, the export keeps it. */
-test('the take-off pad can stand on a flat roof', async ({page}) => {
-  await page.emulateMedia({reducedMotion: 'reduce'});
+test('the take-off pad can stand on a flat roof', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await page.getByRole('button', {name: 'Open the bandos', exact: true}).click();
-  const lv = (baseY: number, roof: string) => ({baseY, height: 3, sides: {n: true, s: true, e: true, w: true}, doors: {}, partitions: [], roof, roofRise: 0});
+  await page.getByRole('button', { name: 'Open the bandos', exact: true }).click();
+  const lv = (baseY: number, roof: string) => ({
+    baseY,
+    height: 3,
+    sides: { n: true, s: true, e: true, w: true },
+    doors: {},
+    partitions: [],
+    roof,
+    roofRise: 0,
+  });
   const fixture = {
-    version: 1, id: 'roofpad', name: 'Roof pad', createdAt: 0, privacy: 'hidden', origin: {lat: 0, lon: 0}, bearingDeg: 0, genScale: 1, extent: 60, seed: 1, trees: [],
-    pads: [{x: 0, z: 0, w: 4, d: 4}], droneStart: {x: 0, z: 0},
-    buildings: [{id: 'h', name: 'Block', pos: {x: 0, z: 0}, rotDeg: 0, length: 14, width: 10, levels: [lv(0, 'none'), lv(3, 'flat')]}],
+    version: 1,
+    id: 'roofpad',
+    name: 'Roof pad',
+    createdAt: 0,
+    privacy: 'hidden',
+    origin: { lat: 0, lon: 0 },
+    bearingDeg: 0,
+    genScale: 1,
+    extent: 60,
+    seed: 1,
+    trees: [],
+    pads: [{ x: 0, z: 0, w: 4, d: 4 }],
+    droneStart: { x: 0, z: 0 },
+    buildings: [
+      {
+        id: 'h',
+        name: 'Block',
+        pos: { x: 0, z: 0 },
+        rotDeg: 0,
+        length: 14,
+        width: 10,
+        levels: [lv(0, 'none'), lv(3, 'flat')],
+      },
+    ],
   };
   const studio = page.locator('app-studio-panel');
-  await studio.locator('input[type=file]').first().setInputFiles({name: 'roof.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture))});
-  const card = studio.locator('.card').filter({hasText: fixture.name});
-  await card.getByRole('button', {name: 'Edit', exact: true}).click();
+  await studio
+    .locator('input[type=file]')
+    .first()
+    .setInputFiles({ name: 'roof.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture)) });
+  const card = studio.locator('.card').filter({ hasText: fixture.name });
+  await card.getByRole('button', { name: 'Edit', exact: true }).click();
   // select the pad through its own menu (it lies inside the building)
   const pad = page.locator('app-bando-editor [data-pk="pad"]');
-  await pad.click({button: 'right', force: true});
+  await pad.click({ button: 'right', force: true });
   await page.keyboard.press('Escape');
   const inspector = page.locator('[data-tour="inspector"]');
   await expect(inspector).toContainText('Take-off pad');
   const standsOn = inspector.getByLabel('stands on');
   await expect(standsOn.locator('option')).toHaveText(['ground', 'floor L1', 'roof']);
-  await standsOn.selectOption({label: 'roof'});
+  await standsOn.selectOption({ label: 'roof' });
   const bar = page.locator('app-bando-editor > .bar');
-  await bar.getByRole('button', {name: 'Save', exact: true}).click();
-  await bar.getByRole('button', {name: '← Bandos', exact: true}).click();
+  await bar.getByRole('button', { name: 'Save', exact: true }).click();
+  await bar.getByRole('button', { name: '← Bandos', exact: true }).click();
   const downloading = page.waitForEvent('download');
-  await card.getByRole('button', {name: 'Export', exact: true}).click();
+  await card.getByRole('button', { name: 'Export', exact: true }).click();
   const spec = JSON.parse((await readFile((await (await downloading).path())!)).toString()) as SiteSpec;
-  expect(spec.takeoffOn).toEqual({building: 'h', level: 2});
+  expect(spec.takeoffOn).toEqual({ building: 'h', level: 2 });
 });
 
 /** In the 3D view the selected take-off pad has a move handle; dragging it moves pad and start together (F-035). */
-test('the take-off pad can be dragged in the 3D view', async ({page}) => {
+test('the take-off pad can be dragged in the 3D view', async ({ page }) => {
   test.setTimeout(180_000);
   const errors: string[] = [];
-  page.on('pageerror', error => errors.push(error.message));
-  await page.emulateMedia({reducedMotion: 'reduce'});
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await page.getByRole('button', {name: 'Open the bandos', exact: true}).click();
+  await page.getByRole('button', { name: 'Open the bandos', exact: true }).click();
   const fixture = {
-    version: 1, id: 'pad3d', name: 'Pad in 3D', createdAt: 0, privacy: 'hidden',
-    origin: {lat: 0, lon: 0}, bearingDeg: 0, genScale: 1, extent: 60, seed: 1, trees: [],
-    pads: [{x: 0, z: 0, w: 8, d: 8, color: '#a9aaa0'}], droneStart: {x: 0, z: 0},
-    buildings: [{id: 'b', name: 'Shed', pos: {x: 30, z: 0}, rotDeg: 0, length: 8, width: 6,
-      levels: [{baseY: 0, height: 4, sides: {n: true, s: true, e: true, w: true}, doors: {}, partitions: [], roof: 'flat', roofRise: 0}]}],
+    version: 1,
+    id: 'pad3d',
+    name: 'Pad in 3D',
+    createdAt: 0,
+    privacy: 'hidden',
+    origin: { lat: 0, lon: 0 },
+    bearingDeg: 0,
+    genScale: 1,
+    extent: 60,
+    seed: 1,
+    trees: [],
+    pads: [{ x: 0, z: 0, w: 8, d: 8, color: '#a9aaa0' }],
+    droneStart: { x: 0, z: 0 },
+    buildings: [
+      {
+        id: 'b',
+        name: 'Shed',
+        pos: { x: 30, z: 0 },
+        rotDeg: 0,
+        length: 8,
+        width: 6,
+        levels: [
+          {
+            baseY: 0,
+            height: 4,
+            sides: { n: true, s: true, e: true, w: true },
+            doors: {},
+            partitions: [],
+            roof: 'flat',
+            roofRise: 0,
+          },
+        ],
+      },
+    ],
   };
   const studio = page.locator('app-studio-panel');
-  await studio.locator('input[type=file]').first().setInputFiles({name: 'pad3d.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture))});
-  const card = studio.locator('.card').filter({hasText: fixture.name});
-  await card.getByRole('button', {name: 'Edit', exact: true}).click();
+  await studio
+    .locator('input[type=file]')
+    .first()
+    .setInputFiles({ name: 'pad3d.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture)) });
+  const card = studio.locator('.card').filter({ hasText: fixture.name });
+  await card.getByRole('button', { name: 'Edit', exact: true }).click();
   const bar = page.locator('app-bando-editor > .bar');
   await page.locator('app-bando-editor [data-pk="pad"]').click();
   await expect(page.locator('[data-tour="inspector"]')).toContainText('Take-off pad');
@@ -119,91 +216,136 @@ test('the take-off pad can be dragged in the 3D view', async ({page}) => {
   await expect(canvas).toBeVisible();
 
   // the move handle shows a "move" cursor under the pointer
-  const hover = () => canvas.evaluate((el: HTMLCanvasElement) => {
-    const r = el.getBoundingClientRect();
-    for (let y = 8; y < r.height; y += 8) for (let x = 8; x < r.width; x += 8) {
-      el.dispatchEvent(new PointerEvent('pointermove', {clientX: r.left + x, clientY: r.top + y, bubbles: true}));
-      if (el.style.cursor === 'move') return {x: r.left + x, y: r.top + y};
-    }
-    return null;
-  });
-  await expect.poll(hover, {timeout: 15_000}).not.toBeNull();
+  const hover = () =>
+    canvas.evaluate((el: HTMLCanvasElement) => {
+      const r = el.getBoundingClientRect();
+      for (let y = 8; y < r.height; y += 8)
+        for (let x = 8; x < r.width; x += 8) {
+          el.dispatchEvent(new PointerEvent('pointermove', { clientX: r.left + x, clientY: r.top + y, bubbles: true }));
+          if (el.style.cursor === 'move') return { x: r.left + x, y: r.top + y };
+        }
+      return null;
+    });
+  await expect.poll(hover, { timeout: 15_000 }).not.toBeNull();
   const from = (await hover())!;
   await page.mouse.move(from.x, from.y);
   await page.mouse.down();
-  try { await page.mouse.move(from.x + 120, from.y, {steps: 8}); } finally { await page.mouse.up(); }
+  try {
+    await page.mouse.move(from.x + 120, from.y, { steps: 8 });
+  } finally {
+    await page.mouse.up();
+  }
 
-  await bar.getByRole('button', {name: 'Save', exact: true}).click();
-  await bar.getByRole('button', {name: '← Bandos', exact: true}).click();
+  await bar.getByRole('button', { name: 'Save', exact: true }).click();
+  await bar.getByRole('button', { name: '← Bandos', exact: true }).click();
   const downloading = page.waitForEvent('download');
-  await card.getByRole('button', {name: 'Export', exact: true}).click();
+  await card.getByRole('button', { name: 'Export', exact: true }).click();
   const spec = JSON.parse((await readFile((await (await downloading).path())!)).toString()) as SiteSpec;
   expect(Math.hypot(spec.droneStart.x, spec.droneStart.z)).toBeGreaterThan(2);
-  expect(spec.pads.at(-1)).toMatchObject({x: spec.droneStart.x, z: spec.droneStart.z});
+  expect(spec.pads.at(-1)).toMatchObject({ x: spec.droneStart.x, z: spec.droneStart.z });
   expect(errors).toEqual([]);
 });
 
 /** The drone starts off every pad, as in Playground and Villetta: the start marker is the take-off spot (F-021). */
-test('a start with no pad under it: the marker is picked and dragged, the slab stays', async ({page}) => {
+test('a start with no pad under it: the marker is picked and dragged, the slab stays', async ({ page }) => {
   test.setTimeout(180_000);
-  await page.emulateMedia({reducedMotion: 'reduce'});
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await page.getByRole('button', {name: 'Open the bandos', exact: true}).click();
+  await page.getByRole('button', { name: 'Open the bandos', exact: true }).click();
   const fixture = {
-    version: 1, id: 'start', name: 'Start off pad', createdAt: 0, privacy: 'hidden',
-    origin: {lat: 0, lon: 0}, bearingDeg: 0, genScale: 1, extent: 60, seed: 1, trees: [],
-    pads: [{x: -20, z: 0, w: 12, d: 12, color: '#a9aaa0'}], droneStart: {x: 20, z: 10},
-    buildings: [{id: 'b', name: 'Shed', pos: {x: 0, z: -30}, rotDeg: 0, length: 8, width: 6,
-      levels: [{baseY: 0, height: 4, sides: {n: true, s: true, e: true, w: true}, doors: {}, partitions: [], roof: 'flat', roofRise: 0}]}],
+    version: 1,
+    id: 'start',
+    name: 'Start off pad',
+    createdAt: 0,
+    privacy: 'hidden',
+    origin: { lat: 0, lon: 0 },
+    bearingDeg: 0,
+    genScale: 1,
+    extent: 60,
+    seed: 1,
+    trees: [],
+    pads: [{ x: -20, z: 0, w: 12, d: 12, color: '#a9aaa0' }],
+    droneStart: { x: 20, z: 10 },
+    buildings: [
+      {
+        id: 'b',
+        name: 'Shed',
+        pos: { x: 0, z: -30 },
+        rotDeg: 0,
+        length: 8,
+        width: 6,
+        levels: [
+          {
+            baseY: 0,
+            height: 4,
+            sides: { n: true, s: true, e: true, w: true },
+            doors: {},
+            partitions: [],
+            roof: 'flat',
+            roofRise: 0,
+          },
+        ],
+      },
+    ],
   };
   const studio = page.locator('app-studio-panel');
-  await studio.locator('input[type=file]').first().setInputFiles({name: 'start.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture))});
-  const card = studio.locator('.card').filter({hasText: fixture.name});
-  await card.getByRole('button', {name: 'Edit', exact: true}).click();
+  await studio
+    .locator('input[type=file]')
+    .first()
+    .setInputFiles({ name: 'start.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(fixture)) });
+  const card = studio.locator('.card').filter({ hasText: fixture.name });
+  await card.getByRole('button', { name: 'Edit', exact: true }).click();
   const bar = page.locator('app-bando-editor > .bar');
   const pad = page.locator('app-bando-editor [data-pk="pad"]');
   const shed = page.locator('[data-pk="building:b"]').first();
   await expect(pad).toBeVisible();
   // in 2D the take-off shape is the 4 m marker at the start, not the far slab
-  const a = (await pad.boundingBox())!, s = (await shed.boundingBox())!;
+  const a = (await pad.boundingBox())!,
+    s = (await shed.boundingBox())!;
   const metre = s.width / 8;
   expect(a.width / metre).toBeLessThan(8); // the 4 m marker, not the 12 m slab
   await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
   await page.mouse.down();
-  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2 + 10 * metre, {steps: 6});
+  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2 + 10 * metre, { steps: 6 });
   await page.mouse.up();
-  const exported = async (): Promise<{droneStart: {x: number; z: number}; pads: {x: number; z: number}[]}> => {
-    await bar.getByRole('button', {name: 'Save', exact: true}).click();
-    await bar.getByRole('button', {name: '← Bandos', exact: true}).click();
+  const exported = async (): Promise<{ droneStart: { x: number; z: number }; pads: { x: number; z: number }[] }> => {
+    await bar.getByRole('button', { name: 'Save', exact: true }).click();
+    await bar.getByRole('button', { name: '← Bandos', exact: true }).click();
     const downloading = page.waitForEvent('download');
-    await card.getByRole('button', {name: 'Export', exact: true}).click();
+    await card.getByRole('button', { name: 'Export', exact: true }).click();
     const spec = JSON.parse((await readFile((await (await downloading).path())!)).toString());
-    await card.getByRole('button', {name: 'Edit', exact: true}).click();
+    await card.getByRole('button', { name: 'Edit', exact: true }).click();
     return spec;
   };
   let spec = await exported();
   expect(spec.droneStart.z).toBeGreaterThan(17);
-  expect(spec.pads[0]).toMatchObject({x: -20, z: 0}); // the slab stays
+  expect(spec.pads[0]).toMatchObject({ x: -20, z: 0 }); // the slab stays
   // in 3D the selection is the marker, small, and its handle drags it
   await pad.click();
   await page.locator('[data-tour="view-3d"]').click();
   const canvas = page.locator('app-site-view canvas');
   await expect(canvas).toBeVisible();
-  const hover = () => canvas.evaluate((el: HTMLCanvasElement) => {
-    const r = el.getBoundingClientRect();
-    for (let y = 8; y < r.height; y += 8) for (let x = 8; x < r.width; x += 8) {
-      el.dispatchEvent(new PointerEvent('pointermove', {clientX: r.left + x, clientY: r.top + y, bubbles: true}));
-      if (el.style.cursor === 'move') return {x: r.left + x, y: r.top + y};
-    }
-    return null;
-  });
-  await expect.poll(hover, {timeout: 15_000}).not.toBeNull();
+  const hover = () =>
+    canvas.evaluate((el: HTMLCanvasElement) => {
+      const r = el.getBoundingClientRect();
+      for (let y = 8; y < r.height; y += 8)
+        for (let x = 8; x < r.width; x += 8) {
+          el.dispatchEvent(new PointerEvent('pointermove', { clientX: r.left + x, clientY: r.top + y, bubbles: true }));
+          if (el.style.cursor === 'move') return { x: r.left + x, y: r.top + y };
+        }
+      return null;
+    });
+  await expect.poll(hover, { timeout: 15_000 }).not.toBeNull();
   const from = (await hover())!;
   await page.mouse.move(from.x, from.y);
   await page.mouse.down();
-  try { await page.mouse.move(from.x - 120, from.y, {steps: 8}); } finally { await page.mouse.up(); }
+  try {
+    await page.mouse.move(from.x - 120, from.y, { steps: 8 });
+  } finally {
+    await page.mouse.up();
+  }
   const before = spec.droneStart;
   spec = await exported();
   expect(Math.hypot(spec.droneStart.x - before.x, spec.droneStart.z - before.z)).toBeGreaterThan(2);
-  expect(spec.pads[0]).toMatchObject({x: -20, z: 0});
+  expect(spec.pads[0]).toMatchObject({ x: -20, z: 0 });
 });

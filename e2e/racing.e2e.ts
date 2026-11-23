@@ -13,9 +13,7 @@ test.beforeEach(async ({ page }) => {
   await page.getByRole('button', { name: 'Load a log', exact: true }).click();
   await page.locator('app-racing-controls > details > summary').click();
 });
-test('two logs: identity colours, race delay, lap gate and portable export/import', async ({
-  page,
-}) => {
+test('two logs: identity colours, race delay, lap gate and portable export/import', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   const points = Array.from({ length: 30 }, (_, i) => ({
@@ -24,15 +22,13 @@ test('two logs: identity colours, race delay, lap gate and portable export/impor
     alt: 2,
     t: i * 0.5,
   }));
-  await page
-    .locator('app-flights-panel input[multiple]')
-    .setInputFiles(
-      ['A', 'B'].map((name) => ({
-        name: `${name}.json`,
-        mimeType: 'application/json',
-        buffer: Buffer.from(JSON.stringify(points)),
-      })),
-    );
+  await page.locator('app-flights-panel input[multiple]').setInputFiles(
+    ['A', 'B'].map((name) => ({
+      name: `${name}.json`,
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(points)),
+    })),
+  );
   const panel = page.locator('app-racing-controls');
   await panel.getByLabel('Show racing ghosts', { exact: true }).check();
   await expect(panel.locator('.pilot')).toHaveCount(2);
@@ -59,19 +55,12 @@ test('two logs: identity colours, race delay, lap gate and portable export/impor
     .analyze();
   expect(axe.violations.map((v) => v.id)).toEqual([]);
 });
-test('two independent live URLs produce two pilots and disconnect retains the recording', async ({
-  page,
-}) => {
+test('two independent live URLs produce two pilots and disconnect retains the recording', async ({ page }) => {
   const timers: ReturnType<typeof setTimeout>[] = [];
   for (const host of ['source-a', 'source-b'])
     await page.routeWebSocket(`ws://${host}.test/`, (route) => {
       route.send(JSON.stringify({ lat: 1.001, lon: 1.001, alt: 2, sats: 10 }));
-      timers.push(
-        setTimeout(
-          () => route.send(JSON.stringify({ lat: 1.00101, lon: 1.00102, alt: 3, sats: 10 })),
-          350,
-        ),
-      );
+      timers.push(setTimeout(() => route.send(JSON.stringify({ lat: 1.00101, lon: 1.00102, alt: 3, sats: 10 })), 350));
     });
   const panel = page.locator('app-racing-controls');
   await panel.getByText('Multiple live sources', { exact: true }).click();

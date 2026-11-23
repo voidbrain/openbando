@@ -29,7 +29,8 @@ export function satelliteTexture(origin: GeoPoint, g: HeightGrid): Promise<THREE
 let last: { key: string; tex: Promise<THREE.Texture | null> } | null = null;
 
 async function draw(origin: GeoPoint, g: HeightGrid): Promise<THREE.Texture | null> {
-  const w = (g.nx - 1) * g.cell, d = (g.nz - 1) * g.cell;
+  const w = (g.nx - 1) * g.cell,
+    d = (g.nz - 1) * g.cell;
   const k = Math.min(PX_PER_M, MAX_SIDE / w, MAX_SIDE / d);
   const c = document.createElement('canvas');
   c.width = Math.round(w * k);

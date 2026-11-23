@@ -22,15 +22,31 @@ export function chatUrl(input: string): string {
 }
 
 /** Request body; servers differ in what structured output they accept, so the caller steps down: schema → object → plain. */
-export function chatBody(model: string, messages: ChatMessage[], mode: 'schema' | 'object' | 'plain', maxTokens = 700, schema: { name: string; schema: object } = { name: 'site_edit', schema: AI_SCHEMA }): Record<string, unknown> {
+export function chatBody(
+  model: string,
+  messages: ChatMessage[],
+  mode: 'schema' | 'object' | 'plain',
+  maxTokens = 700,
+  schema: { name: string; schema: object } = { name: 'site_edit', schema: AI_SCHEMA },
+): Record<string, unknown> {
   const body: Record<string, unknown> = { model, messages, temperature: 0.1, max_tokens: maxTokens, stream: false };
-  if (mode === 'schema') body['response_format'] = { type: 'json_schema', json_schema: { name: schema.name, schema: schema.schema, strict: false } };
+  if (mode === 'schema')
+    body['response_format'] = {
+      type: 'json_schema',
+      json_schema: { name: schema.name, schema: schema.schema, strict: false },
+    };
   else if (mode === 'object') body['response_format'] = { type: 'json_object' };
   return body;
 }
 
 /** One request to the server, stepping down the structured-output modes when it answers 400 / 422. Returns the text. */
-export async function serverChat(cfg: ServerConfig, messages: ChatMessage[], maxTokens = 700, signal?: AbortSignal, schema?: { name: string; schema: object }): Promise<string> {
+export async function serverChat(
+  cfg: ServerConfig,
+  messages: ChatMessage[],
+  maxTokens = 700,
+  signal?: AbortSignal,
+  schema?: { name: string; schema: object },
+): Promise<string> {
   const url = chatUrl(cfg.url);
   if (!url) throw new Error('Enter the server address first.');
   let last = '';
@@ -44,7 +60,9 @@ export async function serverChat(cfg: ServerConfig, messages: ChatMessage[], max
         signal,
       });
     } catch {
-      throw new Error('Could not reach the server. Check the address, that it is HTTPS, and that it allows this site (CORS; for Ollama set OLLAMA_ORIGINS).');
+      throw new Error(
+        'Could not reach the server. Check the address, that it is HTTPS, and that it allows this site (CORS; for Ollama set OLLAMA_ORIGINS).',
+      );
     }
     if (res.ok) {
       const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };

@@ -25,7 +25,9 @@ export class BackupService {
   }
 
   /** Restore a backup file; null when the text is not a backup. */
-  async restore(text: string): Promise<{ added: number; replaced: number; kept: number; blocks: number; dropped: number } | null> {
+  async restore(
+    text: string,
+  ): Promise<{ added: number; replaced: number; kept: number; blocks: number; dropped: number } | null> {
     const b = readBackup(text);
     if (!b) return null;
     const out = { added: 0, replaced: 0, kept: 0, blocks: 0, dropped: b.dropped };

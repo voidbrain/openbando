@@ -42,8 +42,29 @@ import { ToastHost } from './ui/toast-host';
   // the page never scrolls (html and body hide their overflow): a focus or scrollIntoView that moved it is undone (B-032)
   host: { '(window:scroll)': 'unscroll()' },
   imports: [
-    Stage, ViewsPanel, FlightsPanel, SimulatorPanel, RadioPanel, TimelinePanel, SpeedPanel, AttitudePanel, PathPanel,
-    BlackboxPanel, VideoPanel, LivePanel, FlyPanel, RenderPanel, HelpPanel, GuidePanel, WelcomePanel, FeaturesPanel, ViewportPanel, VersionBadge, StudioPanel, ToastHost, TourOverlay,
+    Stage,
+    ViewsPanel,
+    FlightsPanel,
+    SimulatorPanel,
+    RadioPanel,
+    TimelinePanel,
+    SpeedPanel,
+    AttitudePanel,
+    PathPanel,
+    BlackboxPanel,
+    VideoPanel,
+    LivePanel,
+    FlyPanel,
+    RenderPanel,
+    HelpPanel,
+    GuidePanel,
+    WelcomePanel,
+    FeaturesPanel,
+    ViewportPanel,
+    VersionBadge,
+    StudioPanel,
+    ToastHost,
+    TourOverlay,
   ],
   template: `
     <app-stage />
@@ -90,12 +111,15 @@ export class App {
     // a showcase link (?tour=showcase&lang=it): set the language, then the welcome tour plays by itself
     const link = showcaseLink(location.search, location.hash);
     if (link) {
-      const i18n = inject(I18nService), tour = this.tour;
+      const i18n = inject(I18nService),
+        tour = this.tour;
       if (link.lang) i18n.set(link.lang);
       afterNextRender(() => setTimeout(() => void tour.playTour(SHOWCASE), 1200));
     }
     // the browser refusing to keep data is said once per kind of problem, with the way out (Back up all)
-    const store = inject(LibraryStore), toast = inject(ToastService), told = new Set<string>();
+    const store = inject(LibraryStore),
+      toast = inject(ToastService),
+      told = new Set<string>();
     effect(() => {
       const p = store.health().problem;
       if (p && !told.has(p)) untracked(() => (told.add(p), toast.show(storageAdvice(p), 9000)));
@@ -112,7 +136,14 @@ export class App {
         if (!f || f.live) return; // a live link keeps its own panel open
         const tel = !!f.tel;
         if (this.tour.state()) return; // a guide lays out its own screen
-        void placer.open(['flights', 'video', 'timeline', 'path', 'speed', ...(tel ? (['attitude', 'blackbox'] as const) : [])]);
+        void placer.open([
+          'flights',
+          'video',
+          'timeline',
+          'path',
+          'speed',
+          ...(tel ? (['attitude', 'blackbox'] as const) : []),
+        ]);
       });
     });
     // The radio panel opens itself the first time a controller is seen.
