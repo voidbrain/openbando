@@ -914,7 +914,7 @@ export class TourService {
   /** Stand-in for generating from map data: the ready Chiari e Forti example, opened in the editor like a fresh model. */
   private async fakeGenerate(): Promise<void> {
     this.site.generating.set(true);
-    let ok = false;
+    let ok: boolean;
     try {
       ok = await this.copyExample(TOUR_BANDO, 1600);
     } finally {

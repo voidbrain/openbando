@@ -88,6 +88,7 @@ export interface BlockArm {
                   }
                   <div class="dim small">{{ kindLabel(b.kind) }} · {{ b.author }} · {{ b.licence }}</div>
                   @for (p of b.params; track p.key) {
+                    <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -- its control is inside @if, which the rule does not see -->
                     <label class="fld">
                       {{ p.label }}
                       @if (p.type === 'bool') {

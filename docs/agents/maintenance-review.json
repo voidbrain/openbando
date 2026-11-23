@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-23T21:38:55.358Z",
+  "reviewed": "2026-11-23T22:30:45.135Z",
   "policy": "db5c4ffde3ebe2e17d9b8c5e6ac9af6ffb20ff0b786597a277e947dc56a83919",
   "inputs": {
-    "AGENTS.md": "0b8bcd4cbfd52c68de0f377db5301c5830c46f33a30dca1a9b1917a9ba6c7414",
+    "AGENTS.md": "af6b432e7f40d251332e758f6c0e8132af2099310a786b9b2f88bdaaf9b9a13f",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
     "docs/BACKLOG-RULES.md": "b9ec69529fce88862753599ea1b14ada22eb96a8ca4730071d19d2329fa692ad",
     "docs/agents/angular.md": "ce4a2b6fd81fd5eae723cf2d1eb42203e253ab5d08c13457d656814aeaf2448e",
@@ -124,6 +124,12 @@
       "disposition": "implemented",
       "target": "AGENTS.md",
       "evidence": "F-049 step 1: Prettier adopted (format:check in CI and in the AGENTS command block); check-i18n and build-element-map fixed to read Prettier-formatted templates, same output on old and new source."
+    },
+    {
+      "kind": "tool",
+      "disposition": "implemented",
+      "target": "AGENTS.md",
+      "evidence": "F-049 step 2: ESLint adopted (lint, format:check and check:tooling in CI; AGENTS command block and project line); core/ import rule mirrors check:conventions; disables only per line with a reason."
     }
   ]
 }
