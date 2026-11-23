@@ -28,7 +28,14 @@
     "reconcile:preview": "node tools/reconcile-preview.mjs",
     "friction": "node tools/friction.mjs",
     "check:maintenance": "node tools/maintenance.mjs check",
-    "check:audits": "node tools/check-audits.mjs"
+    "check:audits": "node tools/check-audits.mjs",
+    "code:map": "node tools/code-map.mjs",
+    "reconcile:draft": "node tools/reconcile-draft.mjs",
+    "check:rules": "node tools/check-rules.mjs",
+    "check:tooling": "node tools/check-tooling.mjs",
+    "rule-load": "node tools/rule-load.mjs",
+    "check:rule-load": "node tools/rule-load.mjs --check",
+    "verification:plan": "node tools/verification.mjs"
   },
   "private": true,
   "packageManager": "npm@11.17.0",

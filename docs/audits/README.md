@@ -6,4 +6,4 @@ Full audits cover code, logic, tests, documentation, harness, security, delivery
 
 Run check:audits and session freshness. The default review interval is 7 days; invalid manifests fail, due areas warn unless audit.enforce is enabled after a valid baseline exists. Maintenance review receipts are separate and never substitute for product audits. Record actionable findings on the owning backlog, with report-only context and unaccepted proposals clearly identified.
 
-Latest full baseline: [31 October 2026 — OpenBando](2026-10-31-full-openbando.md), main `3f7b844` plus explicitly listed fixes. The manifest establishes eight reviewed areas; outstanding product acceptance remains in the backlog.
+Latest full baseline: [23 November 2026 — OpenBando](2026-11-23-full-openbando.md), main `34f90c3`. Previous: [31 October 2026](2026-10-31-full-openbando.md). The manifest establishes eight reviewed areas; outstanding product acceptance remains in the backlog.

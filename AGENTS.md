@@ -1,69 +1,9 @@
-You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
-
-## TypeScript Best Practices
-
-- Use strict type checking
-- Prefer type inference when the type is obvious
-- Avoid the `any` type; use `unknown` when type is uncertain
-
-## Angular Best Practices
-
-- Always use standalone components over NgModules
-- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
-- Do NOT set `changeDetection: ChangeDetectionStrategy.OnPush` explicitly. `OnPush` is the default in Angular v22+.
-- Use signals for state management
-- Implement lazy loading for feature routes
-- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
-- Use `NgOptimizedImage` for all static images.
-  - `NgOptimizedImage` does not work for inline base64 images.
-
-The convention checker reads the installed workspace version (standalone defaults at v20+, OnPush at v22+). Install locked dependencies before CI checks; a version range alone cannot establish defaults. It complements types, accessibility and browser checks.
-
-## Accessibility Requirements
-
-- It MUST pass all AXE checks.
-- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
-
-### Components
-
-- Keep components small and focused on a single responsibility
-- Use `input()` and `output()` functions instead of decorators
-- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
-- Use `computed()` for derived state
-- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
-- Prefer inline templates for small components
-- Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
-- When not using Signal Forms, prefer Reactive forms instead of Template-driven ones
-- Do NOT use `ngClass`, use `class` bindings instead
-- Do NOT use `ngStyle`, use `style` bindings instead
-- Do NOT import `CommonModule`, import only the directives and pipes the template uses, such as `AsyncPipe` or `DatePipe`
-- When using external templates/styles, use paths relative to the component TS file.
-
-## State Management
-
-- Use signals for local component state
-- Use `computed()` for derived state
-- Keep state transformations pure and predictable
-- Do NOT use `mutate` on signals, use `update` or `set` instead
-
-## Templates
-
-- Keep templates simple and avoid complex logic
-- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
-- Use the async pipe to handle observables
-- Do not assume globals like (`new Date()`) are available.
-
-## Services
-
-- Design services around a single responsibility
-- Use the `providedIn: 'root'` option for singleton services
-- Prefer the `@Service` decorator over `@Injectable({providedIn: 'root'})` for new singleton services (Angular v22+)
-- Use the `inject()` function instead of constructor injection
-
 ## Project conventions (OpenBando)
 
 The app is **OpenBando** (tagline "Build, Fly, Share."). The repository is `voidbrain/openbando`, the Angular project
 `openbando` and the site lives at `https://voidbrain.github.io/openbando/` (`baseHref` in `angular.json`; the deploy workflow uploads `dist/openbando/browser`).
+
+Angular and TypeScript conventions, accessibility requirements (axe, WCAG AA) and Angular pitfalls: [docs/agents/angular.md](docs/agents/angular.md), read before changing Angular code. <!-- project -->
 
 ### Architecture
 
@@ -100,12 +40,16 @@ The app is **OpenBando** (tagline "Build, Fly, Share."). The repository is `void
 ### Checks before you finish
 
 `main` is protected: a PR merges only when `check`, `e2e (1)`–`e2e (4)`, `race-browser` and `CodeQL` pass (ruleset "protect main"; a CodeQL alert is fixed, not waited out). <!-- project -->
-Open every PR against `main`, never on another PR's branch (merging it would not reach `main`). Once a PR's CI is green the owner may merge it at any moment: push no new work to it, open a new PR. Exception: a green PR that conflicts with `main` cannot merge, so it may get a push that only resolves the conflict; its checks run again before it can merge. A conflict in `docs/BACKLOG.md` is resolved record by record with `node tools/merge-backlog.mjs`, never by keeping one side's record (that silently drops the other side's edits).
+Before you open, update or merge a PR, read [pull requests](docs/agents/pull-requests.md): PRs against `main`, when a green PR takes new work, conflicts, scoped verification and independent review.
 
-**What the agent does on its own, and what it asks first.**
-- On its own: branch from `main`, commit, push its branches, open PRs against `main` (then name the PR by its number in the records it touches, and push that before the checks finish), resolve conflicts on its own PRs, merge its own PR once every check on it has passed and GitHub can merge it (`node tools/merge-when-green.mjs <PR>…` waits for that and stops on any failing check or conflict), delete merged branches, reconcile and close backlog records.
-- Asks first: a decision or check a record marks 🧑; repository settings (branch protection, required checks, secrets) and dismissing a code-scanning alert; rewriting published history or force-pushing; deleting what it did not create; a harness change it cannot place as project or template ("Changing a harness file").
+<!-- safety:start -->
+**What the agent does on its own, and what it asks first.** These rules load with this file in every session; the procedures below are read when they apply, never in place of these rules.
+- On its own: branch from `main` in a separate `git worktree` (every task, single or parallel: the primary checkout stays on `main` with no edits of its own, because a running service, another session or the owner may rely on it; put worktrees in a sibling directory or under `.claude/worktrees/`; a project names what relies on its primary checkout with a project line), commit, push its branches, open PRs against `main` (then name the PR by its number in the records it touches, and push that before the checks finish), resolve conflicts on its own PRs, merge its own PR once every check on it has passed and GitHub can merge it (`node tools/merge-when-green.mjs <PR>…` waits for that and stops on any failing check or conflict), delete merged branches and their worktrees, reconcile and close backlog records.
+- Asks first: material changes to an adopted upfront feature plan (BACKLOG-RULES, "Optional upfront feature plans"); a decision or check a record marks 🧑; repository settings (branch protection, required checks, secrets) and dismissing a code-scanning alert; rewriting published history or force-pushing; deleting what it did not create; a harness change it cannot place as project or template ("Changing a harness file").
 - Never: merge with a failing or pending check, or bypass the branch protection. A project narrows this list with a project line.
+- Optional push guard: `node tools/guard.mjs install` makes git refuse a push to `main`, a force-push and an archive rewrite, citing these rules (APPLY.md, "Push guard"; a Claude Code adapter does the same before the command runs). A refused operation the owner approves runs once with `HARNESS_GUARD_ALLOW=<rule>`; never set it without that approval.
+- Never remove a safeguard (an ownership, evidence, privacy or safety rule) because it is old or rarely triggered, and never rewrite governing rules unattended: consolidating rules keeps every requirement ([rule review](docs/agents/rule-review.md), "Periodic rule consolidation").
+<!-- safety:end -->
 
 ```bash
 npm run check:freshness                   # first, at session start: backlog behind main, merged branches, audit age
@@ -117,21 +61,22 @@ npx tsc -p tools/i18n/tsconfig.json       # the translation check
 npm run check:i18n                        # every UI text has its Italian
 npm run check:contrast                    # shared text/surface pairs and token consistency
 npm run check:backlog                     # active record layout and lifecycle cues
-npm run check:conventions                 # Angular conventions above, core/ imports, unused exports
+npm run check:conventions                 # Angular conventions (docs/agents/angular.md), core/ imports, unused exports
 npm run check:integrations                # optional recommendation metadata, not live connections
 npm run check:maintenance                 # current input-bound review evidence
 npm run check:audits                      # declared audit scope and freshness
+npm run check:rules                       # safety rules live in AGENTS, not only in a procedure
+npm run code:map -- <path>                # exports with line ranges: read those lines, not the whole file
 ```
 
+- Every project formats and lints its source, in CI too: `check:tooling` fails without both. OpenBando adopts Prettier and ESLint in follow-up PRs (F-049); until then `check:tooling` is not in CI and `format:check` / `lint` are not listed above. <!-- project -->
 - `npm run e2e` (Playwright, also a CI job): every guide step plays alone in a headless browser without errors, and the first visit, the editor with the library and a running guide step pass axe (WCAG 2.1 A / AA). Locate panels by `app-panel[data-id=…]` or by role: component hosts have no box of their own. Software WebGL is slow there: keep the long timeouts. <!-- project -->
 - A failing test is evidence until shown otherwise: check it against the intended behaviour. Change its expectation only when the requirement deliberately changed, and say which requirement; otherwise fix the code.
 - Tests that encoded the old demo site now set their site up explicitly (origin, take-off pad). <!-- project -->
 - Keep logic in `core/` where possible. Playwright covers selected UI and pointer workflows, but coverage is not exhaustive. <!-- project -->
-- Do not leave dead code behind when replacing a feature: a panel removed means its store, helpers and tests go too. <!-- project -->
-
-### Code coverage
-
-`docs/agents/coverage.md` shows, per folder, how much of the code the unit tests run (lines, statements, branches, functions) and the files no test runs; `npm run coverage` (or the stack's coverage run, then `node tools/coverage-table.mjs --write`) refreshes it and its baseline. CI prints the current table and warns when a folder drops more than `coverage.drop` points. OpenBando keeps `coverage.enforce: false`; the optional enforced policy would compare main-baseline folders even if their display rows were removed. Coverage says what ran, not that the behaviour is checked: a table to find untested parts, never a number to hit. The committed page and baseline change only in a PR that changes coverage on purpose (code removed, tests added for it) and in audits, never as a side effect of other work: CI prints the live table on every PR anyway, and parallel PRs that each rewrite the page conflict.
+- Do not leave dead code behind when replacing a feature: its state, helpers and tests go too. A panel removed means its store, helpers and tests go too. <!-- project -->
+- A bug fix starts with a committed test that fails without the fix; the fix never edits that test to pass (BACKLOG-RULES, "A bug fix starts with a failing test").
+- Coverage: OpenBando keeps `coverage.enforce: false`; the [coverage guide](docs/agents/coverage-guide.md) says how the page in `docs/agents/coverage.md` is read and refreshed. <!-- project -->
 
 ### Changing a harness file
 
@@ -142,26 +87,41 @@ Before editing a file listed in `.harness.json` (`copied`, `forked`, `adapted`, 
 
 `npm run check:freshness` lists the harness files a branch changes, locally and on every PR.
 
-### What follows a change
+### Procedures: read before the task
 
-Everything derived from something else is a row of the impact map, `impact` in `.harness.json`: generated pages and data, recordings (clips, screenshots, films), translations, guides and tours, docs that describe a feature. A row: `{ "id", "when": [file globs], "then": "what must follow", "run": "command", "checked": "what verifies it", "after": [ids] }`. `after` makes chains: when a row it names must run again, so must this one (a catalogue rebuilt → the examples that use it → their pages).
-- Rows are as fine as the code can name things (a recording per step, not "all recordings"), and complete: a derived thing you find without a row gets one in the same PR.
-- A row watches what its output is made of, not only code: the data a recording or a generated page loads (an example, a demo file, a fixture) goes in its `inputs`, which set it off like `when`. A setting with a wide reach (a theme colour, a font, a scale) has its own row chained to every output it shows in, art included.
-- **Couplings.** A value used in two places (a timing, a colour, an offset, a size) has one source that both read. If it cannot, a test asserts the relation. Either way it is listed in `couplings` (`{ value, places: [{ file, what }], kept }`), and `check:freshness` names the other places when a branch changes one. A value copied by hand is a bug waiting to happen.
-- What can change an output with no commit here (library upgrades, the CI browser and machine, external services and data) is listed in `outside` (`{ what, affects, noticed }`) and reviewed by the audit.
-- `npm run check:freshness` lists, locally and on every PR, the rows a branch sets off and the order to run them. Do each in the same PR, or record in the backlog why not.
-- `node tools/impact-map.mjs` writes the readable page (`docs/agents/impact-map.md`): what must follow a change, content dependencies, value couplings and what lies outside the repository, with links to the project's own detailed maps (`pages`: `{ title, path, about }`). CI keeps it equal to `.harness.json`. A row that nothing checks is a candidate for a check.
+All applicable rules must be known and followed from the start; shorter indexes never defer requirements. The [procedure discovery index](docs/agents/procedures.md) links authorities and expected evidence. Each procedure below is binding when its trigger applies: read it before starting that task. `npm run check:rules` fails when a never or ask-first rule lives only in a procedure.
+
+| Before you | Read |
+|---|---|
+| start a session (`npm run check:freshness` lists what is due) | [session start](docs/agents/session-start.md) |
+| open, update or merge a PR | [pull requests](docs/agents/pull-requests.md) |
+| change Angular code | [Angular conventions](docs/agents/angular.md) |
+| switch independent tasks or compact/handoff context | [Task context](docs/agents/task-context.md) |
+| work on parallel branches or model assignments | [Parallel work](docs/agents/parallel-work.md) |
+| reassess architecture, decisions or alternatives | [Architecture reassessment](docs/agents/architecture-review.md) |
+| change tests, coverage settings or the coverage page | [coverage guide](docs/agents/coverage-guide.md) |
+| change something another output is derived from (generated pages and data, recordings, translations, guides, a value used in two places) | [change impact](docs/agents/change-impact.md); `check:freshness` lists the rows a branch sets off: do each in the same PR, or record in the backlog why not |
+| set up the project or change its stack or workflow (capability assessment) | [MCP guidance](docs/agents/mcp.md), "In short" |
+| add, configure or rely on an MCP connection | [MCP guidance](docs/agents/mcp.md) |
+| edit the project's MCP selections or run the MCP commands | [MCP selections and commands](docs/agents/mcp-commands.md) |
+| work across repositories of a solution | [solution profile](docs/agents/solution-profile.md) |
+| add or use a shared skill | [skill guidance](docs/agents/skills.md) |
+| adopt or reconcile the harness or review maintenance evidence (`node tools/maintenance.mjs check` runs at session start and in CI) | [maintenance guidance](docs/agents/maintenance.md) |
+| change AGENTS.md, CLAUDE.md, BACKLOG-RULES or `docs/backlog/` (rerun the agent-behaviour checks when a runner is configured) | [rule review](docs/agents/rule-review.md), "Agent-behaviour checks" |
+| measure friction, consolidate rules or run the periodic token review | [rule review](docs/agents/rule-review.md) |
+| run an audit (`check:freshness` says when) | [audit procedure](docs/agents/audit.md) |
+| record audit findings or improvement proposals | [audit findings](docs/agents/audit-findings.md) |
+| update or close a backlog record | [backlog rules](docs/BACKLOG-RULES.md): its table names the one file the change needs |
 
 ### Testing the joins
 
-- Two bugs reached the live site although every unit had tests: flights on generated bandos were turned 90° (the map's projection and the flight's were each right, but the default alignment between them was not), and a timeline click was undone while the video played (seek and video clock each worked alone). A change that touches how two parts meet gets a test across both: `calibration-default.spec.ts` (a GPS fix lands where the map puts the same point), the seek-with-a-playing-video case in `services.spec.ts`.
-- Test coordinates are neutral (Milan centre, 45.4642, 9.1900, or open sea at 1°N 1°E for flights). Never use a real bando's place, and never the private ones' (see Privacy). The map starts at Milan centre (`DEFAULT_START`) until the pilot searches.
-- Typed coordinates are parsed locally (`parseLatLon`) and never sent to the geocoder: a bando's coordinates are the pilot's secret.
+- A change that touches how two parts meet gets a test across both, not one per side. Unit tests on each part did not catch the bugs that reached users.
+- Two bugs reached the live site although every unit had tests: flights on generated bandos were turned 90° (the map's projection and the flight's were each right, but the default alignment between them was not), and a timeline click was undone while the video played (seek and video clock each worked alone). Their cross-part tests: `calibration-default.spec.ts` (a GPS fix lands where the map puts the same point), the seek-with-a-playing-video case in `services.spec.ts`. <!-- project -->
+- Test coordinates are neutral (Milan centre, 45.4642, 9.1900, or open sea at 1°N 1°E for flights). Never use a real bando's place, and never the private ones' (see Privacy). The map starts at Milan centre (`DEFAULT_START`) until the pilot searches. <!-- project -->
+- Typed coordinates are parsed locally (`parseLatLon`) and never sent to the geocoder: a bando's coordinates are the pilot's secret. <!-- project -->
 
 ### Known pitfalls
 
-- Angular signals in `effect()` that write other signals are fine in v22, but wrap reads you do not want tracked in
-  `untracked()`.
 - WebGL canvases (inspector preview, 3D editor view) skip rendering while hidden; they must not be assumed to exist in tests
   (the scene builders are testable without a renderer).
 - Overpass answers 429 / 500 without CORS headers: do not treat the browser's "access control" error as a code bug.
@@ -193,47 +153,17 @@ Before changing an area, read its section in [docs/agents/areas.md](docs/agents/
 
 - Never commit secrets, tokens or personal data. Test data is neutral and invented.
 - Villetta's and Bardwell House's places are private: their coordinates, addresses, map data and survey points are not in the repository. Never add them (tests, tour, tools, docs, commit messages). Hidden bandos never reveal geographic coordinates (see "Sharing and privacy"). <!-- project -->
-
-### Capability assessment
-
-At setup and relevant stack/workflow changes, understand the project and assess existing capabilities and useful gaps. At session start, inspect `.harness.json` for selected integrations and solution context. Existing tools may suffice; assessment does not require installing an integration.
-
-### MCP recommendations
-
-Read [MCP guidance](docs/agents/mcp.md) when configured/relevant. Discover actual host tools before installing duplicates; a recommendation or generated config is not a working connection. Research fresh candidates only when the workflow needs them, following trusted sources and existing authorization. Missing optional connections do not block independent work.
-
-### Solution context
-
-Read available [solution context](docs/agents/solution-profile.md) when configured/relevant; missing coordinator access does not block independent component work. A solution coordinator owns contracts, compatibility and integration acceptance in its own backlog; components own implementation and their independent acceptance. Link records using repository-qualified IDs and derive dashboards from source ledgers without copying editable statuses or averaging completion. A reusable master never waits for downstream adoption. Only the coordinator writes its dashboard; source revisions, unavailable inputs and dirty snapshots remain explicit.
+- Audits also cover the guides and their clips, the design system and accessibility, images' GPS metadata, and the outputs' outside dependencies listed under `outside` in `.harness.json`. <!-- project -->
 
 ## Work tracking
 
 - Keep single responsibility and dependency inversion across repository boundaries: reusable masters define contracts; derived projects supply their adapters/configuration. A master never depends on derived implementation, deployment or adoption for its release or acceptance. Each backlog owns only its repository’s work; reject foreign next actions and closure conditions (BACKLOG-RULES, Ownership rejection and dependency direction).
 
-**At the start of every session, before other work, run `npm run check:freshness`** and do what it lists, in the session's first PR:
-- the backlog is behind `main`: read the CI of the PRs merged since (`npm run ci:status -- <numbers>`) and review any commit it lists without a PR, update or close their records, archive closed ones, move the header to the current `main`;
-- merged branches are still on GitHub: delete them (and their local branches and worktrees);
-- the scope-aware audit checker reports missing/stale/blocked areas (7 days by default): audit what changed since (docs, tests, guides and clips, design system, accessibility, privacy such as GPS metadata in images, and what the outputs rely on outside the repository: dependency upgrades, the CI browser and machine, external services and data, the `outside` list of `.harness.json`) and write `docs/audits/<date>.md`; <!-- project -->
-- the harness template has a newer release (`.harness.json` names the one this project is on), or its clone is missing, behind or unreachable: pull it first (`git -C ~/Projects/project-harness pull --ff-only --tags`), reconcile it as `~/Projects/project-harness/APPLY.md` ("Reconciling") says, then move `version` forward. `check-backlog`, `check-freshness`, `check-harness`, `ci-status` and `check-conventions` are copies of the template: never edit them here unless one is listed under `forked`; their settings are in `.harness.json` (`core/` imports, the CI workflow, the Auto-sync log note). A generic improvement goes into the template as a new release. <!-- project -->
+**At the start of every session, before other work, run `npm run check:freshness`** and do what it lists, as [session start](docs/agents/session-start.md) says for each finding.
 
-CI prints ordinary freshness reminders as warnings; required maintenance evidence and invalid audit metadata fail. OpenBando enables seven-day overdue-area enforcement after its 31 October full product baseline review; a blocked area does not count as checked. <!-- project --> `ci:status` needs a logged-in `gh`; if unavailable, inspect the same runs/jobs through an authenticated connector/API and name that evidence source. If neither is available, record the missing evidence; never claim the CLI ran.
-
-- [docs/BACKLOG.md](docs/BACKLOG.md) is the source of truth for status; [docs/BACKLOG-RULES.md](docs/BACKLOG-RULES.md) is the procedure (statuses, human-action cues, record layout, CI reconciliation, closure and archives, documentation ownership and the consistency check every PR records). Update the affected records in the same PR as the change, and run `npm run check:backlog`.
-- Keep a confirmed bug, a candidate fix awaiting review, an unimplemented feature and a completed check distinct. A merge is not verification, and a passing unit test is not a verified visual, pointer or device fix. A green CI run establishes the checks it named, not the absence of bugs; keep real-device, pointer/visual and untested tool combinations explicit. Archives (`docs/archive/`: closed backlog records, the old working plan, finished plans) and audits (`docs/audits/`) are dated evidence, not current status; current coverage is reported per area by `check:audits`; a scoped review never resets unrelated areas or certifies a completed full audit. <!-- project -->
+- CI prints ordinary freshness reminders as warnings; required maintenance evidence and invalid audit metadata fail. OpenBando enables seven-day overdue-area enforcement after its 31 October full product baseline review; a blocked area does not count as checked. <!-- project -->
+- Keep a confirmed bug, a candidate fix awaiting review, an unimplemented feature and a completed check distinct. A merge is not verification, and a passing unit test is not a verified visual, pointer or device fix. A green CI run establishes the checks it named, not the absence of bugs. Archives (`docs/archive/`) and audits (`docs/audits/`) are dated evidence, not current status; current audit coverage is reported per area by check:audits; a scoped report never resets the full-audit baseline.
+- Keep real-device, pointer/visual and untested tool combinations explicit; archives also hold closed backlog records, the old working plan and finished plans. <!-- project -->
 - A change to a harness file follows "Changing a harness file" above: this project only, every project (the template first), or ask.
 - A plan or promise given to the user (steps, a table to build, a later fix) becomes backlog records in the same change, and the reply names them. Nothing promised lives only in the conversation.
 - Generated guide text changes in `tools/build-guide.mjs` or the tour source, then `node tools/build-guide.mjs`. That is not re-recording: `npm run clips` and `npm run films` are separate browser/media workflows (F-011). <!-- project -->
-
-### Optional shared skills
-
-When a workflow needs an additional skill, read [skill guidance](docs/agents/skills.md). Discover existing capabilities first; review source, dependencies and project-rule compatibility before use. Shared skills are optional entry points and do not replace project rules or grant installation permissions.
-
-### Maintenance cost and rule consolidation
-
-All applicable rules must be known and followed from the start; shorter indexes never defer requirements. Use [maintenance guidance](docs/agents/maintenance.md) for read-only preview, mandatory timed adoption/reconciliation and input-bound review evidence. Run `node tools/maintenance.mjs check` at session start and in CI; failures require current reviewed outcomes before proceeding. At audits, repeated procedural conflicts or significant workflow changes, consolidate redundant rules with requirement/owner/exception traceability. Never remove a safeguard just because it is old or rarely triggered. Record unresolved findings on their owning outcomes; no automatic expiry or telemetry.
-
-Maintenance findings drive justified rule/tool/skill improvements through tested, owned PRs or an explicit no-change/backlog outcome, never unattended policy rewriting. Daily CI checks freshness between sessions. Coverage is separate from quality: test changed behavior and risky joins, preserve static/security checks, use optional main-baseline non-regression, never demand a percentage increase on every PR.
-
-### Periodic audits and findings
-
-Follow [the audit procedure](docs/agents/audit.md). Produce a dated report and scope manifest with baseline, checked/not-applicable/blocked results, evidence, limits and findings. Full audits cover all eight areas; scope narrow reviews honestly. Separate confirmed bugs, incomplete agreed work, hypotheses, context and value-based improvement proposals. Track actionable unresolved work under owning IDs, preserving uncertainty and authorization. A fresh maintenance receipt or passing CI is not a completed product audit.

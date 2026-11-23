@@ -3,7 +3,7 @@
     "path": "~/Projects/project-harness",
     "repo": "https://github.com/voidbrain/project-harness"
   },
-  "version": "3.1.1",
+  "version": "10.3.1",
   "stacks": [
     "core",
     "angular"
@@ -29,14 +29,33 @@
     "tools/maintenance.mjs": "core/tools/maintenance.mjs",
     ".github/workflows/maintenance.yml": "core/.github/workflows/maintenance.yml",
     "tools/check-audits.mjs": "core/tools/check-audits.mjs",
-    "docs/agents/audit.md": "core/docs/agents/audit.md"
+    "docs/agents/audit.md": "core/docs/agents/audit.md",
+    "tools/check-rules.mjs": "core/tools/check-rules.mjs",
+    "tools/rule-load.mjs": "core/tools/rule-load.mjs",
+    "tools/check-tooling.mjs": "core/tools/check-tooling.mjs",
+    "tools/code-map.mjs": "core/tools/code-map.mjs",
+    "tools/reconcile-draft.mjs": "core/tools/reconcile-draft.mjs",
+    "tools/verification.mjs": "core/tools/verification.mjs",
+    ".claude/agents/mechanical-reviewer.md": "core/.claude/agents/mechanical-reviewer.md",
+    ".claude/agents/design-reviewer.md": "core/.claude/agents/design-reviewer.md",
+    "docs/agents/session-start.md": "core/docs/agents/session-start.md",
+    "docs/agents/procedures.md": "core/docs/agents/procedures.md",
+    "docs/agents/change-impact.md": "core/docs/agents/change-impact.md",
+    "docs/agents/coverage-guide.md": "core/docs/agents/coverage-guide.md",
+    "docs/agents/rule-review.md": "core/docs/agents/rule-review.md",
+    "docs/agents/audit-findings.md": "core/docs/agents/audit-findings.md",
+    "docs/agents/architecture-review.md": "core/docs/agents/architecture-review.md",
+    "docs/agents/task-context.md": "core/docs/agents/task-context.md",
+    "docs/agents/prompt-caching.md": "core/docs/agents/prompt-caching.md",
+    "docs/agents/parallel-work.md": "core/docs/agents/parallel-work.md",
+    "docs/agents/parallel-work-plans.md": "core/docs/agents/parallel-work-plans.md",
+    "docs/agents/verification.md": "core/docs/agents/verification.md",
+    "docs/agents/mcp-commands.md": "core/docs/agents/mcp-commands.md",
+    "docs/agents/claims.md": "core/docs/agents/claims.md"
   },
   "forked": {},
   "adapted": {
-    "AGENTS.md": [
-      "core/AGENTS.md",
-      "angular/AGENTS.angular.md"
-    ],
+    "AGENTS.md": "core/AGENTS.md",
     "CLAUDE.md": "core/CLAUDE.md",
     "README.md": "core/README.md",
     "docs/BACKLOG.md": "core/docs/BACKLOG.md",
@@ -48,7 +67,20 @@
     "docs/audits/README.md": "core/docs/audits/README.md",
     "docs/archive/README.md": "core/docs/archive/README.md",
     ".editorconfig": "core/.editorconfig",
-    ".gitignore": "core/gitignore.txt"
+    ".gitignore": "core/gitignore.txt",
+    "docs/backlog/closure.md": "core/docs/backlog/closure.md",
+    "docs/backlog/documentation.md": "core/docs/backlog/documentation.md",
+    "docs/backlog/estimates.md": "core/docs/backlog/estimates.md",
+    "docs/backlog/evaluations.md": "core/docs/backlog/evaluations.md",
+    "docs/backlog/feature-plans.md": "core/docs/backlog/feature-plans.md",
+    "docs/backlog/ordering.md": "core/docs/backlog/ordering.md",
+    "docs/backlog/outcomes.md": "core/docs/backlog/outcomes.md",
+    "docs/backlog/ownership.md": "core/docs/backlog/ownership.md",
+    "docs/backlog/records.md": "core/docs/backlog/records.md",
+    "docs/backlog/review.md": "core/docs/backlog/review.md",
+    "docs/backlog/steps.md": "core/docs/backlog/steps.md",
+    "docs/agents/pull-requests.md": "core/docs/agents/pull-requests.md",
+    "docs/agents/angular.md": "angular/docs/agents/angular.md"
   },
   "ciStatus": {
     "workflow": "CI",
@@ -69,7 +101,7 @@
       ]
     ]
   },
-  "note": "OpenBando is the reference implementation extracted into the harness. Reconciled 2026-10-31 from the recorded 2.0.1 source commit 9c3abc6d0758feb445b00f82953e0a4fb2c663b1 to published v2.2.2 (0764a362d3c81d828ff6f1bf936e3a2782f19339). The former 2.0.1 stamp had no published tag; its recorded source commit was used for the comparison. Optional integration metadata/guides adopted without installing servers or skills; no solution role selected. ESLint config was a stale adapted entry with no file or lint script and is intentionally not adopted; check:conventions remains the existing checker. Reconciled next to published v3.1.1 (7a81b930c5cbd689b8db9d4c74f9dd42ec1e7031): required input-bound maintenance evidence and scheduled checks; optional scope-aware audit enforcement stays off until a full product baseline is reviewed; coverage remains warning-only. Project rules, product acceptance and existing impact/coupling mappings preserved.",
+  "note": "OpenBando is the reference implementation extracted into the harness. Reconciled 2026-10-31 from the recorded 2.0.1 source commit 9c3abc6d0758feb445b00f82953e0a4fb2c663b1 to published v2.2.2 (0764a362d3c81d828ff6f1bf936e3a2782f19339). The former 2.0.1 stamp had no published tag; its recorded source commit was used for the comparison. Optional integration metadata/guides adopted without installing servers or skills; no solution role selected. ESLint config was a stale adapted entry with no file or lint script and is intentionally not adopted; check:conventions remains the existing checker. Reconciled next to published v3.1.1 (7a81b930c5cbd689b8db9d4c74f9dd42ec1e7031): required input-bound maintenance evidence and scheduled checks; optional scope-aware audit enforcement stays off until a full product baseline is reviewed; coverage remains warning-only. Project rules, product acceptance and existing impact/coupling mappings preserved. Reconciled 2026-11-23 from v3.1.1 to published v10.3.0, then v10.3.1 for the check-rules CodeQL fix (F-048): AGENTS split into safety rules plus procedures (docs/agents/, docs/backlog/, angular.md); completion percentages removed, human-action cues name their kind, Other changes archived; action SHAs pinned and SBOM added. Not adopted: work-items/source-owned records, task claims, work usage, push guard, archive recaps, quiet reporter, browser coverage, solution refresh, CI on push to main, reviews.skills. Prettier/ESLint (5.0.0, check:tooling) follow in F-049.",
   "impact": [
     {
       "id": "lockfile",
@@ -293,7 +325,7 @@
       "places": [
         {
           "file": "e2e/welcome-films.record.ts",
-          "what": "cut(\u2026, 8)"
+          "what": "cut(…, 8)"
         },
         {
           "file": "e2e/showcase.e2e.ts",
@@ -319,7 +351,7 @@
         },
         {
           "file": "e2e/showcase.e2e.ts",
-          "what": "-0.69 \u00b1 0.15"
+          "what": "-0.69 ± 0.15"
         }
       ],
       "kept": "the showcase test (a real Auto-sync scan finds the same offset)"
@@ -372,7 +404,7 @@
         },
         {
           "file": "src/app/ui/studio/bando-editor.html",
-          "what": "Roof \u2192 shape options"
+          "what": "Roof → shape options"
         }
       ],
       "kept": "one source: ROOF_KINDS types the spec and the AI command and feeds AI_SCHEMA and the editor menu; ai-commands.spec.ts checks the schema, set_roof and the prompt prose (F-037)"
@@ -495,11 +527,34 @@
       "tools/check-audits.mjs",
       "tools/maintenance.mjs",
       "tools/friction.mjs",
-      "tools/coverage-table.mjs"
+      "tools/coverage-table.mjs",
+      "docs/agents/angular.md",
+      "docs/agents/pull-requests.md",
+      "docs/agents/session-start.md",
+      "docs/backlog/records.md",
+      "docs/backlog/review.md",
+      "docs/backlog/closure.md",
+      "docs/backlog/documentation.md",
+      "tools/check-rules.mjs",
+      "tools/check-tooling.mjs"
     ]
   },
   "audit": {
     "days": 7,
     "enforce": true
+  },
+  "rules": {
+    "agents": "AGENTS.md",
+    "procedures": [
+      "docs/BACKLOG-RULES.md",
+      "docs/agents/*.md",
+      "docs/backlog/*.md"
+    ],
+    "maxLines": 200,
+    "budgets": {
+      "always": 3500,
+      "procedure": 2000,
+      "trigger": 5000
+    }
   }
 }
