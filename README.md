@@ -188,7 +188,7 @@ of GitHub Actions.
 ## Project maintenance
 
 - [Backlog](docs/BACKLOG.md): current bugs, features and verification status. [Archived working plan](docs/archive/working-plan/working-plan-2026-10-27.md): history and Villetta measurements.
-- [Agent instructions](AGENTS.md): architecture, conventions and required checks; [area notes](docs/agents/areas.md): rules and lessons per part of the app.
+- [Agent instructions](AGENTS.md): architecture, conventions and required checks; [area notes](docs/agents/areas.md): rules and lessons, one file per part of the app.
 - [User guide](docs/guide/README.md): generated feature walkthroughs.
 
 Road overlaps use class priority (railway > road > track > path), stable draw order and full-width terrain draping. Regression coverage checks reversed drawing order; B-005 and B-008 record the user’s acceptance of the hill-road and descent fixes in the backlog archive; this does not establish every slope/intersection combination.

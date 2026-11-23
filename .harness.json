@@ -297,7 +297,7 @@
         "src/app/core/**",
         "src/app/services/**"
       ],
-      "then": "a new or changed feature updates the README (what the app does) and the area's notes in docs/agents/areas.md",
+      "then": "a new or changed feature updates the README (what the app does) and the area's notes in docs/agents/areas/ (one file per area)",
       "checked": "nothing (BACKLOG-RULES, Documentation consistency)"
     },
     {
@@ -536,7 +536,20 @@
       "docs/backlog/closure.md",
       "docs/backlog/documentation.md",
       "tools/check-rules.mjs",
-      "tools/check-tooling.mjs"
+      "tools/check-tooling.mjs",
+      "docs/agents/adding-things.md",
+      "docs/agents/areas/editor.md",
+      "docs/agents/areas/editor-library.md",
+      "docs/agents/areas/editor-geometry.md",
+      "docs/agents/areas/terrain.md",
+      "docs/agents/areas/buildings.md",
+      "docs/agents/areas/sharing.md",
+      "docs/agents/areas/flights.md",
+      "docs/agents/areas/welcome.md",
+      "docs/agents/areas/panels.md",
+      "docs/agents/areas/languages.md",
+      "docs/agents/areas/ui-chrome.md",
+      "docs/agents/areas/harness.md"
     ]
   },
   "audit": {
@@ -548,7 +561,8 @@
     "procedures": [
       "docs/BACKLOG-RULES.md",
       "docs/agents/*.md",
-      "docs/backlog/*.md"
+      "docs/backlog/*.md",
+      "docs/agents/areas/*.md"
     ],
     "maxLines": 200,
     "budgets": {
