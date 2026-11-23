@@ -153,7 +153,7 @@ Before changing an area, read its section in [docs/agents/areas.md](docs/agents/
 
 - Never commit secrets, tokens or personal data. Test data is neutral and invented.
 - Villetta's and Bardwell House's places are private: their coordinates, addresses, map data and survey points are not in the repository. Never add them (tests, tour, tools, docs, commit messages). Hidden bandos never reveal geographic coordinates (see "Sharing and privacy"). <!-- project -->
-- Audits check images for GPS metadata, and the outputs' outside dependencies listed under `outside` in `.harness.json`. <!-- project -->
+- Audits also cover the guides and their clips, the design system and accessibility, images' GPS metadata, and the outputs' outside dependencies listed under `outside` in `.harness.json`. <!-- project -->
 
 ## Work tracking
 
