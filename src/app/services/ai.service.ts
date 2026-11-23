@@ -95,7 +95,8 @@ export class AiService {
     const c = this.changes().find((x) => x.id === id);
     if (!c) return;
     this.changes.update((l) => l.map((x) => (x.id === id ? { ...x, reviewed: true } : x)));
-    if (c.target) this.focus.update((f) => ({ id: c.target!, interior: c.interior, level: c.level, n: (f?.n ?? 0) + 1 }));
+    if (c.target)
+      this.focus.update((f) => ({ id: c.target!, interior: c.interior, level: c.level, n: (f?.n ?? 0) + 1 }));
   }
 
   setReviewed(id: number, reviewed: boolean): void {
@@ -191,7 +192,8 @@ export class AiService {
     try {
       const webllm = await import('@mlc-ai/web-llm');
       const id = this.modelId();
-      if (!webllm.prebuiltAppConfig.model_list.some((m) => m.model_id === id)) throw new Error(`Model ${id} is not in this WebLLM version.`);
+      if (!webllm.prebuiltAppConfig.model_list.some((m) => m.model_id === id))
+        throw new Error(`Model ${id} is not in this WebLLM version.`);
       this.engine = await webllm.CreateMLCEngine(id, {
         initProgressCallback: (r) => {
           this.progress.set(r.progress);
@@ -233,8 +235,16 @@ export class AiService {
     try {
       const history = this.messages()
         .slice(-7, -1)
-        .map((m) => (m.role === 'user' ? { role: 'user' as const, content: m.text } : { role: 'assistant' as const, content: JSON.stringify({ reply: m.text, commands: m.raw ?? [] }) }));
-      const msgs: ChatMessage[] = [{ role: 'system', content: `${SYSTEM_PROMPT}${replyLanguage(this.i18n.lang())}\n\n${buildContext(spec, sel)}` }, ...history, { role: 'user', content: t }];
+        .map((m) =>
+          m.role === 'user'
+            ? { role: 'user' as const, content: m.text }
+            : { role: 'assistant' as const, content: JSON.stringify({ reply: m.text, commands: m.raw ?? [] }) },
+        );
+      const msgs: ChatMessage[] = [
+        { role: 'system', content: `${SYSTEM_PROMPT}${replyLanguage(this.i18n.lang())}\n\n${buildContext(spec, sel)}` },
+        ...history,
+        { role: 'user', content: t },
+      ];
       const parsed = parseReply(scripted ?? (await this.complete(msgs)));
       const probe = cloneSpec(spec);
       const dry = runCommands(probe, parsed.commands, sel);
@@ -243,7 +253,15 @@ export class AiService {
       const entries: AiChange[] = [];
       for (const c of parsed.commands) {
         const r = runCommands(each, [c], sel);
-        if (r.changed) entries.push({ id: ++this.changeSeq, text: r.done.join('; '), target: r.touched[0], level: Math.max(0, (c.level ?? 1) - 1), interior: r.interior, reviewed: false });
+        if (r.changed)
+          entries.push({
+            id: ++this.changeSeq,
+            text: r.done.join('; '),
+            target: r.touched[0],
+            level: Math.max(0, (c.level ?? 1) - 1),
+            interior: r.interior,
+            reviewed: false,
+          });
       }
       if (entries.length) this.changes.update((l) => [...entries.reverse(), ...l]);
       if (dry.changed) {
@@ -253,15 +271,34 @@ export class AiService {
         this.site.applyDraft();
       }
       this.canUndo.set(dry.changed);
-      if (dry.changed && dry.touched[0]) this.focus.update((f) => ({ id: dry.touched[0]!, interior: dry.interior, level: Math.max(0, (parsed.commands.find((c) => c.level)?.level ?? 1) - 1), n: (f?.n ?? 0) + 1 }));
+      if (dry.changed && dry.touched[0])
+        this.focus.update((f) => ({
+          id: dry.touched[0]!,
+          interior: dry.interior,
+          level: Math.max(0, (parsed.commands.find((c) => c.level)?.level ?? 1) - 1),
+          n: (f?.n ?? 0) + 1,
+        }));
       // The model's own reply is only a claim. What counts is what the app did, so say that first.
-      const text = dry.changed ? parsed.reply : `Nothing was changed.${parsed.reply ? ` (The model said: “${parsed.reply}”, but it gave no usable command.)` : ''}`;
+      const text = dry.changed
+        ? parsed.reply
+        : `Nothing was changed.${parsed.reply ? ` (The model said: “${parsed.reply}”, but it gave no usable command.)` : ''}`;
       this.messages.update((m) => [
         ...m,
-        { role: 'ai', text, done: dry.done, errors: [...parsed.errors, ...dry.errors], raw: parsed.commands, changed: dry.changed, understood: parsed.commands.map((c) => describe(c)) },
+        {
+          role: 'ai',
+          text,
+          done: dry.done,
+          errors: [...parsed.errors, ...dry.errors],
+          raw: parsed.commands,
+          changed: dry.changed,
+          understood: parsed.commands.map((c) => describe(c)),
+        },
       ]);
     } catch (e) {
-      this.messages.update((m) => [...m, { role: 'ai', text: '', errors: [e instanceof Error ? e.message : String(e)] }]);
+      this.messages.update((m) => [
+        ...m,
+        { role: 'ai', text: '', errors: [e instanceof Error ? e.message : String(e)] },
+      ]);
     } finally {
       this.busy.set(false);
     }
@@ -278,7 +315,16 @@ export class AiService {
     if (this.busy()) return { block: null, error: 'The assistant is busy.' };
     this.busy.set(true);
     try {
-      return parseBlockReply(await this.complete([{ role: 'system', content: BLOCK_PROMPT + replyLanguage(this.i18n.lang()) }, { role: 'user', content: t }], BLOCK_SCHEMA, 2000));
+      return parseBlockReply(
+        await this.complete(
+          [
+            { role: 'system', content: BLOCK_PROMPT + replyLanguage(this.i18n.lang()) },
+            { role: 'user', content: t },
+          ],
+          BLOCK_SCHEMA,
+          2000,
+        ),
+      );
     } catch (e) {
       return { block: null, error: e instanceof Error ? e.message : String(e) };
     } finally {
@@ -288,7 +334,11 @@ export class AiService {
 
   /** One model call on whichever provider is selected; returns the raw text. */
   private async complete(messages: ChatMessage[], schema: object = AI_SCHEMA, maxTokens = 700): Promise<string> {
-    if (this.provider() === 'server') return serverChat(this.server(), messages, maxTokens, undefined, { name: schema === AI_SCHEMA ? 'site_edit' : 'block', schema });
+    if (this.provider() === 'server')
+      return serverChat(this.server(), messages, maxTokens, undefined, {
+        name: schema === AI_SCHEMA ? 'site_edit' : 'block',
+        schema,
+      });
     if (!this.engine) throw new Error('The model is not loaded.');
     const qwen3 = /^Qwen3-/.test(this.modelId());
     const out = await this.engine.chat.completions.create({

@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { FENCES, FENCE_MATERIALS, fenceDef, hedgeLumps, newFence, postsAlong, setFenceMaterial, wireSag } from './fences';
+import {
+  FENCES,
+  FENCE_MATERIALS,
+  fenceDef,
+  hedgeLumps,
+  newFence,
+  postsAlong,
+  setFenceMaterial,
+  wireSag,
+} from './fences';
 
 describe('fence materials', () => {
   it('every material has distinct ids and sane sizes; unknown falls back to masonry', () => {
@@ -41,7 +50,9 @@ describe('fence materials', () => {
 
 describe('hedges and lines', () => {
   it('a hedge is lumpy, the same way every time, wilder for brambles', () => {
-    const a = hedgeLumps(10, 3.2, false), b = hedgeLumps(10, 3.2, false), w = hedgeLumps(10, 3.2, true);
+    const a = hedgeLumps(10, 3.2, false),
+      b = hedgeLumps(10, 3.2, false),
+      w = hedgeLumps(10, 3.2, true);
     expect(a).toEqual(b);
     expect(a.length).toBe(10);
     const range = (l: { h: number }[]) => Math.max(...l.map((x) => x.h)) - Math.min(...l.map((x) => x.h));

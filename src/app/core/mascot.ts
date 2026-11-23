@@ -33,7 +33,7 @@ export function mascotFrame(ms: number) {
     y: 'jump' in p && p.jump ? Math.round(-18 * Math.sin(u * Math.PI)) : 0,
     droneVisible: p.droneVisible,
     droneRight: p.name === 'fly-out',
-    propellersSpinning: ['takeoff','rise','higher','look-up','jump','victory','fly-out'].includes(p.name),
+    propellersSpinning: ['takeoff', 'rise', 'higher', 'look-up', 'jump', 'victory', 'fly-out'].includes(p.name),
     propellerFrame: Math.floor(t / 100) % 2,
     droneX: Math.round(p.drone[0]! + (p.drone[2]! - p.drone[0]!) * u),
     droneY: Math.round(p.drone[1]! + (p.drone[3]! - p.drone[1]!) * u),

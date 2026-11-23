@@ -39,9 +39,7 @@ describe('racing across loaded/shared flights', () => {
     TestBed.inject(FrameLoopService).runOnce(1, 1, 0);
     expect(race.time).toBe(1);
     expect(playback.time).toBe(0.5);
-    expect(racePose(race.tracks()[0]!, race.time)!.x).toBeGreaterThan(
-      racePose(race.tracks()[1]!, race.time)!.x,
-    );
+    expect(racePose(race.tracks()[0]!, race.time)!.x).toBeGreaterThan(racePose(race.tracks()[1]!, race.time)!.x);
     const pack = JSON.parse(JSON.stringify(race.pack()));
     flights.clear();
     race.importPack(pack);

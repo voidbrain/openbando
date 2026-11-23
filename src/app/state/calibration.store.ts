@@ -20,7 +20,12 @@ export const CalibrationStore = signalStore(
   { providedIn: 'root' },
   withState(() => savedState(KEY, DEFAULTS)),
   withComputed((store) => ({
-    calibration: computed<Calibration>(() => ({ rot: store.rot(), dx: store.dx(), dz: store.dz(), ...(store.reference() ? { reference: store.reference()! } : {}) })),
+    calibration: computed<Calibration>(() => ({
+      rot: store.rot(),
+      dx: store.dx(),
+      dz: store.dz(),
+      ...(store.reference() ? { reference: store.reference()! } : {}),
+    })),
   })),
   withMethods((store) => ({
     setRot: (rot: number) => patchState(store, { rot: isFinite(rot) ? rot : 0 }),
@@ -31,7 +36,10 @@ export const CalibrationStore = signalStore(
     apply: (c: Calibration) => patchState(store, { rot: c.rot, dx: c.dx, dz: c.dz, reference: c.reference ?? null }),
     setReference: (reference: Calibration['reference']) => patchState(store, { reference: reference ?? null }),
     reset: () => patchState(store, { ...DEFAULT_CALIBRATION, reference: null }),
-    setModelScale: (k: number) => patchState(store, { modelScale: clamp(isFinite(k) && k > 0 ? k : 1, MODEL_SCALE_RANGE.min, MODEL_SCALE_RANGE.max) }),
+    setModelScale: (k: number) =>
+      patchState(store, {
+        modelScale: clamp(isFinite(k) && k > 0 ? k : 1, MODEL_SCALE_RANGE.min, MODEL_SCALE_RANGE.max),
+      }),
   })),
   withHooks((store) => {
     persistState(store, KEY);

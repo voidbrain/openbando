@@ -53,22 +53,35 @@ export const niceStep = (px: number, pxPerMetre: number): number => NICE_STEPS.f
  * East / north come from the local frame through the calibration rotation.
  */
 export function drawFlightPath(
-  g: CanvasRenderingContext2D, w: number, h: number, flights: readonly Flight[], view: PathView, cal: Calibration, speedMax: number, replayPosition: Vec3 | null,
+  g: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  flights: readonly Flight[],
+  view: PathView,
+  cal: Calibration,
+  speedMax: number,
+  replayPosition: Vec3 | null,
   /** The flight being replayed: its part already flown is drawn thick in the speed colours, the rest thin and pale. */
   replayed: Flight | null = null,
 ): string {
   g.clearRect(0, 0, w, h);
   if (!flights.length || !flights[0]!.loc.length) return '';
   const A = (cal.rot * Math.PI) / 180;
-  const cA = Math.cos(A), sA = Math.sin(A);
+  const cA = Math.cos(A),
+    sA = Math.sin(A);
   const mode = view.mode;
   /** Vertical exaggeration of the side / front views. */
   const ex = mode === 'side' || mode === 'front' ? 2 : 1;
-  const cy = Math.cos(view.yaw), sy = Math.sin(view.yaw), cp = Math.cos(view.pitch), sp = Math.sin(view.pitch);
+  const cy = Math.cos(view.yaw),
+    sy = Math.sin(view.yaw),
+    cp = Math.cos(view.pitch),
+    sp = Math.sin(view.pitch);
   const east = (p: Vec3): number => p.x * cA + p.z * sA;
   const north = (p: Vec3): number => p.x * sA - p.z * cA;
   const project = (p: Vec3): [number, number] => {
-    const e = east(p), n = north(p), a = p.y;
+    const e = east(p),
+      n = north(p),
+      a = p.y;
     if (mode === 'top') return [e, n];
     if (mode === 'side') return [e, a * ex];
     if (mode === 'front') return [n, a * ex];
@@ -77,7 +90,10 @@ export function drawFlightPath(
     return [x1, a * cp + z1 * sp];
   };
 
-  let u0 = 1e9, u1 = -1e9, v0 = 1e9, v1 = -1e9;
+  let u0 = 1e9,
+    u1 = -1e9,
+    v0 = 1e9,
+    v1 = -1e9;
   const lines: Pt[][] = flights.map((f) => {
     const st = Math.max(1, Math.ceil(f.loc.length / 1200));
     const pts: Pt[] = [];
@@ -86,15 +102,17 @@ export function drawFlightPath(
     if (last % st !== 0) pts.push([...project(f.loc[last]!), f.spd[last] ?? 0, last]);
     return pts;
   });
-  for (const pts of lines) for (const q of pts) {
-    u0 = Math.min(u0, q[0]);
-    u1 = Math.max(u1, q[0]);
-    v0 = Math.min(v0, q[1]);
-    v1 = Math.max(v1, q[1]);
-  }
+  for (const pts of lines)
+    for (const q of pts) {
+      u0 = Math.min(u0, q[0]);
+      u1 = Math.max(u1, q[0]);
+      v0 = Math.min(v0, q[1]);
+      v1 = Math.max(v1, q[1]);
+    }
   if (mode !== 'top') v0 = Math.min(v0, 0);
   const sc = Math.min((w - 44) / Math.max(u1 - u0, 1), (h - 44) / Math.max(v1 - v0, 1)) * view.zoom;
-  const cu = (u0 + u1) / 2, cv = (v0 + v1) / 2;
+  const cu = (u0 + u1) / 2,
+    cv = (v0 + v1) / 2;
   const X = (u: number): number => w / 2 + (u - cu) * sc + view.px;
   const Y = (v: number): number => h / 2 - (v - cv) * sc + view.py;
 
@@ -121,26 +139,36 @@ export function drawFlightPath(
     };
 
     if (mode === '3d') {
-      let e0 = 1e9, e1 = -1e9, n0 = 1e9, n1 = -1e9;
-      for (const f of flights) for (const p of f.loc) {
-        const e = east(p), n = north(p);
-        e0 = Math.min(e0, e);
-        e1 = Math.max(e1, e);
-        n0 = Math.min(n0, n);
-        n1 = Math.max(n1, n);
-      }
+      let e0 = 1e9,
+        e1 = -1e9,
+        n0 = 1e9,
+        n1 = -1e9;
+      for (const f of flights)
+        for (const p of f.loc) {
+          const e = east(p),
+            n = north(p);
+          e0 = Math.min(e0, e);
+          e1 = Math.max(e1, e);
+          n0 = Math.min(n0, n);
+          n1 = Math.max(n1, n);
+        }
       const gs = niceStep(34, sc);
-      const pj = (e: number, n: number, a: number): [number, number] => [X(e * cy + n * sy), Y(a * cp + (-e * sy + n * cy) * sp)];
+      const pj = (e: number, n: number, a: number): [number, number] => [
+        X(e * cy + n * sy),
+        Y(a * cp + (-e * sy + n * cy) * sp),
+      ];
       g.strokeStyle = GRID;
       for (let e = Math.floor(e0 / gs) * gs; e <= e1 + gs; e += gs) {
-        const p1 = pj(e, n0 - gs, 0), p2 = pj(e, n1 + gs, 0);
+        const p1 = pj(e, n0 - gs, 0),
+          p2 = pj(e, n1 + gs, 0);
         g.beginPath();
         g.moveTo(p1[0], p1[1]);
         g.lineTo(p2[0], p2[1]);
         g.stroke();
       }
       for (let n = Math.floor(n0 / gs) * gs; n <= n1 + gs; n += gs) {
-        const p1 = pj(e0 - gs, n, 0), p2 = pj(e1 + gs, n, 0);
+        const p1 = pj(e0 - gs, n, 0),
+          p2 = pj(e1 + gs, n, 0);
         g.beginPath();
         g.moveTo(p1[0], p1[1]);
         g.lineTo(p2[0], p2[1]);
@@ -155,8 +183,10 @@ export function drawFlightPath(
       const gu = niceStep(46, sc);
       const gm = mode === 'top' ? gu : niceStep(34, sc * ex);
       const gv = gm * ex;
-      const ua = (0 - w / 2 - view.px) / sc + cu, ub = (w - w / 2 - view.px) / sc + cu;
-      const va = (h / 2 + view.py - h) / sc + cv, vb = (h / 2 + view.py) / sc + cv;
+      const ua = (0 - w / 2 - view.px) / sc + cu,
+        ub = (w - w / 2 - view.px) / sc + cu;
+      const va = (h / 2 + view.py - h) / sc + cv,
+        vb = (h / 2 + view.py) / sc + cv;
       g.textAlign = 'left';
       for (let u = Math.ceil(ua / gu) * gu; u <= ub; u += gu) {
         g.strokeStyle = Math.abs(u) < 1e-9 ? AXIS : GRID;
@@ -194,13 +224,18 @@ export function drawFlightPath(
       for (let i = 1; i < pts.length; i++) {
         const flown = pts[i - 1]![3] < upTo;
         g.lineWidth = flown ? 3.4 : 1.6;
-        g.strokeStyle = flown ? speedHsl((pts[i]![2] || 0) / speedMax, 90, 52) : speedHsl((pts[i]![2] || 0) / speedMax, 18, 72);
+        g.strokeStyle = flown
+          ? speedHsl((pts[i]![2] || 0) / speedMax, 90, 52)
+          : speedHsl((pts[i]![2] || 0) / speedMax, 18, 72);
         g.beginPath();
         g.moveTo(X(pts[i - 1]![0]), Y(pts[i - 1]![1]));
         g.lineTo(X(pts[i]![0]), Y(pts[i]![1]));
         g.stroke();
       }
-      const ends: readonly (readonly [Pt, string])[] = [[pts[0]!, '#2ecc40'], [pts[pts.length - 1]!, '#ff3b30']];
+      const ends: readonly (readonly [Pt, string])[] = [
+        [pts[0]!, '#2ecc40'],
+        [pts[pts.length - 1]!, '#ff3b30'],
+      ];
       for (const [q, c] of ends) {
         g.fillStyle = c;
         g.strokeStyle = '#fff';

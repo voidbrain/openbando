@@ -7,8 +7,23 @@ import { emptySpec, type BuildingSpec, type SiteSpec } from './site-spec';
 const store = (): SiteSpec => {
   const s = emptySpec({ lat: 45, lon: 12 }, 'T');
   const b: BuildingSpec = {
-    id: 's', name: 'Main store', pos: { x: 0, z: 0 }, rotDeg: 0, length: 60, width: 30,
-    levels: [{ baseY: 0, height: 6, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'gable', roofRise: 3 }],
+    id: 's',
+    name: 'Main store',
+    pos: { x: 0, z: 0 },
+    rotDeg: 0,
+    length: 60,
+    width: 30,
+    levels: [
+      {
+        baseY: 0,
+        height: 6,
+        sides: { n: true, s: true, e: true, w: true },
+        doors: {},
+        partitions: [],
+        roof: 'gable',
+        roofRise: 3,
+      },
+    ],
   };
   s.buildings = [b];
   return s;
@@ -20,7 +35,9 @@ describe('building modules', () => {
     const wall = { key: 's', axis: 'x' as const, at: 15, from: -30, to: 30 };
     expect(setFacade(b, 0, wall, 'store', { bay: 5 })).toBe(12);
     const o = listOpenings(b, 0).sort((a, c) => a.c - c.c);
-    expect(o.map((x) => x.kind).join()).toBe('window,window,door,window,window,door,window,window,door,window,window,door');
+    expect(o.map((x) => x.kind).join()).toBe(
+      'window,window,door,window,window,door,window,window,door,window,window,door',
+    );
     expect(o[0]!.sill).toBeCloseTo(1.5);
     expect(o[2]!.h).toBeCloseTo(5); // full height minus the 1 m lintel
     expect(o[0]!.w).toBeCloseTo(4); // 5 m pitch minus a 1 m pier
@@ -42,7 +59,8 @@ describe('building modules', () => {
     expect(r.errors).toEqual([]);
     const b = s.buildings[0]!;
     const o = listOpenings(b, 0);
-    const north = o.filter((x) => x.at === -30), south = o.filter((x) => x.at === 30);
+    const north = o.filter((x) => x.at === -30),
+      south = o.filter((x) => x.at === 30);
     expect(north.length).toBe(6);
     expect(north.every((x) => x.kind === 'window' && x.sill === 1.5)).toBe(true);
     expect(south.every((x) => x.kind === 'door')).toBe(true);

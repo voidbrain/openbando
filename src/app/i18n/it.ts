@@ -7,8 +7,10 @@
 export const IT: Readonly<Record<string, string>> = {
   'About this bando': 'Informazioni sul bando',
   'Perimeter edge {0}': 'Lato perimetrale {0}',
-  'Cannot reshape basement: check its outline, wall openings and floor items.': 'Impossibile modificare il seminterrato: controlla perimetro, aperture e oggetti del piano.',
-  'Click through buildings to read ground coordinates in metres': 'Clicca attraverso gli edifici per leggere le coordinate del terreno in metri',
+  'Cannot reshape basement: check its outline, wall openings and floor items.':
+    'Impossibile modificare il seminterrato: controlla perimetro, aperture e oggetti del piano.',
+  'Click through buildings to read ground coordinates in metres':
+    'Clicca attraverso gli edifici per leggere le coordinate del terreno in metri',
   'Debug coordinates': 'Coordinate di debug',
 
   'Vegetation': 'Vegetazione',
@@ -18,37 +20,51 @@ export const IT: Readonly<Record<string, string>> = {
   'stands on': 'poggia su',
   'roof': 'tetto',
   'floor {0}': 'piano {0}',
-  'Inside a building the pad can stand on an upper floor, or on the roof when it is flat': 'Dentro un edificio la piazzola può stare su un piano superiore, o sul tetto se è piano',
+  'Inside a building the pad can stand on an upper floor, or on the roof when it is flat':
+    'Dentro un edificio la piazzola può stare su un piano superiore, o sul tetto se è piano',
   'Take-off pad': 'Piazzola di decollo',
   'drag it with Select, or right-click the ground': 'trascinala con Seleziona, o clic destro sul terreno',
-  'Take-off pad · flights start here. Drag it, or right-click the ground: Move the take-off pad here.': 'Piazzola di decollo · i voli partono da qui. Trascinala, o clic destro sul terreno: Sposta qui la piazzola di decollo.',
+  'Take-off pad · flights start here. Drag it, or right-click the ground: Move the take-off pad here.':
+    'Piazzola di decollo · i voli partono da qui. Trascinala, o clic destro sul terreno: Sposta qui la piazzola di decollo.',
   'at (x, z) m': 'a (x, z) m',
-  "Metres east (x) and south (z) of the bando's origin, as x, z": "Metri a est (x) e a sud (z) dall'origine del bando, come x, z",
-  'Write the position as x, z in metres, e.g. 12.5, -8.': 'Scrivi la posizione come x, z in metri, per esempio 12.5, -8.',
+  "Metres east (x) and south (z) of the bando's origin, as x, z":
+    "Metri a est (x) e a sud (z) dall'origine del bando, come x, z",
+  'Write the position as x, z in metres, e.g. 12.5, -8.':
+    'Scrivi la posizione come x, z in metri, per esempio 12.5, -8.',
   'Click the map to plant a tree, hedge or bramble': 'Clicca la mappa per piantare un albero, una siepe o un rovo',
-  'Paint vegetation with a pen, or fill a square, circle or hand-drawn area': 'Dipingi la vegetazione o riempi un quadrato, un cerchio o un’area disegnata',
+  'Paint vegetation with a pen, or fill a square, circle or hand-drawn area':
+    'Dipingi la vegetazione o riempi un quadrato, un cerchio o un’area disegnata',
   'A short editable hedge': 'Una breve siepe modificabile',
   'A short editable bramble thicket': 'Un breve rovo modificabile',
   '{0} shrubs planted. Undo removes the whole stroke.': '{0} arbusti piantati. Annulla rimuove l’intera pennellata.',
-  'No room for shrubs there (or the stroke was too short).': 'Non c’è spazio per arbusti oppure il tratto era troppo corto.',
+  'No room for shrubs there (or the stroke was too short).':
+    'Non c’è spazio per arbusti oppure il tratto era troppo corto.',
   'Measures': 'Misure',
-  'Pin start: position at the start of the video and click the ground where the flight started': 'Fissa inizio: posizionati all’inizio del video e clicca sul terreno dove è iniziato il volo',
-  'Pin start: position at the start of the flight and click the ground where the flight started': 'Fissa inizio: posizionati all’inizio del volo e clicca sul terreno dove è iniziato',
-  'Pin end: position at the end of the video and click the ground where the flight ended': 'Fissa fine: posizionati alla fine del video e clicca sul terreno dove è terminato il volo',
-  'Pin end: position at the end of the flight and click the ground where the flight ended': 'Fissa fine: posizionati alla fine del volo e clicca sul terreno dove è terminato',
-  'Position at the start of the video and turn the path about its start': 'Posizionati all’inizio del video e ruota il percorso intorno al suo inizio',
-  'Position at the start of the flight and turn the path about its start': 'Posizionati all’inizio del volo e ruota il percorso intorno al suo inizio',
+  'Pin start: position at the start of the video and click the ground where the flight started':
+    'Fissa inizio: posizionati all’inizio del video e clicca sul terreno dove è iniziato il volo',
+  'Pin start: position at the start of the flight and click the ground where the flight started':
+    'Fissa inizio: posizionati all’inizio del volo e clicca sul terreno dove è iniziato',
+  'Pin end: position at the end of the video and click the ground where the flight ended':
+    'Fissa fine: posizionati alla fine del video e clicca sul terreno dove è terminato il volo',
+  'Pin end: position at the end of the flight and click the ground where the flight ended':
+    'Fissa fine: posizionati alla fine del volo e clicca sul terreno dove è terminato',
+  'Position at the start of the video and turn the path about its start':
+    'Posizionati all’inizio del video e ruota il percorso intorno al suo inizio',
+  'Position at the start of the flight and turn the path about its start':
+    'Posizionati all’inizio del volo e ruota il percorso intorno al suo inizio',
   'centre strip m': 'fascia centrale m',
   'Flat strip between the two halves of the barrel roof': 'Fascia piana tra le due metà della copertura a volta',
   'Dock inspector to the right': 'Aggancia l’ispezione a destra',
   'Undock inspector': 'Sgancia l’ispezione',
   'Expand studio': 'Espandi studio',
   'Restore studio size': 'Ripristina dimensioni studio',
-  "arch ratio": "rapporto arco",
-  "Arch ratio: crown height is half the width multiplied by this number": "Rapporto arco: l’altezza della sommità è metà della larghezza moltiplicata per questo valore",
-  "Arch crown: {0} m": "Sommità arco: {0} m",
-  "North direction": "Direzione nord",
-  "Orient camera: click for north, drag or use arrow keys to turn": "Orienta la camera: clicca per il nord, trascina o usa le frecce per ruotare",
+  'arch ratio': 'rapporto arco',
+  'Arch ratio: crown height is half the width multiplied by this number':
+    'Rapporto arco: l’altezza della sommità è metà della larghezza moltiplicata per questo valore',
+  'Arch crown: {0} m': 'Sommità arco: {0} m',
+  'North direction': 'Direzione nord',
+  'Orient camera: click for north, drag or use arrow keys to turn':
+    'Orienta la camera: clicca per il nord, trascina o usa le frecce per ruotare',
   'Build it. Fly it. Share it.': 'Costruisci. Vola. Condividi.',
   'Turn your favourite places into your own FPV world.': 'Trasforma i tuoi luoghi preferiti nel tuo mondo FPV.',
   'Explore features': 'Scopri le funzioni',
@@ -63,93 +79,102 @@ export const IT: Readonly<Record<string, string>> = {
   'Create your own blocks': 'Crea i tuoi blocchi',
   'Fly your own places': 'Vola nei tuoi luoghi',
 
-  "Restore roof": "Ripristina tetto",
-  "Colour trails by speed": "Colora le tracce per velocità",
-  "Speed trails: blue slow → red fast. Drones and labels keep pilot colours.": "Tracce: blu lento → rosso veloce. Droni ed etichette mantengono i colori dei piloti.",
-  "Start X (m)": "X iniziale (m)",
-  "End X (m)": "X finale (m)",
-  "Start Z (m)": "Z iniziale (m)",
-  "End Z (m)": "Z finale (m)",
-  "Basement · −1": "Seminterrato · −1",
-  "Use building footprint": "Usa la sagoma dell’edificio",
-  "Basement wall coordinates start at its north-west corner.": "Le coordinate dei muri del seminterrato partono dal suo angolo nord-ovest.",
-  "Roof removed by ruin or open shell. Choosing a shape restores it.": "Tetto rimosso dal degrado o dalla struttura aperta. Scegli una forma per ripristinarlo.",
-  "Show the basement floor": "Mostra il piano seminterrato",
-  "Add basement wall": "Aggiungi muro nel seminterrato",
-  "Delete basement wall": "Elimina muro del seminterrato",
-  "Basement": "Seminterrato",
-  "North wall": "Muro nord",
-  "South wall": "Muro sud",
-  "East wall": "Muro est",
-  "West wall": "Muro ovest",
+  'Restore roof': 'Ripristina tetto',
+  'Colour trails by speed': 'Colora le tracce per velocità',
+  'Speed trails: blue slow → red fast. Drones and labels keep pilot colours.':
+    'Tracce: blu lento → rosso veloce. Droni ed etichette mantengono i colori dei piloti.',
+  'Start X (m)': 'X iniziale (m)',
+  'End X (m)': 'X finale (m)',
+  'Start Z (m)': 'Z iniziale (m)',
+  'End Z (m)': 'Z finale (m)',
+  'Basement · −1': 'Seminterrato · −1',
+  'Use building footprint': 'Usa la sagoma dell’edificio',
+  'Basement wall coordinates start at its north-west corner.':
+    'Le coordinate dei muri del seminterrato partono dal suo angolo nord-ovest.',
+  'Roof removed by ruin or open shell. Choosing a shape restores it.':
+    'Tetto rimosso dal degrado o dalla struttura aperta. Scegli una forma per ripristinarlo.',
+  'Show the basement floor': 'Mostra il piano seminterrato',
+  'Add basement wall': 'Aggiungi muro nel seminterrato',
+  'Delete basement wall': 'Elimina muro del seminterrato',
+  'Basement': 'Seminterrato',
+  'North wall': 'Muro nord',
+  'South wall': 'Muro sud',
+  'East wall': 'Muro est',
+  'West wall': 'Muro ovest',
 
-
-  "Relay token": "Token relay",
+  'Relay token': 'Token relay',
   // ---- multipath racing
-  "Pilot colour: {0}": "Colore pilota: {0}",
-  "Pilot name: {0}": "Nome pilota: {0}",
-  "Show pilot: {0}": "Mostra pilota: {0}",
-  "Pause race": "Pausa gara",
-  "Play race": "Avvia gara",
-  "Stale GPS": "GPS non aggiornato",
-  "Live": "Live",
-  "Leave room": "Esci dalla stanza",
-  "Join room": "Entra nella stanza",
-  "Racing and ghosts": "Gare e ghost",
-  "Up to eight pilots. Import logs above, or exchange race packages. Open the same bando and model scale on every device.": "Fino a otto piloti. Importa i log qui sopra o scambia pacchetti gara. Apri lo stesso bando con la stessa scala su ogni dispositivo.",
-  "Show racing ghosts": "Mostra i ghost della gara",
-  "Restart race": "Riavvia gara",
-  "Repeat replay": "Ripeti replay",
-  "Race time (s)": "Tempo gara (s)",
-  "Start delay (s)": "Ritardo partenza (s)",
-  "Closed loop": "Circuito chiuso",
-  "Set start gate": "Imposta la linea di partenza",
-  "Laps": "Giri",
-  "Best lap (s)": "Miglior giro (s)",
-  "Last lap (s)": "Ultimo giro (s)",
-  "Gate width (m)": "Larghezza linea (m)",
-  "Gate height (m)": "Altezza linea (m)",
-  "Minimum lap (s)": "Durata minima giro (s)",
-  "Minimum lap distance (m)": "Distanza minima giro (m)",
-  "Set one shared start gate from a path that starts on the line and moves forward. GPS lap times are estimates, not official race timing.": "Imposta una linea comune da una traccia che parte sulla linea e procede in avanti. I tempi GPS sono stime, non cronometraggi ufficiali.",
-  "Export race": "Esporta gara",
-  "Import race": "Importa gara",
-  "Clear shared paths": "Rimuovi tracce condivise",
-  "Multiple live sources": "Più sorgenti live",
-  "Pilot name": "Nome pilota",
-  "Telemetry URL": "URL telemetria",
-  "Add live source": "Aggiungi sorgente live",
-  "Each source must expose GPS JSON over WebSocket or an HTTP event stream. Video-only SquirrelCast links are not telemetry. HTTPS pages need reachable HTTPS/WSS sources with the required browser permissions.": "Ogni sorgente deve esporre GPS JSON tramite WebSocket o flusso eventi HTTP. I link SquirrelCast solo video non forniscono telemetria. Le pagine HTTPS richiedono sorgenti HTTPS/WSS raggiungibili con i permessi del browser necessari.",
-  "Shared race room": "Stanza gara condivisa",
-  "Optional self-hosted relay. The same exported bando must be open on every device. Sharing sends pilot names and local path coordinates; it does not send GPS coordinates, logs or video.": "Relay opzionale sul tuo server. Apri lo stesso bando esportato su ogni dispositivo. La condivisione invia nomi dei piloti e coordinate locali delle tracce; non invia coordinate GPS, log o video.",
-  "Relay URL": "URL relay",
-  "Room token": "Token stanza",
-  "Share local paths": "Condividi tracce locali",
-  "Broadcast live paths": "Trasmetti tracce live",
-  "Connecting": "Connessione in corso",
-  "Waiting for GPS": "In attesa del GPS",
-  "Receiving": "Ricezione in corso",
-  "Connection error": "Errore di connessione",
-  "Disconnected": "Disconnesso",
-  "Connected": "Connesso",
-  "Local paths shared": "Tracce locali condivise",
-  "Relay disconnected; join again to reconnect": "Relay disconnesso; entra di nuovo per riconnetterti",
-  "Invalid race package": "Pacchetto gara non valido",
-  "Invalid race track": "Traccia gara non valida",
-  "Invalid race gate": "Linea di partenza non valida",
-  "Race points must be finite and strictly time ordered": "I punti devono essere validi e ordinati per tempo crescente",
-  "Open the same bando and model scale before importing this race": "Apri lo stesso bando con la stessa scala prima di importare questa gara",
-  "Racing supports at most eight pilots": "Le gare supportano al massimo otto piloti",
-  "Live trace limit reached; reconnect to start a new recording": "Limite traccia live raggiunto; riconnettiti per iniziare una nuova registrazione",
-  "Use a WebSocket or event-stream URL": "Usa un URL WebSocket o di flusso eventi",
-  "Use an HTTP relay base URL": "Usa un URL base HTTP del relay",
-  "Room needs a name and a token of at least 16 characters": "La stanza richiede un nome e un token di almeno 16 caratteri",
-  "Race package exceeds 12 MB": "Il pacchetto gara supera 12 MB",
-  "Race upload exceeds the relay limit; share fewer paths": "La gara supera il limite del relay; condividi meno tracce",
-  "Relay snapshot is too large": "Il contenuto del relay è troppo grande",
-  "Invalid relay snapshot": "Contenuto del relay non valido",
-  "Invalid relay publisher": "Autore relay non valido",
-  "Relay HTTP {0}": "Relay HTTP {0}",
+  'Pilot colour: {0}': 'Colore pilota: {0}',
+  'Pilot name: {0}': 'Nome pilota: {0}',
+  'Show pilot: {0}': 'Mostra pilota: {0}',
+  'Pause race': 'Pausa gara',
+  'Play race': 'Avvia gara',
+  'Stale GPS': 'GPS non aggiornato',
+  'Live': 'Live',
+  'Leave room': 'Esci dalla stanza',
+  'Join room': 'Entra nella stanza',
+  'Racing and ghosts': 'Gare e ghost',
+  'Up to eight pilots. Import logs above, or exchange race packages. Open the same bando and model scale on every device.':
+    'Fino a otto piloti. Importa i log qui sopra o scambia pacchetti gara. Apri lo stesso bando con la stessa scala su ogni dispositivo.',
+  'Show racing ghosts': 'Mostra i ghost della gara',
+  'Restart race': 'Riavvia gara',
+  'Repeat replay': 'Ripeti replay',
+  'Race time (s)': 'Tempo gara (s)',
+  'Start delay (s)': 'Ritardo partenza (s)',
+  'Closed loop': 'Circuito chiuso',
+  'Set start gate': 'Imposta la linea di partenza',
+  'Laps': 'Giri',
+  'Best lap (s)': 'Miglior giro (s)',
+  'Last lap (s)': 'Ultimo giro (s)',
+  'Gate width (m)': 'Larghezza linea (m)',
+  'Gate height (m)': 'Altezza linea (m)',
+  'Minimum lap (s)': 'Durata minima giro (s)',
+  'Minimum lap distance (m)': 'Distanza minima giro (m)',
+  'Set one shared start gate from a path that starts on the line and moves forward. GPS lap times are estimates, not official race timing.':
+    'Imposta una linea comune da una traccia che parte sulla linea e procede in avanti. I tempi GPS sono stime, non cronometraggi ufficiali.',
+  'Export race': 'Esporta gara',
+  'Import race': 'Importa gara',
+  'Clear shared paths': 'Rimuovi tracce condivise',
+  'Multiple live sources': 'Più sorgenti live',
+  'Pilot name': 'Nome pilota',
+  'Telemetry URL': 'URL telemetria',
+  'Add live source': 'Aggiungi sorgente live',
+  'Each source must expose GPS JSON over WebSocket or an HTTP event stream. Video-only SquirrelCast links are not telemetry. HTTPS pages need reachable HTTPS/WSS sources with the required browser permissions.':
+    'Ogni sorgente deve esporre GPS JSON tramite WebSocket o flusso eventi HTTP. I link SquirrelCast solo video non forniscono telemetria. Le pagine HTTPS richiedono sorgenti HTTPS/WSS raggiungibili con i permessi del browser necessari.',
+  'Shared race room': 'Stanza gara condivisa',
+  'Optional self-hosted relay. The same exported bando must be open on every device. Sharing sends pilot names and local path coordinates; it does not send GPS coordinates, logs or video.':
+    'Relay opzionale sul tuo server. Apri lo stesso bando esportato su ogni dispositivo. La condivisione invia nomi dei piloti e coordinate locali delle tracce; non invia coordinate GPS, log o video.',
+  'Relay URL': 'URL relay',
+  'Room token': 'Token stanza',
+  'Share local paths': 'Condividi tracce locali',
+  'Broadcast live paths': 'Trasmetti tracce live',
+  'Connecting': 'Connessione in corso',
+  'Waiting for GPS': 'In attesa del GPS',
+  'Receiving': 'Ricezione in corso',
+  'Connection error': 'Errore di connessione',
+  'Disconnected': 'Disconnesso',
+  'Connected': 'Connesso',
+  'Local paths shared': 'Tracce locali condivise',
+  'Relay disconnected; join again to reconnect': 'Relay disconnesso; entra di nuovo per riconnetterti',
+  'Invalid race package': 'Pacchetto gara non valido',
+  'Invalid race track': 'Traccia gara non valida',
+  'Invalid race gate': 'Linea di partenza non valida',
+  'Race points must be finite and strictly time ordered': 'I punti devono essere validi e ordinati per tempo crescente',
+  'Open the same bando and model scale before importing this race':
+    'Apri lo stesso bando con la stessa scala prima di importare questa gara',
+  'Racing supports at most eight pilots': 'Le gare supportano al massimo otto piloti',
+  'Live trace limit reached; reconnect to start a new recording':
+    'Limite traccia live raggiunto; riconnettiti per iniziare una nuova registrazione',
+  'Use a WebSocket or event-stream URL': 'Usa un URL WebSocket o di flusso eventi',
+  'Use an HTTP relay base URL': 'Usa un URL base HTTP del relay',
+  'Room needs a name and a token of at least 16 characters':
+    'La stanza richiede un nome e un token di almeno 16 caratteri',
+  'Race package exceeds 12 MB': 'Il pacchetto gara supera 12 MB',
+  'Race upload exceeds the relay limit; share fewer paths': 'La gara supera il limite del relay; condividi meno tracce',
+  'Relay snapshot is too large': 'Il contenuto del relay è troppo grande',
+  'Invalid relay snapshot': 'Contenuto del relay non valido',
+  'Invalid relay publisher': 'Autore relay non valido',
+  'Relay HTTP {0}': 'Relay HTTP {0}',
   // ---- panels and the stage
   'Views': 'Viste',
   'Flights': 'Voli',
@@ -172,16 +197,21 @@ export const IT: Readonly<Record<string, string>> = {
   'Collapse / expand': 'Comprimi / espandi',
   'Transparent': 'Trasparente',
   'Tips on hover': 'Suggerimenti al passaggio',
-  'Tips on hover: hover a control for a moment to see how it works': 'Suggerimenti al passaggio: tieni il puntatore su un comando per vedere come funziona',
-  'Tips on hover are on: hover a control for a moment to see how it works (click to turn off)': 'Suggerimenti al passaggio attivi: tieni il puntatore su un comando per vedere come funziona (clic per spegnere)',
+  'Tips on hover: hover a control for a moment to see how it works':
+    'Suggerimenti al passaggio: tieni il puntatore su un comando per vedere come funziona',
+  'Tips on hover are on: hover a control for a moment to see how it works (click to turn off)':
+    'Suggerimenti al passaggio attivi: tieni il puntatore su un comando per vedere come funziona (clic per spegnere)',
   'Close (Views shows it again)': 'Chiudi (Viste lo mostra di nuovo)',
   'Close {0}': 'Chiudi {0}',
   'Collapse': 'Comprimi',
   'Drag to move': 'Trascina per spostare',
   'Drag to resize': 'Trascina per ridimensionare',
-  'Drag to move · double-click for the default size': 'Trascina per spostare · doppio clic per la dimensione predefinita',
-  'Transparent: hide the panel background, keep only the content': 'Trasparente: nasconde lo sfondo del pannello, resta solo il contenuto',
-  'Main page: video — open the Video panel and load a file': 'Pagina principale: video — apri il pannello Video e carica un file',
+  'Drag to move · double-click for the default size':
+    'Trascina per spostare · doppio clic per la dimensione predefinita',
+  'Transparent: hide the panel background, keep only the content':
+    'Trasparente: nasconde lo sfondo del pannello, resta solo il contenuto',
+  'Main page: video — open the Video panel and load a file':
+    'Pagina principale: video — apri il pannello Video e carica un file',
   'Language': 'Lingua',
   'Language: {0}': 'Lingua: {0}',
   'A JavaScript library for interactive maps': 'Una libreria JavaScript per mappe interattive',
@@ -196,7 +226,8 @@ export const IT: Readonly<Record<string, string>> = {
   'Telemetry': 'Telemetria',
   'Show every panel': 'Mostra ogni pannello',
   'Hide every panel but this one': 'Nascondi ogni pannello tranne questo',
-  'The drone hits buildings, trees and the ground (off: it flies through them)': 'Il drone urta edifici, alberi e terreno (spento: li attraversa)',
+  'The drone hits buildings, trees and the ground (off: it flies through them)':
+    'Il drone urta edifici, alberi e terreno (spento: li attraversa)',
   'Instruments': 'Strumenti',
   'Tools': 'Strumenti',
   'Orbit': 'Orbita',
@@ -211,44 +242,58 @@ export const IT: Readonly<Record<string, string>> = {
   'X-ray on: obstacles fade when they hide the drone': 'Raggi X attivi: gli ostacoli sfumano quando coprono il drone',
   'X-ray off': 'Raggi X disattivati',
   'Panels': 'Pannelli',
-  'Reset UI: restore panel positions and sizes': 'Reimposta interfaccia: ripristina posizione e dimensione dei pannelli',
+  'Reset UI: restore panel positions and sizes':
+    'Reimposta interfaccia: ripristina posizione e dimensione dei pannelli',
   'Show every panel in {0}': 'Mostra ogni pannello in {0}',
   'Hide every panel in {0}': 'Nascondi ogni pannello in {0}',
   'Show {0}': 'Mostra {0}',
   'Hide {0}': 'Nascondi {0}',
-  'Orbit: turn around the drone or the bando (drag to turn, wheel to zoom)': 'Orbita: gira attorno al drone o al bando (trascina per girare, rotella per lo zoom)',
+  'Orbit: turn around the drone or the bando (drag to turn, wheel to zoom)':
+    'Orbita: gira attorno al drone o al bando (trascina per girare, rotella per lo zoom)',
   'Chase: behind the drone': 'Inseguimento: dietro al drone',
   'FPV: from the drone’s camera': 'FPV: dalla camera del drone',
   'Top: from above, north up': 'Alto: dall’alto, nord in su',
-  'Follow the drone (Orbit & Top; panning stops it, double-click recentres)': 'Segui il drone (Orbita e Alto; il pan lo ferma, doppio clic ricentra)',
+  'Follow the drone (Orbit & Top; panning stops it, double-click recentres)':
+    'Segui il drone (Orbita e Alto; il pan lo ferma, doppio clic ricentra)',
   'Follow the replay (Chase & FPV)': 'Segui il replay (Inseguimento e FPV)',
   'Roofs hidden: show them again': 'Tetti nascosti: mostrali di nuovo',
   'Hide the roofs (see inside the buildings)': 'Nascondi i tetti (vedi dentro gli edifici)',
   'Hide roofs': 'Nascondi i tetti',
-  'X-ray: whatever stands between the camera and the drone fades': 'Raggi X: ciò che sta tra la camera e il drone sfuma',
+  'X-ray: whatever stands between the camera and the drone fades':
+    'Raggi X: ciò che sta tra la camera e il drone sfuma',
   'Reset the camera': 'Reimposta la camera',
 
   // ---- Flights, path, timeline
   'Upload log': 'Carica log',
   'Clear paths': 'Cancella tracce',
-  'Drop a Betaflight Blackbox CSV, GPX or JSON log on the page (or Upload) to see the flight path.': 'Trascina sulla pagina un log Betaflight Blackbox CSV, GPX o JSON (o Carica) per vedere la traiettoria.',
+  'Drop a Betaflight Blackbox CSV, GPX or JSON log on the page (or Upload) to see the flight path.':
+    'Trascina sulla pagina un log Betaflight Blackbox CSV, GPX o JSON (o Carica) per vedere la traiettoria.',
   'blue = slow → red =': 'blu = lento → rosso =',
   'Pin start': 'Fissa partenza',
   'Pin end': 'Fissa arrivo',
   'Pin this moment': 'Fissa questo momento',
   'Adjust position': 'Regola la posizione',
-  'Adjust position: arrows on the replay drone in the 3D view; drag it to where it is at this moment, height included': 'Regola la posizione: frecce sul drone del replay nella vista 3D; trascinalo dove si trova in questo momento, altezza compresa',
+  'Adjust position: arrows on the replay drone in the 3D view; drag it to where it is at this moment, height included':
+    'Regola la posizione: frecce sul drone del replay nella vista 3D; trascinalo dove si trova in questo momento, altezza compresa',
   'Done adjusting': 'Fine regolazione',
-  'Done: keep the drone where you put it (Enter); Esc puts it back': 'Fatto: il drone resta dove l\'hai messo (Invio); Esc lo rimette com\'era',
-  'Drag the arrows (or a square) to where the drone is at this moment; arrows nudge, Shift+↑↓ up and down. Enter keeps it, Esc puts it back.': 'Trascina le frecce (o un quadrato) dove si trova il drone in questo momento; i tasti freccia lo spostano, Shift+↑↓ su e giù. Invio conferma, Esc lo rimette com\'era.',
-  'Pinned at {0}: the drone stays where you put it, the path blends to the next pin.': 'Fissato a {0}: il drone resta dove l\'hai messo, il percorso sfuma verso il punto fissato successivo.',
-  'Click where the drone is at this moment (the video shows it). Esc cancels.': 'Fai clic dove si trova il drone in questo momento (lo mostra il video). Esc annulla.',
-  'Pin this moment: stop where the video shows clearly where the drone is, then click the ground there; the path around this moment moves there (GPS drift)': 'Fissa questo momento: fermati dove il video mostra chiaramente dove si trova il drone, poi fai clic sul terreno in quel punto; il percorso intorno a questo momento si sposta lì (deriva del GPS)',
-  'Click the ground where the drone is at this moment (the video shows it) — in any 3D view or panel. Esc cancels.': 'Fai clic sul terreno dove si trova il drone in questo momento (lo mostra il video), in qualsiasi vista 3D o pannello. Esc annulla.',
-  'Pinned at {0}: the path around this moment moves there, blending to the next pin.': 'Fissato a {0}: il percorso intorno a questo momento si sposta lì, sfumando verso il punto fissato successivo.',
+  'Done: keep the drone where you put it (Enter); Esc puts it back':
+    "Fatto: il drone resta dove l'hai messo (Invio); Esc lo rimette com'era",
+  'Drag the arrows (or a square) to where the drone is at this moment; arrows nudge, Shift+↑↓ up and down. Enter keeps it, Esc puts it back.':
+    "Trascina le frecce (o un quadrato) dove si trova il drone in questo momento; i tasti freccia lo spostano, Shift+↑↓ su e giù. Invio conferma, Esc lo rimette com'era.",
+  'Pinned at {0}: the drone stays where you put it, the path blends to the next pin.':
+    "Fissato a {0}: il drone resta dove l'hai messo, il percorso sfuma verso il punto fissato successivo.",
+  'Click where the drone is at this moment (the video shows it). Esc cancels.':
+    'Fai clic dove si trova il drone in questo momento (lo mostra il video). Esc annulla.',
+  'Pin this moment: stop where the video shows clearly where the drone is, then click the ground there; the path around this moment moves there (GPS drift)':
+    'Fissa questo momento: fermati dove il video mostra chiaramente dove si trova il drone, poi fai clic sul terreno in quel punto; il percorso intorno a questo momento si sposta lì (deriva del GPS)',
+  'Click the ground where the drone is at this moment (the video shows it) — in any 3D view or panel. Esc cancels.':
+    'Fai clic sul terreno dove si trova il drone in questo momento (lo mostra il video), in qualsiasi vista 3D o pannello. Esc annulla.',
+  'Pinned at {0}: the path around this moment moves there, blending to the next pin.':
+    'Fissato a {0}: il percorso intorno a questo momento si sposta lì, sfumando verso il punto fissato successivo.',
   'Remove the pins at moments of this flight': 'Togli i punti fissati nei momenti di questo volo',
   'Remove the pins at moments': 'Togli i punti fissati nei momenti',
-  'Pins at moments removed: the path follows the GPS again.': 'Punti fissati nei momenti tolti: il percorso segue di nuovo il GPS.',
+  'Pins at moments removed: the path follows the GPS again.':
+    'Punti fissati nei momenti tolti: il percorso segue di nuovo il GPS.',
   'Fit': 'Adatta',
   'Click the ground where the flight started': 'Clicca il terreno dove è partito il volo',
   'Click the ground where the flight ended': 'Clicca il terreno dove è finito il volo',
@@ -262,12 +307,18 @@ export const IT: Readonly<Record<string, string>> = {
   'Load a log first': 'Carica prima un log',
   'Pin cancelled': 'Fissaggio annullato',
   'Path placed. Use the compass to rotate it if needed.': 'Traccia posizionata. Usa la bussola per ruotarla se serve.',
-  'Start placed. Pin the end to turn the path about it, or use the compass.': 'Partenza posizionata. Fissa l’arrivo per ruotare la traccia attorno a lei, o usa la bussola.',
-  'Path turned about its start toward the end you pinned.': 'Traccia ruotata attorno alla partenza verso l’arrivo che hai fissato.',
-  'Click the ground where the flight started — in any 3D view or panel. Esc cancels; your view is not changed.': 'Clicca il terreno dove è partito il volo, in qualsiasi vista 3D o pannello. Esc annulla; la vista non cambia.',
-  'Click the ground where the flight ended — in any 3D view or panel. Esc cancels; your view is not changed.': 'Clicca il terreno dove è finito il volo, in qualsiasi vista 3D o pannello. Esc annulla; la vista non cambia.',
-  'Path is {0} m from the map origin — outside the modelled area': 'La traccia è a {0} m dall’origine della mappa, fuori dall’area modellata',
-  'This bando has no real place: the flight starts on its take-off pad. Pin start / end and the compass fine-tune it.': 'Questo bando non ha un luogo reale: il volo parte dalla piazzola di decollo. Fissa partenza / arrivo e la bussola lo regolano.',
+  'Start placed. Pin the end to turn the path about it, or use the compass.':
+    'Partenza posizionata. Fissa l’arrivo per ruotare la traccia attorno a lei, o usa la bussola.',
+  'Path turned about its start toward the end you pinned.':
+    'Traccia ruotata attorno alla partenza verso l’arrivo che hai fissato.',
+  'Click the ground where the flight started — in any 3D view or panel. Esc cancels; your view is not changed.':
+    'Clicca il terreno dove è partito il volo, in qualsiasi vista 3D o pannello. Esc annulla; la vista non cambia.',
+  'Click the ground where the flight ended — in any 3D view or panel. Esc cancels; your view is not changed.':
+    'Clicca il terreno dove è finito il volo, in qualsiasi vista 3D o pannello. Esc annulla; la vista non cambia.',
+  'Path is {0} m from the map origin — outside the modelled area':
+    'La traccia è a {0} m dall’origine della mappa, fuori dall’area modellata',
+  'This bando has no real place: the flight starts on its take-off pad. Pin start / end and the compass fine-tune it.':
+    'Questo bando non ha un luogo reale: il volo parte dalla piazzola di decollo. Fissa partenza / arrivo e la bussola lo regolano.',
 
   // ---- Simulator and radio
   'Arm + record': 'Arma + registra',
@@ -299,7 +350,8 @@ export const IT: Readonly<Record<string, string>> = {
   'inv': 'inv',
   'rate °/s': 'rate °/s',
   'throttle springs to centre (gamepad)': 'il gas torna al centro (gamepad)',
-  'No controller — plug in your radio (USB joystick mode) or gamepad and move a stick.': 'Nessun controller: collega la radio (modalità joystick USB) o un gamepad e muovi uno stick.',
+  'No controller — plug in your radio (USB joystick mode) or gamepad and move a stick.':
+    'Nessun controller: collega la radio (modalità joystick USB) o un gamepad e muovi uno stick.',
   'Turn slowly': 'Gira piano',
 
   // ---- Help
@@ -307,13 +359,18 @@ export const IT: Readonly<Record<string, string>> = {
   'KEYS': 'TASTI',
   'LOGS': 'LOG',
   'ORBIT': 'ORBITA',
-  '· Enter arm/record · W/S pitch · A/D roll · Q/E yaw · ↑/↓ or Space/Shift throttle': '· Invio arma/registra · W/S beccheggio · A/D rollio · Q/E imbardata · ↑/↓ o Spazio/Shift gas',
-  '· V view · M angle/acro · H alt-hold · R reset · P replay · ←/→ seek (Shift = 10 s) · Esc cancel a pin · radio via USB (Radio panel)': '· V vista · M angle/acro · H mantieni quota · R reimposta · P replay · ←/→ scorri (Shift = 10 s) · Esc annulla il fissaggio · radio via USB (pannello Radio)',
-  '· drag rotate · right-drag pan · wheel zoom · pinch on touch': '· trascina ruota · tasto destro sposta · rotella zoom · pizzica sul touch',
-  '· drop a Betaflight Blackbox CSV, GPX or JSON file anywhere · drop a satellite screenshot to replace the map': '· trascina ovunque un file Betaflight Blackbox CSV, GPX o JSON · trascina uno screenshot satellitare per sostituire la mappa',
+  '· Enter arm/record · W/S pitch · A/D roll · Q/E yaw · ↑/↓ or Space/Shift throttle':
+    '· Invio arma/registra · W/S beccheggio · A/D rollio · Q/E imbardata · ↑/↓ o Spazio/Shift gas',
+  '· V view · M angle/acro · H alt-hold · R reset · P replay · ←/→ seek (Shift = 10 s) · Esc cancel a pin · radio via USB (Radio panel)':
+    '· V vista · M angle/acro · H mantieni quota · R reimposta · P replay · ←/→ scorri (Shift = 10 s) · Esc annulla il fissaggio · radio via USB (pannello Radio)',
+  '· drag rotate · right-drag pan · wheel zoom · pinch on touch':
+    '· trascina ruota · tasto destro sposta · rotella zoom · pizzica sul touch',
+  '· drop a Betaflight Blackbox CSV, GPX or JSON file anywhere · drop a satellite screenshot to replace the map':
+    '· trascina ovunque un file Betaflight Blackbox CSV, GPX o JSON · trascina uno screenshot satellitare per sostituire la mappa',
 
   // ---- Blackbox, video, live, render
-  'Load a Betaflight Blackbox CSV with motor, gyro and RC columns to see sticks, motors and attitude here.': 'Carica un CSV Betaflight Blackbox con colonne motori, giroscopio e RC per vedere qui stick, motori e assetto.',
+  'Load a Betaflight Blackbox CSV with motor, gyro and RC columns to see sticks, motors and attitude here.':
+    'Carica un CSV Betaflight Blackbox con colonne motori, giroscopio e RC per vedere qui stick, motori e assetto.',
   'Load video': 'Carica video',
   'Auto-sync': 'Sincronizza auto',
   'Sync here': 'Sincronizza qui',
@@ -326,12 +383,15 @@ export const IT: Readonly<Record<string, string>> = {
   'offset s': 'scarto s',
   'scan s': 'analizza s',
   'size': 'dimensione',
-  'The video is on the main page (Views panel → Main page).': 'Il video è nella pagina principale (pannello Viste → Pagina principale).',
+  'The video is on the main page (Views panel → Main page).':
+    'Il video è nella pagina principale (pannello Viste → Pagina principale).',
   'Video loaded: {0}': 'Video caricato: {0}',
   'Video offset {0} s': 'Scarto video {0} s',
   'Need a log with a lift-off and a loaded video': 'Serve un log con un decollo e un video caricato',
-  'Need a log with a flip or roll in the first 25 s of flight, and a loaded video': 'Serve un log con un flip o roll nei primi 25 s di volo, e un video caricato',
-  'Need a log with a yaw flick after lift-off, and a loaded video': 'Serve un log con un colpo di imbardata dopo il decollo, e un video caricato',
+  'Need a log with a flip or roll in the first 25 s of flight, and a loaded video':
+    'Serve un log con un flip o roll nei primi 25 s di volo, e un video caricato',
+  'Need a log with a yaw flick after lift-off, and a loaded video':
+    'Serve un log con un colpo di imbardata dopo il decollo, e un video caricato',
   'Load the video first': 'Carica prima il video',
   'Auto-sync failed': 'Sincronizzazione automatica non riuscita',
   'Auto-synced: offset {0} s': 'Sincronizzato: scarto {0} s',
@@ -339,9 +399,11 @@ export const IT: Readonly<Record<string, string>> = {
   'opening video…': 'apertura video…',
   'Go live': 'Vai live',
   'Telemetry: run': 'Telemetria: avvia',
-  'Not connected. Enter a ws:// (WebSocket) or http:// (event stream) URL for your telemetry source, open this page over http://localhost, then Connect.': 'Non connesso. Inserisci un URL ws:// (WebSocket) o http:// (event stream) della sorgente di telemetria, apri questa pagina su http://localhost, poi Connetti.',
+  'Not connected. Enter a ws:// (WebSocket) or http:// (event stream) URL for your telemetry source, open this page over http://localhost, then Connect.':
+    'Non connesso. Inserisci un URL ws:// (WebSocket) o http:// (event stream) della sorgente di telemetria, apri questa pagina su http://localhost, poi Connetti.',
   '(CRSF from an ExpressLRS receiver, UDP, TCP, serial, or': '(CRSF da un ricevitore ExpressLRS, UDP, TCP, seriale, o',
-  ') and connect to its WebSocket. Video: SquirrelCast can stream the phone\'s camera over WebRTC or RTSP; open its page or load the file in the Video panel.': ') e connettiti al suo WebSocket. Video: SquirrelCast può trasmettere la camera del telefono via WebRTC o RTSP; apri la sua pagina o carica il file nel pannello Video.',
+  ") and connect to its WebSocket. Video: SquirrelCast can stream the phone's camera over WebRTC or RTSP; open its page or load the file in the Video panel.":
+    ') e connettiti al suo WebSocket. Video: SquirrelCast può trasmettere la camera del telefono via WebRTC o RTSP; apri la sua pagina o carica il file nel pannello Video.',
   'Connected: waiting for a GPS fix…': 'Connesso: in attesa del fix GPS…',
   'Disconnected. The live path is kept as a normal flight.': 'Disconnesso. La traccia live resta come un volo normale.',
   'Render replay (exact MP4)': 'Render del replay (MP4 esatto)',
@@ -355,7 +417,8 @@ export const IT: Readonly<Record<string, string>> = {
   'Render cancelled.': 'Render annullato.',
   'Seeking to the start…': 'Ritorno all’inizio…',
   'Load a recorded flight first.': 'Carica prima un volo registrato.',
-  'This browser cannot record video: use Chrome or Edge.': 'Questo browser non può registrare video: usa Chrome o Edge.',
+  'This browser cannot record video: use Chrome or Edge.':
+    'Questo browser non può registrare video: usa Chrome o Edge.',
   'Render replay (exact MP4): draws the replay frame by frame at the chosen size and fps, so the speed is always right and the file is constant frame rate (best for DaVinci); slower than real time, keep this tab in front. Record: captures what you see, live, and can stutter if the page is slow. “Green screen” keeps only the widgets on green, to key out in DaVinci.':
     'Render del replay (MP4 esatto): disegna il replay fotogramma per fotogramma alla dimensione e agli fps scelti, quindi la velocità è sempre giusta e il file ha frame rate costante (ideale per DaVinci); più lento del tempo reale, tieni questa scheda in primo piano. Registra: cattura ciò che vedi, dal vivo, e può scattare se la pagina è lenta. “Green screen” tiene solo i widget su verde, da scontornare in DaVinci.',
 
@@ -400,43 +463,52 @@ export const IT: Readonly<Record<string, string>> = {
   'Add a copy of {0} to your bandos and open it': 'Aggiungi una copia di {0} ai tuoi bando e aprila',
   'Show {0} in 3D': 'Mostra {0} in 3D',
   'Change the area on the map and regenerate': 'Cambia l’area sulla mappa e rigenera',
-  'Edit the model (its place is hidden, so there is no map area)': 'Modifica il modello (il luogo è nascosto, quindi non c’è area sulla mappa)',
+  'Edit the model (its place is hidden, so there is no map area)':
+    'Modifica il modello (il luogo è nascosto, quindi non c’è area sulla mappa)',
   'no map · place hidden': 'niente mappa · luogo nascosto',
-  'This bando was shared without its place: no map, no map data, no Area step. Flights start on its take-off pad; pin start / end and the compass fine-tune them.': 'Questo bando è stato condiviso senza il luogo: niente mappa, niente dati della mappa, niente passo Area. I voli partono dalla sua piazzola di decollo; fissa partenza / arrivo e la bussola li regolano.',
+  'This bando was shared without its place: no map, no map data, no Area step. Flights start on its take-off pad; pin start / end and the compass fine-tune them.':
+    'Questo bando è stato condiviso senza il luogo: niente mappa, niente dati della mappa, niente passo Area. I voli partono dalla sua piazzola di decollo; fissa partenza / arrivo e la bussola li regolano.',
   'place hidden': 'luogo nascosto',
   'Save it as a file to share; its place stays hidden': 'Salvalo come file da condividere; il luogo resta nascosto',
   'Save it as a file to share, with its place': 'Salvalo come file da condividere, con il luogo',
-  'Save a copy to share without its place: no map, no map names, no GPS landmarks': 'Salva una copia da condividere senza il luogo: niente mappa, niente nomi dalla mappa, niente riferimenti GPS',
+  'Save a copy to share without its place: no map, no map names, no GPS landmarks':
+    'Salva una copia da condividere senza il luogo: niente mappa, niente nomi dalla mappa, niente riferimenti GPS',
   'Export hidden': 'Esporta nascosto',
   '{0} buildings · place hidden': '{0} edifici · luogo nascosto',
   '{0} buildings · {1}': '{0} edifici · {1}',
   '{0} buildings': '{0} edifici',
-  'No bando yet. Press New bando, search a place, frame the area on the map and generate the 3D model.': 'Ancora nessun bando. Premi Nuovo bando, cerca un luogo, inquadra l’area sulla mappa e genera il modello 3D.',
+  'No bando yet. Press New bando, search a place, frame the area on the map and generate the 3D model.':
+    'Ancora nessun bando. Premi Nuovo bando, cerca un luogo, inquadra l’area sulla mappa e genera il modello 3D.',
   'Bando duplicated.': 'Bando duplicato.',
   'Back up all': 'Backup di tutto',
   'Restore…': 'Ripristina…',
-  'Save every bando and your own blocks in one file (keep it somewhere safe: the browser can lose what it stores)': 'Salva ogni bando e i tuoi blocchi in un file (tienilo al sicuro: il browser può perdere ciò che conserva)',
-  'Bring back a backup file: bandos it has that are missing here are added, an older copy here is replaced, a newer one is kept': 'Ripristina un file di backup: i bando che mancano qui vengono aggiunti, una copia più vecchia qui viene sostituita, una più nuova resta',
+  'Save every bando and your own blocks in one file (keep it somewhere safe: the browser can lose what it stores)':
+    'Salva ogni bando e i tuoi blocchi in un file (tienilo al sicuro: il browser può perdere ciò che conserva)',
+  'Bring back a backup file: bandos it has that are missing here are added, an older copy here is replaced, a newer one is kept':
+    'Ripristina un file di backup: i bando che mancano qui vengono aggiunti, una copia più vecchia qui viene sostituita, una più nuova resta',
   'Backed up {0} bandos and {1} own blocks in {2}.': 'Backup di {0} bando e {1} blocchi tuoi in {2}.',
   'That file is not an OpenBando backup.': 'Quel file non è un backup di OpenBando.',
   'Restored: {0}.': 'Ripristinato: {0}.',
   'Nothing to restore: the backup is empty.': 'Niente da ripristinare: il backup è vuoto.',
   '{0} added': '{0} aggiunti',
-  '{0} replaced by the backup\'s newer copy': '{0} sostituiti dalla copia più nuova del backup',
+  "{0} replaced by the backup's newer copy": '{0} sostituiti dalla copia più nuova del backup',
   '{0} kept (newer here)': '{0} tenuti (più nuovi qui)',
   '{0} own blocks': '{0} blocchi tuoi',
   '{0} broken entries skipped': '{0} voci rovinate saltate',
   'Delete “{0}”? This cannot be undone.': 'Eliminare “{0}”? Non si può annullare.',
   'Exported {0}.': 'Esportato {0}.',
   'Exported {0} without its place.': 'Esportato {0} senza il luogo.',
-  'Exported {0} without its place; its real ground travels inside.': 'Esportato {0} senza il luogo; il terreno reale viaggia dentro il file.',
+  'Exported {0} without its place; its real ground travels inside.':
+    'Esportato {0} senza il luogo; il terreno reale viaggia dentro il file.',
   'Exported {0}; its real ground travels inside.': 'Esportato {0}; il terreno reale viaggia dentro il file.',
   'Imported “{0}”.': 'Importato “{0}”.',
   'Imported “{0}” (its place is hidden).': 'Importato “{0}” (il luogo è nascosto).',
   'Not a valid bando file.': 'Non è un file di bando valido.',
-  'Could not download “{0}”. Check the connection and try again.': 'Impossibile scaricare “{0}”. Controlla la connessione e riprova.',
+  'Could not download “{0}”. Check the connection and try again.':
+    'Impossibile scaricare “{0}”. Controlla la connessione e riprova.',
   'Bando “{0}” loaded.': 'Bando “{0}” caricato.',
-  'The old Chiari e Forti oil factory on the Sile river: brick and ochre blocks with broken roofs, the roofless mill with its battlemented tower by the river, the water tower and the Olio Cuore sign tower.': 'La vecchia fabbrica dell’olio Chiari e Forti sul Sile: blocchi in mattoni e ocra con i tetti sfondati, il mulino senza tetto con la sua torre merlata sul fiume, la torre dell’acqua e la torre insegna dell’Olio Cuore.',
+  'The old Chiari e Forti oil factory on the Sile river: brick and ochre blocks with broken roofs, the roofless mill with its battlemented tower by the river, the water tower and the Olio Cuore sign tower.':
+    'La vecchia fabbrica dell’olio Chiari e Forti sul Sile: blocchi in mattoni e ocra con i tetti sfondati, il mulino senza tetto con la sua torre merlata sul fiume, la torre dell’acqua e la torre insegna dell’Olio Cuore.',
 
   // ---- zone map
   '← Bandos': '← Bando',
@@ -450,43 +522,59 @@ export const IT: Readonly<Record<string, string>> = {
   'Direction of the rows': 'Direzione delle file',
   '{0} axis': 'asse {0}',
   'Replay speed': 'Velocità del replay',
-  'Pan and zoom the map to place the area, drag the frame\'s edges and corners to size it, then Generate.': 'Sposta e ingrandisci la mappa per posizionare l’area, trascina bordi e angoli della cornice per dimensionarla, poi Genera.',
+  "Pan and zoom the map to place the area, drag the frame's edges and corners to size it, then Generate.":
+    'Sposta e ingrandisci la mappa per posizionare l’area, trascina bordi e angoli della cornice per dimensionarla, poi Genera.',
   '＋ Add area': '＋ Aggiungi area',
   'Areas': 'Aree',
   'Area': 'Area',
   'Zone {0}': 'Zona {0}',
-  'Keep this framed area and frame another one: they are generated together': 'Tieni quest’area inquadrata e inquadrane un’altra: vengono generate insieme',
-  'On: one bando covering the areas and the ground between them. Off: only what is inside each area.': 'Attivo: un bando che copre le aree e il terreno tra di esse. Disattivo: solo ciò che sta dentro ogni area.',
+  'Keep this framed area and frame another one: they are generated together':
+    'Tieni quest’area inquadrata e inquadrane un’altra: vengono generate insieme',
+  'On: one bando covering the areas and the ground between them. Off: only what is inside each area.':
+    'Attivo: un bando che copre le aree e il terreno tra di esse. Disattivo: solo ciò che sta dentro ogni area.',
   'Data server…': 'Server dati…',
-  'Use your own OpenStreetMap data server (e.g. the PHP proxy) instead of the public ones': 'Usa un tuo server dati OpenStreetMap (es. il proxy PHP) invece di quelli pubblici',
-  'Your Overpass / proxy URL (leave empty to use the public servers):': 'URL del tuo Overpass / proxy (lascia vuoto per i server pubblici):',
+  'Use your own OpenStreetMap data server (e.g. the PHP proxy) instead of the public ones':
+    'Usa un tuo server dati OpenStreetMap (es. il proxy PHP) invece di quelli pubblici',
+  'Your Overpass / proxy URL (leave empty to use the public servers):':
+    'URL del tuo Overpass / proxy (lascia vuoto per i server pubblici):',
   'Using your data server first.': 'Uso prima il tuo server dati.',
   'Using the public data servers.': 'Uso i server dati pubblici.',
   'Generate 3D': 'Genera 3D',
   'Building…': 'Costruzione…',
   'Regenerate 3D': 'Rigenera 3D',
   'Generate the model first': 'Genera prima il modello',
-  'Drag to turn the frame (shift = steps of 15°). Only what is inside the turned frame is used.': 'Trascina per ruotare la cornice (shift = passi di 15°). Si usa solo ciò che è dentro la cornice ruotata.',
+  'Drag to turn the frame (shift = steps of 15°). Only what is inside the turned frame is used.':
+    'Trascina per ruotare la cornice (shift = passi di 15°). Si usa solo ciò che è dentro la cornice ruotata.',
   'Turn the frame back to north-up': 'Riporta la cornice con il nord in alto',
   'North is up': 'Il nord è in alto',
   'Move the map to frame the area first.': 'Sposta prima la mappa per inquadrare l’area.',
-  'That area is already added: move the map to frame another one.': 'Quell’area è già aggiunta: sposta la mappa per inquadrarne un’altra.',
+  'That area is already added: move the map to frame another one.':
+    'Quell’area è già aggiunta: sposta la mappa per inquadrarne un’altra.',
   'Area {0} added. Frame the next one, or Generate.': 'Area {0} aggiunta. Inquadra la prossima, o Genera.',
-  'The areas are too far apart: together they may span at most {0} m.': 'Le aree sono troppo lontane: insieme possono coprire al massimo {0} m.',
-  'Regenerating replaces this bando\'s model, including your manual edits. Continue?': 'Rigenerare sostituisce il modello di questo bando, comprese le tue modifiche manuali. Continuare?',
+  'The areas are too far apart: together they may span at most {0} m.':
+    'Le aree sono troppo lontane: insieme possono coprire al massimo {0} m.',
+  "Regenerating replaces this bando's model, including your manual edits. Continue?":
+    'Rigenerare sostituisce il modello di questo bando, comprese le tue modifiche manuali. Continuare?',
   'No location found for that search.': 'Nessun luogo trovato per questa ricerca.',
-  'Exact address not found: showing “{0}”. Move the map to the place.': 'Indirizzo esatto non trovato: mostro “{0}”. Sposta la mappa sul luogo.',
-  'Search a place (or drag the map to it), then frame the area and Generate.': 'Cerca un luogo (o trascina la mappa fin lì), poi inquadra l’area e Genera.',
+  'Exact address not found: showing “{0}”. Move the map to the place.':
+    'Indirizzo esatto non trovato: mostro “{0}”. Sposta la mappa sul luogo.',
+  'Search a place (or drag the map to it), then frame the area and Generate.':
+    'Cerca un luogo (o trascina la mappa fin lì), poi inquadra l’area e Genera.',
   'Search a place or drag the map to it first': 'Prima cerca un luogo o trascina la mappa fin lì',
   'Matches': 'Risultati',
   'Close the matches': 'Chiudi i risultati',
-  'Geocoding unreachable (offline?). Enter lat,lon instead.': 'Ricerca luoghi non raggiungibile (offline?). Inserisci lat,lon.',
-  'Trees and roads could not be loaded (servers busy): buildings only. Regenerate later to add them.': 'Alberi e strade non caricati (server occupati): solo edifici. Rigenera più tardi per aggiungerli.',
+  'Geocoding unreachable (offline?). Enter lat,lon instead.':
+    'Ricerca luoghi non raggiungibile (offline?). Inserisci lat,lon.',
+  'Trees and roads could not be loaded (servers busy): buildings only. Regenerate later to add them.':
+    'Alberi e strade non caricati (server occupati): solo edifici. Rigenera più tardi per aggiungerli.',
   'Could not load OpenStreetMap data.': 'Impossibile caricare i dati OpenStreetMap.',
-  'Real ground loaded ({0} m above sea level at the centre). {1}.': 'Terreno reale caricato ({0} m s.l.m. al centro). {1}.',
+  'Real ground loaded ({0} m above sea level at the centre). {1}.':
+    'Terreno reale caricato ({0} m s.l.m. al centro). {1}.',
   'Could not load the real ground: {0}.': 'Impossibile caricare il terreno reale: {0}.',
-  'The two corners are too close together to solve a rotation.': 'I due angoli sono troppo vicini per calcolare una rotazione.',
-  'Blank model: create a bando in the Bandos panel, or Alt+click the map to build one.': 'Modello vuoto: crea un bando nel pannello Bando, o Alt+clic sulla mappa per costruirne uno.',
+  'The two corners are too close together to solve a rotation.':
+    'I due angoli sono troppo vicini per calcolare una rotazione.',
+  'Blank model: create a bando in the Bandos panel, or Alt+click the map to build one.':
+    'Modello vuoto: crea un bando nel pannello Bando, o Alt+clic sulla mappa per costruirne uno.',
 
   // ---- editor header
   '2D': '2D',
@@ -496,103 +584,135 @@ export const IT: Readonly<Record<string, string>> = {
   'natural': 'naturale',
   'height map': 'mappa altezze',
   'wireframe': 'wireframe',
-  'How the ground is drawn: its own colours, coloured by height (also under the 2D plan), or as a wireframe (3D)': 'Come si disegna il terreno: i suoi colori, colorato per altezza (anche sotto la pianta 2D), o in wireframe (3D)',
+  'How the ground is drawn: its own colours, coloured by height (also under the 2D plan), or as a wireframe (3D)':
+    'Come si disegna il terreno: i suoi colori, colorato per altezza (anche sotto la pianta 2D), o in wireframe (3D)',
   'roofs': 'tetti',
   'Show the roofs in the 3D view': 'Mostra i tetti nella vista 3D',
   'Indoors': 'Interni',
   '✓ Indoors': '✓ Interni',
-  'Take the roof off and edit one floor of the selected building: walls, doors, windows, voids, columns, stairs': 'Togli il tetto e modifica un piano dell’edificio selezionato: muri, porte, finestre, vuoti, colonne, scale',
+  'Take the roof off and edit one floor of the selected building: walls, doors, windows, voids, columns, stairs':
+    'Togli il tetto e modifica un piano dell’edificio selezionato: muri, porte, finestre, vuoti, colonne, scale',
   'The roof is hidden while editing indoors': 'Il tetto è nascosto mentre modifichi gli interni',
   'Library': 'Libreria',
   '▦ Library': '▦ Libreria',
-  'Library: ready-made objects, buildings and patterns, yours and from the online catalogue': 'Libreria: oggetti, edifici e schemi pronti, tuoi e dal catalogo online',
+  'Library: ready-made objects, buildings and patterns, yours and from the online catalogue':
+    'Libreria: oggetti, edifici e schemi pronti, tuoi e dal catalogo online',
   'Elements': 'Elementi',
   '☰ Elements': '☰ Elementi',
-  'Elements: list of all buildings, structures, walls and trees (grouped by area), with thumbnails and links': 'Elementi: elenco di tutti gli edifici, strutture, muri e alberi (raggruppati per area), con miniature e collegamenti',
+  'Elements: list of all buildings, structures, walls and trees (grouped by area), with thumbnails and links':
+    'Elementi: elenco di tutti gli edifici, strutture, muri e alberi (raggruppati per area), con miniature e collegamenti',
   'AI': 'IA',
-  'Chat with the AI assistant to edit buildings and interiors': 'Chatta con l’assistente IA per modificare edifici e interni',
-  'click: select · drag handles: move / resize · drag: orbit · wheel: zoom': 'clic: seleziona · trascina le maniglie: sposta / ridimensiona · trascina: orbita · rotella: zoom',
-  'click: select · drag: orbit · right-drag / Shift-drag: pan · wheel: zoom': 'clic: seleziona · trascina: orbita · tasto destro / Shift-trascina: sposta · rotella: zoom',
-  'Drag a building to move it, corners / edge squares to resize or reshape, the yellow knob to rotate. Drag the map to pan.': 'Trascina un edificio per spostarlo, gli angoli / quadratini dei lati per ridimensionarlo o cambiarne la forma, la manopola gialla per ruotarlo. Trascina la mappa per spostarti.',
-  'Drag to move the tools · double-click to put them back': 'Trascina per spostare gli strumenti · doppio clic per rimetterli a posto',
-  'Drag to move the options · double-click to put them back beside the tool': 'Trascina per spostare le opzioni · doppio clic per rimetterle accanto allo strumento',
+  'Chat with the AI assistant to edit buildings and interiors':
+    'Chatta con l’assistente IA per modificare edifici e interni',
+  'click: select · drag handles: move / resize · drag: orbit · wheel: zoom':
+    'clic: seleziona · trascina le maniglie: sposta / ridimensiona · trascina: orbita · rotella: zoom',
+  'click: select · drag: orbit · right-drag / Shift-drag: pan · wheel: zoom':
+    'clic: seleziona · trascina: orbita · tasto destro / Shift-trascina: sposta · rotella: zoom',
+  'Drag a building to move it, corners / edge squares to resize or reshape, the yellow knob to rotate. Drag the map to pan.':
+    'Trascina un edificio per spostarlo, gli angoli / quadratini dei lati per ridimensionarlo o cambiarne la forma, la manopola gialla per ruotarlo. Trascina la mappa per spostarti.',
+  'Drag to move the tools · double-click to put them back':
+    'Trascina per spostare gli strumenti · doppio clic per rimetterli a posto',
+  'Drag to move the options · double-click to put them back beside the tool':
+    'Trascina per spostare le opzioni · doppio clic per rimetterle accanto allo strumento',
 
   // ---- tools
   'Select': 'Seleziona',
   'Select options': 'Opzioni di Seleziona',
   'Click selects': 'Il clic seleziona',
   'drag moves / resizes / rotates': 'trascina sposta / ridimensiona / ruota',
-  'indoors, drag on the floor to box-select columns, outside the building to pan': 'negli interni, trascina sul pavimento per selezionare le colonne, fuori dall’edificio per spostarti',
+  'indoors, drag on the floor to box-select columns, outside the building to pan':
+    'negli interni, trascina sul pavimento per selezionare le colonne, fuori dall’edificio per spostarti',
   '▭ Box': '▭ Riquadro',
   '◌ Lasso': '◌ Lazo',
   'Shift + drag · Shift + click adds': 'Shift + trascina · Shift + clic aggiunge',
   'drag on the floor · Shift adds': 'trascina sul pavimento · Shift aggiunge',
-  'How a drag on empty ground selects (outdoors: hold Shift; indoors: columns of the floor)': 'Come seleziona un trascinamento sul terreno vuoto (esterni: tieni Shift; interni: le colonne del piano)',
+  'How a drag on empty ground selects (outdoors: hold Shift; indoors: columns of the floor)':
+    'Come seleziona un trascinamento sul terreno vuoto (esterni: tieni Shift; interni: le colonne del piano)',
   'magnet': 'magnete',
-  'While moving or rotating a building: snap flush to close neighbours and line up with their angles and the map axes. Hold Alt to drag freely.': 'Mentre sposti o ruoti un edificio: si accosta ai vicini e si allinea ai loro angoli e agli assi della mappa. Tieni Alt per trascinare liberamente.',
+  'While moving or rotating a building: snap flush to close neighbours and line up with their angles and the map axes. Hold Alt to drag freely.':
+    'Mentre sposti o ruoti un edificio: si accosta ai vicini e si allinea ai loro angoli e agli assi della mappa. Tieni Alt per trascinare liberamente.',
   'Measure': 'Misura',
   'Measure options': 'Opzioni di Misura',
-  'Click points to chain measures (magnet to elements)': 'Clicca i punti per concatenare misure (magnete sugli elementi)',
+  'Click points to chain measures (magnet to elements)':
+    'Clicca i punti per concatenare misure (magnete sugli elementi)',
   'click a line to select / move it': 'clicca una linea per selezionarla / spostarla',
   'Delete removes it': 'Elimina la rimuove',
-  'Click points: each one continues the chain (B of one is A of the next); click the same point twice, Esc or right-click to stop. Click a line to select it, drag to move it, Delete removes it.': 'Clicca i punti: ognuno continua la catena (la B di una è la A della successiva); clicca due volte lo stesso punto, Esc o tasto destro per finire. Clicca una linea per selezionarla, trascinala per spostarla, Elimina la rimuove.',
+  'Click points: each one continues the chain (B of one is A of the next); click the same point twice, Esc or right-click to stop. Click a line to select it, drag to move it, Delete removes it.':
+    'Clicca i punti: ognuno continua la catena (la B di una è la A della successiva); clicca due volte lo stesso punto, Esc o tasto destro per finire. Clicca una linea per selezionarla, trascinala per spostarla, Elimina la rimuove.',
   'Delete the selected measure (Delete key)': 'Elimina la misura selezionata (tasto Canc)',
   'Remove all measures': 'Rimuovi tutte le misure',
   'Clear all': 'Cancella tutto',
   'Building': 'Edificio',
   'Building options': 'Opzioni di Edificio',
-  'Drag a rectangle on the map; it snaps flush to close neighbours unless auto-align is off': 'Trascina un rettangolo sulla mappa; si accosta ai vicini se l’allineamento automatico è attivo',
-  'Drag a rectangle to add a building (it cannot overlap another).': 'Trascina un rettangolo per aggiungere un edificio (non può sovrapporsi a un altro).',
+  'Drag a rectangle on the map; it snaps flush to close neighbours unless auto-align is off':
+    'Trascina un rettangolo sulla mappa; si accosta ai vicini se l’allineamento automatico è attivo',
+  'Drag a rectangle to add a building (it cannot overlap another).':
+    'Trascina un rettangolo per aggiungere un edificio (non può sovrapporsi a un altro).',
   'What to draw: Building': 'Cosa disegnare: Edificio',
   'What to draw: Greenhouse': 'Cosa disegnare: Serra',
   'auto-align': 'allineamento automatico',
-  'Snap the new building flush against close neighbours (closes small gaps, straightens small angles)': 'Accosta il nuovo edificio ai vicini (chiude piccoli spazi, raddrizza piccoli angoli)',
+  'Snap the new building flush against close neighbours (closes small gaps, straightens small angles)':
+    'Accosta il nuovo edificio ai vicini (chiude piccoli spazi, raddrizza piccoli angoli)',
   'Merge': 'Unisci',
   'Merge options': 'Opzioni di Unisci',
-  'Then click a touching (or almost touching) building to join it into the selected one': 'Poi clicca un edificio che tocca (o quasi) per unirlo a quello selezionato',
+  'Then click a touching (or almost touching) building to join it into the selected one':
+    'Poi clicca un edificio che tocca (o quasi) per unirlo a quello selezionato',
   'Click a touching building to merge it into “{0}”.': 'Clicca un edificio adiacente per unirlo a “{0}”.',
   'Buildings merged.': 'Edifici uniti.',
   'Cannot merge: {0}.': 'Impossibile unire: {0}.',
   'Cut': 'Taglia',
   'Cut options': 'Opzioni di Taglia',
-  'Cut a notch out of the selected building (U, H, L shapes)': 'Ritaglia una tacca dall’edificio selezionato (forme a U, H, L)',
-  'Drag a rectangle over the selected building to cut it out.': 'Trascina un rettangolo sull’edificio selezionato per ritagliarlo.',
+  'Cut a notch out of the selected building (U, H, L shapes)':
+    'Ritaglia una tacca dall’edificio selezionato (forme a U, H, L)',
+  'Drag a rectangle over the selected building to cut it out.':
+    'Trascina un rettangolo sull’edificio selezionato per ritagliarlo.',
   'That cut would split the building or leave a hole.': 'Quel taglio dividerebbe l’edificio o lascerebbe un buco.',
   'Wing': 'Ala',
   'Wing options': 'Opzioni di Ala',
   'Add a wing to the selected building': 'Aggiungi un’ala all’edificio selezionato',
-  'Drag a rectangle over the selected building to add it as a wing.': 'Trascina un rettangolo sull’edificio selezionato per aggiungerlo come ala.',
+  'Drag a rectangle over the selected building to add it as a wing.':
+    'Trascina un rettangolo sull’edificio selezionato per aggiungerlo come ala.',
   'The wing has to touch the building.': 'L’ala deve toccare l’edificio.',
   'That wing would overlap another building.': 'Quell’ala si sovrapporrebbe a un altro edificio.',
   'Structure': 'Struttura',
   'Structure options': 'Opzioni di Struttura',
-  'Tower, bridge, container, vehicle ... (choose the kind in the options)': 'Torre, ponte, container, veicolo ... (scegli il tipo nelle opzioni)',
-  'Click to place it. Select it to change height and size; drag to move.': 'Clicca per posizionarla. Selezionala per cambiare altezza e dimensione; trascina per spostarla.',
+  'Tower, bridge, container, vehicle ... (choose the kind in the options)':
+    'Torre, ponte, container, veicolo ... (scegli il tipo nelle opzioni)',
+  'Click to place it. Select it to change height and size; drag to move.':
+    'Clicca per posizionarla. Selezionala per cambiare altezza e dimensione; trascina per spostarla.',
   'What to place': 'Cosa posizionare',
   'What to place: {0}': 'Cosa posizionare: {0}',
   'Tree': 'Albero',
   'Tree options': 'Opzioni di Albero',
   'Click the map to plant a tree': 'Clicca la mappa per piantare un albero',
-  'Click to plant trees; switch to ↖ to move or delete them.': 'Clicca per piantare alberi; passa a ↖ per spostarli o eliminarli.',
+  'Click to plant trees; switch to ↖ to move or delete them.':
+    'Clicca per piantare alberi; passa a ↖ per spostarli o eliminarli.',
   'Tree: {0}': 'Albero: {0}',
   'Trees: {0}': 'Alberi: {0}',
   'Tree brush': 'Pennello alberi',
   'Tree brush options': 'Opzioni del pennello alberi',
-  'Paint trees with a pen, or fill a square, circle or hand-drawn area with random trees': 'Dipingi alberi con una penna, o riempi un quadrato, un cerchio o un’area disegnata a mano con alberi casuali',
+  'Paint trees with a pen, or fill a square, circle or hand-drawn area with random trees':
+    'Dipingi alberi con una penna, o riempi un quadrato, un cerchio o un’area disegnata a mano con alberi casuali',
   'pen': 'penna',
   'Pen': 'Penna',
   'Square': 'Quadrato',
   'Circle': 'Cerchio',
   'Lasso': 'Lazo',
   'Plant along a stroke': 'Pianta lungo un tratto',
-  'Drag along a path: trees are planted randomly in a strip around it.': 'Trascina lungo un percorso: gli alberi vengono piantati a caso in una striscia attorno.',
+  'Drag along a path: trees are planted randomly in a strip around it.':
+    'Trascina lungo un percorso: gli alberi vengono piantati a caso in una striscia attorno.',
   'Drag a square: it is filled with random trees.': 'Trascina un quadrato: si riempie di alberi a caso.',
-  'Drag from the centre: a circle is filled with random trees.': 'Trascina dal centro: un cerchio si riempie di alberi a caso.',
-  'Draw a loop freehand: it is filled with random trees.': 'Disegna un contorno a mano libera: si riempie di alberi a caso.',
-  'Drag along a path: shrubs are planted randomly in a strip around it.': 'Trascina lungo un percorso: gli arbusti vengono piantati a caso in una striscia attorno.',
+  'Drag from the centre: a circle is filled with random trees.':
+    'Trascina dal centro: un cerchio si riempie di alberi a caso.',
+  'Draw a loop freehand: it is filled with random trees.':
+    'Disegna un contorno a mano libera: si riempie di alberi a caso.',
+  'Drag along a path: shrubs are planted randomly in a strip around it.':
+    'Trascina lungo un percorso: gli arbusti vengono piantati a caso in una striscia attorno.',
   'Drag a square: it is filled with random shrubs.': 'Trascina un quadrato: si riempie di arbusti a caso.',
-  'Drag from the centre: a circle is filled with random shrubs.': 'Trascina dal centro: un cerchio si riempie di arbusti a caso.',
-  'Draw a loop freehand: it is filled with random shrubs.': 'Disegna un contorno a mano libera: si riempie di arbusti a caso.',
+  'Drag from the centre: a circle is filled with random shrubs.':
+    'Trascina dal centro: un cerchio si riempie di arbusti a caso.',
+  'Draw a loop freehand: it is filled with random shrubs.':
+    'Disegna un contorno a mano libera: si riempie di arbusti a caso.',
   'Brush shape': 'Forma del pennello',
   'Brush shape: {0}': 'Forma del pennello: {0}',
   'Width of the pen stroke': 'Larghezza del tratto',
@@ -601,11 +721,13 @@ export const IT: Readonly<Record<string, string>> = {
   'Deciduous': 'Latifoglie',
   'Conifer': 'Conifere',
   '{0} trees planted. Undo removes the whole stroke.': '{0} alberi piantati. Annulla rimuove tutto il tratto.',
-  'No room for trees there (or the stroke was too short).': 'Non c’è spazio per alberi lì (o il tratto era troppo corto).',
+  'No room for trees there (or the stroke was too short).':
+    'Non c’è spazio per alberi lì (o il tratto era troppo corto).',
   'Fence': 'Recinzione',
   'Fence options': 'Opzioni di Recinzione',
   'Drag to draw a free-standing wall or fence': 'Trascina per disegnare un muro o una recinzione',
-  'Drag to draw a free-standing wall or fence. Select it to edit height or drag its ends.': 'Trascina per disegnare un muro o una recinzione. Selezionalo per cambiare l’altezza o trascinarne le estremità.',
+  'Drag to draw a free-standing wall or fence. Select it to edit height or drag its ends.':
+    'Trascina per disegnare un muro o una recinzione. Selezionalo per cambiare l’altezza o trascinarne le estremità.',
   'Material': 'Materiale',
   'Material: {0}': 'Materiale: {0}',
   'Masonry wall': 'Muro in muratura',
@@ -614,13 +736,16 @@ export const IT: Readonly<Record<string, string>> = {
   'Rendered block wall': 'Muro in blocchi intonacati',
   'Wooden fence': 'Staccionata in legno',
   'Post-and-rail fence': 'Staccionata a tre assi',
-  'Three planks on posts, open between them (a white farm fence)': 'Tre assi su pali, aperte tra loro (una staccionata bianca da fattoria)',
+  'Three planks on posts, open between them (a white farm fence)':
+    'Tre assi su pali, aperte tra loro (una staccionata bianca da fattoria)',
   'Metal fence': 'Recinzione metallica',
   'Chain-link fence': 'Rete metallica',
   'Road': 'Strada',
   'Road options': 'Opzioni di Strada',
-  'Drag along the way: a road, track, path or railway laid on the ground': 'Trascina lungo il tracciato: strada, sterrato, sentiero o ferrovia sul terreno',
-  'Drag along the way. Select a road to change its kind, width or surface.': 'Trascina lungo il tracciato. Seleziona una strada per cambiarne tipo, larghezza o fondo.',
+  'Drag along the way: a road, track, path or railway laid on the ground':
+    'Trascina lungo il tracciato: strada, sterrato, sentiero o ferrovia sul terreno',
+  'Drag along the way. Select a road to change its kind, width or surface.':
+    'Trascina lungo il tracciato. Seleziona una strada per cambiarne tipo, larghezza o fondo.',
   'Drag along the way to draw a road.': 'Trascina lungo il tracciato per disegnare una strada.',
   'Kind: {0}': 'Tipo: {0}',
   'Kind': 'Tipo',
@@ -630,8 +755,10 @@ export const IT: Readonly<Record<string, string>> = {
   '6 m wide by default': 'larga 6 m di default',
   'Surface': 'Superficie',
   'Surface options': 'Opzioni di Superficie',
-  'Draw an outline: the ground inside becomes asphalt, gravel, sand ...': 'Disegna un contorno: il terreno dentro diventa asfalto, ghiaia, sabbia ...',
-  'Draw the outline by hand. Select it (click its edge) to change it or delete it.': 'Disegna il contorno a mano. Selezionalo (clicca il bordo) per cambiarlo o eliminarlo.',
+  'Draw an outline: the ground inside becomes asphalt, gravel, sand ...':
+    'Disegna un contorno: il terreno dentro diventa asfalto, ghiaia, sabbia ...',
+  'Draw the outline by hand. Select it (click its edge) to change it or delete it.':
+    'Disegna il contorno a mano. Selezionalo (clicca il bordo) per cambiarlo o eliminarlo.',
   'Draw a loop: the outline of the area.': 'Disegna un anello: il contorno dell’area.',
   'Ground: {0}': 'Fondo: {0}',
   'Grass': 'Erba',
@@ -643,12 +770,14 @@ export const IT: Readonly<Record<string, string>> = {
   'Rubble': 'Macerie',
   'Water': 'Acqua',
   'Water options': 'Opzioni di Acqua',
-  'Draw an outline: a pond or basin, dug into the ground': 'Disegna un contorno: uno stagno o una vasca, scavati nel terreno',
+  'Draw an outline: a pond or basin, dug into the ground':
+    'Disegna un contorno: uno stagno o una vasca, scavati nel terreno',
   'Depth of the basin below the water, metres': 'Profondità della vasca sotto l’acqua, metri',
   'Terrain': 'Terreno',
   'Terrain options': 'Opzioni di Terreno',
   'raise': 'alza',
-  'Shape the ground: raise, lower, smooth, flatten, or stamp a hill, crater or ramp': 'Modella il terreno: alza, abbassa, ammorbidisci, spiana, o stampa una collina, un cratere o una rampa',
+  'Shape the ground: raise, lower, smooth, flatten, or stamp a hill, crater or ramp':
+    'Modella il terreno: alza, abbassa, ammorbidisci, spiana, o stampa una collina, un cratere o una rampa',
   'Shape the ground': 'Modella il terreno',
   'Shape the ground: {0}': 'Modella il terreno: {0}',
   'Raise': 'Alza',
@@ -657,7 +786,8 @@ export const IT: Readonly<Record<string, string>> = {
   'Flatten': 'Spiana',
   'Hill': 'Collina',
   'Crater': 'Cratere',
-  'Drag to raise the ground along the stroke. One stroke = one undo step.': 'Trascina per alzare il terreno lungo il tratto. Un tratto = un passo di annulla.',
+  'Drag to raise the ground along the stroke. One stroke = one undo step.':
+    'Trascina per alzare il terreno lungo il tratto. Un tratto = un passo di annulla.',
   'Brush radius (ramp: its width)': 'Raggio del pennello (rampa: la sua larghezza)',
   'Edge': 'Bordo',
   'Edge: {0}': 'Bordo: {0}',
@@ -708,12 +838,15 @@ export const IT: Readonly<Record<string, string>> = {
   'Rounded, natural': 'Arrotondato, naturale',
   'Re-load real ground': 'Ricarica terreno reale',
   'Download the real ground again (your strokes stay)': 'Scarica di nuovo il terreno reale (i tuoi tratti restano)',
-  'Remove every terrain stroke (back to the real ground, or flat)': 'Rimuovi ogni tratto di terreno (torna al terreno reale, o piano)',
+  'Remove every terrain stroke (back to the real ground, or flat)':
+    'Rimuovi ogni tratto di terreno (torna al terreno reale, o piano)',
   'Terrain strokes removed. Undo brings them back.': 'Tratti di terreno rimossi. Annulla li riporta.',
   'Tunnel': 'Tunnel',
   'Tunnel options': 'Opzioni di Tunnel',
-  'Drag a tunnel (or a room) under the ground; it opens where the ground is cut': 'Trascina un tunnel (o una stanza) sotto terra; si apre dove il terreno è tagliato',
-  'Drag from one end of the tunnel to the other. It opens where the ground is between its floor and ceiling: lower the ground at its ends with Terrain to make the mouths.': 'Trascina da un’estremità del tunnel all’altra. Si apre dove il terreno sta tra pavimento e soffitto: abbassa il terreno alle estremità con Terreno per fare gli imbocchi.',
+  'Drag a tunnel (or a room) under the ground; it opens where the ground is cut':
+    'Trascina un tunnel (o una stanza) sotto terra; si apre dove il terreno è tagliato',
+  'Drag from one end of the tunnel to the other. It opens where the ground is between its floor and ceiling: lower the ground at its ends with Terrain to make the mouths.':
+    'Trascina da un’estremità del tunnel all’altra. Si apre dove il terreno sta tra pavimento e soffitto: abbassa il terreno alle estremità con Terreno per fare gli imbocchi.',
   'What: {0}': 'Cosa: {0}',
   'Room': 'Stanza',
   'Section: {0}': 'Sezione: {0}',
@@ -723,9 +856,12 @@ export const IT: Readonly<Record<string, string>> = {
   'Concrete box section': 'Scatolare in cemento',
   'Inside width, metres': 'Larghezza interna, metri',
   'Inside height, metres': 'Altezza interna, metri',
-  'How far the floor is below the ground where you start dragging (a room: its ceiling)': 'Quanto il pavimento sta sotto il terreno dove inizi a trascinare (una stanza: il suo soffitto)',
-  'Heights are metres from the bando\'s zero. It opens where the ground is between floor and ceiling: dashed = covered, dark = open.': 'Le altezze sono metri dallo zero del bando. Si apre dove il terreno sta tra pavimento e soffitto: tratteggiato = coperto, scuro = aperto.',
-  '{0}: floor {1} m, ceiling {2} m. It is open where the ground is between them (dark on the plan); deeper ground covers it.': '{0}: pavimento {1} m, soffitto {2} m. È aperto dove il terreno sta tra i due (scuro sulla pianta); il terreno più profondo lo copre.',
+  'How far the floor is below the ground where you start dragging (a room: its ceiling)':
+    'Quanto il pavimento sta sotto il terreno dove inizi a trascinare (una stanza: il suo soffitto)',
+  "Heights are metres from the bando's zero. It opens where the ground is between floor and ceiling: dashed = covered, dark = open.":
+    'Le altezze sono metri dallo zero del bando. Si apre dove il terreno sta tra pavimento e soffitto: tratteggiato = coperto, scuro = aperto.',
+  '{0}: floor {1} m, ceiling {2} m. It is open where the ground is between them (dark on the plan); deeper ground covers it.':
+    '{0}: pavimento {1} m, soffitto {2} m. È aperto dove il terreno sta tra i due (scuro sulla pianta); il terreno più profondo lo copre.',
   'Drag a rectangle at least 2 m each way.': 'Trascina un rettangolo di almeno 2 m per lato.',
   'Wall': 'Muro',
   'Draw an interior wall on this floor': 'Disegna un muro interno su questo piano',
@@ -742,13 +878,16 @@ export const IT: Readonly<Record<string, string>> = {
   'Click a wall of this floor': 'Clicca un muro di questo piano',
   'Click closer to a wall of this floor.': 'Clicca più vicino a un muro di questo piano.',
   'Column': 'Colonna',
-  'Click to place a column: it snaps to the other columns and shows the distances': 'Clicca per posizionare una colonna: si aggancia alle altre e mostra le distanze',
+  'Click to place a column: it snaps to the other columns and shows the distances':
+    'Clicca per posizionare una colonna: si aggancia alle altre e mostra le distanze',
   'Column size (side or diameter), metres': 'Dimensione della colonna (lato o diametro), metri',
   'Place the column inside the building.': 'Posiziona la colonna dentro l’edificio.',
   'Not there: it is in a void or on another column.': 'Non lì: è in un vuoto o su un’altra colonna.',
   'Buildings cannot overlap.': 'Gli edifici non possono sovrapporsi.',
-  'Buildings cannot overlap: draw it on free ground (use Merge to join them).': 'Gli edifici non possono sovrapporsi: disegnalo su terreno libero (usa Unisci per unirli).',
-  'Buildings cannot overlap: right-click on free ground.': 'Gli edifici non possono sovrapporsi: tasto destro su terreno libero.',
+  'Buildings cannot overlap: draw it on free ground (use Merge to join them).':
+    'Gli edifici non possono sovrapporsi: disegnalo su terreno libero (usa Unisci per unirli).',
+  'Buildings cannot overlap: right-click on free ground.':
+    'Gli edifici non possono sovrapporsi: tasto destro su terreno libero.',
   'Aligned to {0} neighbouring building.': 'Allineato a {0} edificio vicino.',
   'Aligned to {0} neighbouring buildings.': 'Allineato a {0} edifici vicini.',
   'Select a building first.': 'Seleziona prima un edificio.',
@@ -758,12 +897,14 @@ export const IT: Readonly<Record<string, string>> = {
 
   // ---- inspector
   'Inspector': 'Ispettore',
-  'Click a building, tree, door or window on the map. Use the tools above to add or reshape.': 'Clicca un edificio, un albero, una porta o una finestra sulla mappa. Usa gli strumenti sopra per aggiungere o modificare.',
+  'Click a building, tree, door or window on the map. Use the tools above to add or reshape.':
+    'Clicca un edificio, un albero, una porta o una finestra sulla mappa. Usa gli strumenti sopra per aggiungere o modificare.',
   'drag to rotate · wheel to zoom': 'trascina per ruotare · rotella per lo zoom',
   'floor {0} · the rest is ghosted · drag to rotate': 'piano {0} · il resto è in trasparenza · trascina per ruotare',
   'Drag to change the height of the preview': 'Trascina per cambiare l’altezza dell’anteprima',
   'Drag to rotate · Shift: 15° steps': 'Trascina per ruotare · Shift: passi di 15°',
-  'Drag to rotate · magnet lines it up with neighbours · Shift: 15° steps · Alt: free': 'Trascina per ruotare · il magnete lo allinea ai vicini · Shift: passi di 15° · Alt: libero',
+  'Drag to rotate · magnet lines it up with neighbours · Shift: 15° steps · Alt: free':
+    'Trascina per ruotare · il magnete lo allinea ai vicini · Shift: passi di 15° · Alt: libero',
   'Shaped · {0} × {1} m · {2} corners': 'Sagomato · {0} × {1} m · {2} angoli',
   'Reset shape': 'Ripristina forma',
   'Back to a plain rectangle over the bounding box': 'Torna a un rettangolo semplice sull’ingombro',
@@ -774,11 +915,15 @@ export const IT: Readonly<Record<string, string>> = {
   'Floors': 'Piani',
   'Floor {0}': 'Piano {0}',
   '(floor {0})': '(piano {0})',
-  'Floor {0}: roof off in 3D. Doors, windows, walls, voids and columns are edited here, per floor. Delete removes the selection.': 'Piano {0}: tetto tolto in 3D. Porte, finestre, muri, vuoti e colonne si modificano qui, piano per piano. Elimina rimuove la selezione.',
+  'Floor {0}: roof off in 3D. Doors, windows, walls, voids and columns are edited here, per floor. Delete removes the selection.':
+    'Piano {0}: tetto tolto in 3D. Porte, finestre, muri, vuoti e colonne si modificano qui, piano per piano. Elimina rimuove la selezione.',
   'Edit this floor': 'Modifica questo piano',
-  'Edit this floor · click again to see the whole building': 'Modifica questo piano · clicca di nuovo per vedere tutto l’edificio',
-  'Show only this floor solid, the rest of the building ghosted (click again for the whole building)': 'Mostra solo questo piano pieno, il resto dell’edificio in trasparenza (clicca di nuovo per l’edificio intero)',
-  'Add a floor on top (a copy of the last one; the roof moves up)': 'Aggiungi un piano sopra (copia dell’ultimo; il tetto sale)',
+  'Edit this floor · click again to see the whole building':
+    'Modifica questo piano · clicca di nuovo per vedere tutto l’edificio',
+  'Show only this floor solid, the rest of the building ghosted (click again for the whole building)':
+    'Mostra solo questo piano pieno, il resto dell’edificio in trasparenza (clicca di nuovo per l’edificio intero)',
+  'Add a floor on top (a copy of the last one; the roof moves up)':
+    'Aggiungi un piano sopra (copia dell’ultimo; il tetto sale)',
   'Remove the selected floor': 'Rimuovi il piano selezionato',
   'Hide roof': 'Nascondi tetto',
   'Hide the roof': 'Nascondi il tetto',
@@ -796,18 +941,23 @@ export const IT: Readonly<Record<string, string>> = {
   'None': 'Nessuno',
   'ruined %': 'rovina %',
   'ruin by wall': 'rovina per muro',
-  'One wall more ruined than the rest (or less): percent, empty = as the building': 'Un muro più in rovina degli altri (o meno): percentuale, vuoto = come l’edificio',
+  'One wall more ruined than the rest (or less): percent, empty = as the building':
+    'Un muro più in rovina degli altri (o meno): percentuale, vuoto = come l’edificio',
   'Ruin of the {0} wall, percent': 'Rovina del muro {0}, percentuale',
   '{0} wall': 'muro {0}',
   '◌ Outline': '◌ Contorno',
   '∿ Line': '∿ Linea',
-  'Draw the outline by hand (a pond, a basin), or along a centre line (a canal, a ditch)': 'Disegna il contorno a mano (uno stagno, una vasca), o lungo una linea centrale (un canale, un fosso)',
+  'Draw the outline by hand (a pond, a basin), or along a centre line (a canal, a ditch)':
+    'Disegna il contorno a mano (uno stagno, una vasca), o lungo una linea centrale (un canale, un fosso)',
   'Width of the canal, metres': 'Larghezza del canale, metri',
   'Drag along the course of the canal.': 'Trascina lungo il percorso del canale.',
-  'Drag along the course of a canal or ditch: the water follows the line at the width above. Select it (click its edge) to change it.': 'Trascina lungo il percorso di un canale o di un fosso: l’acqua segue la linea alla larghezza indicata. Selezionala (clicca il bordo) per cambiarla.',
-  'Draw the outline by hand. Select it (click its edge, or in ☰ Elements) to change it or delete it.': 'Disegna il contorno a mano. Selezionalo (clicca il bordo, o in ☰ Elementi) per cambiarlo o eliminarlo.',
+  'Drag along the course of a canal or ditch: the water follows the line at the width above. Select it (click its edge) to change it.':
+    'Trascina lungo il percorso di un canale o di un fosso: l’acqua segue la linea alla larghezza indicata. Selezionala (clicca il bordo) per cambiarla.',
+  'Draw the outline by hand. Select it (click its edge, or in ☰ Elements) to change it or delete it.':
+    'Disegna il contorno a mano. Selezionalo (clicca il bordo, o in ☰ Elementi) per cambiarlo o eliminarlo.',
   'Merge overlapping': 'Unisci sovrapposte',
-  'Join it with every water it overlaps or touches into one outline': 'Uniscila a ogni acqua che sovrappone o tocca, in un solo contorno',
+  'Join it with every water it overlaps or touches into one outline':
+    'Uniscila a ogni acqua che sovrappone o tocca, in un solo contorno',
   'It does not overlap or touch any other water.': 'Non sovrappone né tocca altra acqua.',
   'Water merged.': 'Acqua unita.',
   'Water, roads, ground': 'Acqua, strade, terreno',
@@ -817,19 +967,26 @@ export const IT: Readonly<Record<string, string>> = {
   '{0} m²': '{0} m²',
   'open shell': 'guscio aperto',
   'glass': 'vetri',
-  'Off: only the steel skeleton is left (and it can be flown through)': 'Spento: resta solo lo scheletro d’acciaio (e ci si può volare attraverso)',
-  'An open shell: the roof and the upper floors are gone, the walls stand as the ruin level says': 'Un guscio aperto: il tetto e i piani superiori non ci sono più, i muri stanno in piedi come dice il livello di rovina',
+  'Off: only the steel skeleton is left (and it can be flown through)':
+    'Spento: resta solo lo scheletro d’acciaio (e ci si può volare attraverso)',
+  'An open shell: the roof and the upper floors are gone, the walls stand as the ruin level says':
+    'Un guscio aperto: il tetto e i piani superiori non ci sono più, i muri stanno in piedi come dice il livello di rovina',
   'battlements': 'merli',
-  'Battlements along the top of the walls (on a flat roof or an open shell)': 'Merli lungo la cima dei muri (su un tetto piano o un guscio aperto)',
+  'Battlements along the top of the walls (on a flat roof or an open shell)':
+    'Merli lungo la cima dei muri (su un tetto piano o un guscio aperto)',
   'Sign tower': 'Torre insegna',
   'Caged roof ladder': 'Scala alla marinara con gabbia',
-  '0 = intact. A ruin first has holes in the roof; from 60 % the roof is gone and the walls lose their upper part along a broken line; from 75 % the upper floors are gone too': '0 = intatto. Una rovina ha prima buchi nel tetto; dal 60 % il tetto non c’è più e i muri perdono la parte alta lungo una linea spezzata; dal 75 % non ci sono più nemmeno i piani superiori',
+  '0 = intact. A ruin first has holes in the roof; from 60 % the roof is gone and the walls lose their upper part along a broken line; from 75 % the upper floors are gone too':
+    '0 = intatto. Una rovina ha prima buchi nel tetto; dal 60 % il tetto non c’è più e i muri perdono la parte alta lungo una linea spezzata; dal 75 % non ci sono più nemmeno i piani superiori',
   'basement m': 'seminterrato m',
-  'A basement under the ground floor: the ground is cut under the building; reach it through a void in the ground floor': 'Un seminterrato sotto il piano terra: il terreno è tagliato sotto l’edificio; ci si arriva da un vuoto nel piano terra',
+  'A basement under the ground floor: the ground is cut under the building; reach it through a void in the ground floor':
+    'Un seminterrato sotto il piano terra: il terreno è tagliato sotto l’edificio; ci si arriva da un vuoto nel piano terra',
   '→ Greenhouse': '→ Serra',
   '→ Building': '→ Edificio',
-  'Rebuilds it as the other kind: the interior, openings and outline are lost': 'Lo ricostruisce dell’altro tipo: interni, aperture e contorno vanno persi',
-  'Convert to a {0}? Its interior walls, doors, windows, columns, voids and outline are lost (you can still Undo).': 'Convertire in {0}? Muri interni, porte, finestre, colonne, vuoti e contorno vanno persi (puoi sempre annullare).',
+  'Rebuilds it as the other kind: the interior, openings and outline are lost':
+    'Lo ricostruisce dell’altro tipo: interni, aperture e contorno vanno persi',
+  'Convert to a {0}? Its interior walls, doors, windows, columns, voids and outline are lost (you can still Undo).':
+    'Convertire in {0}? Muri interni, porte, finestre, colonne, vuoti e contorno vanno persi (puoi sempre annullare).',
   'greenhouse': 'serra',
   'building': 'edificio',
   'the building': 'l’edificio',
@@ -843,7 +1000,8 @@ export const IT: Readonly<Record<string, string>> = {
   'Metres': 'Metri',
   'Side': 'Lato',
   'Front': 'Fronte',
-  '{0} trees selected. Delete removes them; the inspector changes them all.': '{0} alberi selezionati. Elimina li rimuove; l’ispettore li cambia tutti.',
+  '{0} trees selected. Delete removes them; the inspector changes them all.':
+    '{0} alberi selezionati. Elimina li rimuove; l’ispettore li cambia tutti.',
   '{0} trees': '{0} alberi',
   '{0} in {1} zones': '{0} in {1} zone',
   '{0} trees · {1} E · {2} N': '{0} alberi · {1} E · {2} N',
@@ -865,29 +1023,37 @@ export const IT: Readonly<Record<string, string>> = {
   'Make it': 'Crea',
   'Make a row': 'Crea una fila',
   'Fill floor': 'Riempi piano',
-  'Fill the whole floor with columns like this one on a grid of the spacing above (not inside voids)': 'Riempi tutto il piano con colonne come questa su una griglia del passo indicato (non nei vuoti)',
+  'Fill the whole floor with columns like this one on a grid of the spacing above (not inside voids)':
+    'Riempi tutto il piano con colonne come questa su una griglia del passo indicato (non nei vuoti)',
   'One copy, spacing away along the chosen direction': 'Una copia, a un passo di distanza nella direzione scelta',
-  'Every column in the same east–west row (double-click a column does the same)': 'Ogni colonna nella stessa fila est–ovest (doppio clic su una colonna fa lo stesso)',
+  'Every column in the same east–west row (double-click a column does the same)':
+    'Ogni colonna nella stessa fila est–ovest (doppio clic su una colonna fa lo stesso)',
   'Every column in the same north–south line': 'Ogni colonna nella stessa linea nord–sud',
-  'Every column of the same size and shape on this floor': 'Ogni colonna della stessa dimensione e forma su questo piano',
+  'Every column of the same size and shape on this floor':
+    'Ogni colonna della stessa dimensione e forma su questo piano',
   'All alike': 'Tutte uguali',
   'Line': 'Linea',
-  '{0} columns selected. Duplicate repeats the group; Fill floor continues its grid.': '{0} colonne selezionate. Duplica ripete il gruppo; Riempi piano continua la griglia.',
+  '{0} columns selected. Duplicate repeats the group; Fill floor continues its grid.':
+    '{0} colonne selezionate. Duplica ripete il gruppo; Riempi piano continua la griglia.',
   '{0} columns selected (row).': '{0} colonne selezionate (fila).',
   '{0} columns selected (line).': '{0} colonne selezionate (linea).',
   '{0} columns selected (all alike).': '{0} colonne selezionate (tutte uguali).',
   '{0} copies added.': '{0} copie aggiunte.',
   'No room for copies along this wall with that spacing.': 'Non c’è spazio per copie lungo questo muro con quel passo.',
   '{0} columns copied as a group.': '{0} colonne copiate come gruppo.',
-  'The copy does not fit there (wall, void or another column).': 'La copia non ci sta (muro, vuoto o un’altra colonna).',
-  'The copy would fall outside the building, in a void, or on another column.': 'La copia finirebbe fuori dall’edificio, in un vuoto o su un’altra colonna.',
+  'The copy does not fit there (wall, void or another column).':
+    'La copia non ci sta (muro, vuoto o un’altra colonna).',
+  'The copy would fall outside the building, in a void, or on another column.':
+    'La copia finirebbe fuori dall’edificio, in un vuoto o su un’altra colonna.',
   '{0} columns added.': '{0} colonne aggiunte.',
   'Nothing fits in that direction.': 'Non ci sta niente in quella direzione.',
   '{0} columns added on the grid of your selection.': '{0} colonne aggiunte sulla griglia della selezione.',
-  'The selection\'s grid has no more room.': 'La griglia della selezione non ha più spazio.',
-  'Floor filled with {0} columns, evenly spread and clear of the walls.': 'Piano riempito con {0} colonne, distribuite e lontane dai muri.',
+  "The selection's grid has no more room.": 'La griglia della selezione non ha più spazio.',
+  'Floor filled with {0} columns, evenly spread and clear of the walls.':
+    'Piano riempito con {0} colonne, distribuite e lontane dai muri.',
   'No room for columns with that spacing.': 'Non c’è spazio per colonne con quel passo.',
-  'No pattern blocks yet: open ▦ Library to fetch the catalogue.': 'Ancora nessun blocco schema: apri ▦ Libreria per scaricare il catalogo.',
+  'No pattern blocks yet: open ▦ Library to fetch the catalogue.':
+    'Ancora nessun blocco schema: apri ▦ Libreria per scaricare il catalogo.',
   'That pattern changed nothing here.': 'Quello schema qui non ha cambiato niente.',
 
   // ---- library (blocks box)
@@ -901,7 +1067,8 @@ export const IT: Readonly<Record<string, string>> = {
   'Kind of block': 'Tipo di blocco',
   'Check the online catalogue for new blocks': 'Controlla il catalogo online per nuovi blocchi',
   'Save selection as block': 'Salva la selezione come blocco',
-  'The selected building or structure becomes one of your blocks': 'L’edificio o la struttura selezionati diventano uno dei tuoi blocchi',
+  'The selected building or structure becomes one of your blocks':
+    'L’edificio o la struttura selezionati diventano uno dei tuoi blocchi',
   'Describe a new object to the AI': 'Descrivi un nuovo oggetto all’IA',
   'Connect a model in the assistant (💬) first.': 'Collega prima un modello nell’assistente (💬).',
   'Name of the new block': 'Nome del nuovo blocco',
@@ -913,13 +1080,19 @@ export const IT: Readonly<Record<string, string>> = {
   'That selection cannot be made into a block.': 'Quella selezione non può diventare un blocco.',
   'Updated to “{0}” v{1}.': 'Aggiornato a “{0}” v{1}.',
   'Could not update it.': 'Impossibile aggiornarlo.',
-  'Bays of two lower panels and one full-height door, repeated along the chosen walls of the floor.': 'Campate di due pannelli bassi e una porta a tutta altezza, ripetute lungo i muri scelti del piano.',
-  'Every bay a full-height door: garages, sheds, a fire station.': 'Ogni campata una porta a tutta altezza: garage, capannoni, una caserma dei pompieri.',
-  'Every bay a lower panel opening: an abandoned shop front or a loading hall.': 'Ogni campata un’apertura a pannello basso: una vetrina abbandonata o un capannone di carico.',
-  'Long walls 2 panels + 1 door, one end all doors, the other all panels, and rows of columns.': 'Muri lunghi 2 pannelli + 1 porta, un lato tutto porte, l’altro tutto pannelli, e file di colonne.',
-  'Rows of columns along the hall; 4 rows are spaced 1 - 2 - 1.': 'File di colonne lungo la navata; 4 file sono distanziate 1 - 2 - 1.',
+  'Bays of two lower panels and one full-height door, repeated along the chosen walls of the floor.':
+    'Campate di due pannelli bassi e una porta a tutta altezza, ripetute lungo i muri scelti del piano.',
+  'Every bay a full-height door: garages, sheds, a fire station.':
+    'Ogni campata una porta a tutta altezza: garage, capannoni, una caserma dei pompieri.',
+  'Every bay a lower panel opening: an abandoned shop front or a loading hall.':
+    'Ogni campata un’apertura a pannello basso: una vetrina abbandonata o un capannone di carico.',
+  'Long walls 2 panels + 1 door, one end all doors, the other all panels, and rows of columns.':
+    'Muri lunghi 2 pannelli + 1 porta, un lato tutto porte, l’altro tutto pannelli, e file di colonne.',
+  'Rows of columns along the hall; 4 rows are spaced 1 - 2 - 1.':
+    'File di colonne lungo la navata; 4 file sono distanziate 1 - 2 - 1.',
   'Replaces what was there; still editable one by one.': 'Sostituisce ciò che c’era; resta modificabile uno per uno.',
-  '{0} Replaces what was there; still editable one by one.': '{0} Sostituisce ciò che c’era; resta modificabile uno per uno.',
+  '{0} Replaces what was there; still editable one by one.':
+    '{0} Sostituisce ciò che c’era; resta modificabile uno per uno.',
   // catalogue block names
   'Barrel-vault shed': 'Capannone a volte',
   'Billboard': 'Cartellone',
@@ -979,7 +1152,8 @@ export const IT: Readonly<Record<string, string>> = {
   'address': 'indirizzo',
   'model': 'modello',
   'token (optional)': 'token (facoltativo)',
-  "The token is saved in this browser's local storage.": 'Il token viene salvato nella memoria locale di questo browser.',
+  "The token is saved in this browser's local storage.":
+    'Il token viene salvato nella memoria locale di questo browser.',
   'Changes': 'Modifiche',
   'Accept all': 'Accetta tutte',
   'Reviewed': 'Rivista',
@@ -989,10 +1163,14 @@ export const IT: Readonly<Record<string, string>> = {
   'Applied.': 'Applicato.',
   'what I understood': 'cosa ho capito',
   'e.g. split into 2 rooms, add a door on the east wall': 'es. dividi in 2 stanze, aggiungi una porta sul muro est',
-  'Tell me what to change in the selected building, or name it. Try:': 'Dimmi cosa cambiare nell’edificio selezionato, o dagli un nome. Prova:',
-  'Keep this tab open. The first download can take several minutes.': 'Tieni aperta questa scheda. Il primo download può richiedere diversi minuti.',
-  'A small language model runs inside your browser (nothing is sent anywhere). The first load downloads the model once, then it is cached.': 'Un piccolo modello linguistico gira nel tuo browser (non viene inviato nulla). Il primo caricamento scarica il modello una volta, poi resta in cache.',
-  'This browser has no WebGPU, which the in-browser model needs. Use a recent desktop Chrome or Edge, or Safari 26 or later, or switch to “Server / home PC”.': 'Questo browser non ha WebGPU, necessario al modello nel browser. Usa un Chrome o Edge desktop recente, o Safari 26 o successivo, oppure passa a “Server / PC di casa”.',
+  'Tell me what to change in the selected building, or name it. Try:':
+    'Dimmi cosa cambiare nell’edificio selezionato, o dagli un nome. Prova:',
+  'Keep this tab open. The first download can take several minutes.':
+    'Tieni aperta questa scheda. Il primo download può richiedere diversi minuti.',
+  'A small language model runs inside your browser (nothing is sent anywhere). The first load downloads the model once, then it is cached.':
+    'Un piccolo modello linguistico gira nel tuo browser (non viene inviato nulla). Il primo caricamento scarica il modello una volta, poi resta in cache.',
+  'This browser has no WebGPU, which the in-browser model needs. Use a recent desktop Chrome or Edge, or Safari 26 or later, or switch to “Server / home PC”.':
+    'Questo browser non ha WebGPU, necessario al modello nel browser. Usa un Chrome o Edge desktop recente, o Safari 26 o successivo, oppure passa a “Server / PC di casa”.',
   'Describe the object first.': 'Descrivi prima l’oggetto.',
   'Connect or load a model in the assistant first.': 'Collega o carica prima un modello nell’assistente.',
   'The assistant is busy.': 'L’assistente è occupato.',
@@ -1026,10 +1204,14 @@ export const IT: Readonly<Record<string, string>> = {
   'Insert basement vertex': 'Inserisci vertice del seminterrato',
   'Remove basement vertex': 'Rimuovi vertice del seminterrato',
   'Move basement vertex': 'Sposta vertice del seminterrato',
-  'Cannot move this vertex: check the outline and floor items.': 'Impossibile spostare il vertice: controlla il perimetro e gli elementi del piano.',
-  'Drag or use arrows to move; Insert adds and Delete removes a vertex': 'Trascina o usa le frecce per spostare; Ins aggiunge e Canc rimuove un vertice',
-  'Cannot add a vertex here: check wall openings and length.': 'Impossibile aggiungere un vertice qui: controlla le aperture e la lunghezza del muro.',
-  'Cannot remove this vertex: check wall openings and floor items.': 'Impossibile rimuovere il vertice: controlla le aperture e gli elementi del piano.',
+  'Cannot move this vertex: check the outline and floor items.':
+    'Impossibile spostare il vertice: controlla il perimetro e gli elementi del piano.',
+  'Drag or use arrows to move; Insert adds and Delete removes a vertex':
+    'Trascina o usa le frecce per spostare; Ins aggiunge e Canc rimuove un vertice',
+  'Cannot add a vertex here: check wall openings and length.':
+    'Impossibile aggiungere un vertice qui: controlla le aperture e la lunghezza del muro.',
+  'Cannot remove this vertex: check wall openings and floor items.':
+    'Impossibile rimuovere il vertice: controlla le aperture e gli elementi del piano.',
   'Edit with the AI assistant': 'Modifica con l’assistente IA',
   'Load a flight log': 'Carica un log di volo',
   'Load the flight video': 'Carica il video del volo',
@@ -1039,32 +1221,51 @@ export const IT: Readonly<Record<string, string>> = {
   '❚❚ Pause': '❚❚ Pausa',
   'Next ›': 'Avanti ›',
   '‹ Back': '‹ Indietro',
-  'Back: this step again from its start (from its start, the step before)': 'Indietro: di nuovo questo passo dall’inizio (dall’inizio, il passo precedente)',
+  'Back: this step again from its start (from its start, the step before)':
+    'Indietro: di nuovo questo passo dall’inizio (dall’inizio, il passo precedente)',
   'Skip to the next step': 'Passa al passo successivo',
   'Stop the tour (Esc)': 'Ferma il tour (Esc)',
   '▶ Show me': '▶ Mostrami',
-  'Guided tour: the answers are scripted, the changes are real.': 'Tour guidato: le risposte sono preparate, le modifiche sono vere.',
-  'The example could not be downloaded; the tour goes on without it.': 'Non è stato possibile scaricare l’esempio; il tour continua senza.',
-  'The demo flight could not be loaded: load your own here.': 'Il volo demo non si è potuto caricare: carica il tuo qui.',
-  'Frame the area: move the map, pull the frame by its edges and corners, turn it with the yellow knob.': 'Inquadra l’area: sposta la mappa, tira la cornice dai bordi e dagli angoli, ruotala con la manopola gialla.',
-  'Generate 3D downloads buildings, roads, trees, water and the real ground, and builds the model.': 'Genera 3D scarica edifici, strade, alberi, acqua e il terreno reale, e costruisce il modello.',
-  'The model is drawn over the map: each building can be moved, resized, reshaped and turned.': 'Il modello è disegnato sulla mappa: ogni edificio si può spostare, ridimensionare, sagomare e ruotare.',
-  'Switch to 3D to look around: drag to orbit, the wheel zooms.': 'Passa al 3D per guardarti intorno: trascina per orbitare, la rotella fa lo zoom.',
+  'Guided tour: the answers are scripted, the changes are real.':
+    'Tour guidato: le risposte sono preparate, le modifiche sono vere.',
+  'The example could not be downloaded; the tour goes on without it.':
+    'Non è stato possibile scaricare l’esempio; il tour continua senza.',
+  'The demo flight could not be loaded: load your own here.':
+    'Il volo demo non si è potuto caricare: carica il tuo qui.',
+  'Frame the area: move the map, pull the frame by its edges and corners, turn it with the yellow knob.':
+    'Inquadra l’area: sposta la mappa, tira la cornice dai bordi e dagli angoli, ruotala con la manopola gialla.',
+  'Generate 3D downloads buildings, roads, trees, water and the real ground, and builds the model.':
+    'Genera 3D scarica edifici, strade, alberi, acqua e il terreno reale, e costruisce il modello.',
+  'The model is drawn over the map: each building can be moved, resized, reshaped and turned.':
+    'Il modello è disegnato sulla mappa: ogni edificio si può spostare, ridimensionare, sagomare e ruotare.',
+  'Switch to 3D to look around: drag to orbit, the wheel zooms.':
+    'Passa al 3D per guardarti intorno: trascina per orbitare, la rotella fa lo zoom.',
   'Back to 2D to edit the plan.': 'Torna al 2D per modificare la pianta.',
-  'Click a building to select it: the inspector shows its size, floors, roof and openings.': 'Clicca un edificio per selezionarlo: l’ispettore mostra dimensioni, piani, tetto e aperture.',
+  'Click a building to select it: the inspector shows its size, floors, roof and openings.':
+    'Clicca un edificio per selezionarlo: l’ispettore mostra dimensioni, piani, tetto e aperture.',
   'Every value can be changed: here the wall height.': 'Ogni valore si può cambiare: qui l’altezza dei muri.',
-  'Add a floor, take the roof off, make it a ruin: each change is one Undo step.': 'Aggiungi un piano, togli il tetto, rendilo una rovina: ogni modifica è un passo di Annulla.',
-  'Building tool: drag a rectangle on free ground. It snaps flush to close neighbours.': 'Strumento Edificio: trascina un rettangolo su terreno libero. Si accosta ai vicini.',
-  'The tree brush plants trees along a stroke, or fills a square, a circle or a hand-drawn area.': 'Il pennello alberi pianta alberi lungo un tratto, o riempie un quadrato, un cerchio o un’area disegnata a mano.',
-  'The Library has ready-made objects, buildings and patterns, from the online catalogue and your own.': 'La Libreria ha oggetti, edifici e schemi pronti, dal catalogo online e tuoi.',
+  'Add a floor, take the roof off, make it a ruin: each change is one Undo step.':
+    'Aggiungi un piano, togli il tetto, rendilo una rovina: ogni modifica è un passo di Annulla.',
+  'Building tool: drag a rectangle on free ground. It snaps flush to close neighbours.':
+    'Strumento Edificio: trascina un rettangolo su terreno libero. Si accosta ai vicini.',
+  'The tree brush plants trees along a stroke, or fills a square, a circle or a hand-drawn area.':
+    'Il pennello alberi pianta alberi lungo un tratto, o riempie un quadrato, un cerchio o un’area disegnata a mano.',
+  'The Library has ready-made objects, buildings and patterns, from the online catalogue and your own.':
+    'La Libreria ha oggetti, edifici e schemi pronti, dal catalogo online e tuoi.',
   'Pick one, then click the map to place it.': 'Scegline uno, poi clicca la mappa per posizionarlo.',
-  'The AI assistant edits from plain words. It runs in your browser, or on your own server.': 'L’assistente IA modifica a parole. Gira nel tuo browser, o su un tuo server.',
+  'The AI assistant edits from plain words. It runs in your browser, or on your own server.':
+    'L’assistente IA modifica a parole. Gira nel tuo browser, o su un tuo server.',
   'Ask for a change to the selected building.': 'Chiedi una modifica all’edificio selezionato.',
-  'What changed is listed for review, and Undo is one click. The app reports what it really did, not what the model claims.': 'Le modifiche sono elencate da rivedere, e Annulla è un clic. L’app riporta ciò che ha fatto davvero, non ciò che dice il modello.',
-  'Drop a Betaflight Blackbox log (CSV), a GPX or a JSON file on the page, or press Upload log.': 'Trascina sulla pagina un log Betaflight Blackbox (CSV), un GPX o un JSON, o premi Carica log.',
-  'Load the video of the same flight. It stays on this computer; nothing is uploaded.': 'Carica il video dello stesso volo. Resta su questo computer; non viene caricato nulla.',
-  'Auto-sync lines up the video with the log from how the picture moves; flips and rolls are the best markers.': 'La sincronizzazione automatica allinea il video al log da come si muove l’immagine; flip e roll sono i riferimenti migliori.',
-  'Play: the drone flies its real path through the model, with the video in step.': 'Avvia: il drone vola la sua traccia reale dentro il modello, con il video allineato.',
+  'What changed is listed for review, and Undo is one click. The app reports what it really did, not what the model claims.':
+    'Le modifiche sono elencate da rivedere, e Annulla è un clic. L’app riporta ciò che ha fatto davvero, non ciò che dice il modello.',
+  'Drop a Betaflight Blackbox log (CSV), a GPX or a JSON file on the page, or press Upload log.':
+    'Trascina sulla pagina un log Betaflight Blackbox (CSV), un GPX o un JSON, o premi Carica log.',
+  'Load the video of the same flight. It stays on this computer; nothing is uploaded.':
+    'Carica il video dello stesso volo. Resta su questo computer; non viene caricato nulla.',
+  'Auto-sync lines up the video with the log from how the picture moves; flips and rolls are the best markers.':
+    'La sincronizzazione automatica allinea il video al log da come si muove l’immagine; flip e roll sono i riferimenti migliori.',
+  'Play: the drone flies its real path through the model, with the video in step.':
+    'Avvia: il drone vola la sua traccia reale dentro il modello, con il video allineato.',
 
   // ---- added in the audit (strings found untranslated on screen)
   'Show roof': 'Mostra tetto',
@@ -1101,10 +1302,12 @@ export const IT: Readonly<Record<string, string>> = {
   'Describe the object': 'Descrivi l’oggetto',
   'a rusty fuel pump with a hose': 'una pompa di benzina arrugginita con il tubo',
   'Bando “{0}” saved ({1} in the library). Source: {2}.': 'Bando “{0}” salvato ({1} in libreria). Fonte: {2}.',
-  'This bando was shared without its place: there is no map area to edit': 'Questo bando è stato condiviso senza il luogo: non c’è un’area della mappa da modificare',
+  'This bando was shared without its place: there is no map area to edit':
+    'Questo bando è stato condiviso senza il luogo: non c’è un’area della mappa da modificare',
   'Columns every (0 = every third pier)': 'Colonne ogni (0 = ogni terzo pilastro)',
   'columns every (0 = every third pier)': 'colonne ogni (0 = ogni terzo pilastro)',
-  'Long walls 2 panels + 1 door, one end all doors, the other all panels, and four rows of columns: a quarter in from each long wall and a pair in the middle, on the piers.': 'Muri lunghi 2 pannelli + 1 porta, un lato tutto porte, l’altro tutto pannelli, e quattro file di colonne: a un quarto da ogni muro lungo e una coppia al centro, sui pilastri.',
+  'Long walls 2 panels + 1 door, one end all doors, the other all panels, and four rows of columns: a quarter in from each long wall and a pair in the middle, on the piers.':
+    'Muri lunghi 2 pannelli + 1 porta, un lato tutto porte, l’altro tutto pannelli, e quattro file di colonne: a un quarto da ogni muro lungo e una coppia al centro, sui pilastri.',
 
   // ---- found by the translation check (tools/i18n)
   'Expand': 'Espandi',
@@ -1121,14 +1324,17 @@ export const IT: Readonly<Record<string, string>> = {
   'Show': 'Mostra',
   'Free the GPU memory': 'Libera la memoria della GPU',
   'Unload': 'Scarica dalla memoria',
-  'Any OpenAI-compatible server: Ollama or LM Studio on your PC (over HTTPS, e.g. Tailscale), a proxy on your hosting, or a cloud API. Your messages and the building list are sent to it.': 'Qualsiasi server compatibile con OpenAI: Ollama o LM Studio sul tuo PC (via HTTPS, ad es. Tailscale), un proxy sul tuo hosting o un’API cloud. I tuoi messaggi e l’elenco degli edifici gli vengono inviati.',
+  'Any OpenAI-compatible server: Ollama or LM Studio on your PC (over HTTPS, e.g. Tailscale), a proxy on your hosting, or a cloud API. Your messages and the building list are sent to it.':
+    'Qualsiasi server compatibile con OpenAI: Ollama o LM Studio sul tuo PC (via HTTPS, ad es. Tailscale), un proxy sul tuo hosting o un’API cloud. I tuoi messaggi e l’elenco degli edifici gli vengono inviati.',
   '{0} (~{1} GB GPU)': '{0} (~{1} GB di GPU)',
-  '(a small model on a laptop GPU can take 10–40 s)': '(un modello piccolo sulla GPU di un portatile può metterci 10–40 s)',
+  '(a small model on a laptop GPU can take 10–40 s)':
+    '(un modello piccolo sulla GPU di un portatile può metterci 10–40 s)',
   '{0} to review of {1}': '{0} da rivedere su {1}',
   'Remove this area': 'Rimuovi quest’area',
   'options': 'opzioni',
   'How much to soften (percent)': 'Quanto ammorbidire (percentuale)',
-  'Download the real ground heights for this bando (your strokes stay)': 'Scarica le quote reali del terreno per questo bando (i tuoi tratti restano)',
+  'Download the real ground heights for this bando (your strokes stay)':
+    'Scarica le quote reali del terreno per questo bando (i tuoi tratti restano)',
   'Remove area': 'Rimuovi area',
   'Real ground': 'Terreno reale',
   '(maximum)': '(massimo)',
@@ -1137,7 +1343,8 @@ export const IT: Readonly<Record<string, string>> = {
   'jib length': 'lunghezza del braccio',
   'length': 'lunghezza',
   'open floor above': 'solaio sopra aperto',
-  'This bando was built with the old rotated layout and can\'t be drawn over the map. Go to': 'Questo bando è stato costruito con la vecchia disposizione ruotata e non si può disegnare sulla mappa. Vai a',
+  "This bando was built with the old rotated layout and can't be drawn over the map. Go to":
+    'Questo bando è stato costruito con la vecchia disposizione ruotata e non si può disegnare sulla mappa. Vai a',
   'and press': 'e premi',
   'Regenerate': 'Rigenera',
   'to rebuild it aligned to the map.': 'per ricostruirlo allineato alla mappa.',
@@ -1150,7 +1357,8 @@ export const IT: Readonly<Record<string, string>> = {
   'Repeat': 'Ripeti',
   '{0} trees selected · changes apply to all': '{0} alberi selezionati · le modifiche valgono per tutti',
   'radius': 'raggio',
-  '{0} shapes · {1} m tall · its form comes from its block': '{0} forme · {1} m di altezza · la forma viene dal suo blocco',
+  '{0} shapes · {1} m tall · its form comes from its block':
+    '{0} forme · {1} m di altezza · la forma viene dal suo blocco',
   'style': 'stile',
   'beam on piers': 'trave su pile',
   'arch': 'arco',
@@ -1179,10 +1387,12 @@ export const IT: Readonly<Record<string, string>> = {
   'Apply to the selected building, this floor': 'Applica all’edificio selezionato, a questo piano',
   'Select a building first': 'Prima seleziona un edificio',
   'Offline: showing the saved catalogue.': 'Offline: mostro il catalogo salvato.',
-  'The catalogue could not be checked; showing the saved one.': 'Non è stato possibile controllare il catalogo; mostro quello salvato.',
+  'The catalogue could not be checked; showing the saved one.':
+    'Non è stato possibile controllare il catalogo; mostro quello salvato.',
   'mine': 'mio',
   'Nothing matches.': 'Nessun risultato.',
-  'No blocks yet: check the catalogue (↻) or import a file.': 'Ancora nessun blocco: controlla il catalogo (↻) o importa un file.',
+  'No blocks yet: check the catalogue (↻) or import a file.':
+    'Ancora nessun blocco: controlla il catalogo (↻) o importa un file.',
   'Updates in this bando': 'Aggiornamenti in questo bando',
   'Update': 'Aggiorna',
   'Apply to floor': 'Applica al piano',
@@ -1193,17 +1403,22 @@ export const IT: Readonly<Record<string, string>> = {
   '3D preview unavailable (WebGL could not start).': 'Anteprima 3D non disponibile (WebGL non si è avviato).',
   'Interior wall {0}': 'Muro interno {0}',
   'Void {0}': 'Vuoto {0}',
-  'drag / click on the ground to draw or place · right-drag or Shift-drag: orbit · wheel: zoom': 'trascina / clicca sul terreno per disegnare o posizionare · trascina col destro o con Shift: orbita · rotella: zoom',
+  'drag / click on the ground to draw or place · right-drag or Shift-drag: orbit · wheel: zoom':
+    'trascina / clicca sul terreno per disegnare o posizionare · trascina col destro o con Shift: orbita · rotella: zoom',
   '3D view unavailable (WebGL could not start).': 'Vista 3D non disponibile (WebGL non si è avviato).',
   'No bando yet. Press': 'Ancora nessun bando. Premi',
-  ', search a place, frame the area on the map and generate the 3D model.': ', cerca un luogo, inquadra l’area sulla mappa e genera il modello 3D.',
+  ', search a place, frame the area on the map and generate the 3D model.':
+    ', cerca un luogo, inquadra l’area sulla mappa e genera il modello 3D.',
   'Language:': 'Lingua:',
   // ---- coordinates, outlines point by point, the preview, the satellite ground
-  'Satellite picture on the 3D ground (bandos with a place and real ground; imagery © Esri, Maxar)': 'Foto satellitare sul terreno 3D (bando con un luogo e terreno reale; immagini © Esri, Maxar)',
+  'Satellite picture on the 3D ground (bandos with a place and real ground; imagery © Esri, Maxar)':
+    'Foto satellitare sul terreno 3D (bando con un luogo e terreno reale; immagini © Esri, Maxar)',
   'Satellite ground': 'Terreno satellitare',
   'satellite (3D)': 'satellite (3D)',
-  'Coordinates: latitude, longitude (45.4642, 9.1900 or 45°27\'51"N 9°11\'24"E)': 'Coordinate: latitudine, longitudine (45.4642, 9.1900 oppure 45°27\'51"N 9°11\'24"E)',
-  'Those are not coordinates: latitude, longitude, e.g. 45.4642, 9.1900.': 'Non sono coordinate: latitudine, longitudine, ad es. 45.4642, 9.1900.',
+  'Coordinates: latitude, longitude (45.4642, 9.1900 or 45°27\'51"N 9°11\'24"E)':
+    'Coordinate: latitudine, longitudine (45.4642, 9.1900 oppure 45°27\'51"N 9°11\'24"E)',
+  'Those are not coordinates: latitude, longitude, e.g. 45.4642, 9.1900.':
+    'Non sono coordinate: latitudine, longitudine, ad es. 45.4642, 9.1900.',
   'That point is far outside this bando.': 'Quel punto è molto fuori da questo bando.',
   'Move its centre to coordinates…': 'Sposta il centro alle coordinate…',
   'Move to coordinates…': 'Sposta alle coordinate…',
@@ -1213,7 +1428,7 @@ export const IT: Readonly<Record<string, string>> = {
   'An outline keeps at least 3 points.': 'Un contorno tiene almeno 3 punti.',
   'A road keeps at least 2 points.': 'Una strada tiene almeno 2 punti.',
   'Zoom to': 'Inquadra',
-  'Zoom to one of the building\'s fixtures': 'Inquadra uno degli elementi fissati all’edificio',
+  "Zoom to one of the building's fixtures": 'Inquadra uno degli elementi fissati all’edificio',
   'Back to the usual size': 'Torna alla dimensione solita',
   'Make the preview as big as the inspector allows': 'Ingrandisci l’anteprima quanto consente l’ispettore',
   'Smaller preview': 'Anteprima più piccola',
@@ -1227,55 +1442,77 @@ export const IT: Readonly<Record<string, string>> = {
   'Open the AI assistant to connect a model': 'Apri l’assistente AI per collegare un modello',
   'Sync again': 'Sincronizza di nuovo',
   'Load another video': 'Carica un altro video',
-  'The browser’s storage for this site is full: recent changes are kept only until this tab closes. Back up all (Bandos panel), then delete bandos you do not need or free space in the browser.': 'Lo spazio del browser per questo sito è pieno: le ultime modifiche restano solo finché questa scheda è aperta. Fai Backup di tutto (pannello Bando), poi elimina i bando che non ti servono o libera spazio nel browser.',
-  'This browser does not let OpenBando keep data (a private window, or storage blocked for this site): changes last only until this tab closes. Back up all (Bandos panel) to keep them.': 'Questo browser non lascia a OpenBando conservare dati (finestra privata, o spazio bloccato per questo sito): le modifiche durano finché questa scheda è aperta. Fai Backup di tutto (pannello Bando) per tenerle.',
-  'A change could not be saved (the browser interrupted the write). It is still here: save again, or Back up all (Bandos panel) to be safe.': 'Una modifica non è stata salvata (il browser ha interrotto la scrittura). È ancora qui: salva di nuovo, o fai Backup di tutto (pannello Bando) per sicurezza.',
-  'A change could not be saved in the browser. It is still here until this tab closes: Back up all (Bandos panel) to keep it.': 'Una modifica non è stata salvata nel browser. Resta qui finché questa scheda è aperta: fai Backup di tutto (pannello Bando) per tenerla.',
-  'OpenBando: your bandos in 3D, and your flights back inside them.': 'OpenBando: i tuoi bando in 3D, e i tuoi voli di nuovo lì dentro.',
-  'Build the place. Fly it again. Share it, or keep it secret.': 'Costruisci il posto. Rivolalo. Condividilo, o tienilo segreto.',
+  'The browser’s storage for this site is full: recent changes are kept only until this tab closes. Back up all (Bandos panel), then delete bandos you do not need or free space in the browser.':
+    'Lo spazio del browser per questo sito è pieno: le ultime modifiche restano solo finché questa scheda è aperta. Fai Backup di tutto (pannello Bando), poi elimina i bando che non ti servono o libera spazio nel browser.',
+  'This browser does not let OpenBando keep data (a private window, or storage blocked for this site): changes last only until this tab closes. Back up all (Bandos panel) to keep them.':
+    'Questo browser non lascia a OpenBando conservare dati (finestra privata, o spazio bloccato per questo sito): le modifiche durano finché questa scheda è aperta. Fai Backup di tutto (pannello Bando) per tenerle.',
+  'A change could not be saved (the browser interrupted the write). It is still here: save again, or Back up all (Bandos panel) to be safe.':
+    'Una modifica non è stata salvata (il browser ha interrotto la scrittura). È ancora qui: salva di nuovo, o fai Backup di tutto (pannello Bando) per sicurezza.',
+  'A change could not be saved in the browser. It is still here until this tab closes: Back up all (Bandos panel) to keep it.':
+    'Una modifica non è stata salvata nel browser. Resta qui finché questa scheda è aperta: fai Backup di tutto (pannello Bando) per tenerla.',
+  'OpenBando: your bandos in 3D, and your flights back inside them.':
+    'OpenBando: i tuoi bando in 3D, e i tuoi voli di nuovo lì dentro.',
+  'Build the place. Fly it again. Share it, or keep it secret.':
+    'Costruisci il posto. Rivolalo. Condividilo, o tienilo segreto.',
   'OpenBando. Build, Fly, Share.': 'OpenBando. Costruisci, vola, condividi.',
-  'What OpenBando does, played automatically through the complete flight.': 'Cosa fa OpenBando, mostrato automaticamente fino alla fine del volo.',
+  'What OpenBando does, played automatically through the complete flight.':
+    'Cosa fa OpenBando, mostrato automaticamente fino alla fine del volo.',
   'Build, Fly, Share.': 'Costruisci, vola, condividi.',
   'Build': 'Costruisci',
   'Fly': 'Vola',
   'active': 'attivo',
   'Options': 'Opzioni',
-  'Satellite ground on the main 3D view; Studio has its own ground selector (imagery © Esri, Maxar)': 'Satellite sul terreno 3D principale; Studio ha un selettore separato (immagini © Esri, Maxar)',
-  'X-ray: obstacles fade while following the drone; FPV only fades surfaces close to the camera': 'Raggi X: gli ostacoli sfumano seguendo il drone; in FPV sfumano solo le superfici vicine alla camera',
+  'Satellite ground on the main 3D view; Studio has its own ground selector (imagery © Esri, Maxar)':
+    'Satellite sul terreno 3D principale; Studio ha un selettore separato (immagini © Esri, Maxar)',
+  'X-ray: obstacles fade while following the drone; FPV only fades surfaces close to the camera':
+    'Raggi X: gli ostacoli sfumano seguendo il drone; in FPV sfumano solo le superfici vicine alla camera',
   'Reset to Orbit and park the simulator drone': 'Torna a Orbita e parcheggia il drone del simulatore',
   'Step time remaining (estimated for guides)': 'Tempo restante del passaggio (stimato per le guide)',
   'Close (menu opens it again)': 'Chiudi (il menu lo riapre)',
   'Loading video…': 'Caricamento video…',
   'Video could not be loaded. Try another format.': 'Impossibile caricare il video. Prova un altro formato.',
   'Share': 'Condividi',
-  'Create a bando, find the place on the map and generate it in 3D from OpenStreetMap and the real ground. Reshape the buildings, ruin them, sculpt the terrain, drop towers and gates from the library, and let the AI do the details.': 'Crea un bando, trova il posto sulla mappa e generalo in 3D da OpenStreetMap e dal terreno reale. Rimodella gli edifici, rendili rovine, modella il terreno, aggiungi torri e gate dalla libreria e lascia i dettagli all’AI.',
-  'Drop your Blackbox log and your DVR: they sync themselves, and the drone flies its real line through the model, with sticks, motors, attitude and four cameras in step. No flight yet? Fly the place in the simulator with your radio.': 'Trascina il log Blackbox e il DVR: si sincronizzano da soli, e il drone rivola la sua linea vera dentro il modello, con stick, motori, assetto e quattro camere al passo. Nessun volo ancora? Vola il posto nel simulatore con la tua radio.',
-  'Export a bando with its address, or hidden: no coordinates, no map, no street names, so only the model travels. Render the replay as an MP4 up to 4K, keep everything in one backup, or open the examples.': 'Esporta un bando con il suo indirizzo, o nascosto: niente coordinate, niente mappa, niente nomi di strade, viaggia solo il modello. Registra il replay come MP4 fino al 4K, tieni tutto in un backup, o apri gli esempi.',
+  'Create a bando, find the place on the map and generate it in 3D from OpenStreetMap and the real ground. Reshape the buildings, ruin them, sculpt the terrain, drop towers and gates from the library, and let the AI do the details.':
+    'Crea un bando, trova il posto sulla mappa e generalo in 3D da OpenStreetMap e dal terreno reale. Rimodella gli edifici, rendili rovine, modella il terreno, aggiungi torri e gate dalla libreria e lascia i dettagli all’AI.',
+  'Drop your Blackbox log and your DVR: they sync themselves, and the drone flies its real line through the model, with sticks, motors, attitude and four cameras in step. No flight yet? Fly the place in the simulator with your radio.':
+    'Trascina il log Blackbox e il DVR: si sincronizzano da soli, e il drone rivola la sua linea vera dentro il modello, con stick, motori, assetto e quattro camere al passo. Nessun volo ancora? Vola il posto nel simulatore con la tua radio.',
+  'Export a bando with its address, or hidden: no coordinates, no map, no street names, so only the model travels. Render the replay as an MP4 up to 4K, keep everything in one backup, or open the examples.':
+    'Esporta un bando con il suo indirizzo, o nascosto: niente coordinate, niente mappa, niente nomi di strade, viaggia solo il modello. Registra il replay come MP4 fino al 4K, tieni tutto in un backup, o apri gli esempi.',
   'Your bandos in 3D, and your flights back inside them.': 'I tuoi bando in 3D, e i tuoi voli di nuovo lì dentro.',
   'Open the bandos': 'Apri i bando',
   'Load a log': 'Carica un log',
   'Load a video': 'Carica un video',
   '▶ Watch': '▶ Guarda',
-  'No account needed. Your logs, videos and places stay on this computer.': 'Nessun account. I tuoi log, video e posti restano su questo computer.',
+  'No account needed. Your logs, videos and places stay on this computer.':
+    'Nessun account. I tuoi log, video e posti restano su questo computer.',
   'Open a bando': 'Apri un bando',
-  'Open a bando: public or hidden. A 3D model to explore.': 'Apri un bando: pubblico o nascosto. Un modello 3D da esplorare.',
+  'Open a bando: public or hidden. A 3D model to explore.':
+    'Apri un bando: pubblico o nascosto. Un modello 3D da esplorare.',
   'Load the flight': 'Carica il volo',
   'Drop the Blackbox log and the DVR of the same flight.': 'Trascina il log Blackbox e il DVR dello stesso volo.',
-  'Auto-sync matches the picture with the gyro: no clapperboard needed.': 'L’auto-sync allinea l’immagine con il giroscopio: niente ciak.',
+  'Auto-sync matches the picture with the gyro: no clapperboard needed.':
+    'L’auto-sync allinea l’immagine con il giroscopio: niente ciak.',
   'Replay in sync': 'Replay sincronizzato',
-  'Speed, attitude, sticks and the path: every number of the flight, in step with the video.': 'Velocità, assetto, stick e traiettoria: ogni numero del volo, al passo con il video.',
+  'Speed, attitude, sticks and the path: every number of the flight, in step with the video.':
+    'Velocità, assetto, stick e traiettoria: ogni numero del volo, al passo con il video.',
   'Ride along: the FPV camera, in step with the video.': 'In volo con lui: la camera FPV, al passo con il video.',
-  'The video turns to glass: the model behind it, in step.': 'Il video diventa trasparente: dietro, il modello al passo.',
+  'The video turns to glass: the model behind it, in step.':
+    'Il video diventa trasparente: dietro, il modello al passo.',
   'speed': 'velocità',
-  'How fast the ground grows while the button is held (metres a second)': 'Quanto cresce il terreno mentre tieni premuto (metri al secondo)',
+  'How fast the ground grows while the button is held (metres a second)':
+    'Quanto cresce il terreno mentre tieni premuto (metri al secondo)',
   'Hold: the left button raises, the right lowers': 'Tieni premuto: il tasto sinistro alza, il destro abbassa',
   'Sculpt': 'Modella',
-  'Hold the left button to raise the ground, the right one to lower it: the longer you hold, the higher and wider it grows. Move while holding to shape a ridge or a ditch.': 'Tieni premuto il tasto sinistro per alzare il terreno, il destro per abbassarlo: più tieni, più cresce in altezza e larghezza. Muoviti tenendo premuto per fare un crinale o un fosso.',
+  'Hold the left button to raise the ground, the right one to lower it: the longer you hold, the higher and wider it grows. Move while holding to shape a ridge or a ditch.':
+    'Tieni premuto il tasto sinistro per alzare il terreno, il destro per abbassarlo: più tieni, più cresce in altezza e larghezza. Muoviti tenendo premuto per fare un crinale o un fosso.',
   'Start a bando: find the place': 'Inizia un bando: trova il luogo',
-  'New bando opens the map. Search a place, or paste its coordinates.': 'Nuovo bando apre la mappa. Cerca un luogo, o incolla le sue coordinate.',
+  'New bando opens the map. Search a place, or paste its coordinates.':
+    'Nuovo bando apre la mappa. Cerca un luogo, o incolla le sue coordinate.',
   'From a new bando to a synced replay.': 'Da un nuovo bando a un replay sincronizzato.',
-  'Hover a tool for a moment to see the step that explains it': 'Tieni il puntatore su uno strumento per vedere il passo che lo spiega',
-  'The guide uses the real app on copies of the examples. Esc stops it.': 'La guida usa la vera app su copie degli esempi. Esc la ferma.',
+  'Hover a tool for a moment to see the step that explains it':
+    'Tieni il puntatore su uno strumento per vedere il passo che lo spiega',
+  'The guide uses the real app on copies of the examples. Esc stops it.':
+    'La guida usa la vera app su copie degli esempi. Esc la ferma.',
   'What is drawn under the model': 'Cosa si vede sotto il modello',
   'The map drawn under the model': 'La mappa disegnata sotto il modello',
   'map': 'mappa',
@@ -1299,9 +1536,12 @@ export const IT: Readonly<Record<string, string>> = {
   'Bramble thicket': 'Rovi',
   'Wild brambles, wide, uneven and impassable': 'Rovi selvatici, larghi, irregolari e invalicabili',
   'Phone / power line': 'Linea telefonica / elettrica',
-  'Poles with wires hanging between them, drawn from pole to pole': 'Pali con i fili tesi fra loro, disegnata da palo a palo',
-  'Race gates, dive gates, ladders, hurdles, flags and slalom poles: click the map to place one': 'Gate da gara, gate da tuffo, scale, ostacoli, bandiere e paletti da slalom: clicca sulla mappa per metterne uno',
-  'Click the map to place it, facing the way set in the options. Select it to move or turn it.': 'Clicca sulla mappa per metterlo, girato come indicato nelle opzioni. Selezionalo per spostarlo o girarlo.',
+  'Poles with wires hanging between them, drawn from pole to pole':
+    'Pali con i fili tesi fra loro, disegnata da palo a palo',
+  'Race gates, dive gates, ladders, hurdles, flags and slalom poles: click the map to place one':
+    'Gate da gara, gate da tuffo, scale, ostacoli, bandiere e paletti da slalom: clicca sulla mappa per metterne uno',
+  'Click the map to place it, facing the way set in the options. Select it to move or turn it.':
+    'Clicca sulla mappa per metterlo, girato come indicato nelle opzioni. Selezionalo per spostarlo o girarlo.',
   'video alone': 'solo il video',
   'Move the video back 1 s (the replay stays)': 'Sposta indietro il video di 1 s (il replay resta)',
   'Move the video back one frame (the replay stays)': 'Sposta indietro il video di un fotogramma (il replay resta)',
@@ -1309,15 +1549,21 @@ export const IT: Readonly<Record<string, string>> = {
   'Move the video forward 1 s (the replay stays)': 'Sposta avanti il video di 1 s (il replay resta)',
   '−1 frame': '−1 fotogramma',
   '+1 frame': '+1 fotogramma',
-  'Pin start: click the ground where the flight started': 'Fissa la partenza: clicca sul terreno dove è partito il volo',
+  'Pin start: click the ground where the flight started':
+    'Fissa la partenza: clicca sul terreno dove è partito il volo',
   'Pin end: click the ground where the flight ended': 'Fissa l’arrivo: clicca sul terreno dove è finito il volo',
   'Turn the path about its start': 'Ruota la traiettoria attorno alla partenza',
-  'Turn the path about its start: drag around, or use the arrow keys (Shift = 10°)': 'Ruota la traiettoria attorno alla partenza: trascina in cerchio, o usa le frecce (Maiusc = 10°)',
-  'Auto-sync matches the log with the video over the first minute of flight, using how fast the picture pans and, for flips and rolls, when it is upside down. A flip or roll in the first 10 s is the ideal marker (shown as F on the timeline). If it fails: move the timeline near the moment, then the video alone (−1 s … +1 s) to the frame where the picture is upside down in the middle of the first flip or roll, and press “Video here = first flip/roll”; or use “Video here = lift-off” / “Sync here”. Nudge ±0.1 while watching the plot (blue and orange should line up). Video plays locally; nothing is uploaded.': 'L’auto-sync allinea il log al video nel primo minuto di volo, usando quanto velocemente l’immagine ruota e, per flip e roll, quando è capovolta. Un flip o un roll nei primi 10 s è il riferimento ideale (segnato con F sulla timeline). Se non riesce: porta la timeline vicino al momento, poi solo il video (−1 s … +1 s) al fotogramma in cui l’immagine è capovolta a metà del primo flip o roll, e premi “Video qui = primo flip/roll”; oppure usa “Video qui = decollo” / “Sincronizza qui”. Ritocca di ±0,1 guardando il grafico (blu e arancio devono coincidere). Il video gira in locale; non viene caricato nulla.',
+  'Turn the path about its start: drag around, or use the arrow keys (Shift = 10°)':
+    'Ruota la traiettoria attorno alla partenza: trascina in cerchio, o usa le frecce (Maiusc = 10°)',
+  'Auto-sync matches the log with the video over the first minute of flight, using how fast the picture pans and, for flips and rolls, when it is upside down. A flip or roll in the first 10 s is the ideal marker (shown as F on the timeline). If it fails: move the timeline near the moment, then the video alone (−1 s … +1 s) to the frame where the picture is upside down in the middle of the first flip or roll, and press “Video here = first flip/roll”; or use “Video here = lift-off” / “Sync here”. Nudge ±0.1 while watching the plot (blue and orange should line up). Video plays locally; nothing is uploaded.':
+    'L’auto-sync allinea il log al video nel primo minuto di volo, usando quanto velocemente l’immagine ruota e, per flip e roll, quando è capovolta. Un flip o un roll nei primi 10 s è il riferimento ideale (segnato con F sulla timeline). Se non riesce: porta la timeline vicino al momento, poi solo il video (−1 s … +1 s) al fotogramma in cui l’immagine è capovolta a metà del primo flip o roll, e premi “Video qui = primo flip/roll”; oppure usa “Video qui = decollo” / “Sincronizza qui”. Ritocca di ±0,1 guardando il grafico (blu e arancio devono coincidere). Il video gira in locale; non viene caricato nulla.',
   'Fit the path in the view': 'Adatta la traiettoria alla vista',
-  'Where the flight starts, latitude and longitude: type others to move the path there': 'Dove parte il volo, latitudine e longitudine: scrivine altre per spostare lì la traiettoria',
-  'Where the flight starts in the bando, metres east of its centre': 'Dove parte il volo nel bando, metri a est del centro',
-  'Where the flight starts in the bando, metres south of its centre': 'Dove parte il volo nel bando, metri a sud del centro',
+  'Where the flight starts, latitude and longitude: type others to move the path there':
+    'Dove parte il volo, latitudine e longitudine: scrivine altre per spostare lì la traiettoria',
+  'Where the flight starts in the bando, metres east of its centre':
+    'Dove parte il volo nel bando, metri a est del centro',
+  'Where the flight starts in the bando, metres south of its centre':
+    'Dove parte il volo nel bando, metri a sud del centro',
   'start': 'partenza',
   'start x m': 'partenza x m',
   'Not a latitude, longitude: try 45.4642, 9.1900': 'Non è una latitudine, longitudine: prova 45.4642, 9.1900',
@@ -1334,35 +1580,48 @@ export const IT: Readonly<Record<string, string>> = {
   'Fly checklist': 'Checklist di volo',
   'What are you doing?': 'Cosa stai facendo?',
   'Replay': 'Replay',
-  'Replay a recorded flight: its log, its DVR video or both': 'Riguarda un volo registrato: il log, il video DVR o entrambi',
+  'Replay a recorded flight: its log, its DVR video or both':
+    'Riguarda un volo registrato: il log, il video DVR o entrambi',
   'Practise in the simulator over this bando': 'Esercitati nel simulatore su questo bando',
   'Follow live telemetry from a receiver bridge': 'Segui la telemetria live da un ponte ricevente',
-  'Create one or open a saved one; the model and your alignment stay as you move on.': 'Creane uno o aprine uno salvato; modello e allineamento restano mentre prosegui.',
+  'Create one or open a saved one; the model and your alignment stay as you move on.':
+    'Creane uno o aprine uno salvato; modello e allineamento restano mentre prosegui.',
   'Load the flight log': 'Carica il log di volo',
-  'A Betaflight Blackbox CSV, a GPX or a JSON. Skip it if you only have the DVR video.': 'Un CSV Blackbox di Betaflight, un GPX o un JSON. Saltalo se hai solo il video DVR.',
+  'A Betaflight Blackbox CSV, a GPX or a JSON. Skip it if you only have the DVR video.':
+    'Un CSV Blackbox di Betaflight, un GPX o un JSON. Saltalo se hai solo il video DVR.',
   'Load its DVR video': 'Carica il suo video DVR',
-  'The video of the same flight; it stays on this computer. Skip it if you only have the log.': 'Il video dello stesso volo; resta su questo computer. Saltalo se hai solo il log.',
-  'Press Auto-sync in Video: it lines them up in time from how the picture moves.': "Premi Auto-sync in Video: li allinea nel tempo da come si muove l'immagine.",
+  'The video of the same flight; it stays on this computer. Skip it if you only have the log.':
+    'Il video dello stesso volo; resta su questo computer. Saltalo se hai solo il log.',
+  'Press Auto-sync in Video: it lines them up in time from how the picture moves.':
+    "Premi Auto-sync in Video: li allinea nel tempo da come si muove l'immagine.",
   'Needs both the log and the video.': 'Servono sia il log sia il video.',
   'Align the path with the model': 'Allinea la traiettoria al modello',
-  'Time sync does not place the path: pin its start and end, or turn it, in Flight path.': 'La sincronizzazione nel tempo non posiziona la traiettoria: fissa inizio e fine, o ruotala, in Traiettoria.',
+  'Time sync does not place the path: pin its start and end, or turn it, in Flight path.':
+    'La sincronizzazione nel tempo non posiziona la traiettoria: fissa inizio e fine, o ruotala, in Traiettoria.',
   'Needs a flight log.': 'Serve un log di volo.',
   'Compare more flights': 'Confronta altri voli',
-  'Load other logs of this bando to replay them together, or exchange race files in Flights.': 'Carica altri log di questo bando per riguardarli insieme, o scambia file di gara in Voli.',
+  'Load other logs of this bando to replay them together, or exchange race files in Flights.':
+    'Carica altri log di questo bando per riguardarli insieme, o scambia file di gara in Voli.',
   'Connect a controller': 'Collega un controller',
-  'A radio over USB or a gamepad; the keyboard works too (WASD, QE, arrows, space). Skip it to use the keyboard.': 'Una radio via USB o un gamepad; funziona anche la tastiera (WASD, QE, frecce, spazio). Saltalo per usare la tastiera.',
+  'A radio over USB or a gamepad; the keyboard works too (WASD, QE, arrows, space). Skip it to use the keyboard.':
+    'Una radio via USB o un gamepad; funziona anche la tastiera (WASD, QE, frecce, spazio). Saltalo per usare la tastiera.',
   'Open the simulator': 'Apri il simulatore',
-  'Arming is up to you: nothing arms on its own. Collisions can be switched off in the Simulator panel.': "L'armamento spetta a te: niente si arma da solo. Le collisioni si disattivano nel pannello Simulatore.",
+  'Arming is up to you: nothing arms on its own. Collisions can be switched off in the Simulator panel.':
+    "L'armamento spetta a te: niente si arma da solo. Le collisioni si disattivano nel pannello Simulatore.",
   'Arm and fly': 'Arma e vola',
-  'Arm with the switch or the button when you are ready; disarm to land.': "Arma con l'interruttore o il pulsante quando sei pronto; disarma per atterrare.",
+  'Arm with the switch or the button when you are ready; disarm to land.':
+    "Arma con l'interruttore o il pulsante quando sei pronto; disarma per atterrare.",
   'Open the simulator first.': 'Apri prima il simulatore.',
   'Connect the live link': 'Collega il collegamento live',
-  'Run the telemetry bridge (tools/elrs_bridge.py) and connect to its WebSocket or event stream.': 'Avvia il ponte di telemetria (tools/elrs_bridge.py) e collegati al suo WebSocket o flusso di eventi.',
+  'Run the telemetry bridge (tools/elrs_bridge.py) and connect to its WebSocket or event stream.':
+    'Avvia il ponte di telemetria (tools/elrs_bridge.py) e collegati al suo WebSocket o flusso di eventi.',
   'Watch the link': 'Controlla il collegamento',
-  'The status line says when data goes stale, GPS is lost or the link drops; reconnect from Live link.': 'La riga di stato dice quando i dati invecchiano, il GPS si perde o il collegamento cade; ricollegati da Collegamento live.',
+  'The status line says when data goes stale, GPS is lost or the link drops; reconnect from Live link.':
+    'La riga di stato dice quando i dati invecchiano, il GPS si perde o il collegamento cade; ricollegati da Collegamento live.',
   'Connect first.': 'Prima collegati.',
   'Fly with others': 'Vola con altri',
-  'Several live sources show as separate pilots in Flights; a relay is optional and only for people you trust.': 'Più sorgenti live appaiono come piloti separati in Voli; un relay è facoltativo e solo per persone di fiducia.',
+  'Several live sources show as separate pilots in Flights; a relay is optional and only for people you trust.':
+    'Più sorgenti live appaiono come piloti separati in Voli; un relay è facoltativo e solo per persone di fiducia.',
   'Open Flights': 'Apri Voli',
   'Open Video': 'Apri Video',
   'Open Flight path': 'Apri Traiettoria',
@@ -1378,25 +1637,35 @@ export const IT: Readonly<Record<string, string>> = {
   'Cancel': 'Annulla',
   'Reopen the last skipped step': "Riapri l'ultimo passo saltato",
   'Close the checklist; loaded files and edits stay': 'Chiudi la checklist; file caricati e modifiche restano',
-  'This route is complete. Choose another, or reopen a skipped step.': 'Questo percorso è completo. Scegline un altro, o riapri un passo saltato.',
+  'This route is complete. Choose another, or reopen a skipped step.':
+    'Questo percorso è completo. Scegline un altro, o riapri un passo saltato.',
   'Follow the Fly checklist': 'Segui la checklist di volo',
-  'Fly opens this checklist beside the replay. Choose what you are doing: replay a recording, the simulator or live telemetry.': 'Vola apre questa checklist accanto al replay. Scegli cosa stai facendo: riguardare una registrazione, il simulatore o la telemetria live.',
-  'Each step ticks itself from what is loaded, so the list picks up where you left it. Skip what you do not have.': 'Ogni passo si spunta da solo in base a ciò che è caricato, così la lista riprende da dove eri rimasto. Salta quello che non hai.',
-  'The simulator route opens the simulator and leaves arming to you.': "Il percorso simulatore apre il simulatore e lascia a te l'armamento.",
+  'Fly opens this checklist beside the replay. Choose what you are doing: replay a recording, the simulator or live telemetry.':
+    'Vola apre questa checklist accanto al replay. Scegli cosa stai facendo: riguardare una registrazione, il simulatore o la telemetria live.',
+  'Each step ticks itself from what is loaded, so the list picks up where you left it. Skip what you do not have.':
+    'Ogni passo si spunta da solo in base a ciò che è caricato, così la lista riprende da dove eri rimasto. Salta quello che non hai.',
+  'The simulator route opens the simulator and leaves arming to you.':
+    "Il percorso simulatore apre il simulatore e lascia a te l'armamento.",
   'Courtyard': 'Cortile',
   'Courtyard {0}': 'Cortile {0}',
   'Delete courtyard {0}': 'Elimina cortile {0}',
   'Delete courtyard': 'Elimina cortile',
-  'Drag a courtyard into the basement: the ground stays, walls go around it': 'Trascina un cortile nel piano interrato: il terreno resta, i muri lo circondano',
-  'Drag a rectangle inside the basement: the ground stays there and walls go around it.': 'Trascina un rettangolo dentro il piano interrato: lì il terreno resta e i muri lo circondano.',
-  'A courtyard must lie inside the basement, at least 1 m across, clear of other courtyards and of columns, walls and voids.': 'Un cortile deve stare dentro il piano interrato, largo almeno 1 m, lontano da altri cortili e da colonne, muri e vuoti.',
+  'Drag a courtyard into the basement: the ground stays, walls go around it':
+    'Trascina un cortile nel piano interrato: il terreno resta, i muri lo circondano',
+  'Drag a rectangle inside the basement: the ground stays there and walls go around it.':
+    'Trascina un rettangolo dentro il piano interrato: lì il terreno resta e i muri lo circondano.',
+  'A courtyard must lie inside the basement, at least 1 m across, clear of other courtyards and of columns, walls and voids.':
+    'Un cortile deve stare dentro il piano interrato, largo almeno 1 m, lontano da altri cortili e da colonne, muri e vuoti.',
   'Basement piece': 'Parte di interrato',
   'Piece {0}': 'Parte {0}',
   'Delete piece {0}': 'Elimina parte {0}',
   'Delete piece': 'Elimina parte',
-  'Drag a separate piece of basement, apart from the main one': "Trascina una parte di interrato separata, staccata da quella principale",
-  'Drag a rectangle apart from the basement: a separate piece with its own walls.': 'Trascina un rettangolo staccato dal piano interrato: una parte separata con i suoi muri.',
-  'A separate piece must be at least 2 m across and apart from the basement and the other pieces.': 'Una parte separata deve essere larga almeno 2 m e staccata dal piano interrato e dalle altre parti.',
+  'Drag a separate piece of basement, apart from the main one':
+    'Trascina una parte di interrato separata, staccata da quella principale',
+  'Drag a rectangle apart from the basement: a separate piece with its own walls.':
+    'Trascina un rettangolo staccato dal piano interrato: una parte separata con i suoi muri.',
+  'A separate piece must be at least 2 m across and apart from the basement and the other pieces.':
+    'Una parte separata deve essere larga almeno 2 m e staccata dal piano interrato e dalle altre parti.',
   'Courtyard {0} wall {1}': 'Cortile {0} muro {1}',
   'Piece {0} wall {1}': 'Parte {0} muro {1}',
   'wall': 'muro',

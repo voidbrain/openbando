@@ -42,7 +42,9 @@ describe('services', () => {
       await flights.loadFiles([csvFile('pinned.csv', 1600 * 3)]);
       TestBed.tick();
       const f = flights.active!;
-      const t = 3, before = positionAt(f, t)!, start = f.loc[0]!.clone();
+      const t = 3,
+        before = positionAt(f, t)!,
+        start = f.loc[0]!.clone();
       const target = { x: before.x + 6, z: before.z - 4 };
       flights.setPins(f, addPin([], t, before, target));
       const after = positionAt(f, t)!;
@@ -106,7 +108,11 @@ describe('services', () => {
     it('caches lift-off and the first flip per flight', () => {
       const flights = TestBed.inject(FlightService);
       const tel = makeTelemetry({ duration: 30, liftoff: 3, flips: [{ at: 8, axis: 'roll' }] });
-      const f = flights.add('synthetic', Array.from({ length: 300 }, (_, i) => ({ lat: 45.4642 + i * 1e-6, lon: 9.1900, alt: 10, t: i / 10 })), tel);
+      const f = flights.add(
+        'synthetic',
+        Array.from({ length: 300 }, (_, i) => ({ lat: 45.4642 + i * 1e-6, lon: 9.19, alt: 10, t: i / 10 })),
+        tel,
+      );
       expect(flights.liftoff(f)).toBeCloseTo(3, 1);
       expect(flights.firstFlip(f)).toBeCloseTo(8, 0);
     });
@@ -121,7 +127,7 @@ describe('services', () => {
       const mid = (flights.active!.pts.length / 2) | 0;
       const before = flights.active!.loc[mid]!.clone();
       // same pivot logic the map panel's GPS alignment uses: rotate, then shift so the midpoint does not move
-      const rot = (((40 + 540) % 360) + 360) % 360 - 180;
+      const rot = ((((40 + 540) % 360) + 360) % 360) - 180;
       cal.setRot(rot);
       TestBed.tick(); // the flight's model coordinates follow the calibration through an effect
       expect(cal.rot()).toBeCloseTo(40, 9);
@@ -177,12 +183,21 @@ describe('services', () => {
       const p = TestBed.inject(PlaybackService);
       const v = TestBed.inject(VideoService);
       // a paused video whose seek never finishes: `seeking` stays true and no `seeked` comes
-      let vt = 0, sets = 0, seeking = true, now = 1000;
+      let vt = 0,
+        sets = 0,
+        seeking = true,
+        now = 1000;
       vi.spyOn(performance, 'now').mockImplementation(() => now);
       Object.defineProperty(v.element, 'readyState', { get: () => 4 });
       Object.defineProperty(v.element, 'paused', { get: () => true });
       Object.defineProperty(v.element, 'seeking', { get: () => seeking });
-      Object.defineProperty(v.element, 'currentTime', { get: () => vt, set: (t: number) => { vt = t; sets++; } });
+      Object.defineProperty(v.element, 'currentTime', {
+        get: () => vt,
+        set: (t: number) => {
+          vt = t;
+          sets++;
+        },
+      });
       v.loaded.set(true);
       v.setOffset(0);
       frames(1);
@@ -190,14 +205,17 @@ describe('services', () => {
       p.seekTo(3); // a timeline drag ends here
       frames(1);
       expect(sets).toBe(1);
-      now += 500; frames(5);
+      now += 500;
+      frames(5);
       expect(sets).toBe(1); // not yet: a seek may take a moment
-      now += 700; frames(1);
+      now += 700;
+      frames(1);
       expect(sets).toBe(2); // stalled for over a second: asked again, at the same place
       expect(vt).toBeCloseTo(3, 6);
       seeking = false;
       v.element.dispatchEvent(new Event('seeked'));
-      now += 5000; frames(5);
+      now += 5000;
+      frames(5);
       expect(sets).toBe(2); // done: nothing more
       vi.restoreAllMocks();
     });
@@ -206,12 +224,19 @@ describe('services', () => {
       await load();
       const p = TestBed.inject(PlaybackService);
       const v = TestBed.inject(VideoService);
-      let vt = 0, plays = 0, pauses = 0;
+      let vt = 0,
+        plays = 0,
+        pauses = 0;
       Object.defineProperty(v.element, 'readyState', { get: () => 4 });
       Object.defineProperty(v.element, 'paused', { get: () => true });
       Object.defineProperty(v.element, 'currentTime', { get: () => vt, set: (t: number) => (vt = t) });
-      v.element.play = () => { plays++; return Promise.resolve(); };
-      v.element.pause = () => { pauses++; };
+      v.element.play = () => {
+        plays++;
+        return Promise.resolve();
+      };
+      v.element.pause = () => {
+        pauses++;
+      };
       v.loaded.set(true);
       v.setOffset(0.5);
       p.seekTo(2);

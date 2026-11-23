@@ -10,14 +10,21 @@ export function basementOutline(b: BuildingSpec): Vec2[] {
 }
 /** Convert legacy rectilinear compass-side flags without guessing which diagonal edge they meant. */
 function perimeterWalls(b: BuildingSpec): boolean[] | null {
-  const basement = b.basement!, poly = basementOutline(b);
+  const basement = b.basement!,
+    poly = basementOutline(b);
   if (basement.wallEdges) return basement.wallEdges.length === poly.length ? [...basement.wallEdges] : null;
   if (!Object.values(basement.sides ?? {}).includes(false)) return poly.map(() => true);
   if (!isRectilinear(poly)) return null;
-  const area = poly.reduce((sum, a, i) => { const z = poly[(i + 1) % poly.length]!; return sum + a.x * z.z - z.x * a.z; }, 0);
+  const area = poly.reduce((sum, a, i) => {
+    const z = poly[(i + 1) % poly.length]!;
+    return sum + a.x * z.z - z.x * a.z;
+  }, 0);
   return poly.map((a, i) => {
-    const z = poly[(i + 1) % poly.length]!, dx = z.x - a.x, dz = z.z - a.z, sign = Math.sign(area);
-    const side = Math.abs(dx) > Math.abs(dz) ? (dx * sign > 0 ? 'n' : 's') : (dz * sign > 0 ? 'e' : 'w');
+    const z = poly[(i + 1) % poly.length]!,
+      dx = z.x - a.x,
+      dz = z.z - a.z,
+      sign = Math.sign(area);
+    const side = Math.abs(dx) > Math.abs(dz) ? (dx * sign > 0 ? 'n' : 's') : dz * sign > 0 ? 'e' : 'w';
     return basement.sides?.[side] !== false;
   });
 }
@@ -27,37 +34,48 @@ export function basementBuilding(b: BuildingSpec): BuildingSpec {
   const outline = basementOutline(b);
   const box = bounds(outline);
   const offset = { x: (box.x0 + box.x1) / 2, z: (box.z0 + box.z1) / 2 };
-  const angle = b.rotDeg * Math.PI / 180, c = Math.cos(angle), s = Math.sin(angle);
-  const centred = outline.map(p => ({ x: p.x - offset.x, z: p.z - offset.z }));
+  const angle = (b.rotDeg * Math.PI) / 180,
+    c = Math.cos(angle),
+    s = Math.sin(angle);
+  const centred = outline.map((p) => ({ x: p.x - offset.x, z: p.z - offset.z }));
   const level: LevelSpec = {
     baseY: -h,
     height: h,
     sides: { n: true, s: true, e: true, w: true, ...b.basement?.sides },
     doors: structuredClone(b.basement?.doors ?? {}),
     wallEdges: b.basement?.wallEdges ? [...b.basement.wallEdges] : undefined,
-    wallOpenings: b.basement?.wallOpenings?.map(o => ({ ...o, x: o.x - offset.x, z: o.z - offset.z })),
+    wallOpenings: b.basement?.wallOpenings?.map((o) => ({ ...o, x: o.x - offset.x, z: o.z - offset.z })),
     columns: structuredClone(b.basement?.columns),
     voids: structuredClone(b.basement?.voids),
     partitions: b.basement?.partitions ?? [],
     roof: 'none',
     roofRise: 0,
-    ...(b.basement?.courtyards?.length ? { courtyards: b.basement.courtyards.map(y => ({ ring: y.outline.map(p => ({ x: p.x - offset.x, z: p.z - offset.z })), ...(y.wallEdges ? { walls: [...y.wallEdges] } : {}) })) } : {}),
-    ...(b.basement?.pieces?.length ? { pieces: b.basement.pieces.map(p => p.outline.map(q => ({ x: q.x - offset.x, z: q.z - offset.z }))) } : {}),
+    ...(b.basement?.courtyards?.length
+      ? {
+          courtyards: b.basement.courtyards.map((y) => ({
+            ring: y.outline.map((p) => ({ x: p.x - offset.x, z: p.z - offset.z })),
+            ...(y.wallEdges ? { walls: [...y.wallEdges] } : {}),
+          })),
+        }
+      : {}),
+    ...(b.basement?.pieces?.length
+      ? { pieces: b.basement.pieces.map((p) => p.outline.map((q) => ({ x: q.x - offset.x, z: q.z - offset.z }))) }
+      : {}),
   };
   const length = box.x1 - box.x0;
   const width = box.z1 - box.z0;
   const rectangular =
     centred.length === 4 &&
-    centred.every(
-      (p) =>
-        Math.abs(Math.abs(p.x) - length / 2) < 0.001 && Math.abs(Math.abs(p.z) - width / 2) < 0.001,
-    );
+    centred.every((p) => Math.abs(Math.abs(p.x) - length / 2) < 0.001 && Math.abs(Math.abs(p.z) - width / 2) < 0.001);
   return {
     ...b,
     pos: { x: b.pos.x + offset.x * c - offset.z * s, z: b.pos.z + offset.x * s + offset.z * c },
     length,
     width,
-    footprint: rectangular && !b.basement?.wallOpenings?.length && !b.basement?.wallEdges && !b.basement?.courtyards?.length ? undefined : centred,
+    footprint:
+      rectangular && !b.basement?.wallOpenings?.length && !b.basement?.wallEdges && !b.basement?.courtyards?.length
+        ? undefined
+        : centred,
     levels: [level],
     basement: undefined,
     fixtures: undefined,
@@ -81,16 +99,50 @@ export function editBasementFloor(b: BuildingSpec, edit: (floor: BuildingSpec) =
 /** Save an edited virtual basement without moving the building above. */
 export function saveBasementFloor(b: BuildingSpec, floor: BuildingSpec, saveOutline = false): boolean {
   if (!b.basement) return false;
-  const a = b.rotDeg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
-  const dx = floor.pos.x - b.pos.x, dz = floor.pos.z - b.pos.z;
+  const a = (b.rotDeg * Math.PI) / 180,
+    c = Math.cos(a),
+    s = Math.sin(a);
+  const dx = floor.pos.x - b.pos.x,
+    dz = floor.pos.z - b.pos.z;
   const offset = { x: dx * c + dz * s, z: -dx * s + dz * c };
   const level = floor.levels[0]!;
-  const next = { ...b.basement, sides: { ...level.sides }, partitions: level.partitions, doors: level.doors, wallEdges: level.wallEdges?.some(v => !v) ? [...level.wallEdges] : undefined,
-    wallOpenings: level.wallOpenings?.map(o => ({ ...o, x: o.x + offset.x, z: o.z + offset.z })), columns: level.columns, voids: level.voids,
-    ...(saveOutline ? { outline: (floor.footprint ?? rectPoly(floor.length, floor.width)).map(p => ({ x: p.x + offset.x, z: p.z + offset.z })) } : {}) };
-  const valid = (p: Vec2): boolean => Number.isFinite(p.x) && Number.isFinite(p.z) && Math.abs(p.x) <= BASEMENT_COORD_LIMIT && Math.abs(p.z) <= BASEMENT_COORD_LIMIT;
-  if ((next.outline && (!validOutline(next.outline) || !next.outline.every(valid))) || (next.wallOpenings ?? []).some(o => !valid(o)) || (next.columns ?? []).some(c => !valid(c)) || (next.partitions ?? []).some(w => w.some(p => !valid(p))) || (next.voids ?? []).some(v => !valid({ x: v.x0, z: v.z0 }) || !valid({ x: v.x1, z: v.z1 }))) return false;
-  if (next.wallEdges && (next.wallEdges.length !== (next.outline ?? basementOutline(b)).length || !next.wallEdges.every(v => typeof v === 'boolean'))) return false;
+  const next = {
+    ...b.basement,
+    sides: { ...level.sides },
+    partitions: level.partitions,
+    doors: level.doors,
+    wallEdges: level.wallEdges?.some((v) => !v) ? [...level.wallEdges] : undefined,
+    wallOpenings: level.wallOpenings?.map((o) => ({ ...o, x: o.x + offset.x, z: o.z + offset.z })),
+    columns: level.columns,
+    voids: level.voids,
+    ...(saveOutline
+      ? {
+          outline: (floor.footprint ?? rectPoly(floor.length, floor.width)).map((p) => ({
+            x: p.x + offset.x,
+            z: p.z + offset.z,
+          })),
+        }
+      : {}),
+  };
+  const valid = (p: Vec2): boolean =>
+    Number.isFinite(p.x) &&
+    Number.isFinite(p.z) &&
+    Math.abs(p.x) <= BASEMENT_COORD_LIMIT &&
+    Math.abs(p.z) <= BASEMENT_COORD_LIMIT;
+  if (
+    (next.outline && (!validOutline(next.outline) || !next.outline.every(valid))) ||
+    (next.wallOpenings ?? []).some((o) => !valid(o)) ||
+    (next.columns ?? []).some((c) => !valid(c)) ||
+    (next.partitions ?? []).some((w) => w.some((p) => !valid(p))) ||
+    (next.voids ?? []).some((v) => !valid({ x: v.x0, z: v.z0 }) || !valid({ x: v.x1, z: v.z1 }))
+  )
+    return false;
+  if (
+    next.wallEdges &&
+    (next.wallEdges.length !== (next.outline ?? basementOutline(b)).length ||
+      !next.wallEdges.every((v) => typeof v === 'boolean'))
+  )
+    return false;
   if (!ringsKept(b, next)) return false; // a courtyard left outside the outline, or a floor item inside a courtyard
   b.basement = next;
   return true;
@@ -99,17 +151,20 @@ export function saveBasementFloor(b: BuildingSpec, floor: BuildingSpec, saveOutl
 /** Restore old boundary breakpoints so collinear edges with different wall states never merge. */
 function reshapePerimeter(old: Vec2[], flags: boolean[], next: Vec2[]): { outline: Vec2[]; walls: boolean[] } | null {
   const onSegment = (p: Vec2, a: Vec2, b: Vec2): number | null => {
-    const dx = b.x - a.x, dz = b.z - a.z, length = Math.hypot(dx, dz);
+    const dx = b.x - a.x,
+      dz = b.z - a.z,
+      length = Math.hypot(dx, dz);
     if (length < 1e-6) return null;
     const t = ((p.x - a.x) * dx + (p.z - a.z) * dz) / (length * length);
     return t >= -1e-6 && t <= 1 + 1e-6 && Math.abs((p.x - a.x) * dz - (p.z - a.z) * dx) / length < 1e-6 ? t : null;
   };
   const outline = next.flatMap((a, i) => {
     const b = next[(i + 1) % next.length]!;
-    const splits = old.map(p => ({p, t: onSegment(p, a, b)}))
-      .filter((cut): cut is {p: Vec2; t: number} => cut.t !== null && cut.t > 1e-6 && cut.t < 1 - 1e-6)
+    const splits = old
+      .map((p) => ({ p, t: onSegment(p, a, b) }))
+      .filter((cut): cut is { p: Vec2; t: number } => cut.t !== null && cut.t > 1e-6 && cut.t < 1 - 1e-6)
       .sort((x, y) => x.t - y.t);
-    return [{...a}, ...splits.map(cut => ({...cut.p}))];
+    return [{ ...a }, ...splits.map((cut) => ({ ...cut.p }))];
   });
   if (!validOutline(outline)) return null;
   const walls = outline.map((a, i) => {
@@ -120,14 +175,15 @@ function reshapePerimeter(old: Vec2[], flags: boolean[], next: Vec2[]): { outlin
     });
     return edge < 0 ? true : flags[edge]!;
   });
-  return {outline, walls};
+  return { outline, walls };
 }
 
 /** Drop the vertices between two collinear edges in the same wall state (the old corners `reshapePerimeter` keeps). */
 function joinCollinear(p: { outline: Vec2[]; walls: boolean[] }): { outline: Vec2[]; walls: boolean[] } {
   const n = p.outline.length;
   const keep = p.outline.map((v, i) => {
-    const a = p.outline[(i + n - 1) % n]!, b = p.outline[(i + 1) % n]!;
+    const a = p.outline[(i + n - 1) % n]!,
+      b = p.outline[(i + 1) % n]!;
     const straight = Math.abs((v.x - a.x) * (b.z - v.z) - (v.z - a.z) * (b.x - v.x)) < 1e-9;
     return !straight || p.walls[(i + n - 1) % n] !== p.walls[i];
   });
@@ -138,7 +194,8 @@ function joinCollinear(p: { outline: Vec2[]; walls: boolean[] }): { outline: Vec
 function openSpansSurvive(old: Vec2[], flags: boolean[], next: { outline: Vec2[]; walls: boolean[] }): boolean {
   const length = (a: Vec2, b: Vec2): number => Math.hypot(b.x - a.x, b.z - a.z);
   const on = (p: Vec2, a: Vec2, b: Vec2): boolean => {
-    const l = length(a, b), t = ((p.x - a.x) * (b.x - a.x) + (p.z - a.z) * (b.z - a.z)) / (l * l);
+    const l = length(a, b),
+      t = ((p.x - a.x) * (b.x - a.x) + (p.z - a.z) * (b.z - a.z)) / (l * l);
     return t >= -1e-6 && t <= 1 + 1e-6 && Math.abs((p.x - a.x) * (b.z - a.z) - (p.z - a.z) * (b.x - a.x)) / l < 1e-6;
   };
   return old.every((a, j) => {
@@ -164,28 +221,37 @@ export function reshapeBasement(b: BuildingSpec, rect: Rect, op: 'add' | 'cut'):
     return saveBasementFloor(b, floor, true);
   }
   // The tool rectangle is relative to the centred basement view; the saved outline is building-local.
-  const old = basementOutline(b), before = bounds(old), ox = (before.x0 + before.x1) / 2, oz = (before.z0 + before.z1) / 2;
-  const result = polygonRect(old, {x0: rect.x0 + ox, x1: rect.x1 + ox, z0: rect.z0 + oz, z1: rect.z1 + oz}, op);
+  const old = basementOutline(b),
+    before = bounds(old),
+    ox = (before.x0 + before.x1) / 2,
+    oz = (before.z0 + before.z1) / 2;
+  const result = polygonRect(old, { x0: rect.x0 + ox, x1: rect.x1 + ox, z0: rect.z0 + oz, z1: rect.z1 + oz }, op);
   const perimeter = result && reshapePerimeter(old, flags, result);
   if (!perimeter) return false;
   const next = perimeter.outline;
-  if (next.some(p => Math.abs(p.x) > BASEMENT_COORD_LIMIT || Math.abs(p.z) > BASEMENT_COORD_LIMIT)) return false;
+  if (next.some((p) => Math.abs(p.x) > BASEMENT_COORD_LIMIT || Math.abs(p.z) > BASEMENT_COORD_LIMIT)) return false;
   return replaceBasementOutline(b, next, perimeter.walls);
 }
 
 /** Replace topology only after preserving openings and floor items in the new boundary. */
 function replaceBasementOutline(b: BuildingSpec, next: Vec2[], walls: boolean[]): boolean {
-  const old = basementOutline(b), before = bounds(old);
+  const old = basementOutline(b),
+    before = bounds(old);
   if (b.basement && !ringsFit(b.basement, next)) return false;
   const copy = structuredClone(b);
   if (!moveBasementVertex(copy, 0, old[0]!)) return false;
-  const after = bounds(next), dx = before.x0 - after.x0, dz = before.z0 - after.z0, basement = copy.basement!;
+  const after = bounds(next),
+    dx = before.x0 - after.x0,
+    dz = before.z0 - after.z0,
+    basement = copy.basement!;
   basement.outline = next;
-  if (walls.some(v => !v)) basement.wallEdges = walls;
+  if (walls.some((v) => !v)) basement.wallEdges = walls;
   else delete basement.wallEdges;
-  if (basement.columns) basement.columns = basement.columns.map(c => ({...c, x:c.x + dx, z:c.z + dz}));
-  if (basement.partitions) basement.partitions = basement.partitions.map(w => w.map(p => ({x:p.x + dx,z:p.z + dz})) as [Vec2, Vec2]);
-  if (basement.voids) basement.voids = basement.voids.map(v => ({...v,x0:v.x0 + dx,x1:v.x1 + dx,z0:v.z0 + dz,z1:v.z1 + dz}));
+  if (basement.columns) basement.columns = basement.columns.map((c) => ({ ...c, x: c.x + dx, z: c.z + dz }));
+  if (basement.partitions)
+    basement.partitions = basement.partitions.map((w) => w.map((p) => ({ x: p.x + dx, z: p.z + dz })) as [Vec2, Vec2]);
+  if (basement.voids)
+    basement.voids = basement.voids.map((v) => ({ ...v, x0: v.x0 + dx, x1: v.x1 + dx, z0: v.z0 + dz, z1: v.z1 + dz }));
   if (!moveBasementVertex(copy, 0, next[0]!)) return false;
   b.basement = copy.basement;
   return true;
@@ -195,7 +261,10 @@ function replaceBasementOutline(b: BuildingSpec, next: Vec2[], walls: boolean[])
 export function moveBasementVertex(b: BuildingSpec, index: number, point: Vec2): boolean {
   const old = basementOutline(b);
   if (!b.basement || !Number.isInteger(index) || index < 0 || index >= old.length) return false;
-  return moveBasementVertices(b, old.map((p, i) => i === index ? {...point} : {...p}));
+  return moveBasementVertices(
+    b,
+    old.map((p, i) => (i === index ? { ...point } : { ...p })),
+  );
 }
 
 /** Move a matching set of vertices atomically, retaining edge identities and floor-item world positions. */
@@ -206,23 +275,45 @@ function moveBasementVertices(b: BuildingSpec, next: Vec2[]): boolean {
   if (!wallEdges) return false;
   const old = basementOutline(b);
   if (next.length !== old.length) return false;
-  const validPoint = (p: Vec2): boolean => Number.isFinite(p.x) && Number.isFinite(p.z) && Math.abs(p.x) <= BASEMENT_COORD_LIMIT && Math.abs(p.z) <= BASEMENT_COORD_LIMIT;
+  const validPoint = (p: Vec2): boolean =>
+    Number.isFinite(p.x) &&
+    Number.isFinite(p.z) &&
+    Math.abs(p.x) <= BASEMENT_COORD_LIMIT &&
+    Math.abs(p.z) <= BASEMENT_COORD_LIMIT;
   if (!validOutline(next) || !next.every(validPoint)) return false;
-  const before = bounds(old), after = bounds(next);
-  const dx = before.x0 - after.x0, dz = before.z0 - after.z0;
+  const before = bounds(old),
+    after = bounds(next);
+  const dx = before.x0 - after.x0,
+    dz = before.z0 - after.z0;
   const shifted = (p: Vec2): Vec2 => ({ x: p.x + dx, z: p.z + dz });
-  if ((basement.columns ?? []).some(c => !validPoint(shifted(c))) || (basement.partitions ?? []).some(w => w.some(p => !validPoint(shifted(p)))) || (basement.voids ?? []).some(v => !validPoint(shifted({ x: v.x0, z: v.z0 })) || !validPoint(shifted({ x: v.x1, z: v.z1 })))) return false;
-  const inNext = (p: Vec2): boolean => contains(next, p.x, p.z) || next.some((a, i) => {
-    const z = next[(i + 1) % next.length]!, ex = z.x - a.x, ez = z.z - a.z;
-    const t = Math.max(0, Math.min(1, ((p.x - a.x) * ex + (p.z - a.z) * ez) / (ex * ex + ez * ez)));
-    return Math.hypot(p.x - a.x - t * ex, p.z - a.z - t * ez) < 1e-6;
-  });
+  if (
+    (basement.columns ?? []).some((c) => !validPoint(shifted(c))) ||
+    (basement.partitions ?? []).some((w) => w.some((p) => !validPoint(shifted(p)))) ||
+    (basement.voids ?? []).some(
+      (v) => !validPoint(shifted({ x: v.x0, z: v.z0 })) || !validPoint(shifted({ x: v.x1, z: v.z1 })),
+    )
+  )
+    return false;
+  const inNext = (p: Vec2): boolean =>
+    contains(next, p.x, p.z) ||
+    next.some((a, i) => {
+      const z = next[(i + 1) % next.length]!,
+        ex = z.x - a.x,
+        ez = z.z - a.z;
+      const t = Math.max(0, Math.min(1, ((p.x - a.x) * ex + (p.z - a.z) * ez) / (ex * ex + ez * ez)));
+      return Math.hypot(p.x - a.x - t * ex, p.z - a.z - t * ez) < 1e-6;
+    });
   const asLocal = (p: Vec2): Vec2 => ({ x: before.x0 + p.x, z: before.z0 + p.z });
   const segmentInside = (a: Vec2, b: Vec2): boolean => {
     if (!inNext(a) || !inNext(b)) return false;
-    const dx = b.x - a.x, dz = b.z - a.z, cuts = [0, 1];
+    const dx = b.x - a.x,
+      dz = b.z - a.z,
+      cuts = [0, 1];
     for (let i = 0; i < next.length; i++) {
-      const p = next[i]!, q = next[(i + 1) % next.length]!, ex = q.x - p.x, ez = q.z - p.z;
+      const p = next[i]!,
+        q = next[(i + 1) % next.length]!,
+        ex = q.x - p.x,
+        ez = q.z - p.z;
       const det = dx * ez - dz * ex;
       if (Math.abs(det) < 1e-9) continue;
       const t = ((p.x - a.x) * ez - (p.z - a.z) * ex) / det;
@@ -230,92 +321,166 @@ function moveBasementVertices(b: BuildingSpec, next: Vec2[]): boolean {
       if (t > 0 && t < 1 && u >= 0 && u <= 1) cuts.push(t);
     }
     cuts.sort((x, y) => x - y);
-    return cuts.slice(1).every((t, i) => { const mid = (cuts[i]! + t) / 2; return inNext({ x: a.x + mid * dx, z: a.z + mid * dz }); });
+    return cuts.slice(1).every((t, i) => {
+      const mid = (cuts[i]! + t) / 2;
+      return inNext({ x: a.x + mid * dx, z: a.z + mid * dz });
+    });
   };
-  if ((basement.columns ?? []).some(c => !inNext(asLocal(c))) || (basement.partitions ?? []).some(w => !segmentInside(asLocal(w[0]), asLocal(w[1]))) || (basement.voids ?? []).some(v => {
-    const corners = [asLocal({ x: v.x0, z: v.z0 }), asLocal({ x: v.x1, z: v.z0 }), asLocal({ x: v.x1, z: v.z1 }), asLocal({ x: v.x0, z: v.z1 })];
-    return corners.some((p, i) => !segmentInside(p, corners[(i + 1) % corners.length]!));
-  })) return false;
-  const mini = basementBuilding(b), offsetX = (before.x0 + before.x1) / 2, offsetZ = (before.z0 + before.z1) / 2;
+  if (
+    (basement.columns ?? []).some((c) => !inNext(asLocal(c))) ||
+    (basement.partitions ?? []).some((w) => !segmentInside(asLocal(w[0]), asLocal(w[1]))) ||
+    (basement.voids ?? []).some((v) => {
+      const corners = [
+        asLocal({ x: v.x0, z: v.z0 }),
+        asLocal({ x: v.x1, z: v.z0 }),
+        asLocal({ x: v.x1, z: v.z1 }),
+        asLocal({ x: v.x0, z: v.z1 }),
+      ];
+      return corners.some((p, i) => !segmentInside(p, corners[(i + 1) % corners.length]!));
+    })
+  )
+    return false;
+  const mini = basementBuilding(b),
+    offsetX = (before.x0 + before.x1) / 2,
+    offsetZ = (before.z0 + before.z1) / 2;
   // Compass-indexed doors left on an already shaped floor are legacy data nothing shows (F-004: those that fit a wall
   // were migrated on load): keep them as they are rather than refuse the edit.
   const legacyDoors = mini.footprint ? basement.doors : undefined;
   const currentOpenings = listOpenings(mini, 0);
-  const expectedCount = mini.footprint ? mini.levels[0]!.wallOpenings?.length ?? 0 : Object.values(mini.levels[0]!.doors).reduce((n, list) => n + (list?.length ?? 0), 0);
+  const expectedCount = mini.footprint
+    ? (mini.levels[0]!.wallOpenings?.length ?? 0)
+    : Object.values(mini.levels[0]!.doors).reduce((n, list) => n + (list?.length ?? 0), 0);
   if (currentOpenings.length !== expectedCount) return false;
-  const openings = currentOpenings.map(o => {
+  const openings = currentOpenings.map((o) => {
     const x = (o.vector ? o.vector.a.x + o.c * o.vector.ux : o.axis === 'x' ? o.c : o.at) + offsetX;
     const z = (o.vector ? o.vector.a.z + o.c * o.vector.uz : o.axis === 'x' ? o.at : o.c) + offsetZ;
-    let best = -1, bestDistance = Infinity, fraction = 0;
+    let best = -1,
+      bestDistance = Infinity,
+      fraction = 0;
     for (let i = 0; i < old.length; i++) {
-      const a = old[i]!, q = old[(i + 1) % old.length]!, ex = q.x - a.x, ez = q.z - a.z;
+      const a = old[i]!,
+        q = old[(i + 1) % old.length]!,
+        ex = q.x - a.x,
+        ez = q.z - a.z;
       const t = Math.max(0, Math.min(1, ((x - a.x) * ex + (z - a.z) * ez) / (ex * ex + ez * ez)));
       const d = Math.hypot(x - a.x - t * ex, z - a.z - t * ez);
-      if (d < bestDistance) { best = i; bestDistance = d; fraction = t; }
+      if (d < bestDistance) {
+        best = i;
+        bestDistance = d;
+        fraction = t;
+      }
     }
     if (best < 0 || bestDistance > 0.08) return null;
-    const a = next[best]!, q = next[(best + 1) % next.length]!, len = Math.hypot(q.x - a.x, q.z - a.z);
+    const a = next[best]!,
+      q = next[(best + 1) % next.length]!,
+      len = Math.hypot(q.x - a.x, q.z - a.z);
     if (fraction * len < o.w / 2 || (1 - fraction) * len < o.w / 2) return null;
-    return { kind: o.kind, x: a.x + fraction * (q.x - a.x), z: a.z + fraction * (q.z - a.z), w: o.w, h: o.h, sill: o.sill, closed: o.closed };
+    return {
+      kind: o.kind,
+      x: a.x + fraction * (q.x - a.x),
+      z: a.z + fraction * (q.z - a.z),
+      w: o.w,
+      h: o.h,
+      sill: o.sill,
+      closed: o.closed,
+    };
   });
-  if (openings.some(o => !o || !validPoint(o))) return false;
+  if (openings.some((o) => !o || !validPoint(o))) return false;
   if (!ringsFit(basement, next)) return false;
   basement.outline = next;
   delete basement.sides;
-  if (wallEdges.some(v => !v)) basement.wallEdges = wallEdges;
+  if (wallEdges.some((v) => !v)) basement.wallEdges = wallEdges;
   else delete basement.wallEdges;
   basement.doors = legacyDoors ?? {};
-  basement.wallOpenings = openings.filter(o => o !== null);
-  if (basement.columns) basement.columns = basement.columns.map(c => ({ ...c, x: c.x + dx, z: c.z + dz }));
-  if (basement.partitions) basement.partitions = basement.partitions.map(w => w.map(p => ({ x: p.x + dx, z: p.z + dz })) as [Vec2, Vec2]);
-  if (basement.voids) basement.voids = basement.voids.map(v => ({ ...v, x0: v.x0 + dx, x1: v.x1 + dx, z0: v.z0 + dz, z1: v.z1 + dz }));
+  basement.wallOpenings = openings.filter((o) => o !== null);
+  if (basement.columns) basement.columns = basement.columns.map((c) => ({ ...c, x: c.x + dx, z: c.z + dz }));
+  if (basement.partitions)
+    basement.partitions = basement.partitions.map((w) => w.map((p) => ({ x: p.x + dx, z: p.z + dz })) as [Vec2, Vec2]);
+  if (basement.voids)
+    basement.voids = basement.voids.map((v) => ({ ...v, x0: v.x0 + dx, x1: v.x1 + dx, z0: v.z0 + dz, z1: v.z1 + dz }));
   return true;
 }
 
 /** Resize around the current basement centre, preserving its shape and each perimeter edge's identity. */
 export function resizeBasement(b: BuildingSpec, length: number, width: number): boolean {
-  if (!b.basement || ![length, width].every(v => Number.isFinite(v) && v >= 2 && v <= 300)) return false;
-  const old = basementOutline(b), box = bounds(old), cx = (box.x0 + box.x1) / 2, cz = (box.z0 + box.z1) / 2;
-  const sx = length / (box.x1 - box.x0), sz = width / (box.z1 - box.z0);
-  return moveBasementVertices(b, old.map(p => ({x: cx + (p.x - cx) * sx, z: cz + (p.z - cz) * sz})));
+  if (!b.basement || ![length, width].every((v) => Number.isFinite(v) && v >= 2 && v <= 300)) return false;
+  const old = basementOutline(b),
+    box = bounds(old),
+    cx = (box.x0 + box.x1) / 2,
+    cz = (box.z0 + box.z1) / 2;
+  const sx = length / (box.x1 - box.x0),
+    sz = width / (box.z1 - box.z0);
+  return moveBasementVertices(
+    b,
+    old.map((p) => ({ x: cx + (p.x - cx) * sx, z: cz + (p.z - cz) * sz })),
+  );
 }
 
 /** Restore the building's current footprint; do not guess how open walls map onto different topology. */
 export function restoreBasementFootprint(b: BuildingSpec): boolean {
   if (!b.basement) return false;
-  const old = basementOutline(b), target = outlineOf(b), before = bounds(old), after = bounds(target);
+  const old = basementOutline(b),
+    target = outlineOf(b),
+    before = bounds(old),
+    after = bounds(target);
   if (!validOutline(old) || !validOutline(target)) return false;
   const flags = perimeterWalls(b);
   if (!flags) return false;
-  const norm = (p: Vec2, box: Rect): Vec2 => ({x: (p.x - box.x0) / (box.x1 - box.x0), z: (p.z - box.z0) / (box.z1 - box.z0)});
+  const norm = (p: Vec2, box: Rect): Vec2 => ({
+    x: (p.x - box.x0) / (box.x1 - box.x0),
+    z: (p.z - box.z0) / (box.z1 - box.z0),
+  });
   const same = (a: Vec2, z: Vec2): boolean => Math.hypot(a.x - z.x, a.z - z.z) < 1e-6;
   let indices: number[] | null = null;
   if (old.length === target.length) {
-    for (const direction of [1, -1]) for (let start = 0; start < target.length && !indices; start++) {
-      const order = old.map((_, i) => (start + direction * i + target.length) % target.length);
-      if (old.every((p, i) => same(norm(p, before), norm(target[order[i]!]!, after)))) indices = order;
-    }
+    for (const direction of [1, -1])
+      for (let start = 0; start < target.length && !indices; start++) {
+        const order = old.map((_, i) => (start + direction * i + target.length) % target.length);
+        if (old.every((p, i) => same(norm(p, before), norm(target[order[i]!]!, after)))) indices = order;
+      }
   }
   const copy = structuredClone(b);
   if (indices) {
-    if (!moveBasementVertices(copy, indices.map(i => ({...target[i]!})))) return false;
+    if (
+      !moveBasementVertices(
+        copy,
+        indices.map((i) => ({ ...target[i]! })),
+      )
+    )
+      return false;
     const mapped = target.map((_, i) => {
-      const a = indices.indexOf(i), next = (i + 1) % target.length;
+      const a = indices.indexOf(i),
+        next = (i + 1) % target.length;
       return indices[(a + 1) % indices.length] === next ? flags[a]! : flags[(a + flags.length - 1) % flags.length]!;
     });
-    if (mapped.some(v => !v)) {
-      copy.basement!.outline = target.map(p => ({...p}));
+    if (mapped.some((v) => !v)) {
+      copy.basement!.outline = target.map((p) => ({ ...p }));
       copy.basement!.wallEdges = mapped;
-    } else { delete copy.basement!.outline; delete copy.basement!.wallEdges; }
+    } else {
+      delete copy.basement!.outline;
+      delete copy.basement!.wallEdges;
+    }
   } else if (flags.every(Boolean)) {
-    if (!replaceBasementOutline(copy, target.map(p => ({...p})), target.map(() => true))) return false;
+    if (
+      !replaceBasementOutline(
+        copy,
+        target.map((p) => ({ ...p })),
+        target.map(() => true),
+      )
+    )
+      return false;
     delete copy.basement!.outline;
   } else {
     // Different topology with open walls: a new edge keeps an old edge's state only where it lies exactly on that edge
     // (as Cut/Wing does), and every open span must survive whole. Anything less would silently close a wall: refuse.
     const split = reshapePerimeter(old, flags, target);
     const perimeter = split && joinCollinear(split);
-    if (!perimeter || !openSpansSurvive(old, flags, perimeter) || !replaceBasementOutline(copy, perimeter.outline, perimeter.walls)) return false;
+    if (
+      !perimeter ||
+      !openSpansSurvive(old, flags, perimeter) ||
+      !replaceBasementOutline(copy, perimeter.outline, perimeter.walls)
+    )
+      return false;
   }
   b.basement = copy.basement;
   return true;
@@ -338,12 +503,17 @@ export function setBasementPerimeterWall(b: BuildingSpec, edge: number, on: bool
 export function insertBasementVertex(b: BuildingSpec, edge: number): boolean {
   const old = basementOutline(b);
   if (!b.basement || edge < 0 || edge >= old.length || old.length >= 64) return false;
-  const copy = structuredClone(b), a = old[edge]!, z = old[(edge + 1) % old.length]!;
+  const copy = structuredClone(b),
+    a = old[edge]!,
+    z = old[(edge + 1) % old.length]!;
   if (!moveBasementVertex(copy, edge, a)) return false;
-  const len = Math.hypot(z.x - a.x, z.z - a.z), mid = len / 2;
+  const len = Math.hypot(z.x - a.x, z.z - a.z),
+    mid = len / 2;
   if (len < 1) return false;
   for (const o of copy.basement!.wallOpenings ?? []) {
-    const x = o.x - a.x, y = o.z - a.z, along = (x * (z.x - a.x) + y * (z.z - a.z)) / len;
+    const x = o.x - a.x,
+      y = o.z - a.z,
+      along = (x * (z.x - a.x) + y * (z.z - a.z)) / len;
     const distance = Math.abs(x * (z.z - a.z) - y * (z.x - a.x)) / len;
     if (distance < 0.08 && Math.abs(along - mid) < o.w / 2 + 0.1) return false;
   }
@@ -360,23 +530,33 @@ export function removeBasementVertex(b: BuildingSpec, index: number): boolean {
   const copy = structuredClone(b);
   if (!moveBasementVertex(copy, index, old[index]!)) return false;
   const onEdge = (p: Vec2, a: Vec2, z: Vec2): boolean => {
-    const dx = z.x - a.x, dz = z.z - a.z, len = Math.hypot(dx, dz);
+    const dx = z.x - a.x,
+      dz = z.z - a.z,
+      len = Math.hypot(dx, dz);
     const along = ((p.x - a.x) * dx + (p.z - a.z) * dz) / len;
     return along >= -0.08 && along <= len + 0.08 && Math.abs((p.x - a.x) * dz - (p.z - a.z) * dx) / len < 0.08;
   };
-  const previous = old[(index + old.length - 1) % old.length]!, vertex = old[index]!, next = old[(index + 1) % old.length]!;
-  if ((copy.basement!.wallOpenings ?? []).some(o => onEdge(o, previous, vertex) || onEdge(o, vertex, next))) return false;
+  const previous = old[(index + old.length - 1) % old.length]!,
+    vertex = old[index]!,
+    next = old[(index + 1) % old.length]!;
+  if ((copy.basement!.wallOpenings ?? []).some((o) => onEdge(o, previous, vertex) || onEdge(o, vertex, next)))
+    return false;
   const flags = copy.basement!.wallEdges;
   if (flags && flags[(index + old.length - 1) % old.length] !== flags[index]) return false;
   const outline = old.filter((_, i) => i !== index);
   if (!validOutline(outline)) return false;
-  const before = bounds(old), after = bounds(outline), dx = before.x0 - after.x0, dz = before.z0 - after.z0;
+  const before = bounds(old),
+    after = bounds(outline),
+    dx = before.x0 - after.x0,
+    dz = before.z0 - after.z0;
   const basement = copy.basement!;
   basement.outline = outline;
   if (flags) basement.wallEdges = flags.filter((_, i) => i !== index);
-  if (basement.columns) basement.columns = basement.columns.map(c => ({ ...c, x: c.x + dx, z: c.z + dz }));
-  if (basement.partitions) basement.partitions = basement.partitions.map(w => w.map(p => ({ x: p.x + dx, z: p.z + dz })) as [Vec2, Vec2]);
-  if (basement.voids) basement.voids = basement.voids.map(v => ({ ...v, x0: v.x0 + dx, x1: v.x1 + dx, z0: v.z0 + dz, z1: v.z1 + dz }));
+  if (basement.columns) basement.columns = basement.columns.map((c) => ({ ...c, x: c.x + dx, z: c.z + dz }));
+  if (basement.partitions)
+    basement.partitions = basement.partitions.map((w) => w.map((p) => ({ x: p.x + dx, z: p.z + dz })) as [Vec2, Vec2]);
+  if (basement.voids)
+    basement.voids = basement.voids.map((v) => ({ ...v, x0: v.x0 + dx, x1: v.x1 + dx, z0: v.z0 + dz, z1: v.z1 + dz }));
   if (!moveBasementVertex(copy, 0, outline[0]!)) return false;
   b.basement = copy.basement;
   return true;
@@ -388,9 +568,24 @@ export function removeBasementVertex(b: BuildingSpec, index: number): boolean {
  */
 export function addCourtyard(b: BuildingSpec, rect: Rect): boolean {
   if (!b.basement) return false;
-  const box = bounds(basementOutline(b)), ox = (box.x0 + box.x1) / 2, oz = (box.z0 + box.z1) / 2;
-  const x0 = Math.min(rect.x0, rect.x1) + ox, x1 = Math.max(rect.x0, rect.x1) + ox, z0 = Math.min(rect.z0, rect.z1) + oz, z1 = Math.max(rect.z0, rect.z1) + oz;
-  const courtyards = [...(b.basement.courtyards ?? []), { outline: [{ x: x0, z: z0 }, { x: x1, z: z0 }, { x: x1, z: z1 }, { x: x0, z: z1 }] }];
+  const box = bounds(basementOutline(b)),
+    ox = (box.x0 + box.x1) / 2,
+    oz = (box.z0 + box.z1) / 2;
+  const x0 = Math.min(rect.x0, rect.x1) + ox,
+    x1 = Math.max(rect.x0, rect.x1) + ox,
+    z0 = Math.min(rect.z0, rect.z1) + oz,
+    z1 = Math.max(rect.z0, rect.z1) + oz;
+  const courtyards = [
+    ...(b.basement.courtyards ?? []),
+    {
+      outline: [
+        { x: x0, z: z0 },
+        { x: x1, z: z0 },
+        { x: x1, z: z1 },
+        { x: x0, z: z1 },
+      ],
+    },
+  ];
   if (courtyards.length > MAX_COURTYARDS) return false;
   const next = { ...b.basement, courtyards };
   if (!ringsKept(b, next)) return false;
@@ -412,7 +607,14 @@ export function removeCourtyard(b: BuildingSpec, index: number): boolean {
 export function basementPieceBuilding(b: BuildingSpec, index: number): BuildingSpec | null {
   const piece = b.basement?.pieces?.[index];
   if (!piece) return null;
-  return basementBuilding({ ...b, basement: { height: b.basement!.height, outline: piece.outline, ...(piece.wallEdges ? { wallEdges: piece.wallEdges } : {}) } });
+  return basementBuilding({
+    ...b,
+    basement: {
+      height: b.basement!.height,
+      outline: piece.outline,
+      ...(piece.wallEdges ? { wallEdges: piece.wallEdges } : {}),
+    },
+  });
 }
 
 /**
@@ -421,11 +623,21 @@ export function basementPieceBuilding(b: BuildingSpec, index: number): BuildingS
  */
 export function addBasementPiece(b: BuildingSpec, rect: Rect): boolean {
   if (!b.basement) return false;
-  const box = bounds(basementOutline(b)), ox = (box.x0 + box.x1) / 2, oz = (box.z0 + box.z1) / 2;
-  const x0 = Math.min(rect.x0, rect.x1) + ox, x1 = Math.max(rect.x0, rect.x1) + ox, z0 = Math.min(rect.z0, rect.z1) + oz, z1 = Math.max(rect.z0, rect.z1) + oz;
+  const box = bounds(basementOutline(b)),
+    ox = (box.x0 + box.x1) / 2,
+    oz = (box.z0 + box.z1) / 2;
+  const x0 = Math.min(rect.x0, rect.x1) + ox,
+    x1 = Math.max(rect.x0, rect.x1) + ox,
+    z0 = Math.min(rect.z0, rect.z1) + oz,
+    z1 = Math.max(rect.z0, rect.z1) + oz;
   if (x1 - x0 < 2 || z1 - z0 < 2) return false;
-  const outline = [{ x: x0, z: z0 }, { x: x1, z: z0 }, { x: x1, z: z1 }, { x: x0, z: z1 }];
-  if (outline.some(p => Math.abs(p.x) > BASEMENT_COORD_LIMIT || Math.abs(p.z) > BASEMENT_COORD_LIMIT)) return false;
+  const outline = [
+    { x: x0, z: z0 },
+    { x: x1, z: z0 },
+    { x: x1, z: z1 },
+    { x: x0, z: z1 },
+  ];
+  if (outline.some((p) => Math.abs(p.x) > BASEMENT_COORD_LIMIT || Math.abs(p.z) > BASEMENT_COORD_LIMIT)) return false;
   const pieces = [...(b.basement.pieces ?? []), { outline }];
   if (pieces.length > MAX_PIECES) return false;
   const next = { ...b.basement, pieces };
@@ -451,8 +663,11 @@ export function removeBasementPiece(b: BuildingSpec, index: number): boolean {
  */
 export function migrateCompassDoors(b: BuildingSpec): BuildingSpec['basement'] {
   const basement = b.basement;
-  if (!basement?.outline || !Object.values(basement.doors ?? {}).some(list => list?.length)) return basement;
-  const outline = basement.outline, box = bounds(outline), ox = (box.x0 + box.x1) / 2, oz = (box.z0 + box.z1) / 2;
+  if (!basement?.outline || !Object.values(basement.doors ?? {}).some((list) => list?.length)) return basement;
+  const outline = basement.outline,
+    box = bounds(outline),
+    ox = (box.x0 + box.x1) / 2,
+    oz = (box.z0 + box.z1) / 2;
   // the rectangle the doors were placed on, in the centred frame
   const rect = { ...basementBuilding(b), footprint: undefined };
   const moved: WallOpening[] = [];
@@ -460,13 +675,28 @@ export function migrateCompassDoors(b: BuildingSpec): BuildingSpec['basement'] {
   for (const seg of listOpenings(rect, 0)) {
     const [, side, i] = seg.id.split(':') as [string, 'n' | 's' | 'e' | 'w', string];
     const door = basement.doors![side]![Number(i)]!;
-    const x = (seg.axis === 'x' ? seg.c : seg.at) + ox, z = (seg.axis === 'x' ? seg.at : seg.c) + oz;
+    const x = (seg.axis === 'x' ? seg.c : seg.at) + ox,
+      z = (seg.axis === 'x' ? seg.at : seg.c) + oz;
     const fits = outline.some((a, k) => {
-      const q = outline[(k + 1) % outline.length]!, ex = q.x - a.x, ez = q.z - a.z, len = Math.hypot(ex, ez);
+      const q = outline[(k + 1) % outline.length]!,
+        ex = q.x - a.x,
+        ez = q.z - a.z,
+        len = Math.hypot(ex, ez);
       const t = ((x - a.x) * ex + (z - a.z) * ez) / (len * len);
-      return Math.abs((x - a.x) * ez - (z - a.z) * ex) / len < 0.08 && t * len >= door.w / 2 && (1 - t) * len >= door.w / 2;
+      return (
+        Math.abs((x - a.x) * ez - (z - a.z) * ex) / len < 0.08 && t * len >= door.w / 2 && (1 - t) * len >= door.w / 2
+      );
     });
-    if (fits) moved.push({ kind: door.kind, x, z, w: door.w, h: door.h, ...(door.sill !== undefined ? { sill: door.sill } : {}), ...(door.closed ? { closed: true } : {}) });
+    if (fits)
+      moved.push({
+        kind: door.kind,
+        x,
+        z,
+        w: door.w,
+        h: door.h,
+        ...(door.sill !== undefined ? { sill: door.sill } : {}),
+        ...(door.closed ? { closed: true } : {}),
+      });
     else (kept[side] ??= []).push(door);
   }
   if (!moved.length) return basement;

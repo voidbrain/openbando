@@ -29,10 +29,12 @@ export const FlightStore = signalStore(
     active: computed(() => s.flights().find((f) => f.id === s.activeId()) ?? null),
   })),
   withMethods((store) => ({
-    add: (f: FlightSummary) => patchState(store, (s) => ({ flights: [...s.flights, f], activeId: f.id, revision: s.revision + 1 })),
+    add: (f: FlightSummary) =>
+      patchState(store, (s) => ({ flights: [...s.flights, f], activeId: f.id, revision: s.revision + 1 })),
     clear: () => patchState(store, (s) => ({ flights: [], activeId: null, revision: s.revision + 1 })),
     activate: (id: string) => patchState(store, (s) => (s.flights.some((f) => f.id === id) ? { activeId: id } : {})),
-    updateStats: (id: string, stats: string) => patchState(store, (s) => ({ flights: s.flights.map((f) => (f.id === id ? { ...f, stats } : f)) })),
+    updateStats: (id: string, stats: string) =>
+      patchState(store, (s) => ({ flights: s.flights.map((f) => (f.id === id ? { ...f, stats } : f)) })),
     touch: () => patchState(store, (s) => ({ revision: s.revision + 1 })),
   })),
 );

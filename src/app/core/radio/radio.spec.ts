@@ -48,7 +48,14 @@ describe('radio input', () => {
 
 describe('switch tracker', () => {
   const read = (arm: boolean | null, mode: boolean | null = null, throttle = 0, spring = false) => ({
-    roll: 0, pitch: 0, yaw: 0, throttle, gamepad: true, spring, armSwitch: arm, modeSwitch: mode,
+    roll: 0,
+    pitch: 0,
+    yaw: 0,
+    throttle,
+    gamepad: true,
+    spring,
+    armSwitch: arm,
+    modeSwitch: mode,
   });
 
   it('never arms just because a radio was connected with the switch already up', () => {

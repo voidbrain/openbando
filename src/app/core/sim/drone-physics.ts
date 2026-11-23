@@ -84,7 +84,13 @@ export function applyExpo(v: number, expo: number): number {
 }
 
 /** Fly one physics step: attitude (angle or acro), thrust, drag, gravity, collisions and the ground. */
-export function stepDrone(d: DroneState, dt: number, input: PilotInput, cfg: ControlSettings, world: CollisionWorld | null): StepResult {
+export function stepDrone(
+  d: DroneState,
+  dt: number,
+  input: PilotInput,
+  cfg: ControlSettings,
+  world: CollisionWorld | null,
+): StepResult {
   const F = (v: number): number => (input.gamepad ? applyExpo(v, cfg.expo) : v);
   const rate = (cfg.rate * Math.PI) / 180;
   const tilt = input.gamepad ? 0.8 : 0.62;
@@ -121,7 +127,10 @@ export function stepDrone(d: DroneState, dt: number, input: PilotInput, cfg: Con
         ? input.throttle * GRAVITY * 4.5
         : GRAVITY / Math.max(0.4, up.y) + input.throttle * 12 - (d.hold && !input.throttle ? d.v.y * 4 : 0);
   }
-  const accel = up.scale(thrust).add(new Vec3(0, -GRAVITY, 0)).addScaled(d.v, -DRAG);
+  const accel = up
+    .scale(thrust)
+    .add(new Vec3(0, -GRAVITY, 0))
+    .addScaled(d.v, -DRAG);
   d.v.addScaled(accel, dt);
 
   let crashed = false;

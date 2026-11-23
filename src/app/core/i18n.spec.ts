@@ -11,7 +11,12 @@ describe('languages', () => {
   });
 
   it('translates exact text, patterns (holes may move) and " · " lists, keeping white space', () => {
-    const d = compileDict({ Save: 'Salva', '{0} buildings': '{0} edifici', 'from {0} to {1}': 'a {1} da {0}', Delete: 'Elimina' });
+    const d = compileDict({
+      Save: 'Salva',
+      '{0} buildings': '{0} edifici',
+      'from {0} to {1}': 'a {1} da {0}',
+      Delete: 'Elimina',
+    });
     expect(translate('  Save ', d)).toBe('  Salva ');
     expect(translate('12 buildings', d)).toBe('12 edifici');
     expect(translate('from A to B', d)).toBe('a B da A');
@@ -29,11 +34,17 @@ describe('languages', () => {
     }
     expect(translate('Imported “Bando Villetta”.', d)).toBe('Importato “Bando Villetta”.');
     // a palette button's title: the tool's name · its hint
-    expect(translate('Cut · Cut a notch out of the selected building (U, H, L shapes)', d)).toBe('Taglia · Ritaglia una tacca dall’edificio selezionato (forme a U, H, L)');
+    expect(translate('Cut · Cut a notch out of the selected building (U, H, L shapes)', d)).toBe(
+      'Taglia · Ritaglia una tacca dall’edificio selezionato (forme a U, H, L)',
+    );
   });
 
   it('every caption and title of the guided tour has its Italian', () => {
-    const texts = [...SECTIONS.map((x) => x.title), ...TOURS.flatMap((t) => [t.title, t.about]), ...SNIPPETS.flatMap((s) => [s.title, ...s.beats.flatMap((b) => (b.say ? [b.say] : []))])];
+    const texts = [
+      ...SECTIONS.map((x) => x.title),
+      ...TOURS.flatMap((t) => [t.title, t.about]),
+      ...SNIPPETS.flatMap((s) => [s.title, ...s.beats.flatMap((b) => (b.say ? [b.say] : []))]),
+    ];
     expect(texts.filter((t) => !(t in IT))).toEqual([]);
   });
 

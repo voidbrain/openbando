@@ -27,11 +27,16 @@ const files = (dir: string): string[] =>
     return /\.(ts|html)$/.test(f) && !f.endsWith('.spec.ts') ? [p] : [];
   });
 
-/** The templates of a file: a whole .html, or the inline `template:` of a component. */
+/**
+ * The templates of a file: a whole .html, or the inline `template:` of a component. Prettier may write a closing tag
+ * as `</span\n  >`; it is folded back to `</span>` so the cuts below find their end (otherwise a cut runs to the end of
+ * the file and every text after it goes unchecked).
+ */
 const templates = (path: string, src: string): string[] => {
-  if (path.endsWith('.html')) return [src];
+  const fold = (t: string): string => t.replace(/<\/(\w[\w-]*)\s+>/g, '</$1>');
+  if (path.endsWith('.html')) return [fold(src)];
   const out: string[] = [];
-  for (const m of src.matchAll(/template:\s*`([\s\S]*?)`/g)) out.push(m[1]!);
+  for (const m of src.matchAll(/template:\s*`([\s\S]*?)`/g)) out.push(fold(m[1]!));
   return out;
 };
 
@@ -100,11 +105,13 @@ for (const path of files(`${ROOT}/src/app`)) {
     for (const m of body.matchAll(/>([^<>]+)</g)) see(m[1]!.replace(/\u0001/g, '0'), rel);
   }
   // toasts and native dialogs with plain text
-  for (const m of src.matchAll(/(?:toast\.show|tr)\(\s*'((?:[^'\\]|\\.)+)'/g)) see(m[1]!.replace(/\\'/g, "'"), rel);
+  // single- or double-quoted: Prettier writes a text holding an apostrophe in double quotes
+  const str = (m: RegExpMatchArray): string => (m[1] ?? m[2]!).replace(/\\(['"])/g, '$1');
+  for (const m of src.matchAll(/(?:toast\.show|tr)\(\s*(?:'((?:[^'\\]|\\.)+)'|"((?:[^"\\]|\\.)+)")/g)) see(str(m), rel);
   // labels and hints in TypeScript data: picture menus, tool and material lists, context menus (comments left out)
   if (path.endsWith('.ts')) {
     const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
-    for (const m of code.matchAll(/\b(?:label|hint)\s*:\s*'((?:[^'\\]|\\.)+)'/g)) see(m[1]!.replace(/\\'/g, "'"), rel);
+    for (const m of code.matchAll(/\b(?:label|hint)\s*:\s*(?:'((?:[^'\\]|\\.)+)'|"((?:[^"\\]|\\.)+)")/g)) see(str(m), rel);
   }
 }
 

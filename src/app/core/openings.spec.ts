@@ -3,8 +3,23 @@ import { addOpening, listOpenings, moveOpening, patchOpening, previewOpening, re
 import { emptySpec, type BuildingSpec } from './site-spec';
 
 const building = (): BuildingSpec => ({
-  id: 'b', name: 'B', pos: { x: 100, z: 50 }, rotDeg: 0, length: 20, width: 12,
-  levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'gable', roofRise: 2 }],
+  id: 'b',
+  name: 'B',
+  pos: { x: 100, z: 50 },
+  rotDeg: 0,
+  length: 20,
+  width: 12,
+  levels: [
+    {
+      baseY: 0,
+      height: 4,
+      sides: { n: true, s: true, e: true, w: true },
+      doors: {},
+      partitions: [],
+      roof: 'gable',
+      roofRise: 2,
+    },
+  ],
 });
 
 describe('openings & reshaping', () => {

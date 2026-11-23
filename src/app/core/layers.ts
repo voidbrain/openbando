@@ -46,9 +46,19 @@ export const surfaceDef = (k: SurfaceKind | undefined): SurfaceDef => SURFACES.f
 export const WATER_COLOR = '#3d86b6';
 
 const clamp = (v: number, a: number, b: number): number => Math.min(b, Math.max(a, v));
-const okPt = (p: unknown): p is Vec2 => !!p && typeof (p as Vec2).x === 'number' && typeof (p as Vec2).z === 'number' && isFinite((p as Vec2).x) && isFinite((p as Vec2).z);
+const okPt = (p: unknown): p is Vec2 =>
+  !!p &&
+  typeof (p as Vec2).x === 'number' &&
+  typeof (p as Vec2).z === 'number' &&
+  isFinite((p as Vec2).x) &&
+  isFinite((p as Vec2).z);
 const pts = (v: unknown, min: number): Vec2[] | null => {
-  const a = Array.isArray(v) ? v.filter(okPt).slice(0, 2000).map((p) => ({ x: clamp(p.x, -2000, 2000), z: clamp(p.z, -2000, 2000) })) : [];
+  const a = Array.isArray(v)
+    ? v
+        .filter(okPt)
+        .slice(0, 2000)
+        .map((p) => ({ x: clamp(p.x, -2000, 2000), z: clamp(p.z, -2000, 2000) }))
+    : [];
   return a.length >= min ? a : null;
 };
 
@@ -56,14 +66,23 @@ const pts = (v: unknown, min: number): Vec2[] | null => {
  * The layers of a stored spec, every value checked. A spec saved before roads existed has its roads as rotated pads:
  * those (all pads but the last, the take-off pad) become two-point roads.
  */
-export function sanitizeLayers(s: Partial<SiteSpec>): Partial<Pick<SiteSpec, 'roads' | 'surfaces' | 'waters' | 'pads' | 'underground'>> {
+export function sanitizeLayers(
+  s: Partial<SiteSpec>,
+): Partial<Pick<SiteSpec, 'roads' | 'surfaces' | 'waters' | 'pads' | 'underground'>> {
   const out: Partial<Pick<SiteSpec, 'roads' | 'surfaces' | 'waters' | 'pads' | 'underground'>> = {};
   if (Array.isArray(s.roads)) {
     out.roads = s.roads.flatMap((r) => {
       const p = pts(r?.pts, 2);
       if (!p) return [];
       const kind = ROADS.some((d) => d.id === r.kind) ? r.kind : 'road';
-      return [{ pts: p, kind, width: clamp(typeof r.width === 'number' && isFinite(r.width) ? r.width : roadDef(kind).width, 0.5, 40), ...(SURFACES.some((d) => d.id === r.surface) ? { surface: r.surface } : {}) }];
+      return [
+        {
+          pts: p,
+          kind,
+          width: clamp(typeof r.width === 'number' && isFinite(r.width) ? r.width : roadDef(kind).width, 0.5, 40),
+          ...(SURFACES.some((d) => d.id === r.surface) ? { surface: r.surface } : {}),
+        },
+      ];
     });
   } else if (Array.isArray(s.pads) && s.pads.length > 1) {
     const { roads, pads } = padsToRoads(s.pads as PadSpec[]);
@@ -79,7 +98,15 @@ export function sanitizeLayers(s: Partial<SiteSpec>): Partial<Pick<SiteSpec, 'ro
   if (Array.isArray(s.waters)) {
     out.waters = s.waters.flatMap((w) => {
       const p = pts(w?.pts, 3);
-      return p ? [{ pts: p, depth: clamp(typeof w.depth === 'number' && isFinite(w.depth) ? w.depth : 1.5, 0.2, 20), ...(typeof w.level === 'number' && isFinite(w.level) ? { level: clamp(w.level, -10, 5) } : {}) }] : [];
+      return p
+        ? [
+            {
+              pts: p,
+              depth: clamp(typeof w.depth === 'number' && isFinite(w.depth) ? w.depth : 1.5, 0.2, 20),
+              ...(typeof w.level === 'number' && isFinite(w.level) ? { level: clamp(w.level, -10, 5) } : {}),
+            },
+          ]
+        : [];
     });
   }
   if (Array.isArray(s.underground)) {
@@ -87,18 +114,23 @@ export function sanitizeLayers(s: Partial<SiteSpec>): Partial<Pick<SiteSpec, 'ro
       const p = pts(u?.outline, 3);
       if (!p) return [];
       const floor = typeof u.floor === 'number' && isFinite(u.floor) ? clamp(u.floor, -200, 300) : -3;
-      const ceiling = typeof u.ceiling === 'number' && isFinite(u.ceiling) ? clamp(u.ceiling, floor + 0.8, floor + 60) : floor + 3;
+      const ceiling =
+        typeof u.ceiling === 'number' && isFinite(u.ceiling) ? clamp(u.ceiling, floor + 0.8, floor + 60) : floor + 3;
       const shape = u.shape === 'pipe' || u.shape === 'vault' ? u.shape : 'box';
-      return [{
-        id: typeof u.id === 'string' && u.id ? u.id : `ug-${i}`,
-        name: typeof u.name === 'string' ? u.name.slice(0, 80) : 'Tunnel',
-        outline: p.slice(0, 64),
-        floor,
-        ceiling,
-        shape,
-        wall: typeof u.wall === 'number' && isFinite(u.wall) ? clamp(u.wall, 0.1, 3) : 0.4,
-        ...(typeof u.water === 'number' && isFinite(u.water) && u.water > 0 ? { water: clamp(u.water, 0, ceiling - floor) } : {}),
-      }];
+      return [
+        {
+          id: typeof u.id === 'string' && u.id ? u.id : `ug-${i}`,
+          name: typeof u.name === 'string' ? u.name.slice(0, 80) : 'Tunnel',
+          outline: p.slice(0, 64),
+          floor,
+          ceiling,
+          shape,
+          wall: typeof u.wall === 'number' && isFinite(u.wall) ? clamp(u.wall, 0.1, 3) : 0.4,
+          ...(typeof u.water === 'number' && isFinite(u.water) && u.water > 0
+            ? { water: clamp(u.water, 0, ceiling - floor) }
+            : {}),
+        },
+      ];
     });
   }
   return out;
@@ -108,8 +140,16 @@ export function sanitizeLayers(s: Partial<SiteSpec>): Partial<Pick<SiteSpec, 'ro
 export function padsToRoads(pads: readonly PadSpec[]): { roads: RoadSpec[]; pads: PadSpec[] } {
   const start = pads[pads.length - 1];
   const roads = pads.slice(0, -1).map((p): RoadSpec => {
-    const a = ((p.rotDeg ?? 0) * Math.PI) / 180, h = p.w / 2;
-    return { pts: [{ x: p.x - Math.cos(a) * h, z: p.z - Math.sin(a) * h }, { x: p.x + Math.cos(a) * h, z: p.z + Math.sin(a) * h }], width: p.d, kind: 'road' };
+    const a = ((p.rotDeg ?? 0) * Math.PI) / 180,
+      h = p.w / 2;
+    return {
+      pts: [
+        { x: p.x - Math.cos(a) * h, z: p.z - Math.sin(a) * h },
+        { x: p.x + Math.cos(a) * h, z: p.z + Math.sin(a) * h },
+      ],
+      width: p.d,
+      kind: 'road',
+    };
   });
   return { roads, pads: start ? [start] : [] };
 }
@@ -127,20 +167,35 @@ const curves = new WeakMap<readonly Vec2[], { width: number; line: Vec2[] }>();
 export function roadLine(r: Pick<RoadSpec, 'pts' | 'width'>): Vec2[] {
   const hit = curves.get(r.pts);
   if (hit?.width === r.width) return hit.line;
-  const pts = r.pts, out: Vec2[] = pts.length ? [pts[0]!] : [];
+  const pts = r.pts,
+    out: Vec2[] = pts.length ? [pts[0]!] : [];
   for (let i = 1; i + 1 < pts.length; i++) {
-    const a = pts[i - 1]!, b = pts[i]!, c = pts[i + 1]!;
-    const l1 = Math.hypot(b.x - a.x, b.z - a.z), l2 = Math.hypot(c.x - b.x, c.z - b.z);
-    if (l1 < 0.01 || l2 < 0.01) { out.push(b); continue; }
-    const u = { x: (b.x - a.x) / l1, z: (b.z - a.z) / l1 }, v = { x: (c.x - b.x) / l2, z: (c.z - b.z) / l2 };
+    const a = pts[i - 1]!,
+      b = pts[i]!,
+      c = pts[i + 1]!;
+    const l1 = Math.hypot(b.x - a.x, b.z - a.z),
+      l2 = Math.hypot(c.x - b.x, c.z - b.z);
+    if (l1 < 0.01 || l2 < 0.01) {
+      out.push(b);
+      continue;
+    }
+    const u = { x: (b.x - a.x) / l1, z: (b.z - a.z) / l1 },
+      v = { x: (c.x - b.x) / l2, z: (c.z - b.z) / l2 };
     const turn = Math.acos(clamp(u.x * v.x + u.z * v.z, -1, 1));
-    if (turn < 0.035) { out.push(b); continue; } // straight on (under 2°)
+    if (turn < 0.035) {
+      out.push(b);
+      continue;
+    } // straight on (under 2°)
     const t = Math.min(roadRadius(r.width) * Math.tan(Math.min(turn, 3) / 2), l1 / 2, l2 / 2);
-    const p = { x: b.x - u.x * t, z: b.z - u.z * t }, q = { x: b.x + v.x * t, z: b.z + v.z * t };
+    const p = { x: b.x - u.x * t, z: b.z - u.z * t },
+      q = { x: b.x + v.x * t, z: b.z + v.z * t };
     // a quadratic curve from p to q with the corner as its control point: tangent to both segments, about 1 m a step
     const n = Math.max(2, Math.ceil((turn * t) / 1));
     for (let k = 0; k <= n; k++) {
-      const s = k / n, w0 = (1 - s) * (1 - s), w1 = 2 * s * (1 - s), w2 = s * s;
+      const s = k / n,
+        w0 = (1 - s) * (1 - s),
+        w1 = 2 * s * (1 - s),
+        w2 = s * s;
       out.push({ x: w0 * p.x + w1 * b.x + w2 * q.x, z: w0 * p.z + w1 * b.z + w2 * q.z });
     }
   }
@@ -153,8 +208,11 @@ export function roadLine(r: Pick<RoadSpec, 'pts' | 'width'>): Vec2[] {
 export function nearestOnPath(path: readonly Vec2[], x: number, z: number): { d: number; at: Vec2 } {
   let best = { d: Infinity, at: path[0]! };
   for (let i = 1; i < path.length; i++) {
-    const a = path[i - 1]!, b = path[i]!;
-    const dx = b.x - a.x, dz = b.z - a.z, l2 = dx * dx + dz * dz;
+    const a = path[i - 1]!,
+      b = path[i]!;
+    const dx = b.x - a.x,
+      dz = b.z - a.z,
+      l2 = dx * dx + dz * dz;
     const t = l2 ? clamp(((x - a.x) * dx + (z - a.z) * dz) / l2, 0, 1) : 0;
     const q = { x: a.x + dx * t, z: a.z + dz * t };
     const d = Math.hypot(x - q.x, z - q.z);
@@ -164,20 +222,34 @@ export function nearestOnPath(path: readonly Vec2[], x: number, z: number): { d:
 }
 
 /** Every cell within `r` of a polyline / polygon bounding box. */
-function cellsNear(g: HeightGrid, poly: readonly Vec2[], r: number, fn: (k: number, x: number, z: number) => void): void {
-  let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity;
+function cellsNear(
+  g: HeightGrid,
+  poly: readonly Vec2[],
+  r: number,
+  fn: (k: number, x: number, z: number) => void,
+): void {
+  let x0 = Infinity,
+    z0 = Infinity,
+    x1 = -Infinity,
+    z1 = -Infinity;
   for (const p of poly) {
-    x0 = Math.min(x0, p.x - r); z0 = Math.min(z0, p.z - r); x1 = Math.max(x1, p.x + r); z1 = Math.max(z1, p.z + r);
+    x0 = Math.min(x0, p.x - r);
+    z0 = Math.min(z0, p.z - r);
+    x1 = Math.max(x1, p.x + r);
+    z1 = Math.max(z1, p.z + r);
   }
-  const i0 = Math.max(0, Math.floor((x0 - g.x0) / g.cell)), i1 = Math.min(g.nx - 1, Math.ceil((x1 - g.x0) / g.cell));
-  const j0 = Math.max(0, Math.floor((z0 - g.z0) / g.cell)), j1 = Math.min(g.nz - 1, Math.ceil((z1 - g.z0) / g.cell));
+  const i0 = Math.max(0, Math.floor((x0 - g.x0) / g.cell)),
+    i1 = Math.min(g.nx - 1, Math.ceil((x1 - g.x0) / g.cell));
+  const j0 = Math.max(0, Math.floor((z0 - g.z0) / g.cell)),
+    j1 = Math.min(g.nz - 1, Math.ceil((z1 - g.z0) / g.cell));
   for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) fn(j * g.nx + i, g.x0 + i * g.cell, g.z0 + j * g.cell);
 }
 
 export function insidePolygon(poly: readonly Vec2[], x: number, z: number): boolean {
   let inside = false;
   for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    const a = poly[i]!, b = poly[j]!;
+    const a = poly[i]!,
+      b = poly[j]!;
     if (a.z > z !== b.z > z && x < ((b.x - a.x) * (z - a.z)) / (b.z - a.z) + a.x) inside = !inside;
   }
   return inside;
@@ -202,23 +274,25 @@ export function levelRoads(g: HeightGrid, roads: readonly RoadSpec[]): void {
   const src = { ...g, h: g.h.slice() };
   const blend = 2;
   const touched = new Set<number>();
-  for (const r of live) cellsNear(g, roadLine(r), r.width / 2 + blend, (k, x, z) => {
-    if (touched.has(k)) return;
-    touched.add(k);
-    let chosen: { d: number; at: Vec2; half: number; priority: number } | null = null;
-    for (const q of live) {
-      const m = nearestOnPath(roadLine(q), x, z), half = q.width / 2;
-      if (m.d > half + blend) continue;
-      const priority = m.d <= half ? roadPriority(q) : -1;
-      if (!chosen || priority > chosen.priority || (priority === chosen.priority && m.d < chosen.d)) {
-        chosen = { ...m, half, priority };
+  for (const r of live)
+    cellsNear(g, roadLine(r), r.width / 2 + blend, (k, x, z) => {
+      if (touched.has(k)) return;
+      touched.add(k);
+      let chosen: { d: number; at: Vec2; half: number; priority: number } | null = null;
+      for (const q of live) {
+        const m = nearestOnPath(roadLine(q), x, z),
+          half = q.width / 2;
+        if (m.d > half + blend) continue;
+        const priority = m.d <= half ? roadPriority(q) : -1;
+        if (!chosen || priority > chosen.priority || (priority === chosen.priority && m.d < chosen.d)) {
+          chosen = { ...m, half, priority };
+        }
       }
-    }
-    if (!chosen) return;
-    const y = heightAt(src, chosen.at.x, chosen.at.z);
-    const w = chosen.d <= chosen.half ? 1 : 1 - (chosen.d - chosen.half) / blend;
-    g.h[k] = src.h[k]! + (y - src.h[k]!) * w;
-  });
+      if (!chosen) return;
+      const y = heightAt(src, chosen.at.x, chosen.at.z);
+      const w = chosen.d <= chosen.half ? 1 : 1 - (chosen.d - chosen.half) / blend;
+      g.h[k] = src.h[k]! + (y - src.h[k]!) * w;
+    });
 }
 
 /** The water level of a basin: just below its lowest bank (the outline's lowest point), plus its own offset. */
@@ -244,7 +318,8 @@ export function digWater(g: HeightGrid, w: WaterSpec): number {
 /** Simplify a hand-drawn line (Douglas-Peucker, `tol` metres) so a stroke stays a few dozen points. */
 export function simplifyPath(p: readonly Vec2[], tol = 0.6): Vec2[] {
   if (p.length < 3) return [...p];
-  let idx = 0, dmax = 0;
+  let idx = 0,
+    dmax = 0;
   for (let i = 1; i < p.length - 1; i++) {
     const d = nearestOnPath([p[0]!, p[p.length - 1]!], p[i]!.x, p[i]!.z).d;
     if (d > dmax) {
@@ -260,7 +335,8 @@ export function simplifyPath(p: readonly Vec2[], tol = 0.6): Vec2[] {
 export function polygonArea(p: readonly Vec2[]): number {
   let a = 0;
   for (let i = 0; i < p.length; i++) {
-    const q = p[i]!, r = p[(i + 1) % p.length]!;
+    const q = p[i]!,
+      r = p[(i + 1) % p.length]!;
     a += q.x * r.z - r.x * q.z;
   }
   return Math.abs(a) / 2;
@@ -272,8 +348,11 @@ export function stripOutline(line: readonly Vec2[], width: number): Vec2[] {
   const half = width / 2;
   const side = (k: number): Vec2[] =>
     line.map((p, i) => {
-      const a = line[Math.max(0, i - 1)]!, b = line[Math.min(line.length - 1, i + 1)]!;
-      const dx = b.x - a.x, dz = b.z - a.z, l = Math.hypot(dx, dz) || 1;
+      const a = line[Math.max(0, i - 1)]!,
+        b = line[Math.min(line.length - 1, i + 1)]!;
+      const dx = b.x - a.x,
+        dz = b.z - a.z,
+        l = Math.hypot(dx, dz) || 1;
       return { x: p.x - (dz / l) * k * half, z: p.z + (dx / l) * k * half };
     });
   return [...side(1), ...side(-1).reverse()];
@@ -286,13 +365,16 @@ export function stripOutline(line: readonly Vec2[], width: number): Vec2[] {
 export function unionOutline(polys: readonly (readonly Vec2[])[], cell = 1): Vec2[] {
   const all = polys.flat();
   if (!all.length) return [];
-  const x0 = Math.min(...all.map((p) => p.x)) - cell, z0 = Math.min(...all.map((p) => p.z)) - cell;
-  const nx = Math.ceil((Math.max(...all.map((p) => p.x)) + cell - x0) / cell), nz = Math.ceil((Math.max(...all.map((p) => p.z)) + cell - z0) / cell);
+  const x0 = Math.min(...all.map((p) => p.x)) - cell,
+    z0 = Math.min(...all.map((p) => p.z)) - cell;
+  const nx = Math.ceil((Math.max(...all.map((p) => p.x)) + cell - x0) / cell),
+    nz = Math.ceil((Math.max(...all.map((p) => p.z)) + cell - z0) / cell);
   if (nx * nz > 4e6) return [...(polys[0] ?? [])]; // too big for the grid: keep the first as it is
   const inside = new Uint8Array(nx * nz);
   for (let j = 0; j < nz; j++)
     for (let i = 0; i < nx; i++) {
-      const x = x0 + (i + 0.5) * cell, z = z0 + (j + 0.5) * cell;
+      const x = x0 + (i + 0.5) * cell,
+        z = z0 + (j + 0.5) * cell;
       if (polys.some((p) => p.length >= 3 && insidePolygon(p, x, z))) inside[j * nx + i] = 1;
     }
   const at = (i: number, j: number): boolean => i >= 0 && j >= 0 && i < nx && j < nz && inside[j * nx + i] === 1;
@@ -333,9 +415,11 @@ export function polygonsTouch(a: readonly Vec2[], b: readonly Vec2[]): boolean {
   if (a.some((p) => insidePolygon(b, p.x, p.z)) || b.some((p) => insidePolygon(a, p.x, p.z))) return true;
   const cross = (p: Vec2, q: Vec2, r: Vec2): number => (q.x - p.x) * (r.z - p.z) - (q.z - p.z) * (r.x - p.x);
   for (let i = 0; i < a.length; i++) {
-    const p1 = a[i]!, p2 = a[(i + 1) % a.length]!;
+    const p1 = a[i]!,
+      p2 = a[(i + 1) % a.length]!;
     for (let j = 0; j < b.length; j++) {
-      const q1 = b[j]!, q2 = b[(j + 1) % b.length]!;
+      const q1 = b[j]!,
+        q2 = b[(j + 1) % b.length]!;
       if (cross(p1, p2, q1) * cross(p1, p2, q2) <= 0 && cross(q1, q2, p1) * cross(q1, q2, p2) <= 0) return true;
     }
   }
@@ -364,18 +448,32 @@ export function mergeWaters(waters: readonly WaterSpec[], i: number): { waters: 
  * its left and how far to stretch the half-width there. At a bend the two segments share one frame whose normal bisects
  * theirs, stretched by 1 / cos(half the turn) (a mitre, capped at 2×), so the strip turns without gaps or overlaps.
  */
-export function stripFrames(pts: readonly Vec2[], step: number): { x: number; z: number; nx: number; nz: number; s: number }[] {
-  const segs = pts.slice(1).map((b, i) => {
-    const a = pts[i]!, dx = b.x - a.x, dz = b.z - a.z, len = Math.hypot(dx, dz);
-    return { a, dx, dz, len, nx: len ? -dz / len : 0, nz: len ? dx / len : 0 };
-  }).filter((g) => g.len > 0.01);
+export function stripFrames(
+  pts: readonly Vec2[],
+  step: number,
+): { x: number; z: number; nx: number; nz: number; s: number }[] {
+  const segs = pts
+    .slice(1)
+    .map((b, i) => {
+      const a = pts[i]!,
+        dx = b.x - a.x,
+        dz = b.z - a.z,
+        len = Math.hypot(dx, dz);
+      return { a, dx, dz, len, nx: len ? -dz / len : 0, nz: len ? dx / len : 0 };
+    })
+    .filter((g) => g.len > 0.01);
   const out: { x: number; z: number; nx: number; nz: number; s: number }[] = [];
   segs.forEach((g, i) => {
-    const n = Math.max(1, Math.ceil(g.len / step)), next = segs[i + 1];
+    const n = Math.max(1, Math.ceil(g.len / step)),
+      next = segs[i + 1];
     for (let k = i ? 1 : 0; k <= n; k++) {
-      let nx = g.nx, nz = g.nz, s = 1;
+      let nx = g.nx,
+        nz = g.nz,
+        s = 1;
       if (k === n && next) {
-        const mx = g.nx + next.nx, mz = g.nz + next.nz, ml = Math.hypot(mx, mz);
+        const mx = g.nx + next.nx,
+          mz = g.nz + next.nz,
+          ml = Math.hypot(mx, mz);
         if (ml > 1e-6) {
           nx = mx / ml;
           nz = mz / ml;
@@ -397,9 +495,14 @@ export function pathLength(pts: readonly Vec2[]): number {
  * The shape a finished layer drag makes, simplified (`tol` metres): a road's centre line (`line`), an outline drawn by
  * hand (`outline`), or a canal `width` wide along the drag (`strip`). A string says why the drag was refused.
  */
-export function layerShape(raw: readonly Vec2[], kind: 'line' | 'outline' | 'strip', o: { tol: number; width?: number }): Vec2[] | string {
+export function layerShape(
+  raw: readonly Vec2[],
+  kind: 'line' | 'outline' | 'strip',
+  o: { tol: number; width?: number },
+): Vec2[] | string {
   const pts = simplifyPath(raw, o.tol);
-  const along = pts.length >= 2 && Math.hypot(pts[pts.length - 1]!.x - pts[0]!.x, pts[pts.length - 1]!.z - pts[0]!.z) >= 2;
+  const along =
+    pts.length >= 2 && Math.hypot(pts[pts.length - 1]!.x - pts[0]!.x, pts[pts.length - 1]!.z - pts[0]!.z) >= 2;
   if (kind === 'line') return along ? pts : 'Drag along the way to draw a road.';
   if (kind === 'strip') return along ? stripOutline(pts, o.width ?? 8) : 'Drag along the course of the canal.';
   return pts.length >= 3 ? pts : 'Draw a loop: the outline of the area.';
@@ -410,10 +513,14 @@ export function nearestEdge(pts: readonly Vec2[], p: Vec2, closed: boolean): { i
   const n = closed ? pts.length : pts.length - 1;
   let best: { i: number; at: Vec2; d: number } | null = null;
   for (let i = 0; i < n; i++) {
-    const a = pts[i]!, b = pts[(i + 1) % pts.length]!;
-    const dx = b.x - a.x, dz = b.z - a.z, l2 = dx * dx + dz * dz;
+    const a = pts[i]!,
+      b = pts[(i + 1) % pts.length]!;
+    const dx = b.x - a.x,
+      dz = b.z - a.z,
+      l2 = dx * dx + dz * dz;
     const t = l2 ? Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.z - a.z) * dz) / l2)) : 0;
-    const at = { x: a.x + dx * t, z: a.z + dz * t }, d = Math.hypot(p.x - at.x, p.z - at.z);
+    const at = { x: a.x + dx * t, z: a.z + dz * t },
+      d = Math.hypot(p.x - at.x, p.z - at.z);
     if (!best || d < best.d) best = { i, at, d };
   }
   return best;

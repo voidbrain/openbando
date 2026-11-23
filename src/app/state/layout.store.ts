@@ -35,8 +35,21 @@ const LAYOUT_V = 4;
 const Z_START = 10;
 const Z_MAX = 5000;
 
-const initialPanel = (visible: boolean): PanelState => ({ visible, minimized: false, ghost: false, x: null, y: null, z: Z_START, w: null, h: null });
-const defaults = (): LayoutState => ({ panels: Object.fromEntries(PANELS.map((p) => [p.id, initialPanel(p.visible)])) as Record<PanelId, PanelState>, zTop: Z_START, v: LAYOUT_V });
+const initialPanel = (visible: boolean): PanelState => ({
+  visible,
+  minimized: false,
+  ghost: false,
+  x: null,
+  y: null,
+  z: Z_START,
+  w: null,
+  h: null,
+});
+const defaults = (): LayoutState => ({
+  panels: Object.fromEntries(PANELS.map((p) => [p.id, initialPanel(p.visible)])) as Record<PanelId, PanelState>,
+  zTop: Z_START,
+  v: LAYOUT_V,
+});
 
 /** Where every floating panel is, whether it is shown / collapsed / transparent, and which is on top. Remembered across visits. */
 export const LayoutStore = signalStore(
@@ -44,7 +57,11 @@ export const LayoutStore = signalStore(
   withState(() => {
     const d = defaults();
     const requested = new URLSearchParams(location.search).get('panel');
-    if (requested === 'features') { d.panels.welcome.visible = false; d.panels.features.visible = true; return d; }
+    if (requested === 'features') {
+      d.panels.welcome.visible = false;
+      d.panels.features.visible = true;
+      return d;
+    }
     // a showcase link starts like a first visit (only Welcome); the tour arranges the rest itself
     if (showcaseLink(location.search, location.hash)) return d;
     const saved = savedState<LayoutState>(KEY, d);
@@ -56,7 +73,11 @@ export const LayoutStore = signalStore(
       // A stale saved size from an older build (or from when a panel was resizable) makes the reopened panel the
       // wrong height: only trust w/h for panels that are resizable today. Also drop sizes that were recorded while
       // the panel was collapsed / transiently laid out (a few px high) — those reopen at the wrong height.
-      let clean: Partial<PanelState> = s ? (PANEL_BY_ID[id]?.resizable && saved.v === LAYOUT_V ? s : { ...s, w: null, h: null }) : {};
+      let clean: Partial<PanelState> = s
+        ? PANEL_BY_ID[id]?.resizable && saved.v === LAYOUT_V
+          ? s
+          : { ...s, w: null, h: null }
+        : {};
       if (clean.minimized && (clean.w ?? 0) < 120) clean = { ...clean, w: null };
       if ((clean.h ?? 999) < 100 || (clean.w ?? 999) < 60) clean = { ...clean, h: null, w: null };
       panels[id] = { ...panels[id], ...clean };
@@ -92,8 +113,12 @@ export const LayoutStore = signalStore(
     return {
       hideAll: () => {
         const panels = store.panels();
-        beforeHideAll ??= (Object.keys(panels) as PanelId[]).filter(id => panels[id].visible);
-        patchState(store, { panels: Object.fromEntries(Object.entries(panels).map(([id, p]) => [id, { ...p, visible: id === 'views' }])) as Record<PanelId, PanelState> });
+        beforeHideAll ??= (Object.keys(panels) as PanelId[]).filter((id) => panels[id].visible);
+        patchState(store, {
+          panels: Object.fromEntries(
+            Object.entries(panels).map(([id, p]) => [id, { ...p, visible: id === 'views' }]),
+          ) as Record<PanelId, PanelState>,
+        });
       },
       /** Showing a panel also brings it to the front. */
       setVisible: (id: PanelId, visible: boolean) => {
@@ -115,13 +140,17 @@ export const LayoutStore = signalStore(
       restore: (saved: Partial<Record<PanelId, Partial<PanelState>>>) =>
         patchState(store, (s) => {
           const panels = { ...s.panels };
-          for (const [id, p] of Object.entries(saved) as [PanelId, Partial<PanelState>][]) panels[id] = { ...panels[id], ...p };
+          for (const [id, p] of Object.entries(saved) as [PanelId, Partial<PanelState>][])
+            panels[id] = { ...panels[id], ...p };
           return { panels };
         }),
       reset: () => {
         // Reset geometry and appearance while preserving which panels the pilot has open.
         const d = defaults();
-        for (const id of Object.keys(d.panels) as PanelId[]) d.panels[id].visible = beforeHideAll ? beforeHideAll.includes(id) || id === 'views' : store.panels()[id].visible;
+        for (const id of Object.keys(d.panels) as PanelId[])
+          d.panels[id].visible = beforeHideAll
+            ? beforeHideAll.includes(id) || id === 'views'
+            : store.panels()[id].visible;
         beforeHideAll = null;
         patchState(store, d);
         // the float boxes and the editor's toolbars remember their place on their own

@@ -1,0 +1,19 @@
+# Formatting covers source code. Keep byte-identical: copied harness tools, vendored and generated files, fixtures.
+node_modules/
+dist/
+coverage/
+vendor/
+.angular/
+playwright-report/
+test-results/
+# CI checks the harness template out here.
+.harness/
+# Copied harness tools live in tools/; project tools are not formatted yet (the format scripts cover src/ and e2e/).
+tools/
+public/
+library/
+docs/
+*.md
+*.json
+*.yml
+*.yaml

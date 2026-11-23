@@ -10,7 +10,11 @@ describe('math3d', () => {
   });
 
   it('recovers pitch, yaw and roll from an attitude quaternion', () => {
-    for (const [p, y, r] of [[0.3, 1.2, -0.5], [-0.8, -2.5, 0.9], [0, 0, 0]] as const) {
+    for (const [p, y, r] of [
+      [0.3, 1.2, -0.5],
+      [-0.8, -2.5, 0.9],
+      [0, 0, 0],
+    ] as const) {
       const a = attitudeAngles(attitudeQuat(new Quat(), p, y, r));
       expect(a.pitchUp).toBeCloseTo(p, 6);
       expect(a.yaw).toBeCloseTo(y, 6);
@@ -42,7 +46,9 @@ describe('math3d', () => {
   });
 
   it('multiply composes rotations in the local frame', () => {
-    const q = new Quat().setFromEuler(0, Math.PI / 2, 0, 'YXZ').multiply(new Quat().setFromEuler(0, Math.PI / 2, 0, 'YXZ'));
+    const q = new Quat()
+      .setFromEuler(0, Math.PI / 2, 0, 'YXZ')
+      .multiply(new Quat().setFromEuler(0, Math.PI / 2, 0, 'YXZ'));
     expect(Math.abs(eulerYXZ(q).y)).toBeCloseTo(Math.PI, 6);
   });
 });

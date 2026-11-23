@@ -3,7 +3,10 @@ import { LayoutStore } from '../state/layout.store';
 import { PanelPlacer } from './panel-placer.service';
 
 describe('panel placement', () => {
-  beforeEach(() => { localStorage.clear(); TestBed.resetTestingModule(); });
+  beforeEach(() => {
+    localStorage.clear();
+    TestBed.resetTestingModule();
+  });
   it('opens the timeline at its bottom anchor while arranging the other flight panels', async () => {
     const layout = TestBed.inject(LayoutStore);
     layout.moveTo('timeline', 50, 50);
@@ -17,7 +20,8 @@ describe('panel placement', () => {
 });
 
 it('places Flights below Video while retaining the bottom timeline anchor', async () => {
-  localStorage.clear(); TestBed.resetTestingModule();
+  localStorage.clear();
+  TestBed.resetTestingModule();
   const layout = TestBed.inject(LayoutStore);
   await TestBed.inject(PanelPlacer).open(['video', 'flights', 'timeline']);
   expect(layout.panels().flights.x).toBe(layout.panels().video.x);

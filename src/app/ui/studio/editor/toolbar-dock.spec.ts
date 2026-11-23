@@ -13,6 +13,11 @@ describe('editor toolbars', () => {
     expect(optionsPlace(null, { x: 700, y: 8 }, btn, size)).toEqual({ left: null, right: 106, top: 108, max: 686 });
   });
   it('where it was dragged, kept inside', () => {
-    expect(optionsPlace({ x: 790, y: 600 }, { x: 8, y: 8 }, { top: 0, palW: 46 }, size)).toEqual({ left: 680, right: null, top: 464, max: 112 });
+    expect(optionsPlace({ x: 790, y: 600 }, { x: 8, y: 8 }, { top: 0, palW: 46 }, size)).toEqual({
+      left: 680,
+      right: null,
+      top: 464,
+      max: 112,
+    });
   });
 });

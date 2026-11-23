@@ -15,14 +15,24 @@ describe('alignment position service', () => {
     const playback = { time: 0, duration: 10 };
     const pin = signal<'s' | 'e' | null>(null);
     const endPin = vi.fn(() => pin.set(null));
-    TestBed.configureTestingModule({ providers: [
-      AlignmentPositionService,
-      { provide: FlightService, useValue: { active: {} } },
-      { provide: PlaybackService, useValue: playback },
-      { provide: VideoService, useValue: video },
-      { provide: SceneService, useValue: { pin, endPin } },
-      { provide: FrameLoopService, useValue: { every: (_n: number, _order: number, cb: () => void) => { tick = cb; return () => undefined; } } },
-    ] });
+    TestBed.configureTestingModule({
+      providers: [
+        AlignmentPositionService,
+        { provide: FlightService, useValue: { active: {} } },
+        { provide: PlaybackService, useValue: playback },
+        { provide: VideoService, useValue: video },
+        { provide: SceneService, useValue: { pin, endPin } },
+        {
+          provide: FrameLoopService,
+          useValue: {
+            every: (_n: number, _order: number, cb: () => void) => {
+              tick = cb;
+              return () => undefined;
+            },
+          },
+        },
+      ],
+    });
     const gate = TestBed.inject(AlignmentPositionService);
     tick();
     expect(gate.atStart()).toBe(true);

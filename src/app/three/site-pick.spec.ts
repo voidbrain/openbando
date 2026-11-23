@@ -43,11 +43,7 @@ describe('main-page and editor picking', () => {
     ];
     const model = buildSiteFromSpec(s);
     expect(
-      pickModel(
-        new THREE.Raycaster(new THREE.Vector3(-10, 30, 0), new THREE.Vector3(0, -1, 0)),
-        model,
-        s,
-      ),
+      pickModel(new THREE.Raycaster(new THREE.Vector3(-10, 30, 0), new THREE.Vector3(0, -1, 0)), model, s),
     ).toEqual({ kind: 'tree', i: 1 });
   });
   it('does not select a buried tunnel through the intact hill above it', () => {
@@ -76,16 +72,15 @@ describe('main-page and editor picking', () => {
     ];
     const model = buildSiteFromSpec(s);
     expect(
-      pickModel(
-        new THREE.Raycaster(new THREE.Vector3(0, 30, 0), new THREE.Vector3(0, -1, 0)),
-        model,
-        s,
-      ),
+      pickModel(new THREE.Raycaster(new THREE.Vector3(0, 30, 0), new THREE.Vector3(0, -1, 0)), model, s),
     ).toBeNull();
   });
   it('picks the take-off pad (the last pad), not another pad, in the merged view (F-035)', () => {
     const s = emptySpec();
-    s.pads = [{ x: 20, z: 0, w: 6, d: 6 }, { x: -20, z: 0, w: 6, d: 6 }];
+    s.pads = [
+      { x: 20, z: 0, w: 6, d: 6 },
+      { x: -20, z: 0, w: 6, d: 6 },
+    ];
     s.droneStart = { x: -20, z: 0 };
     const model = buildSiteFromSpec(s, { merge: true });
     const down = (x: number) => new THREE.Raycaster(new THREE.Vector3(x, 20, 1.5), new THREE.Vector3(0, -1, 0));

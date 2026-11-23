@@ -75,7 +75,9 @@ export class LiveLinkService {
       };
       src.onerror = () => {
         this.status.set('error');
-        this.message.set('Could not connect. Is the telemetry source running, and is this page opened over http://localhost? (A published page cannot reach local devices.)');
+        this.message.set(
+          'Could not connect. Is the telemetry source running, and is this page opened over http://localhost? (A published page cannot reach local devices.)',
+        );
         if (src instanceof EventSource && src.readyState === EventSource.CLOSED) this.closed();
       };
       if (src instanceof WebSocket) src.onclose = () => this.closed();

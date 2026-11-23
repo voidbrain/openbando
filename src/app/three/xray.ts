@@ -10,7 +10,9 @@ interface Faded {
 
 /** Distance of point p from the segment a-b. */
 export function segmentDistance(a: THREE.Vector3, b: THREE.Vector3, px: number, py: number, pz: number): number {
-  const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
+  const dx = b.x - a.x,
+    dy = b.y - a.y,
+    dz = b.z - a.z;
   const l = dx * dx + dy * dy + dz * dz;
   let t = l ? ((px - a.x) * dx + (py - a.y) * dy + (pz - a.z) * dz) / l : 0;
   t = t < 0 ? 0 : t > 1 ? 1 : t;
@@ -33,7 +35,13 @@ export class XRay {
   constructor(public site: SiteModel) {}
 
   /** `targets` are world positions of drones that must stay visible; `modelScale` is the site's scale. */
-  step(dt: number, camera: THREE.Camera, targets: readonly THREE.Vector3[], modelScale: number, allowNearCamera = true): void {
+  step(
+    dt: number,
+    camera: THREE.Camera,
+    targets: readonly THREE.Vector3[],
+    modelScale: number,
+    allowNearCamera = true,
+  ): void {
     const tg = this.enabled ? targets : [];
     if (++this.frame % 2 === 0) this.search(camera, tg, modelScale, allowNearCamera);
     this.faded.forEach((st, mesh) => {

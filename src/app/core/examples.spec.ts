@@ -38,10 +38,15 @@ describe('example bandos', () => {
     const c = sanitizeSpec(chiari)!;
     expect(c.buildings.find((b) => b.name === 'Ruined mill')).toMatchObject({ roofless: true, crenels: true });
     expect(c.structures?.map((s) => s.block?.id).sort()).toEqual(['abando/sign-tower', 'abando/water-tower']);
-    expect(sanitizeSpec(hidden)!.buildings.find((b) => b.block?.id === 'abando/vault-shed')?.levels[0]?.roof).toBe('vault');
+    expect(sanitizeSpec(hidden)!.buildings.find((b) => b.block?.id === 'abando/vault-shed')?.levels[0]?.roof).toBe(
+      'vault',
+    );
   });
 
-  it.each([['Villetta', hidden], ['Bardwell House', bardwell]] as const)('%s, without its place, gives nothing away and carries its own ground', (_, file) => {
+  it.each([
+    ['Villetta', hidden],
+    ['Bardwell House', bardwell],
+  ] as const)('%s, without its place, gives nothing away and carries its own ground', (_, file) => {
     const h = sanitizeSpec(file)!;
     expect(h.privacy).toBe('hidden');
     expect(h.origin).toEqual({ lat: 0, lon: 0 });
@@ -68,7 +73,8 @@ describe('example bandos', () => {
     expect(b.droneStart).toEqual({ x: b.pads.at(-1)!.x, z: b.pads.at(-1)!.z });
     // only the model's ground: every road point and tree inside the area of its heights, the grass just around it
     const half = b.terrain!.half;
-    for (const r of b.roads ?? []) for (const p of r.pts) expect(Math.abs(p.x) <= half.e + 1e-6 && Math.abs(p.z) <= half.n + 1e-6).toBe(true);
+    for (const r of b.roads ?? [])
+      for (const p of r.pts) expect(Math.abs(p.x) <= half.e + 1e-6 && Math.abs(p.z) <= half.n + 1e-6).toBe(true);
     for (const t of b.trees) expect(Math.abs(t.x) <= half.e && Math.abs(t.z) <= half.n).toBe(true);
     expect(b.extent).toBeLessThanOrEqual(Math.max(half.e, half.n) + 5);
     // the hedge on the south side of the house, the second drive and the pad in front of the house
@@ -97,15 +103,25 @@ describe('the Playground', () => {
     expect(wh.levels[0]!.voids?.length).toBeGreaterThan(0);
     expect(p.buildings.some((b) => b.roofless && b.crenels)).toBe(true);
     expect(p.trees.length).toBeGreaterThan(40);
-    const placed = new Set([...p.buildings, ...(p.structures ?? []), ...(p.walls ?? []), ...p.trees].map((e) => e.block?.id).filter(Boolean));
-    const patterns = (catalog.blocks as { id: string; kind?: string }[]).filter((b) => b.kind === 'pattern').map((b) => b.id);
-    for (const b of catalog.blocks as { id: string; kind?: string }[]) if (b.kind !== 'pattern') expect(placed.has(b.id), b.id).toBe(true);
+    const placed = new Set(
+      [...p.buildings, ...(p.structures ?? []), ...(p.walls ?? []), ...p.trees].map((e) => e.block?.id).filter(Boolean),
+    );
+    const patterns = (catalog.blocks as { id: string; kind?: string }[])
+      .filter((b) => b.kind === 'pattern')
+      .map((b) => b.id);
+    for (const b of catalog.blocks as { id: string; kind?: string }[])
+      if (b.kind !== 'pattern') expect(placed.has(b.id), b.id).toBe(true);
     expect(patterns.length).toBeGreaterThan(0); // patterns write ordinary openings and columns: checked by the builder
   });
 });
 
 describe('example releases', () => {
-  const ex = sanitizeExamples({ bandos: [{ file: 'bandos/a.json', name: 'A', origin: { lat: 0, lon: 0 }, release: 3 }, { file: 'bandos/b.json', name: 'B', origin: { lat: 0, lon: 0 } }] });
+  const ex = sanitizeExamples({
+    bandos: [
+      { file: 'bandos/a.json', name: 'A', origin: { lat: 0, lon: 0 }, release: 3 },
+      { file: 'bandos/b.json', name: 'B', origin: { lat: 0, lon: 0 } },
+    ],
+  });
   it('reads the release (1 when absent)', () => {
     expect(ex.map((e) => e.release)).toEqual([3, 1]);
   });
@@ -131,7 +147,7 @@ describe('Villetta survey refinements', () => {
   it('keeps the four store crowns at 8 m and surveyed façade openings', () => {
     const l = store.levels[0]!;
     expect(l.roofCenterStrip).toBe(1);
-    expect(l.baseY + l.height + (store.width - l.roofCenterStrip!) / l.roofCount! / 2 * l.vaultK!).toBeCloseTo(8);
+    expect(l.baseY + l.height + ((store.width - l.roofCenterStrip!) / l.roofCount! / 2) * l.vaultK!).toBeCloseTo(8);
     for (const o of Object.values(l.doors).flat()) {
       if (o.kind === 'door') expect(o.w).toBe(4.64);
       else expect(o.sill).toBe(2.69);
@@ -141,18 +157,19 @@ describe('Villetta survey refinements', () => {
   });
   it('keeps the north facade mostly closed with two covered windows and one door on the exposed eastern end', () => {
     const north = store.levels[0]!.doors.e!; // the rotated store's local east side faces site north
-    expect(north.filter(o => o.kind === 'window').map(o => o.c)).toEqual([7.499, 27.599]);
-    expect(north.filter(o => o.kind === 'door').map(o => o.c)).toEqual([47.699]);
+    expect(north.filter((o) => o.kind === 'window').map((o) => o.c)).toEqual([7.499, 27.599]);
+    expect(north.filter((o) => o.kind === 'door').map((o) => o.c)).toEqual([47.699]);
     expect(store.levels[0]!.roofColor).toBe(annex.levels[1]!.roofColor);
   });
   it('places a separately selectable cabin over the blue ladder with an open bottom and doorway', () => {
     const ladder = fixturesInSite(store)[0]!;
-    const cabin = v.structures!.find(s => s.id === 'villetta-ladder-cabin')!;
+    const cabin = v.structures!.find((s) => s.id === 'villetta-ladder-cabin')!;
     expect(cabin.x).toBeCloseTo(ladder.x, 2);
     expect(cabin.z).toBeCloseTo(ladder.z, 2);
     expect(cabin.y).toBe(7);
     const boxes = shapeSolids(expandShapes(cabin.shapes!), 0, 0, 0).boxes;
-    const contains = (x: number, y: number, z: number): boolean => boxes.some(b => x > b[0] && x < b[1] && y > b[2] && y < b[3] && z > b[4] && z < b[5]);
+    const contains = (x: number, y: number, z: number): boolean =>
+      boxes.some((b) => x > b[0] && x < b[1] && y > b[2] && y < b[3] && z > b[4] && z < b[5]);
     expect(contains(0, 0.05, 0)).toBe(false); // ladder can enter through the open bottom
     expect(contains(0, 1, -0.9)).toBe(false); // doorway remains open
     expect(contains(0, 2.25, 0)).toBe(true); // a roof closes the cabin
@@ -164,27 +181,29 @@ describe('Villetta survey refinements', () => {
     expect(annex.levels[1]!.sides.w).toBe(true);
     expect(annex.levels[0]!.columns!.length).toBeGreaterThan(0);
     expect(v.walls).toHaveLength(12);
-    expect(v.walls!.slice(9, 12).every(w => w.height === 6.2)).toBe(true);
+    expect(v.walls!.slice(9, 12).every((w) => w.height === 6.2)).toBe(true);
   });
   it('keeps the greenhouse footprint but uses the estimated crown and the measured rib pitch', () => {
     expect(greenhouse.width).toBeCloseTo(20.289);
     // crown 11.2 m (ratio 1.1, the owner 2026-10-30): the 9.3 m of the survey was estimated from below and looked too low
-    expect(greenhouse.width / 2 * greenhouse.levels[0]!.vaultK!).toBeCloseTo(11.16, 1);
+    expect((greenhouse.width / 2) * greenhouse.levels[0]!.vaultK!).toBeCloseTo(11.16, 1);
     expect(greenhouse.ribSpacing).toBe(4.61);
     expect(greenhouse.glass).toBe(false);
     expect(greenhouse.archShape).toBe('parabola');
     expect(greenhouse.levels[0]!.baseY).toBeCloseTo(0.35); // 30–40 cm above its levelled ground, estimated
-    expect(greenhouse.fixtures?.find(f => f.id === 'villetta-greenhouse-east-frame')?.y).toBeCloseTo(0.35);
-    const end = greenhouse.fixtures?.find(f => f.id === 'villetta-greenhouse-east-frame');
+    expect(greenhouse.fixtures?.find((f) => f.id === 'villetta-greenhouse-east-frame')?.y).toBeCloseTo(0.35);
+    const end = greenhouse.fixtures?.find((f) => f.id === 'villetta-greenhouse-east-frame');
     expect(end?.x).toBeCloseTo(-greenhouse.length / 2);
-    const placed = fixturesInSite(greenhouse).find(f => f.id === end?.id)!;
+    const placed = fixturesInSite(greenhouse).find((f) => f.id === end?.id)!;
     const opposite = fixturesInSite({ ...greenhouse, fixtures: [{ ...end!, x: -end!.x }] })[0]!;
     const distanceToAnnex = (p: { x: number; z: number }) => Math.hypot(p.x - annex.pos.x, p.z - annex.pos.z);
     expect(distanceToAnnex(placed)).toBeGreaterThan(distanceToAnnex(opposite));
     expect(end?.shapes).toHaveLength(8);
   });
   it('leaves a 3.11 m first-floor walkway, a central void and a 6.20 m slab underside', () => {
-    const g = annex.levels[0]!, u = annex.levels[1]!, hole = u.voids![0]!;
+    const g = annex.levels[0]!,
+      u = annex.levels[1]!,
+      hole = u.voids![0]!;
     expect(u.baseY - 0.1).toBeCloseTo(6.2);
     expect(g.height).toBe(u.baseY);
     expect(u.roof).toBe('gable');

@@ -29,9 +29,7 @@ function pilotLabel(track: RaceTrack): THREE.Sprite {
   }
   const map = new THREE.CanvasTexture(canvas);
   map.colorSpace = THREE.SRGBColorSpace;
-  const label = new THREE.Sprite(
-    new THREE.SpriteMaterial({ map, transparent: true, depthWrite: false }),
-  );
+  const label = new THREE.Sprite(new THREE.SpriteMaterial({ map, transparent: true, depthWrite: false }));
   label.position.y = 1.7;
   label.scale.set(8, 0.75, 1);
   label.userData['pilotName'] = track.name;
@@ -46,11 +44,7 @@ export class RaceRenderer {
   private signature = '';
   private lastBuild = 0;
   synchronize(tracks: readonly RaceTrack[], gate: Gate | null, speedTrails = true): void {
-    const signature = JSON.stringify([
-        tracks.map((t) => [t.id, t.name, t.color, t.visible]),
-        gate,
-        speedTrails,
-      ]),
+    const signature = JSON.stringify([tracks.map((t) => [t.id, t.name, t.color, t.visible]), gate, speedTrails]),
       now = performance.now();
     if (signature !== this.signature || now - this.lastBuild >= 1000) {
       this.signature = signature;
@@ -76,16 +70,10 @@ export class RaceRenderer {
       const indices = track.points.map((_, i) => i).filter((i) => i % step === 0);
       if (indices.at(-1) !== track.points.length - 1) indices.push(track.points.length - 1);
       const points = indices.map((i) => track.points[i]!);
-      const geo = new THREE.BufferGeometry().setFromPoints(
-        points.map((p) => new THREE.Vector3(p.x, p.y, p.z)),
-      );
+      const geo = new THREE.BufferGeometry().setFromPoints(points.map((p) => new THREE.Vector3(p.x, p.y, p.z)));
       if (speedTrails) {
         const colors = indices.flatMap((i) => {
-          const c = new THREE.Color().setHSL(
-            (1 - Math.min(1, speeds[trackIndex]![i]! / speedMax)) * 0.62,
-            1,
-            0.5,
-          );
+          const c = new THREE.Color().setHSL((1 - Math.min(1, speeds[trackIndex]![i]! / speedMax)) * 0.62, 1, 0.5);
           return [c.r, c.g, c.b];
         });
         geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));

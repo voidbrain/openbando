@@ -26,7 +26,9 @@ export function drawInstruments(g: CanvasRenderingContext2D, { pitch, roll, head
 }
 
 function drawHorizon(g: CanvasRenderingContext2D, pitch: number, roll: number): void {
-  const cx = 63, cy = 64, R = 56;
+  const cx = 63,
+    cy = 64,
+    R = 56;
   scoped(g, () => {
     g.beginPath();
     g.arc(cx, cy, R, 0, TAU);
@@ -107,7 +109,9 @@ function drawHorizon(g: CanvasRenderingContext2D, pitch: number, roll: number): 
 }
 
 function drawHeadingCard(g: CanvasRenderingContext2D, heading: number): void {
-  const cx = 187, cy = 64, R = 56;
+  const cx = 187,
+    cy = 64,
+    R = 56;
   scoped(g, () => {
     g.translate(cx, cy);
     g.fillStyle = '#17201c';

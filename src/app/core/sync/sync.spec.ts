@@ -1,9 +1,22 @@
 import { makeFlight, makeTelemetry, seeded } from '../testing/fixtures';
-import { GRID_DT, confidenceOf, crossCorrelate, detectVideoOnset, gridFromSamples, logGrid, upGrid, type VideoSample, scanRate } from './features';
+import {
+  GRID_DT,
+  confidenceOf,
+  crossCorrelate,
+  detectVideoOnset,
+  gridFromSamples,
+  logGrid,
+  upGrid,
+  type VideoSample,
+  scanRate,
+} from './features';
 import { matchVideoToLog } from './matcher';
 
 const FLICKS = [5, 8, 9.5, 14, 17, 22, 26, 31, 38, 44];
-const FLIPS = [{ at: 11, axis: 'roll' as const }, { at: 29, axis: 'pitch' as const }];
+const FLIPS = [
+  { at: 11, axis: 'roll' as const },
+  { at: 29, axis: 'pitch' as const },
+];
 
 /**
  * Fake "video scan": camera motion follows the drone's rotation, shifted by `offset` (video = log + offset). `tbLag`
@@ -69,7 +82,14 @@ describe('sync features', () => {
 
   it('dates motion at the middle of its frame interval and brightness at its frame', () => {
     // one analysed frame every 0.4 s of video (a machine that dropped frames): motion changes over 1.0 → 1.4 s
-    const s: VideoSample[] = [0.2, 0.6, 1.0, 1.4, 1.8, 2.2].map((t) => ({ t, dt: 0.4, pan: t > 1.2 ? 4 : 0, diff: 0, mag: 0, tb: t > 1.2 ? 4 : 0 }));
+    const s: VideoSample[] = [0.2, 0.6, 1.0, 1.4, 1.8, 2.2].map((t) => ({
+      t,
+      dt: 0.4,
+      pan: t > 1.2 ? 4 : 0,
+      diff: 0,
+      mag: 0,
+      tb: t > 1.2 ? 4 : 0,
+    }));
     const pan = gridFromSamples(s, 'pan', 0, 2.4);
     const tb = gridFromSamples(s, 'tb', 0, 2.4);
     const half = (g: Float32Array): number => g.findIndex((x) => x >= 2) * GRID_DT;

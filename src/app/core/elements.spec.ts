@@ -6,7 +6,13 @@ const tree = (x: number, z: number): TreeSpec => ({ x, z, h: 8, r: 2, kind: 'd' 
 
 describe('elements helpers', () => {
   it('hulls a square and ignores inner points', () => {
-    const h = convexHull([{ x: 0, z: 0 }, { x: 4, z: 0 }, { x: 4, z: 4 }, { x: 0, z: 4 }, { x: 2, z: 2 }]);
+    const h = convexHull([
+      { x: 0, z: 0 },
+      { x: 4, z: 0 },
+      { x: 4, z: 4 },
+      { x: 0, z: 4 },
+      { x: 2, z: 2 },
+    ]);
     expect(h.length).toBe(4);
   });
   it('keeps one brush stroke as one zone and splits far-apart strokes', () => {
@@ -29,8 +35,24 @@ describe('elements helpers', () => {
   });
   it('finds the stairs inside a building and the floor they start on', () => {
     const s = emptySpec({ lat: 45, lon: 12 }, 'T');
-    const lvl = (baseY: number) => ({ baseY, height: 3, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'flat' as const, roofRise: 0 });
-    const b: BuildingSpec = { id: 'b', name: 'B', pos: { x: 0, z: 0 }, rotDeg: 0, length: 20, width: 10, levels: [lvl(0), lvl(3)] };
+    const lvl = (baseY: number) => ({
+      baseY,
+      height: 3,
+      sides: { n: true, s: true, e: true, w: true },
+      doors: {},
+      partitions: [],
+      roof: 'flat' as const,
+      roofRise: 0,
+    });
+    const b: BuildingSpec = {
+      id: 'b',
+      name: 'B',
+      pos: { x: 0, z: 0 },
+      rotDeg: 0,
+      length: 20,
+      width: 10,
+      levels: [lvl(0), lvl(3)],
+    };
     s.buildings = [b];
     s.structures = [
       { id: 's1', kind: 'stairs', name: 'S', x: 2, z: 1, rotDeg: 0, y: 3, height: 3, size: 1.2, length: 4 },
@@ -55,8 +77,19 @@ describe('selecting columns and points', () => {
   });
 
   it('keeps the points inside a box or a lasso', () => {
-    expect(pointsInside(grid, [{ x: -1, z: -1 }, { x: 7, z: -1 }, { x: 7, z: 7 }, { x: -1, z: 7 }])).toEqual([0, 1, 4, 5, 12]);
-    const lasso = [{ x: -1, z: -1 }, { x: 19, z: -1 }, { x: -1, z: 13 }]; // a triangle: the top-left half
+    expect(
+      pointsInside(grid, [
+        { x: -1, z: -1 },
+        { x: 7, z: -1 },
+        { x: 7, z: 7 },
+        { x: -1, z: 7 },
+      ]),
+    ).toEqual([0, 1, 4, 5, 12]);
+    const lasso = [
+      { x: -1, z: -1 },
+      { x: 19, z: -1 },
+      { x: -1, z: 13 },
+    ]; // a triangle: the top-left half
     const hit = pointsInside(grid, lasso);
     expect(hit).toContain(0);
     expect(hit).not.toContain(11); // (18, 12) is outside

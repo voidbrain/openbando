@@ -1,7 +1,19 @@
 import { DestroyRef, Service, inject, signal } from '@angular/core';
 import { animateTour, TourAnimationClock } from '../core/tour-animation';
 import { FrameLoopService, FrameOrder } from './frame-loop.service';
-import { AI_SCRIPTS, SNIPPET_BY_ID, backTarget, playTime, type At, type Beat, type Hook, type Need, type Snippet, type Tour, type TourAction } from '../core/tour';
+import {
+  AI_SCRIPTS,
+  SNIPPET_BY_ID,
+  backTarget,
+  playTime,
+  type At,
+  type Beat,
+  type Hook,
+  type Need,
+  type Snippet,
+  type Tour,
+  type TourAction,
+} from '../core/tour';
 import { sanitizeSpec } from '../core/site-spec';
 import { MASCOT_DURATION } from '../core/mascot';
 import { MascotProgressService } from './mascot-progress.service';
@@ -90,11 +102,14 @@ export class TourService {
   private stepDuration = 1;
   private progressKind: 'welcome' | 'replay' | 'estimate' = 'estimate';
   private updateStepRemaining(): void {
-    const fraction = this.progressKind === 'welcome' ? this.mascotProgress.elapsed / MASCOT_DURATION
-      : this.progressKind === 'replay' && this.playback.duration > 0 ? this.playback.time / this.playback.duration
-      : (this.activeTime() - this.stepStarted) / this.stepDuration;
+    const fraction =
+      this.progressKind === 'welcome'
+        ? this.mascotProgress.elapsed / MASCOT_DURATION
+        : this.progressKind === 'replay' && this.playback.duration > 0
+          ? this.playback.time / this.playback.duration
+          : (this.activeTime() - this.stepStarted) / this.stepDuration;
     // An estimate never declares an unfinished step complete.
-    this.stepRemaining.set(Math.max(this.progressKind === 'estimate' ? .03 : 0, Math.min(1, 1 - fraction)));
+    this.stepRemaining.set(Math.max(this.progressKind === 'estimate' ? 0.03 : 0, Math.min(1, 1 - fraction)));
   }
   readonly cursor = signal<{ x: number; y: number; down: boolean } | null>(null);
   /** A click ring, bumped on every click. */
@@ -102,7 +117,7 @@ export class TourService {
   /** The box of the current target, outlined. */
   readonly focus = signal<{ x: number; y: number; w: number; h: number } | null>(null);
   /** Show a snippet as a tip when hovering a tool it explains. */
-  readonly welcomeSeen = signal(this.storage.read('openbando-welcome', {completed: false}).completed);
+  readonly welcomeSeen = signal(this.storage.read('openbando-welcome', { completed: false }).completed);
   readonly tips = signal(this.storage.read(SETTINGS, { tips: false }).tips);
 
   editor: TourEditor | null = null;
@@ -113,11 +128,20 @@ export class TourService {
   constructor() {
     const remove = inject(FrameLoopService).add(FrameOrder.widgets, () => {
       if (!this.focus() || !this.focusTarget) return;
-      if (!this.focusTarget.isConnected) { this.focus.set(null); this.focusTarget = null; return; }
-      const r = this.focusTarget.getBoundingClientRect(), f = this.focus()!;
-      if (!r.width || !r.height) { this.focus.set(null); this.focusTarget = null; return; }
+      if (!this.focusTarget.isConnected) {
+        this.focus.set(null);
+        this.focusTarget = null;
+        return;
+      }
+      const r = this.focusTarget.getBoundingClientRect(),
+        f = this.focus()!;
+      if (!r.width || !r.height) {
+        this.focus.set(null);
+        this.focusTarget = null;
+        return;
+      }
       if (r.left !== f.x || r.top !== f.y || r.width !== f.w || r.height !== f.h)
-        this.focus.set({x: r.left, y: r.top, w: r.width, h: r.height});
+        this.focus.set({ x: r.left, y: r.top, w: r.width, h: r.height });
     });
     inject(DestroyRef).onDestroy(remove);
   }
@@ -128,14 +152,23 @@ export class TourService {
     this.navigationExit = true;
     this.navigating.set(true);
     this.end();
-    this.focus.set(null); this.focusTarget = null; this.cursor.set(null); this.ring.set(null);
-    while (this.state()) await new Promise(resolve => setTimeout(resolve, 30));
+    this.focus.set(null);
+    this.focusTarget = null;
+    this.cursor.set(null);
+    this.ring.set(null);
+    while (this.state()) await new Promise((resolve) => setTimeout(resolve, 30));
   }
   private paused = false;
   private readonly animationClock = new TourAnimationClock();
-  private activeTime(): number { return this.animationClock.time(performance.now()); }
+  private activeTime(): number {
+    return this.animationClock.time(performance.now());
+  }
   private animate(ms: number, draw: (fraction: number) => void): Promise<void> {
-    return animateTour(ms, draw, { now: () => this.activeTime(), wait: () => this.sleep(16), skipped: () => this.skip });
+    return animateTour(ms, draw, {
+      now: () => this.activeTime(),
+      wait: () => this.sleep(16),
+      skipped: () => this.skip,
+    });
   }
   private skip = false;
   /** Set by Back: the beat to play next. */
@@ -147,14 +180,16 @@ export class TourService {
   }
 
   playTour(t: Tour): Promise<void> {
-    return this.run(t.title, t.snippets.map((id) => SNIPPET_BY_ID.get(id)).filter((s): s is Snippet => !!s), !!t.returnToWelcome);
+    return this.run(
+      t.title,
+      t.snippets.map((id) => SNIPPET_BY_ID.get(id)).filter((s): s is Snippet => !!s),
+      !!t.returnToWelcome,
+    );
   }
 
   playSnippet(s: Snippet): Promise<void> {
     return this.run(s.title, [s]);
   }
-
-
 
   /** Stop the guide; a replay it was running stops with it (the guide's controls win over the timeline). */
   end(): void {
@@ -206,7 +241,9 @@ export class TourService {
   private firsts: boolean[] = [];
 
   private async run(title: string, snippets: readonly Snippet[], returnToWelcome = false): Promise<void> {
-    const beats: { beat: Beat; snippet: Snippet; first: boolean }[] = snippets.flatMap((s) => s.beats.map((beat, k) => ({ beat, snippet: s, first: k === 0 })));
+    const beats: { beat: Beat; snippet: Snippet; first: boolean }[] = snippets.flatMap((s) =>
+      s.beats.map((beat, k) => ({ beat, snippet: s, first: k === 0 })),
+    );
     if (this.state()) this.end();
     while (this.state()) await new Promise((r) => setTimeout(r, 50));
     this.stop = this.paused = this.skip = false;
@@ -216,21 +253,56 @@ export class TourService {
     this.jump = null;
     this.firsts = beats.map((b) => b.first);
     // the layout before the guide: the panels it opens or moves go back when it ends
-    const before = Object.fromEntries(Object.entries(this.layout.panels()).map(([id, p]) => [id, { visible: p.visible, x: p.x, y: p.y, minimized: p.minimized }]));
+    const before = Object.fromEntries(
+      Object.entries(this.layout.panels()).map(([id, p]) => [
+        id,
+        { visible: p.visible, x: p.x, y: p.y, minimized: p.minimized },
+      ]),
+    );
     const c = this.cursor() ?? { x: innerWidth / 2, y: innerHeight / 2, down: false };
     this.cursor.set({ ...c, down: false });
-    const transportBefore = {loop: this.playback.transport.loop(), speed: this.playback.transport.speed(), direction: this.playback.transport.direction()};
-    if (returnToWelcome) { this.video.quietSyncNotifications = true; this.mascotProgress.holdAtEnd = true; }
-    if (returnToWelcome) { this.playback.transport.setLoop(false); this.playback.transport.setSpeed(1); this.playback.transport.setDirection(1); }
+    const transportBefore = {
+      loop: this.playback.transport.loop(),
+      speed: this.playback.transport.speed(),
+      direction: this.playback.transport.direction(),
+    };
+    if (returnToWelcome) {
+      this.video.quietSyncNotifications = true;
+      this.mascotProgress.holdAtEnd = true;
+    }
+    if (returnToWelcome) {
+      this.playback.transport.setLoop(false);
+      this.playback.transport.setSpeed(1);
+      this.playback.transport.setDirection(1);
+    }
     try {
       for (let i = 0; i < beats.length; i++) {
         const { beat: b, snippet, first } = beats[i]!;
-        this.state.set({ title, index: i + 1, total: beats.length, say: b.say ?? this.state()?.say ?? '', paused: this.paused, canBack: i > 0, preparing: first });
+        this.state.set({
+          title,
+          index: i + 1,
+          total: beats.length,
+          say: b.say ?? this.state()?.say ?? '',
+          paused: this.paused,
+          canBack: i > 0,
+          preparing: first,
+        });
         this.skip = false;
         if (first) {
           this.stepStarted = this.activeTime();
-          this.stepDuration = Math.max(1000, playTime(snippet.beats) + snippet.beats.flatMap(beat => beat.actions).filter(action => action.do === 'hook').length * 1000);
-          this.progressKind = snippet.id === 'sc-welcome' ? 'welcome' : snippet.beats.some(beat => beat.actions.some(action => action.do === 'hook' && action.hook === 'replayEnd')) ? 'replay' : 'estimate';
+          this.stepDuration = Math.max(
+            1000,
+            playTime(snippet.beats) +
+              snippet.beats.flatMap((beat) => beat.actions).filter((action) => action.do === 'hook').length * 1000,
+          );
+          this.progressKind =
+            snippet.id === 'sc-welcome'
+              ? 'welcome'
+              : snippet.beats.some((beat) =>
+                    beat.actions.some((action) => action.do === 'hook' && action.hook === 'replayEnd'),
+                  )
+                ? 'replay'
+                : 'estimate';
           this.stepRemaining.set(1);
           await this.prepare(snippet.needs ?? []);
           this.state.update((s) => (s ? { ...s, preparing: false } : s));
@@ -238,7 +310,13 @@ export class TourService {
         for (const a of b.actions) {
           if (this.stop) throw new Stopped();
           if (this.skip) break;
-          this.diagnostic.set(a.do === 'hook' ? `hook:${a.hook}${a.hook === 'welcomePart' ? ':' + a.arg : ''}` : 'at' in a ? `${a.do}:${a.at}` : a.do);
+          this.diagnostic.set(
+            a.do === 'hook'
+              ? `hook:${a.hook}${a.hook === 'welcomePart' ? ':' + a.arg : ''}`
+              : 'at' in a
+                ? `${a.do}:${a.at}`
+                : a.do,
+          );
           await this.act(a);
         }
         if (this.jump !== null) {
@@ -249,7 +327,7 @@ export class TourService {
       await this.sleep(400);
       if (returnToWelcome && !this.stop) {
         this.welcomeSeen.set(true);
-        this.storage.write('openbando-welcome', {completed: true});
+        this.storage.write('openbando-welcome', { completed: true });
       }
     } catch (e) {
       if (!(e instanceof Stopped)) console.warn('tour', e);
@@ -291,7 +369,10 @@ export class TourService {
     }
     if (needs.includes('model')) {
       await this.open('studio');
-      const open = this.studio.view() === 'zone' && this.site.active().id === TOUR_BANDO.id && this.editor?.state().mode === 'model';
+      const open =
+        this.studio.view() === 'zone' &&
+        this.site.active().id === TOUR_BANDO.id &&
+        this.editor?.state().mode === 'model';
       if (!open) {
         if (this.site.peek(TOUR_BANDO.id)) {
           this.studio.edit(TOUR_BANDO.id);
@@ -369,16 +450,19 @@ export class TourService {
       case 'drag': {
         const el = await this.find(a.at);
         if (!el) return;
-        const from = this.freePoint(el, a.from), to = this.freePoint(el, a.to);
+        const from = this.freePoint(el, a.from),
+          to = this.freePoint(el, a.to);
         await this.glide(from.x, from.y, el);
         const target = this.hitAt(from.x, from.y) ?? el;
         this.pointer(target, 'pointerdown', from.x, from.y, 1);
         this.cursor.set({ ...from, down: true });
         let current = from;
         try {
-          await this.animate(a.ms ?? 900, fraction => {
-            const t = ease(fraction), x = from.x + (to.x - from.x) * t, y = from.y + (to.y - from.y) * t;
-            current = {x, y};
+          await this.animate(a.ms ?? 900, (fraction) => {
+            const t = ease(fraction),
+              x = from.x + (to.x - from.x) * t,
+              y = from.y + (to.y - from.y) * t;
+            current = { x, y };
             this.cursor.set({ x, y, down: true });
             this.pointer(target, 'pointermove', x, y, 1);
           });
@@ -424,7 +508,8 @@ export class TourService {
     for (let ring = 1; ring <= 8; ring++)
       for (let k = 0; k < 8 * ring; k++) {
         const ang = (k / (8 * ring)) * Math.PI * 2;
-        const x = want.x + Math.cos(ang) * ring * r.width * 0.05, y = want.y + Math.sin(ang) * ring * r.height * 0.05;
+        const x = want.x + Math.cos(ang) * ring * r.width * 0.05,
+          y = want.y + Math.sin(ang) * ring * r.height * 0.05;
         if (x > r.left + 4 && x < r.right - 4 && y > r.top + 4 && y < r.bottom - 4 && free(x, y)) return { x, y };
       }
     return want;
@@ -445,8 +530,9 @@ export class TourService {
     const c = this.cursor() ?? { x, y, down: false };
     const d = Math.hypot(x - c.x, y - c.y);
     const duration = Math.max(6, Math.min(30, Math.round(d / 25))) * 16;
-    await this.animate(duration, fraction => {
-      const t = ease(fraction), lift = Math.sin(Math.PI * t) * Math.min(40, d * 0.12);
+    await this.animate(duration, (fraction) => {
+      const t = ease(fraction),
+        lift = Math.sin(Math.PI * t) * Math.min(40, d * 0.12);
       this.cursor.set({ x: c.x + (x - c.x) * t, y: c.y + (y - c.y) * t - lift, down: false });
     });
   }
@@ -460,7 +546,9 @@ export class TourService {
 
   /** What is under a point of the page, looking through the tour's own caption and tip. */
   private hitAt(x: number, y: number): HTMLElement | null {
-    return (document.elementsFromPoint(x, y).find((e) => !e.closest('app-tour-overlay')) as HTMLElement | undefined) ?? null;
+    return (
+      (document.elementsFromPoint(x, y).find((e) => !e.closest('app-tour-overlay')) as HTMLElement | undefined) ?? null
+    );
   }
 
   /**
@@ -469,10 +557,16 @@ export class TourService {
    */
   private async open(id: PanelId): Promise<void> {
     const was = this.layout.panels()[id];
-    const centre = (w: number, h: number): void => this.layout.moveTo(id, Math.max(8, Math.round((innerWidth - w) / 2)), Math.max(8, Math.round((innerHeight - h) / 2.4)));
+    const centre = (w: number, h: number): void =>
+      this.layout.moveTo(
+        id,
+        Math.max(8, Math.round((innerWidth - w) / 2)),
+        Math.max(8, Math.round((innerHeight - h) / 2.4)),
+      );
     // in the middle before it shows (its default width, a guessed height), corrected once it can be measured
     const def = PANEL_BY_ID[id];
-    if (!was.visible && id !== 'views' && def?.width) centre(was.w ?? def.width, was.h ?? def.height ?? Math.min(def.maxHeight ?? 130, innerHeight - 16));
+    if (!was.visible && id !== 'views' && def?.width)
+      centre(was.w ?? def.width, was.h ?? def.height ?? Math.min(def.maxHeight ?? 130, innerHeight - 16));
     this.layout.setVisible(id, true);
     this.layout.raise(id);
     if (was.visible || id === 'views') return;
@@ -494,7 +588,20 @@ export class TourService {
   }
 
   private pointer(t: Element, type: string, x: number, y: number, buttons: number): void {
-    t.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true, composed: true, clientX: x, clientY: y, button: 0, buttons, pointerId: 1, pointerType: 'mouse', isPrimary: true }));
+    t.dispatchEvent(
+      new PointerEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        clientX: x,
+        clientY: y,
+        button: 0,
+        buttons,
+        pointerId: 1,
+        pointerType: 'mouse',
+        isPrimary: true,
+      }),
+    );
   }
 
   private async hook(h: Hook, arg?: string): Promise<void> {
@@ -517,9 +624,10 @@ export class TourService {
         if (index < 0) return;
         const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const film = document.querySelector<HTMLVideoElement>(`app-welcome-panel video[data-id="${arg}"]`);
-        const target = MASCOT_DURATION * (index + 1) / 3;
+        const target = (MASCOT_DURATION * (index + 1)) / 3;
         document.querySelector(`[data-tour="welcome-${arg}"]`)?.dispatchEvent(new MouseEvent('mouseenter'));
-        const loop = film?.loop, rate = film?.playbackRate;
+        const loop = film?.loop,
+          rate = film?.playbackRate;
         let fitted = false;
         if (film && !reduced) {
           film.loop = false;
@@ -531,19 +639,28 @@ export class TourService {
           const started = this.activeTime();
           while (!this.skip) {
             if (film && !fitted && Number.isFinite(film.duration) && film.duration > 0) {
-              film.playbackRate = Math.min(4, Math.max(.25, film.duration / Math.max(.5, (target - this.mascotProgress.elapsed) / 1000)));
+              film.playbackRate = Math.min(
+                4,
+                Math.max(0.25, film.duration / Math.max(0.5, (target - this.mascotProgress.elapsed) / 1000)),
+              );
               fitted = true;
             }
-            const unavailable = !film || !!film.error ||
-              (this.activeTime() - started > 10_000 && (film.readyState < 2 || film.paused && !film.ended));
+            const unavailable =
+              !film ||
+              !!film.error ||
+              (this.activeTime() - started > 10_000 && (film.readyState < 2 || (film.paused && !film.ended)));
             if ((reduced || this.mascotProgress.elapsed >= target) && (reduced || unavailable || film?.ended)) return;
             await this.sleep(50);
           }
-        } finally { if (film && loop !== undefined) film.loop = loop; if (film && rate !== undefined) film.playbackRate = rate; }
+        } finally {
+          if (film && loop !== undefined) film.loop = loop;
+          if (film && rate !== undefined) film.playbackRate = rate;
+        }
         return;
       }
       case 'replayEnd':
-        while (!this.skip && this.playback.duration > 0 && this.playback.time < this.playback.duration - .1) await this.sleep(100);
+        while (!this.skip && this.playback.duration > 0 && this.playback.time < this.playback.duration - 0.1)
+          await this.sleep(100);
         this.haltReplay();
         return;
       case 'orbit':
@@ -572,7 +689,8 @@ export class TourService {
       case 'arrange':
         return this.arrange(arg === 'cameras' ? 'cameras' : 'replay');
       case 'ghost':
-        for (const id of (arg ?? '').split(',') as PanelId[]) if (!this.layout.panels()[id].ghost) this.layout.toggleGhost(id);
+        for (const id of (arg ?? '').split(',') as PanelId[])
+          if (!this.layout.panels()[id].ghost) this.layout.toggleGhost(id);
         return this.sleep(300);
 
       case 'fakeGenerate':
@@ -611,7 +729,7 @@ export class TourService {
       }
       case 'demoVideo': {
         const f = await this.demoFile(DEMO.video, 'demo-flight.mp4', 'video/mp4');
-        if (f) this.video.load(f, {guided: true});
+        if (f) this.video.load(f, { guided: true });
         return this.sleep(f ? 800 : 0);
       }
       case 'autoSync': {
@@ -638,7 +756,8 @@ export class TourService {
     if (this.view.orbitFollow()) this.view.toggleOrbitFollow();
     this.site.showVoid();
     this.layout.reset();
-    for (const id of Object.keys(this.layout.panels()) as PanelId[]) if (id !== 'welcome') this.layout.setVisible(id, false);
+    for (const id of Object.keys(this.layout.panels()) as PanelId[])
+      if (id !== 'welcome') this.layout.setVisible(id, false);
     this.layout.setVisible('welcome', true);
     this.mascotProgress.restart();
     this.scene.resetCamera();
@@ -712,7 +831,10 @@ export class TourService {
    * view is there.
    */
   private async arrange(what: 'replay' | 'cameras'): Promise<void> {
-    const W = innerWidth, H = innerHeight, m = 14, gap = 8;
+    const W = innerWidth,
+      H = innerHeight,
+      m = 14,
+      gap = 8;
     const size = (id: PanelId, w: number, h: number): { w: number; h: number } => {
       const el = document.querySelector<HTMLElement>(`app-panel[data-id="${id}"]`);
       return el && !el.hidden && el.offsetWidth ? { w: el.offsetWidth, h: el.offsetHeight } : { w, h };
@@ -727,11 +849,14 @@ export class TourService {
     const tlTop = H - 40 - BAR_TALLEST - 8 - 150;
     const place = (): void => {
       // first guesses are the panels' measured sizes, so nothing moves when the real ones come in
-      const att = size('attitude', 270, 184), spd = size('speed', 170, 162), bb = size('blackbox', 360, 344);
+      const att = size('attitude', 270, 184),
+        spd = size('speed', 170, 162),
+        bb = size('blackbox', 360, 344);
       // the video's height once its film is loaded (16:9 picture and its controls), whatever it shows now
       const vidH = Math.max(size('video', vidW, 0).h, Math.round(vidW * 0.5625) + 104);
       const pathH = Math.max(170, Math.min(260, Math.round((H - att.h - 3 * gap - 2 * m) * 0.45)));
-      const fpvTop = m + vidH + gap, fpvH = Math.max(140, Math.min(Math.round(vidW * 0.62), tlTop - gap - fpvTop));
+      const fpvTop = m + vidH + gap,
+        fpvH = Math.max(140, Math.min(Math.round(vidW * 0.62), tlTop - gap - fpvTop));
       this.layout.moveTo('video', m, m);
       this.layout.moveTo('vpFpv', m, fpvTop);
       this.layout.resizeTo('vpFpv', vidW, fpvH);
@@ -741,7 +866,8 @@ export class TourService {
       this.layout.moveTo('path', W - m - 330, m + att.h + gap);
       this.layout.moveTo('blackbox', W - m - bb.w, m + att.h + gap + pathH + gap);
     };
-    for (const [id, p] of Object.entries(this.layout.panels()) as [PanelId, { visible: boolean }][]) if (p.visible && !keep.includes(id) && id !== 'timeline') this.layout.setVisible(id, false);
+    for (const [id, p] of Object.entries(this.layout.panels()) as [PanelId, { visible: boolean }][])
+      if (p.visible && !keep.includes(id) && id !== 'timeline') this.layout.setVisible(id, false);
     this.layout.setWidth('video', vidW);
     place(); // with the sizes known so far
     for (const id of keep) if (!this.layout.panels()[id].visible) this.layout.setVisible(id, true);
@@ -756,7 +882,11 @@ export class TourService {
    * no size, and the timeline's contents lay out only once shown.
    */
   /** Put the timeline (w × h) centred with its bottom above the caption bar's tallest caption. */
-  private timelineAt(w: number, h: number, bar = document.querySelector('app-tour-overlay .bar')?.getBoundingClientRect()): void {
+  private timelineAt(
+    w: number,
+    h: number,
+    bar = document.querySelector('app-tour-overlay .bar')?.getBoundingClientRect(),
+  ): void {
     const barTop = bar ? Math.min(bar.top, bar.bottom - BAR_TALLEST) : innerHeight - 40 - BAR_TALLEST;
     this.layout.moveTo('timeline', Math.round((innerWidth - w) / 2), Math.max(8, Math.round(barTop - 8 - h)));
   }
@@ -780,7 +910,6 @@ export class TourService {
       }
     })();
   }
-
 
   /** Stand-in for generating from map data: the ready Chiari e Forti example, opened in the editor like a fresh model. */
   private async fakeGenerate(): Promise<void> {

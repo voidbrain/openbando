@@ -63,7 +63,9 @@ export class FlightsPanel {
   protected readonly store = inject(FlightStore);
   protected readonly flights = inject(FlightService);
   protected readonly playback = inject(PlaybackService);
-  protected readonly topSpeed = computed(() => (this.store.revision() >= 0 ? (this.flights.speedMax * 3.6).toFixed(0) : '0'));
+  protected readonly topSpeed = computed(() =>
+    this.store.revision() >= 0 ? (this.flights.speedMax * 3.6).toFixed(0) : '0',
+  );
 
   protected upload(e: Event): void {
     const input = e.target as HTMLInputElement;

@@ -3,8 +3,23 @@ import type { BuildingSpec } from './site-spec';
 import { flushWalls } from './flush-walls';
 
 const box = (id: string, x: number, z: number, length: number, width: number, rotDeg = 0): BuildingSpec => ({
-  id, name: id, pos: { x, z }, rotDeg, length, width,
-  levels: [{ baseY: 0, height: 3, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'flat', roofRise: 0 }],
+  id,
+  name: id,
+  pos: { x, z },
+  rotDeg,
+  length,
+  width,
+  levels: [
+    {
+      baseY: 0,
+      height: 3,
+      sides: { n: true, s: true, e: true, w: true },
+      doors: {},
+      partitions: [],
+      roof: 'flat',
+      roofRise: 0,
+    },
+  ],
 });
 
 describe('walls of buildings snapped flush (B-035)', () => {
@@ -16,9 +31,21 @@ describe('walls of buildings snapped flush (B-035)', () => {
   it('finds it at any rotation, and on a shaped building', () => {
     // the same pair turned 30° about the house's centre
     const r = (30 * Math.PI) / 180;
-    expect([...flushWalls([box('house', 0, 0, 10, 8, 30), box('shed', 8 * Math.cos(r), 8 * Math.sin(r), 6, 4, 30)])]).toEqual(['shed:w']);
+    expect([
+      ...flushWalls([box('house', 0, 0, 10, 8, 30), box('shed', 8 * Math.cos(r), 8 * Math.sin(r), 6, 4, 30)]),
+    ]).toEqual(['shed:w']);
     // an L-shaped wing whose west edge (x = -3 local, centred) lies on the house's east side
-    const wing: BuildingSpec = { ...box('wing', 8, 0, 6, 6), footprint: [{ x: -3, z: -3 }, { x: 3, z: -3 }, { x: 3, z: 0 }, { x: 0, z: 0 }, { x: 0, z: 3 }, { x: -3, z: 3 }] };
+    const wing: BuildingSpec = {
+      ...box('wing', 8, 0, 6, 6),
+      footprint: [
+        { x: -3, z: -3 },
+        { x: 3, z: -3 },
+        { x: 3, z: 0 },
+        { x: 0, z: 0 },
+        { x: 0, z: 3 },
+        { x: -3, z: 3 },
+      ],
+    };
     expect([...flushWalls([box('house', 0, 0, 10, 8), wing])]).toEqual(['wing:edge5']);
   });
 

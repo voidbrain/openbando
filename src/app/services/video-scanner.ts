@@ -9,7 +9,13 @@ const STALL_MS = 8000;
  * Play a video fast (`rate`; by default 3× up to 1080p, slower for 4K: `scanRate`) from `from` to `to` seconds and measure, between consecutive 64x36 grayscale frames: how fast the
  * picture pans, how much it changes and how much brighter the sky half is than the ground half. Browser only.
  */
-export async function scanVideo(video: HTMLVideoElement, from: number, to: number, onProgress: (t: number) => void, rate = scanRate(video.videoWidth, video.videoHeight)): Promise<VideoSample[]> {
+export async function scanVideo(
+  video: HTMLVideoElement,
+  from: number,
+  to: number,
+  onProgress: (t: number) => void,
+  rate = scanRate(video.videoWidth, video.videoHeight),
+): Promise<VideoSample[]> {
   const canvas = document.createElement('canvas');
   canvas.width = FRAME_W;
   canvas.height = FRAME_H;
@@ -33,7 +39,13 @@ export async function scanVideo(video: HTMLVideoElement, from: number, to: numbe
     watch = setInterval(() => {
       if (performance.now() - last < STALL_MS) return;
       video.pause();
-      reject(new Error(document.hidden ? 'the video stops decoding while this tab is in the background: keep it in front during auto-sync' : 'the video stopped decoding (try a 1080p H.264 proxy)'));
+      reject(
+        new Error(
+          document.hidden
+            ? 'the video stops decoding while this tab is in the background: keep it in front during auto-sync'
+            : 'the video stopped decoding (try a 1080p H.264 proxy)',
+        ),
+      );
     }, 1000);
     const schedule = (cb: (now: number, meta: { mediaTime: number }) => void): void => {
       if (typeof video.requestVideoFrameCallback === 'function') video.requestVideoFrameCallback(cb);
@@ -47,7 +59,8 @@ export async function scanVideo(video: HTMLVideoElement, from: number, to: numbe
         g.drawImage(video, 0, 0, FRAME_W, FRAME_H);
         const px = g.getImageData(0, 0, FRAME_W, FRAME_H).data;
         const cur = new Uint8Array(PIXELS);
-        for (let i = 0; i < PIXELS; i++) cur[i] = (px[i * 4] as number) * 0.3 + (px[i * 4 + 1] as number) * 0.59 + (px[i * 4 + 2] as number) * 0.11;
+        for (let i = 0; i < PIXELS; i++)
+          cur[i] = (px[i * 4] as number) * 0.3 + (px[i * 4 + 1] as number) * 0.59 + (px[i * 4 + 2] as number) * 0.11;
         if (prev) {
           const dt = t - prevT;
           if (dt > 0.02) {
@@ -59,7 +72,14 @@ export async function scanVideo(video: HTMLVideoElement, from: number, to: numbe
             let bottom = 0;
             for (let i = 0; i < PIXELS / 2; i++) top += cur[i]!;
             for (let i = PIXELS / 2; i < PIXELS; i++) bottom += cur[i]!;
-            out.push({ t, dt, pan: Math.hypot(sx, sy) / dt, diff: mag / dt, mag, tb: (top - bottom) / (PIXELS / 2) / 255 });
+            out.push({
+              t,
+              dt,
+              pan: Math.hypot(sx, sy) / dt,
+              diff: mag / dt,
+              mag,
+              tb: (top - bottom) / (PIXELS / 2) / 255,
+            });
           }
         }
         prev = cur;
@@ -73,7 +93,10 @@ export async function scanVideo(video: HTMLVideoElement, from: number, to: numbe
     };
     video.onerror = () => reject(new Error('decode error while scanning'));
     video.playbackRate = rate;
-    video.play().then(() => schedule(onFrame)).catch(reject);
+    video
+      .play()
+      .then(() => schedule(onFrame))
+      .catch(reject);
   }).finally(() => clearInterval(watch));
   return out;
 }

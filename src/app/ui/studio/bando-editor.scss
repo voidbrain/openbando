@@ -274,15 +274,62 @@ input.mini {
   pointer-events: auto;
   touch-action: none;
 }
-.h.n, .h.s { left: 12px; right: 12px; height: 14px; cursor: ns-resize; }
-.h.e, .h.w { top: 12px; bottom: 12px; width: 14px; cursor: ew-resize; }
-.h.n { top: -8px; } .h.s { bottom: -8px; }
-.h.e { right: -8px; } .h.w { left: -8px; }
-.h.nw, .h.ne, .h.sw, .h.se { width: 18px; height: 18px; background: var(--accent); border-radius: 3px; border: 2px solid #12200b; }
-.h.nw { top: -10px; left: -10px; cursor: nwse-resize; }
-.h.se { bottom: -10px; right: -10px; cursor: nwse-resize; }
-.h.ne { top: -10px; right: -10px; cursor: nesw-resize; }
-.h.sw { bottom: -10px; left: -10px; cursor: nesw-resize; }
+.h.n,
+.h.s {
+  left: 12px;
+  right: 12px;
+  height: 14px;
+  cursor: ns-resize;
+}
+.h.e,
+.h.w {
+  top: 12px;
+  bottom: 12px;
+  width: 14px;
+  cursor: ew-resize;
+}
+.h.n {
+  top: -8px;
+}
+.h.s {
+  bottom: -8px;
+}
+.h.e {
+  right: -8px;
+}
+.h.w {
+  left: -8px;
+}
+.h.nw,
+.h.ne,
+.h.sw,
+.h.se {
+  width: 18px;
+  height: 18px;
+  background: var(--accent);
+  border-radius: 3px;
+  border: 2px solid #12200b;
+}
+.h.nw {
+  top: -10px;
+  left: -10px;
+  cursor: nwse-resize;
+}
+.h.se {
+  bottom: -10px;
+  right: -10px;
+  cursor: nwse-resize;
+}
+.h.ne {
+  top: -10px;
+  right: -10px;
+  cursor: nesw-resize;
+}
+.h.sw {
+  bottom: -10px;
+  left: -10px;
+  cursor: nesw-resize;
+}
 .rotk {
   position: absolute;
   left: 50%;
@@ -521,5 +568,10 @@ details.sec.mods {
   border-color: var(--accent);
 }
 
-.work { position: absolute; inset: 0; }
-.ov.debug * { pointer-events: none !important; }
+.work {
+  position: absolute;
+  inset: 0;
+}
+.ov.debug * {
+  pointer-events: none !important;
+}

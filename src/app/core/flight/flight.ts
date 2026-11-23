@@ -74,7 +74,9 @@ export function positionAt(f: Flight, t: number): Vec3 | null {
   const T = t + first.t;
   let i = f.pts.findIndex((p) => p.t >= T);
   if (i <= 0) return (i === 0 ? f.loc[0]! : f.loc.at(-1)!).clone();
-  const a = f.pts[i - 1]!, b = f.pts[i]!, u = (T - a.t) / Math.max(1e-6, b.t - a.t);
+  const a = f.pts[i - 1]!,
+    b = f.pts[i]!,
+    u = (T - a.t) / Math.max(1e-6, b.t - a.t);
   return f.loc[i - 1]!.clone().lerp(f.loc[i]!, u);
 }
 
@@ -132,8 +134,12 @@ export function flightSpeedMax(f: Flight): number {
  */
 export function curvePoint(out: Vec3, pts: readonly Vec3[], i: number, u: number): Vec3 {
   const n = pts.length;
-  const a = pts[Math.max(0, i - 1)]!, b = pts[i]!, c = pts[Math.min(n - 1, i + 1)]!, d = pts[Math.min(n - 1, i + 2)]!;
-  const u2 = u * u, u3 = u2 * u;
+  const a = pts[Math.max(0, i - 1)]!,
+    b = pts[i]!,
+    c = pts[Math.min(n - 1, i + 1)]!,
+    d = pts[Math.min(n - 1, i + 2)]!;
+  const u2 = u * u,
+    u3 = u2 * u;
   const f = (p0: number, p1: number, p2: number, p3: number): number =>
     0.5 * (2 * p1 + (p2 - p0) * u + (2 * p0 - 5 * p1 + 4 * p2 - p3) * u2 + (3 * p1 - p0 - 3 * p2 + p3) * u3);
   return out.set(f(a.x, b.x, c.x, d.x), f(a.y, b.y, c.y, d.y), f(a.z, b.z, c.z, d.z));

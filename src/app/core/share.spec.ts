@@ -6,8 +6,13 @@ const bando = () => {
   const s = emptySpec({ lat: 45.46694, lon: 9.19311 }, 'Old mill');
   s.zone = { lat: 45.46694, lon: 9.19311, halfE: 100, halfN: 80 };
   s.geoCorners = { p1: { lat: 45.466, lon: 9.192 }, p2: { lat: 45.467, lon: 9.194 } };
-  s.calibration = { rot: 3, dx: 1, dz: 2, reference: {lat: 45.4642, lon: 9.19} };
-  s.terrain = { cell: 1, half: { e: 20, n: 20 }, base: { source: 'aws-terrarium', key: 'terrarium:x', fetchedAt: 1, datum: 18.2 }, strokes: [{ op: 'hill', pts: [{ x: 0, z: 0 }], radius: 5, strength: 2 }] };
+  s.calibration = { rot: 3, dx: 1, dz: 2, reference: { lat: 45.4642, lon: 9.19 } };
+  s.terrain = {
+    cell: 1,
+    half: { e: 20, n: 20 },
+    base: { source: 'aws-terrarium', key: 'terrarium:x', fetchedAt: 1, datum: 18.2 },
+    strokes: [{ op: 'hill', pts: [{ x: 0, z: 0 }], radius: 5, strength: 2 }],
+  };
   return s;
 };
 
@@ -40,7 +45,10 @@ describe('sharing a bando', () => {
 
   it('a hidden copy drops names that came from the map, and always the road names of bridges and steps', () => {
     const s = bando();
-    s.buildings = [{ ...s.buildings[0]!, name: 'Ospedale di Asolo', nameFromMap: true }, { ...s.buildings[0]!, id: 'b2', name: 'Main store' }];
+    s.buildings = [
+      { ...s.buildings[0]!, name: 'Ospedale di Asolo', nameFromMap: true },
+      { ...s.buildings[0]!, id: 'b2', name: 'Main store' },
+    ];
     s.structures = [
       { id: 'a', kind: 'bridge', name: 'Via Leonardo da Vinci', x: 0, z: 0, rotDeg: 0, height: 5, size: 7, length: 17 }, // made before names were marked
       { id: 'b', kind: 'silo', name: 'Silo Rossi', x: 0, z: 0, rotDeg: 0, height: 18, size: 3, nameFromMap: true },

@@ -22,7 +22,17 @@ export interface ViewState {
 }
 
 const KEY = 'abando-ng-view';
-const DEFAULTS: ViewState = { mainSource: '3d', cameraView: 'orbit', orbitFollow: true, replayFollow: true, xray: true, roofHidden: false, satGround: false, collisions: true, fpvTiltDeg: 25 };
+const DEFAULTS: ViewState = {
+  mainSource: '3d',
+  cameraView: 'orbit',
+  orbitFollow: true,
+  replayFollow: true,
+  xray: true,
+  roofHidden: false,
+  satGround: false,
+  collisions: true,
+  fpvTiltDeg: 25,
+};
 
 export const ViewStore = signalStore(
   { providedIn: 'root' },

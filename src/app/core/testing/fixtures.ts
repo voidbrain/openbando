@@ -21,20 +21,33 @@ export function seeded(seed: number): () => number {
  * Synthetic Blackbox telemetry at 100 Hz: motors idle until `liftoff`, then hover power; gyro noise everywhere; a
  * 360 degree flip/roll (1 s) centred on each entry of `flips`; yaw flicks at `flicks`.
  */
-export function makeTelemetry(opts: { duration: number; liftoff: number; flips?: FlipSpec[]; flicks?: number[]; yawOff?: number }): Telemetry {
+export function makeTelemetry(opts: {
+  duration: number;
+  liftoff: number;
+  flips?: FlipSpec[];
+  flicks?: number[];
+  yawOff?: number;
+}): Telemetry {
   const hz = 100;
   const n = Math.round(opts.duration * hz);
   const rnd = seeded(7);
-  const t = new Float32Array(n), att = new Float32Array(n * 3), rc = new Float32Array(n * 4);
-  const mot = new Float32Array(n * 4), gyro = new Float32Array(n * 3), vbat = new Float32Array(n).fill(16);
+  const t = new Float32Array(n),
+    att = new Float32Array(n * 3),
+    rc = new Float32Array(n * 4);
+  const mot = new Float32Array(n * 4),
+    gyro = new Float32Array(n * 3),
+    vbat = new Float32Array(n).fill(16);
   for (let i = 0; i < n; i++) {
     const ti = i / hz;
     t[i] = ti;
     const flying = ti >= opts.liftoff;
     const m = flying ? 1100 + 40 * rnd() : 48 + 5 * rnd();
     for (let k = 0; k < 4; k++) mot[i * 4 + k] = m;
-    let roll = 0, pitch = 0;
-    let gr = (rnd() - 0.5) * 20, gp = (rnd() - 0.5) * 20, gy = (rnd() - 0.5) * 20;
+    let roll = 0,
+      pitch = 0;
+    let gr = (rnd() - 0.5) * 20,
+      gp = (rnd() - 0.5) * 20,
+      gy = (rnd() - 0.5) * 20;
     for (const f of opts.flips ?? []) {
       const u = (ti - (f.at - 0.5)) / 1; // 0..1 across the move
       if (u >= 0 && u <= 1) {
@@ -60,7 +73,8 @@ export function makeTelemetry(opts: { duration: number; liftoff: number; flips?:
 /** A straight 10 Hz GPS track near the site matching a telemetry duration. */
 export function makeFlight(tel: Telemetry | null, duration = 30): Flight {
   const pts: GeoSample[] = [];
-  for (let i = 0; i <= duration * 10; i++) pts.push({ lat: 45.4642 + i * 2e-6, lon: 9.1900 + i * 1e-6, alt: 8 + Math.min(10, i / 10), t: i / 10 });
+  for (let i = 0; i <= duration * 10; i++)
+    pts.push({ lat: 45.4642 + i * 2e-6, lon: 9.19 + i * 1e-6, alt: 8 + Math.min(10, i / 10), t: i / 10 });
   const f = createFlight('fixture', pts, tel);
   prepareFlight(f, DEFAULT_CALIBRATION);
   return f;
@@ -75,7 +89,31 @@ export function betaflightCsv(rows: number): string {
   for (let i = 0; i < rows; i++) {
     const gpsStep = Math.floor(i / 80); // GPS changes every 80 rows, like a 10 Hz fix on an 800 Hz log
     lines.push(
-      [i, 1_000_000 + i * 1250, 0.1, 0.2, 1.0, 5, 6, 7, 1100, 500, 510, 520, 530, 1, 2, 3, 1600, 14, 454642000 + gpsStep * 20, 91900000 + gpsStep * 10, 130 + gpsStep, 900, 450].join(','),
+      [
+        i,
+        1_000_000 + i * 1250,
+        0.1,
+        0.2,
+        1.0,
+        5,
+        6,
+        7,
+        1100,
+        500,
+        510,
+        520,
+        530,
+        1,
+        2,
+        3,
+        1600,
+        14,
+        454642000 + gpsStep * 20,
+        91900000 + gpsStep * 10,
+        130 + gpsStep,
+        900,
+        450,
+      ].join(','),
     );
   }
   return lines.join('\n');

@@ -19,7 +19,9 @@ export const FPV_FOV = 100;
 export const RAD_MIN = 8;
 export const RAD_MAX = 520;
 export const createOrbitState = (view: CameraView | 'default' = 'default'): OrbitState =>
-  view === 'top' ? { tg: new THREE.Vector3(0, 0, 0), th: -1.1, ph: 1, rad: 260 } : { tg: new THREE.Vector3(-10, 2, 0), th: -1.1, ph: 1, rad: 330 };
+  view === 'top'
+    ? { tg: new THREE.Vector3(0, 0, 0), th: -1.1, ph: 1, rad: 260 }
+    : { tg: new THREE.Vector3(-10, 2, 0), th: -1.1, ph: 1, rad: 330 };
 
 export const fovFor = (view: CameraView): number => (view === 'fpv' ? FPV_FOV : DEFAULT_FOV);
 
@@ -46,7 +48,11 @@ export const CAMERA_CLEARANCE = 0.3;
  * Lift camera `c` that is below the ground under it (plus the clearance), keeping it aimed at `look`. A target under
  * the terrain (a drone in a tunnel or basement) is left alone: the camera follows it down there. Returns whether it moved.
  */
-export function keepAbove(c: THREE.Camera, groundAt: PlaceOptions['groundAt'], look: { x: number; y: number; z: number }): boolean {
+export function keepAbove(
+  c: THREE.Camera,
+  groundAt: PlaceOptions['groundAt'],
+  look: { x: number; y: number; z: number },
+): boolean {
   if (!groundAt || look.y < groundAt(look.x, look.z)) return false;
   const min = groundAt(c.position.x, c.position.z, c.position.y) + CAMERA_CLEARANCE;
   if (c.position.y >= min) return false;
@@ -62,7 +68,14 @@ const tmpQ = new THREE.Quaternion();
 const tmpE = new THREE.Euler();
 
 /** Position and aim camera `c` for `view` following `f`. `dt` drives the smooth follow. */
-export function placeCamera(c: THREE.PerspectiveCamera, view: CameraView, st: OrbitState, f: FollowSubject, o: PlaceOptions, dt: number): void {
+export function placeCamera(
+  c: THREE.PerspectiveCamera,
+  view: CameraView,
+  st: OrbitState,
+  f: FollowSubject,
+  o: PlaceOptions,
+  dt: number,
+): void {
   c.up.set(0, 1, 0);
   if (o.orbitFollow && !st.manual && (view === 'orbit' || view === 'top')) {
     const k = 1 - Math.exp(-dt * 5);
@@ -71,7 +84,11 @@ export function placeCamera(c: THREE.PerspectiveCamera, view: CameraView, st: Or
     st.tg.y += (f.p.y - st.tg.y) * k;
   }
   if (view === 'orbit') {
-    c.position.set(st.tg.x + st.rad * Math.sin(st.ph) * Math.sin(st.th), st.tg.y + st.rad * Math.cos(st.ph), st.tg.z + st.rad * Math.sin(st.ph) * Math.cos(st.th));
+    c.position.set(
+      st.tg.x + st.rad * Math.sin(st.ph) * Math.sin(st.th),
+      st.tg.y + st.rad * Math.cos(st.ph),
+      st.tg.z + st.rad * Math.sin(st.ph) * Math.cos(st.th),
+    );
     c.lookAt(st.tg);
     keepAbove(c, o.groundAt, st.tg); // a hill between the target and the camera: over it, not inside it
   } else if (view === 'top') {
@@ -98,8 +115,14 @@ export function placeCamera(c: THREE.PerspectiveCamera, view: CameraView, st: Or
  * Set an orbit about `target` that puts the camera exactly at `cam`: leaving the chase camera for the orbit (to look
  * around the drone) starts from the very same view, no jump.
  */
-export function orbitFromCamera(st: OrbitState, cam: { x: number; y: number; z: number }, target: { x: number; y: number; z: number }): void {
-  const dx = cam.x - target.x, dy = cam.y - target.y, dz = cam.z - target.z;
+export function orbitFromCamera(
+  st: OrbitState,
+  cam: { x: number; y: number; z: number },
+  target: { x: number; y: number; z: number },
+): void {
+  const dx = cam.x - target.x,
+    dy = cam.y - target.y,
+    dz = cam.z - target.z;
   const r = Math.hypot(dx, dy, dz) || RAD_MIN;
   st.tg.set(target.x, target.y, target.z);
   st.rad = clamp(r, RAD_MIN, RAD_MAX);

@@ -32,7 +32,10 @@ const files = (d) => readdirSync(d).flatMap((f) => {
   const p = join(d, f);
   return statSync(p).isDirectory() ? files(p) : /\.(html|ts)$/.test(f) && !f.endsWith('.spec.ts') ? [p] : [];
 });
-const templates = (p, src) => (p.endsWith('.html') ? [src] : [...src.matchAll(/template:\s*`([\s\S]*?)`/g)].map((m) => m[1]));
+// Prettier may write a closing tag as `</label\n  >`: fold it back to `</label>` so the matches below find their end.
+const fold = (t) => t.replace(/<\/(\w[\w-]*)\s+>/g, '</$1>');
+const templates = (p, src) =>
+  (p.endsWith('.html') ? [src] : [...src.matchAll(/template:\s*`([\s\S]*?)`/g)].map((m) => m[1])).map(fold);
 const attr = (tag, name) => tag.match(new RegExp(`(?:^|\\s)${name}="([^"]*)"`))?.[1];
 const bound = (tag, name) => tag.match(new RegExp(`\\[${name}\\]="([^"]*)"`))?.[1];
 const lit = (e) => e?.match(/'([^']+)'/)?.[1];

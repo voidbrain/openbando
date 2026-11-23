@@ -18,10 +18,16 @@ export interface TimelineInput {
 }
 
 /** Tick spacing so labels are at least 56 px apart. */
-export const tickStep = (width: number, duration: number): number => STEPS.find((s) => width / (duration / s) >= 56) ?? 300;
+export const tickStep = (width: number, duration: number): number =>
+  STEPS.find((s) => width / (duration / s) >= 56) ?? 300;
 
 /** Speed profile of the flight (colour = speed), tick labels, take-off / flip markers and the playhead. Returns the caption. */
-export function drawTimeline(g: CanvasRenderingContext2D, w: number, h: number, { flight: P, times, time, liftoff, firstFlip, speedMax }: TimelineInput): string {
+export function drawTimeline(
+  g: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  { flight: P, times, time, liftoff, firstFlip, speedMax }: TimelineInput,
+): string {
   const vm = Math.max(0.1, speedMax);
   const t0 = P.pts[0]!.t;
   const dur = P.dur;
@@ -74,4 +80,5 @@ export function drawTimeline(g: CanvasRenderingContext2D, w: number, h: number, 
 }
 
 /** Click / drag position on the timeline -> replay time. */
-export const timeAtX = (x: number, width: number, duration: number): number => (Math.max(0, Math.min(width, x)) / Math.max(1, width)) * duration;
+export const timeAtX = (x: number, width: number, duration: number): number =>
+  (Math.max(0, Math.min(width, x)) / Math.max(1, width)) * duration;

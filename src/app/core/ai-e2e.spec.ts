@@ -7,8 +7,23 @@ import { cloneSpec, emptySpec, type BuildingSpec } from './site-spec';
 const spec = () => {
   const s = emptySpec({ lat: 45, lon: 12 }, 'T');
   const b: BuildingSpec = {
-    id: 'b12', name: 'Building 12', pos: { x: 10, z: 5 }, rotDeg: 0, length: 30, width: 12,
-    levels: [{ baseY: 0, height: 4, sides: { n: true, s: true, e: true, w: true }, doors: {}, partitions: [], roof: 'gable', roofRise: 2 }],
+    id: 'b12',
+    name: 'Building 12',
+    pos: { x: 10, z: 5 },
+    rotDeg: 0,
+    length: 30,
+    width: 12,
+    levels: [
+      {
+        baseY: 0,
+        height: 4,
+        sides: { n: true, s: true, e: true, w: true },
+        doors: {},
+        partitions: [],
+        roof: 'gable',
+        roofRise: 2,
+      },
+    ],
   };
   s.buildings = [b];
   return s;
@@ -17,7 +32,8 @@ const spec = () => {
 describe('AI request → commands → 3D solids (everything except the language model)', () => {
   it('"3 rooms in Building 12, each wall with a door gap" really adds walls to the built scene', () => {
     // what a model answers for that request
-    const answer = '{"reply":"Done, three rooms.","commands":[{"op":"split_rooms","building":"Building 12","count":3,"doors":true}]}';
+    const answer =
+      '{"reply":"Done, three rooms.","commands":[{"op":"split_rooms","building":"Building 12","count":3,"doors":true}]}';
     const parsed = parseReply(answer);
     expect(parsed.commands.length).toBe(1);
 
@@ -33,7 +49,11 @@ describe('AI request → commands → 3D solids (everything except the language 
 
   it('on an upper floor the interior walls stand on that floor, not on the ground', () => {
     const s = spec();
-    runCommands(s, normalizeCommands([{ op: 'add_floor' }, { op: 'split_rooms', count: 2, level: 2, doors: false }]).cmds, '');
+    runCommands(
+      s,
+      normalizeCommands([{ op: 'add_floor' }, { op: 'split_rooms', count: 2, level: 2, doors: false }]).cmds,
+      '',
+    );
     const solids = buildSiteFromSpec(cloneSpec(s)).collider.solids;
     const walls = solids.filter((b) => Math.abs(b[1] - b[0] - 0.3) < 0.01 && b[2] >= 3.9); // 0.3 m thick, starting at the 2nd floor
     expect(walls.length).toBe(1);

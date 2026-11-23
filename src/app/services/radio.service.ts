@@ -43,8 +43,15 @@ export class RadioService {
 
   snapshot(): RadioMapping {
     return {
-      roll: this.mapping.roll(), pitch: this.mapping.pitch(), thr: this.mapping.thr(), yaw: this.mapping.yaw(),
-      arm: this.mapping.arm(), mode: this.mapping.mode(), spring: this.mapping.spring(), rate: this.mapping.rate(), expo: this.mapping.expo(),
+      roll: this.mapping.roll(),
+      pitch: this.mapping.pitch(),
+      thr: this.mapping.thr(),
+      yaw: this.mapping.yaw(),
+      arm: this.mapping.arm(),
+      mode: this.mapping.mode(),
+      spring: this.mapping.spring(),
+      rate: this.mapping.rate(),
+      expo: this.mapping.expo(),
     };
   }
 

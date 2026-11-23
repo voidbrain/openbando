@@ -75,7 +75,8 @@ describe('the camera never goes into the ground (B-037)', () => {
 
   it('a target in a tunnel or basement keeps the camera down there with it', () => {
     // terrain at 0; a tunnel from y = -4 to -1 under x < 20, whose floor (-4) is the ground of a point inside it
-    const ground = (x: number, _z: number, y?: number): number => (y !== undefined && y < -1 && y > -4 && x < 20 ? -4 : 0);
+    const ground = (x: number, _z: number, y?: number): number =>
+      y !== undefined && y < -1 && y > -4 && x < 20 ? -4 : 0;
     const cam = new THREE.PerspectiveCamera();
     cam.position.set(30, -2, 0); // past the tunnel's end, under the terrain
     expect(keepAbove(cam, ground, { x: 10, y: -3, z: 0 })).toBe(false);
@@ -88,15 +89,34 @@ describe('the camera never goes into the ground (B-037)', () => {
   });
 });
 
-
 it('lets the camera pass through a roof or floor while retaining the terrain limit (B-044)', () => {
-  const collider = new SiteCollider([], [], null, [], [], [], [{pts: [{x:-5,z:-5},{x:5,z:-5},{x:5,z:5},{x:-5,z:5}], top: 4, roof: true}]);
-  const camera = new THREE.PerspectiveCamera(); camera.position.set(0, 4.01, 0);
+  const collider = new SiteCollider(
+    [],
+    [],
+    null,
+    [],
+    [],
+    [],
+    [
+      {
+        pts: [
+          { x: -5, z: -5 },
+          { x: 5, z: -5 },
+          { x: 5, z: 5 },
+          { x: -5, z: 5 },
+        ],
+        top: 4,
+        roof: true,
+      },
+    ],
+  );
+  const camera = new THREE.PerspectiveCamera();
+  camera.position.set(0, 4.01, 0);
   expect(collider.groundAt(0, 0, camera.position.y)).toBe(4); // the aircraft still stands there
   const ground = (x: number, z: number, y?: number): number => collider.cameraGroundAt(x, z, y);
-  expect(keepAbove(camera, ground, {x:0,y:0,z:0})).toBe(false);
+  expect(keepAbove(camera, ground, { x: 0, y: 0, z: 0 })).toBe(false);
   expect(camera.position.y).toBe(4.01);
   camera.position.y = -0.1;
-  expect(keepAbove(camera, ground, {x:0,y:1,z:0})).toBe(true);
+  expect(keepAbove(camera, ground, { x: 0, y: 1, z: 0 })).toBe(true);
   expect(camera.position.y).toBeCloseTo(CAMERA_CLEARANCE);
 });

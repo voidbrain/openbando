@@ -34,7 +34,8 @@ export function standingLevels(b: BuildingSpec): { level: number; height: number
   if (b.frame || b.roofless || (b.ruin ?? 0) >= 0.6) return [];
   const out = b.levels.slice(1).map((l, k) => ({ level: k + 1, height: l.baseY + 0.1, roof: false }));
   const top = b.levels.at(-1);
-  if (top && top.roof !== 'none' && (top.roof === 'flat' || b.footprint)) // a shaped building's roof is always flat
+  if (top && top.roof !== 'none' && (top.roof === 'flat' || b.footprint))
+    // a shaped building's roof is always flat
     out.push({ level: b.levels.length, height: top.baseY + top.height + 0.3 + ROOF_CLEARANCE, roof: true });
   return out;
 }
@@ -42,7 +43,14 @@ export function standingLevels(b: BuildingSpec): { level: number; height: number
 /** Where the pad can stand inside the building under it (see `standingLevels`). */
 export function takeoffChoices(spec: SiteSpec, p: Vec2 = spec.droneStart): TakeoffChoice[] {
   const b = buildingAt(spec, p);
-  return b ? standingLevels(b).map((l) => ({ building: b.id, level: l.level, height: l.height, label: l.roof ? 'Roof' : levelName(l.level) })) : [];
+  return b
+    ? standingLevels(b).map((l) => ({
+        building: b.id,
+        level: l.level,
+        height: l.height,
+        label: l.roof ? 'Roof' : levelName(l.level),
+      }))
+    : [];
 }
 
 /** How high above the ground the pad stands (0 on the ground, or when its floor or roof is no longer there). */

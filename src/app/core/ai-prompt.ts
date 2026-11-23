@@ -124,8 +124,13 @@ export interface AiReply {
 
 /** Tolerant parse of the model's answer (code fences, text around the JSON), then strict command checking. */
 export function parseReply(text: string): AiReply {
-  let body = text.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
-  const a = body.indexOf('{'), b = body.lastIndexOf('}');
+  let body = text
+    .trim()
+    .replace(/^```(?:json)?/i, '')
+    .replace(/```$/, '')
+    .trim();
+  const a = body.indexOf('{'),
+    b = body.lastIndexOf('}');
   if (a >= 0 && b > a) body = body.slice(a, b + 1);
   try {
     const o = JSON.parse(body) as { reply?: unknown; commands?: unknown };

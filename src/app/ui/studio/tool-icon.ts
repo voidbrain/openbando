@@ -7,7 +7,10 @@ interface Stroke {
   d?: boolean;
 }
 
-const dot = (x: number, y: number, r = 1.3): Stroke => ({ p: `M ${x - r} ${y} a ${r} ${r} 0 1 0 ${2 * r} 0 a ${r} ${r} 0 1 0 ${-2 * r} 0`, f: true });
+const dot = (x: number, y: number, r = 1.3): Stroke => ({
+  p: `M ${x - r} ${y} a ${r} ${r} 0 1 0 ${2 * r} 0 a ${r} ${r} 0 1 0 ${-2 * r} 0`,
+  f: true,
+});
 
 /** The editor's tool icons: plain outlines in the current colour, so they follow the theme. */
 export const TOOL_ICONS: Readonly<Record<string, readonly Stroke[]>> = {
@@ -23,10 +26,24 @@ export const TOOL_ICONS: Readonly<Record<string, readonly Stroke[]>> = {
   tree: [{ p: 'M6 10 a6 6 0 1 1 12 0 a6 6 0 0 1 -12 0' }, { p: 'M12 16 V21 M9 21 H15' }],
   brush: [{ p: 'M3 19 C8 19 6 9 12 9 S16 17 21 13', d: true }, dot(5, 18, 1.8), dot(12, 9, 1.8), dot(19, 14, 1.8)],
   areaRect: [{ p: 'M4 5 H20 V19 H4 Z', d: true }, dot(9, 10), dot(15, 9), dot(12, 15), dot(7, 15.5), dot(16.5, 15.5)],
-  areaCircle: [{ p: 'M3 12 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0', d: true }, dot(9, 10), dot(15, 9.5), dot(12, 15), dot(8, 14.5)],
-  lasso: [{ p: 'M5 10 C4 5 12 3 17 5 C22 7 20 13 15 14 C12 14.5 12 18 9 19 C6 19.5 4 16 5 10 Z', d: true }, dot(9, 9.5), dot(15, 9), dot(12, 13)],
+  areaCircle: [
+    { p: 'M3 12 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0', d: true },
+    dot(9, 10),
+    dot(15, 9.5),
+    dot(12, 15),
+    dot(8, 14.5),
+  ],
+  lasso: [
+    { p: 'M5 10 C4 5 12 3 17 5 C22 7 20 13 15 14 C12 14.5 12 18 9 19 C6 19.5 4 16 5 10 Z', d: true },
+    dot(9, 9.5),
+    dot(15, 9),
+    dot(12, 13),
+  ],
   railFence: [{ p: 'M5 6 V21 M12 6 V21 M19 6 V21' }, { p: 'M3 9 H21 M3 13 H21 M3 17 H21' }],
-  fence: [{ p: 'M4 21 V9 l2 -2.5 l2 2.5 V21 M10 21 V9 l2 -2.5 l2 2.5 V21 M16 21 V9 l2 -2.5 l2 2.5 V21' }, { p: 'M3 12.5 H21 M3 17.5 H21' }],
+  fence: [
+    { p: 'M4 21 V9 l2 -2.5 l2 2.5 V21 M10 21 V9 l2 -2.5 l2 2.5 V21 M16 21 V9 l2 -2.5 l2 2.5 V21' },
+    { p: 'M3 12.5 H21 M3 17.5 H21' },
+  ],
   wall: [{ p: 'M3 6 H21 V11 H3 Z M3 11 H21 V16 H3 Z M3 16 H21 V20 H3 Z' }, { p: 'M9 6 V11 M15 11 V16 M9 16 V20' }],
   door: [{ p: 'M6 21 V4 H18 V21 M3 21 H21' }, dot(15, 13, 1.1)],
   window: [{ p: 'M5 4 H19 V20 H5 Z M12 4 V20 M5 12 H19' }],
@@ -47,13 +64,22 @@ export const TOOL_ICONS: Readonly<Record<string, readonly Stroke[]>> = {
   container: [{ p: 'M3 8 H21 V18 H3 Z' }, { p: 'M7 8 V18 M11 8 V18 M15 8 V18' }],
   car: [{ p: 'M3 16 V12 L6 8 H15 L19 12 H21 V16 Z' }, dot(7, 17, 1.8), dot(17, 17, 1.8)],
   truck: [{ p: 'M2 16 V7 H14 V16 Z M14 10 H18 L21 13 V16 H14' }, dot(6, 17, 1.8), dot(17, 17, 1.8)],
-  excavator: [{ p: 'M3 18 H13 a2 2 0 0 0 0 -4 H3 a2 2 0 0 0 0 4 Z M5 14 V9 H10 V14 M10 10 L16 5 L20 10' }, { p: 'M20 10 L21.5 13 L18 13 Z', f: true }],
+  excavator: [
+    { p: 'M3 18 H13 a2 2 0 0 0 0 -4 H3 a2 2 0 0 0 0 4 Z M5 14 V9 H10 V14 M10 10 L16 5 L20 10' },
+    { p: 'M20 10 L21.5 13 L18 13 Z', f: true },
+  ],
   conifer: [{ p: 'M12 3 L18 15 H6 Z' }, { p: 'M12 15 V21' }],
   mixedTrees: [{ p: 'M3 10 a4 4 0 1 1 8 0 a4 4 0 0 1 -8 0 M7 14 V20' }, { p: 'M17 5 L21 15 H13 Z M17 15 V20' }],
-  brick: [{ p: 'M3 6 H21 V20 H3 Z M3 10.5 H21 M3 15 H21' }, { p: 'M9 6 V10.5 M15 6 V10.5 M6 10.5 V15 M12 10.5 V15 M18 10.5 V15 M9 15 V20 M15 15 V20' }],
+  brick: [
+    { p: 'M3 6 H21 V20 H3 Z M3 10.5 H21 M3 15 H21' },
+    { p: 'M9 6 V10.5 M15 6 V10.5 M6 10.5 V15 M12 10.5 V15 M18 10.5 V15 M9 15 V20 M15 15 V20' },
+  ],
   concrete: [{ p: 'M3 5 H11 V20 H3 Z M13 5 H21 V20 H13 Z' }],
   metalSheet: [{ p: 'M3 5 H21 V20 H3 Z' }, { p: 'M6 5 V20 M9 5 V20 M12 5 V20 M15 5 V20 M18 5 V20', d: true }],
-  chainlink: [{ p: 'M3 21 V4 M21 21 V4' }, { p: 'M3 6 L18 21 M3 13 L11 21 M10 4 L21 15 M17 4 L21 8 M21 6 L6 21 M21 13 L13 21 M14 4 L3 15 M7 4 L3 8', d: true }],
+  chainlink: [
+    { p: 'M3 21 V4 M21 21 V4' },
+    { p: 'M3 6 L18 21 M3 13 L11 21 M10 4 L21 15 M17 4 L21 8 M21 6 L6 21 M21 13 L13 21 M14 4 L3 15 M7 4 L3 8', d: true },
+  ],
   greenhouse: [{ p: 'M3 20 V12 a9 9 0 0 1 18 0 V20 Z' }, { p: 'M12 3 V20 M7.5 5 V20 M16.5 5 V20', d: true }],
   colSquare: [{ p: 'M7 7 H17 V17 H7 Z' }, dot(12, 12, 1.6)],
   // ---- ground layers ----
@@ -61,11 +87,25 @@ export const TOOL_ICONS: Readonly<Record<string, readonly Stroke[]>> = {
   track: [{ p: 'M5 21 C8 14 6 9 10 3 M13 21 C16 14 14 9 18 3', d: true }],
   pathway: [{ p: 'M12 21 C9 16 15 12 11 7 C9 5 11 4 12 3', d: true }, dot(7, 18, 0.9), dot(17, 9, 0.9)],
   rail: [{ p: 'M8 21 L10 3 M16 21 L14 3' }, { p: 'M6.5 18 H17.5 M7.3 13 H16.7 M8 8 H16 M8.6 4.5 H15.4' }],
-  surface: [{ p: 'M4 8 L12 4 L20 8 L20 16 L12 20 L4 16 Z' }, { p: 'M8 10 h0.01 M12 12 h0.01 M16 10 h0.01 M10 15 h0.01 M14 15 h0.01' }],
-  water: [{ p: 'M3 9 C6 7 8 11 12 9 S18 7 21 9 M3 14 C6 12 8 16 12 14 S18 12 21 14 M3 19 C6 17 8 21 12 19 S18 17 21 19' }],
+  surface: [
+    { p: 'M4 8 L12 4 L20 8 L20 16 L12 20 L4 16 Z' },
+    { p: 'M8 10 h0.01 M12 12 h0.01 M16 10 h0.01 M10 15 h0.01 M14 15 h0.01' },
+  ],
+  water: [
+    { p: 'M3 9 C6 7 8 11 12 9 S18 7 21 9 M3 14 C6 12 8 16 12 14 S18 12 21 14 M3 19 C6 17 8 21 12 19 S18 17 21 19' },
+  ],
   grassland: [{ p: 'M4 20 L6 14 M8 20 L8 12 M12 20 L11 13 M16 20 L17 12 M20 20 L19 15' }, { p: 'M2 20 H22' }],
   asphalt: [{ p: 'M3 6 H21 V18 H3 Z' }, dot(7, 10, 0.7), dot(13, 9, 0.7), dot(17, 13, 0.7), dot(9, 15, 0.7)],
-  gravel: [dot(6, 8, 1.4), dot(12, 7, 1.1), dot(17, 9, 1.5), dot(8, 14, 1.2), dot(14, 14, 1.4), dot(19, 16, 1), dot(5, 19, 1.1), dot(11, 19, 1.3)],
+  gravel: [
+    dot(6, 8, 1.4),
+    dot(12, 7, 1.1),
+    dot(17, 9, 1.5),
+    dot(8, 14, 1.2),
+    dot(14, 14, 1.4),
+    dot(19, 16, 1),
+    dot(5, 19, 1.1),
+    dot(11, 19, 1.3),
+  ],
   dirt: [{ p: 'M2 15 C6 12 9 17 13 14 S19 12 22 15' }, { p: 'M2 19 H22', d: true }, dot(7, 9, 0.8), dot(16, 8, 0.8)],
   sand: [{ p: 'M2 18 C6 14 10 14 14 17 S20 19 22 16' }, { p: 'M4 11 C7 9 10 9 13 11', d: true }],
   rubble: [{ p: 'M3 20 L6 15 L10 17 L12 12 L16 15 L19 11 L21 20 Z' }, { p: 'M8 9 L10 7 L12 9 Z M15 6 L17 5 L18 7 Z' }],
@@ -81,25 +121,40 @@ export const TOOL_ICONS: Readonly<Record<string, readonly Stroke[]>> = {
   // ---- terrain ----
   terrainRaise: [{ p: 'M2 20 C7 20 8 11 12 11 S17 20 22 20' }, { p: 'M12 8 V2 M9 5 L12 2 L15 5' }],
   terrainLower: [{ p: 'M2 10 C7 10 8 19 12 19 S17 10 22 10' }, { p: 'M12 3 V9 M9 6 L12 9 L15 6' }],
-  terrainSculpt: [{ p: 'M2 20 C6 20 7 14 10 14 S14 20 22 20' }, { p: 'M16 4 V11 M13 7 L16 4 L19 7' }, { p: 'M7 6 V11 M5 9 L7 11 L9 9' }],
+  terrainSculpt: [
+    { p: 'M2 20 C6 20 7 14 10 14 S14 20 22 20' },
+    { p: 'M16 4 V11 M13 7 L16 4 L19 7' },
+    { p: 'M7 6 V11 M5 9 L7 11 L9 9' },
+  ],
   terrainSmooth: [{ p: 'M2 15 L5 10 L8 16 L11 9 L14 15', d: true }, { p: 'M2 19 C8 19 10 14 14 14 S20 19 22 19' }],
   terrainFlatten: [{ p: 'M2 20 L7 11 H17 L22 20' }, { p: 'M5 8 H19', d: true }],
   terrainHill: [{ p: 'M2 19 Q12 1 22 19' }, { p: 'M2 19 H22', d: true }],
   terrainCrater: [{ p: 'M2 11 H5 Q12 25 19 11 H22' }, { p: 'M5 11 L6 9 M19 11 L18 9' }],
   hedge: [{ p: 'M2 18 C2 12 5 9 7 11 C8 7 12 7 13 10 C15 7 19 8 19 12 C22 12 22 18 22 18 Z' }, { p: 'M2 20 H22' }],
-  bramble: [{ p: 'M3 18 C4 12 6 15 8 10 C9 14 11 8 13 12 C15 9 16 14 18 10 C19 14 21 13 21 18' }, { p: 'M5 16 l2 -1 M10 13 l2 1 M15 14 l2 -1', d: true }, { p: 'M2 20 H22' }],
+  bramble: [
+    { p: 'M3 18 C4 12 6 15 8 10 C9 14 11 8 13 12 C15 9 16 14 18 10 C19 14 21 13 21 18' },
+    { p: 'M5 16 l2 -1 M10 13 l2 1 M15 14 l2 -1', d: true },
+    { p: 'M2 20 H22' },
+  ],
   wires: [{ p: 'M5 21 V5 M19 21 V5 M3 6 H7 M17 6 H21' }, { p: 'M5 6 Q12 11 19 6 M5 8 Q12 13 19 8' }],
   // ---- views panel: cameras, view toggles, show / hide ----
   eye: [{ p: 'M2 12 C5 6 19 6 22 12 C19 18 5 18 2 12 Z' }, { p: 'M9 12 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0' }],
   eyeOff: [{ p: 'M2 12 C5 6 19 6 22 12 C19 18 5 18 2 12 Z' }, { p: 'M4 20 L20 4' }],
   eyeHalf: [{ p: 'M2 12 C5 6 19 6 22 12 C19 18 5 18 2 12 Z' }, { p: 'M12 9 a3 3 0 0 0 0 6 Z', f: true }],
-  camOrbit: [{ p: 'M3 12 a9 4 0 1 0 18 0 a9 4 0 1 0 -18 0', d: true }, { p: 'M9 12 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0' }, { p: 'M19 9 l2 3 l-3 1' }],
+  camOrbit: [
+    { p: 'M3 12 a9 4 0 1 0 18 0 a9 4 0 1 0 -18 0', d: true },
+    { p: 'M9 12 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0' },
+    { p: 'M19 9 l2 3 l-3 1' },
+  ],
   camChase: [{ p: 'M10 15 L14 9 L18 15 L14 13.5 Z' }, { p: 'M3 21 L8 17 M5 21 l3 -4 l-4 1' }],
   camFpv: [{ p: 'M3 7 H21 V17 H3 Z' }, { p: 'M12 10 v4 M10 12 h4' }],
   camTop: [{ p: 'M4 4 H20 V20 H4 Z', d: true }, { p: 'M12 7 L15 15 L12 13.5 L9 15 Z' }],
   roof: [{ p: 'M3 11 L12 4 L21 11' }, { p: 'M5 11 V20 H19 V11', d: true }],
   xray: [{ p: 'M4 6 H14 V18 H4 Z', d: true }, { p: 'M10 10 H20 V20 H10 Z' }],
-  follow: [{ p: 'M12 3 a9 9 0 1 0 0.01 0', d: true }, { p: 'M12 8 L15.5 16 L12 14 L8.5 16 Z', f: true }],
+  follow: [
+    { p: 'M12 3 a9 9 0 1 0 0.01 0', d: true },
+    { p: 'M12 8 L15.5 16 L12 14 L8.5 16 Z', f: true },
+  ],
   recentre: [{ p: 'M12 3 V7 M12 17 V21 M3 12 H7 M17 12 H21' }, { p: 'M7 12 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0' }],
   satellite: [{ p: 'M4 18 L10 12 L13 15 L20 8' }, { p: 'M3 4 H21 V20 H3 Z' }, dot(8, 8, 1.4)],
   resetLayout: [{ p: 'M4 12 a8 8 0 1 0 2.5 -5.8' }, { p: 'M3 3 V7.5 H7.5' }],

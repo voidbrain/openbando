@@ -108,7 +108,7 @@ export class VideoService {
     });
   }
 
-  load(file: File, options: {guided?: boolean} = {}): void {
+  load(file: File, options: { guided?: boolean } = {}): void {
     if (!options.guided) {
       this.layout.setVisible('flights', true);
       this.layout.setVisible('video', true);
@@ -168,14 +168,16 @@ export class VideoService {
   anchorFlip(): void {
     const f = this.flights.active;
     const flip = f && findFlips(f)[0];
-    if (!flip || !this.loaded()) return this.toast.show('Need a log with a flip or roll in the first 25 s of flight, and a loaded video');
+    if (!flip || !this.loaded())
+      return this.toast.show('Need a log with a flip or roll in the first 25 s of flight, and a loaded video');
     this.anchor(flip.t, `middle of the ${flip.kind} (log ${flip.t.toFixed(2)} s)`);
   }
 
   anchorYawFlick(): void {
     const f = this.flights.active;
     const t = f && findFirstYawFlick(f);
-    if (t == null || !this.loaded()) return this.toast.show('Need a log with a yaw flick after lift-off, and a loaded video');
+    if (t == null || !this.loaded())
+      return this.toast.show('Need a log with a yaw flick after lift-off, and a loaded video');
     this.anchor(t, `first yaw flick at log ${t.toFixed(2)} s`);
   }
 
@@ -201,17 +203,26 @@ export class VideoService {
       const to = Math.min(from + (lengthSeconds || 90), v.duration || 1e9);
       // fast first; when that decodes too few frames or finds no match (a 4K file the browser cannot keep up with), slowly
       const rates = [...new Set([scanRate(v.videoWidth, v.videoHeight), 1])];
-      let outcome: ReturnType<typeof matchVideoToLog> | null = null, samples: Awaited<ReturnType<typeof scanVideo>> = [];
+      let outcome: ReturnType<typeof matchVideoToLog> | null = null,
+        samples: Awaited<ReturnType<typeof scanVideo>> = [];
       for (const [i, rate] of rates.entries()) {
         const slow = i > 0 ? ' (again, slower)' : '';
-        samples = await scanVideo(v, from, to, (t) => this.status.set(`scanning ${t.toFixed(0)} / ${to.toFixed(0)} s${slow}`), rate);
+        samples = await scanVideo(
+          v,
+          from,
+          to,
+          (t) => this.status.set(`scanning ${t.toFixed(0)} / ${to.toFixed(0)} s${slow}`),
+          rate,
+        );
         outcome = samples.length >= 40 ? matchVideoToLog(samples, f) : null;
         if (outcome?.offset != null) break;
       }
       if (samples.length < 40 || !outcome) throw new Error('too few frames decoded (try a 1080p H.264 proxy)');
       this.features.set(outcome.features);
       if (outcome.offset == null) {
-        this.status.set(`no reliable match in ${from.toFixed(0)}–${to.toFixed(0)} s of video. Widen “scan s” / set “from s”, or sync manually.`);
+        this.status.set(
+          `no reliable match in ${from.toFixed(0)}–${to.toFixed(0)} s of video. Widen “scan s” / set “from s”, or sync manually.`,
+        );
         this.toast.show('Auto-sync failed');
         return;
       }
@@ -282,7 +293,8 @@ export class VideoService {
     this.lastSeekTarget = -1;
     this.features.set(null);
     this.status.set('');
-    if (valid && notify && !this.quietSyncNotifications) this.toast.show(`Restored saved sync (offset ${offset.toFixed(2)} s)`);
+    if (valid && notify && !this.quietSyncNotifications)
+      this.toast.show(`Restored saved sync (offset ${offset.toFixed(2)} s)`);
   }
 
   /** Per frame: keep the video where the replay is (playing: free-run and correct drift; paused: seek). */
@@ -318,12 +330,14 @@ export class VideoService {
     this.priming = true;
     const v = this.element;
     // `play()` returns a promise in browsers (not in every test DOM): wrap it either way
-    void Promise.resolve(v.play() as Promise<void> | undefined).catch(() => undefined).finally(() => {
-      this.priming = false;
-      if (this.transport.playing()) return;
-      v.pause();
-      this.seekVideo(Math.max(0, this.playback.time + this.offset()));
-    });
+    void Promise.resolve(v.play() as Promise<void> | undefined)
+      .catch(() => undefined)
+      .finally(() => {
+        this.priming = false;
+        if (this.transport.playing()) return;
+        v.pause();
+        this.seekVideo(Math.max(0, this.playback.time + this.offset()));
+      });
   }
 
   /** Seek the video and remember it is pending until `seeked`, so a stalled seek is noticed and issued again. */

@@ -15,16 +15,47 @@ export const COMPASS = ['north', 'northeast', 'east', 'southeast', 'south', 'sou
 export type Compass = (typeof COMPASS)[number];
 
 export const OPS = [
-  'add_door', 'add_window', 'remove_openings',
-  'split_rooms', 'add_partition', 'clear_partitions',
-  'add_floor', 'set_wall_height', 'set_roof',
-  'cut_notch', 'add_wing',
-  'rename', 'rotate', 'move', 'resize',
-  'add_structure', 'remove_structure', 'set_openings', 'add_columns', 'convert',
-  'set_facade', 'set_columns', 'industrial_store', 'set_ruin',
+  'add_door',
+  'add_window',
+  'remove_openings',
+  'split_rooms',
+  'add_partition',
+  'clear_partitions',
+  'add_floor',
+  'set_wall_height',
+  'set_roof',
+  'cut_notch',
+  'add_wing',
+  'rename',
+  'rotate',
+  'move',
+  'resize',
+  'add_structure',
+  'remove_structure',
+  'set_openings',
+  'add_columns',
+  'convert',
+  'set_facade',
+  'set_columns',
+  'industrial_store',
+  'set_ruin',
 ] as const;
 
-export const STRUCTURE_KINDS: readonly StructureKind[] = ['chimney', 'silo', 'tank', 'water_tower', 'lattice_tower', 'bridge', 'stairs', 'ramp', 'tower_crane', 'container', 'car', 'truck', 'excavator'];
+export const STRUCTURE_KINDS: readonly StructureKind[] = [
+  'chimney',
+  'silo',
+  'tank',
+  'water_tower',
+  'lattice_tower',
+  'bridge',
+  'stairs',
+  'ramp',
+  'tower_crane',
+  'container',
+  'car',
+  'truck',
+  'excavator',
+];
 export type AiOp = (typeof OPS)[number];
 
 export interface AiCommand {
@@ -91,10 +122,28 @@ export interface RunResult {
   interior: boolean;
 }
 
-const INTERIOR: readonly AiOp[] = ['add_door', 'add_window', 'remove_openings', 'split_rooms', 'add_partition', 'clear_partitions', 'set_openings', 'add_columns', 'set_facade', 'set_columns', 'industrial_store'];
+const INTERIOR: readonly AiOp[] = [
+  'add_door',
+  'add_window',
+  'remove_openings',
+  'split_rooms',
+  'add_partition',
+  'clear_partitions',
+  'set_openings',
+  'add_columns',
+  'set_facade',
+  'set_columns',
+  'industrial_store',
+];
 const DIR: Record<Compass, [number, number]> = {
-  north: [0, -1], northeast: [0.7071, -0.7071], east: [1, 0], southeast: [0.7071, 0.7071],
-  south: [0, 1], southwest: [-0.7071, 0.7071], west: [-1, 0], northwest: [-0.7071, -0.7071],
+  north: [0, -1],
+  northeast: [0.7071, -0.7071],
+  east: [1, 0],
+  southeast: [0.7071, 0.7071],
+  south: [0, 1],
+  southwest: [-0.7071, 0.7071],
+  west: [-1, 0],
+  northwest: [-0.7071, -0.7071],
 };
 const num = (v: unknown): number | undefined => (typeof v === 'number' && isFinite(v) ? v : undefined);
 const clamp = (v: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, v));
@@ -116,18 +165,21 @@ export function normalizeCommands(raw: unknown): { cmds: AiCommand[]; errors: st
     const c: AiCommand = { op: op as AiOp };
     if (typeof o['building'] === 'string' && o['building'].trim()) c.building = o['building'].trim().slice(0, 60);
     if (typeof o['name'] === 'string' && o['name'].trim()) c.name = o['name'].trim().slice(0, 60);
-    if (typeof o['side'] === 'string' && (COMPASS as readonly string[]).includes(o['side'].toLowerCase())) c.side = o['side'].toLowerCase() as Compass;
+    if (typeof o['side'] === 'string' && (COMPASS as readonly string[]).includes(o['side'].toLowerCase()))
+      c.side = o['side'].toLowerCase() as Compass;
     if (o['axis'] === 'length' || o['axis'] === 'width') c.axis = o['axis'];
     if (ROOF_KINDS.includes(o['roof'] as RoofKind)) c.roof = o['roof'] as RoofKind;
     if (typeof o['doors'] === 'boolean') c.doors = o['doors'];
     if (typeof o['turn'] === 'boolean') c.turn = o['turn'];
     if (typeof o['roofless'] === 'boolean') c.roofless = o['roofless'];
     if (typeof o['crenels'] === 'boolean') c.crenels = o['crenels'];
-    if (typeof o['structure'] === 'string' && (STRUCTURE_KINDS as readonly string[]).includes(o['structure'])) c.structure = o['structure'] as StructureKind;
+    if (typeof o['structure'] === 'string' && (STRUCTURE_KINDS as readonly string[]).includes(o['structure']))
+      c.structure = o['structure'] as StructureKind;
     if (o['state'] === 'open' || o['state'] === 'closed') c.state = o['state'];
     if (o['what'] === 'door' || o['what'] === 'window') c.what = o['what'];
     if (o['pattern'] === 'row' || o['pattern'] === 'grid') c.pattern = o['pattern'];
-    if (typeof o['facade'] === 'string' && (FACADE_PATTERNS as readonly string[]).includes(o['facade'])) c.facade = o['facade'] as FacadePattern;
+    if (typeof o['facade'] === 'string' && (FACADE_PATTERNS as readonly string[]).includes(o['facade']))
+      c.facade = o['facade'] as FacadePattern;
     if (o['to'] === 'greenhouse' || o['to'] === 'building') c.to = o['to'];
     const level = num(o['level']);
     if (level !== undefined) c.level = clamp(Math.round(level), 1, 20);
@@ -137,11 +189,29 @@ export function normalizeCommands(raw: unknown): { cmds: AiCommand[]; errors: st
       const v = num(o[k]);
       if (v !== undefined) c[k] = clamp(v, 0, 1);
     }
-    for (const [k, lo, hi] of [['width', 0.4, 20], ['height', 0.3, 6], ['sill', 0, 5], ['size', 0.5, 200], ['depth', 0.5, 200], ['length', 2, 400], ['value', 1, 30], ['ruin', 0, 100], ['spacing', 0.8, 60], ['bay', 2, 20], ['rows', 1, 8], ['step', 2, 40], ['inset', 1, 30]] as const) {
+    for (const [k, lo, hi] of [
+      ['width', 0.4, 20],
+      ['height', 0.3, 6],
+      ['sill', 0, 5],
+      ['size', 0.5, 200],
+      ['depth', 0.5, 200],
+      ['length', 2, 400],
+      ['value', 1, 30],
+      ['ruin', 0, 100],
+      ['spacing', 0.8, 60],
+      ['bay', 2, 20],
+      ['rows', 1, 8],
+      ['step', 2, 40],
+      ['inset', 1, 30],
+    ] as const) {
       const v = num(o[k]);
       if (v !== undefined) c[k] = clamp(v, lo, hi);
     }
-    for (const [k, lo, hi] of [['degrees', -360, 360], ['east', -500, 500], ['north', -500, 500]] as const) {
+    for (const [k, lo, hi] of [
+      ['degrees', -360, 360],
+      ['east', -500, 500],
+      ['north', -500, 500],
+    ] as const) {
       const v = num(o[k]);
       if (v !== undefined) c[k] = clamp(v, lo, hi);
     }
@@ -154,11 +224,21 @@ export function normalizeCommands(raw: unknown): { cmds: AiCommand[]; errors: st
 function localSide(b: BuildingSpec, dir: Compass): 'n' | 's' | 'e' | 'w' {
   const a = (b.rotDeg * Math.PI) / 180;
   const d = DIR[dir];
-  let best: 'n' | 's' | 'e' | 'w' = 'n', bd = -2;
-  for (const [s, nx, nz] of [['n', 0, -1], ['s', 0, 1], ['w', -1, 0], ['e', 1, 0]] as const) {
-    const wx = nx * Math.cos(a) - nz * Math.sin(a), wz = nx * Math.sin(a) + nz * Math.cos(a);
+  let best: 'n' | 's' | 'e' | 'w' = 'n',
+    bd = -2;
+  for (const [s, nx, nz] of [
+    ['n', 0, -1],
+    ['s', 0, 1],
+    ['w', -1, 0],
+    ['e', 1, 0],
+  ] as const) {
+    const wx = nx * Math.cos(a) - nz * Math.sin(a),
+      wz = nx * Math.sin(a) + nz * Math.cos(a);
     const dot = wx * d[0] + wz * d[1];
-    if (dot > bd) { bd = dot; best = s; }
+    if (dot > bd) {
+      bd = dot;
+      best = s;
+    }
   }
   return best;
 }
@@ -167,12 +247,18 @@ function localSide(b: BuildingSpec, dir: Compass): 'n' | 's' | 'e' | 'w' {
 function localCorner(b: BuildingSpec, dir: Compass): [number, number] {
   const a = (b.rotDeg * Math.PI) / 180;
   const d = DIR[dir];
-  let best: [number, number] = [-1, -1], bd = -9;
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
-    const wx = sx * Math.cos(a) - sz * Math.sin(a), wz = sx * Math.sin(a) + sz * Math.cos(a);
-    const dot = wx * d[0] + wz * d[1];
-    if (dot > bd) { bd = dot; best = [sx, sz]; }
-  }
+  let best: [number, number] = [-1, -1],
+    bd = -9;
+  for (const sx of [-1, 1])
+    for (const sz of [-1, 1]) {
+      const wx = sx * Math.cos(a) - sz * Math.sin(a),
+        wz = sx * Math.sin(a) + sz * Math.cos(a);
+      const dot = wx * d[0] + wz * d[1];
+      if (dot > bd) {
+        bd = dot;
+        best = [sx, sz];
+      }
+    }
   return best;
 }
 
@@ -187,11 +273,16 @@ function wallFacing(b: BuildingSpec, dir: Compass): ReturnType<typeof wallsOf>[n
     const mid = w.axis === 'x' ? { x: (w.from + w.to) / 2, z: w.at } : { x: w.at, z: (w.from + w.to) / 2 };
     const probe = contains(poly, mid.x + (w.axis === 'z' ? 0.05 : 0), mid.z + (w.axis === 'x' ? 0.05 : 0));
     const sign = probe ? -1 : 1; // outward = away from the inside
-    const nx = w.axis === 'z' ? sign : 0, nz = w.axis === 'x' ? sign : 0;
-    const wx = nx * Math.cos(a) - nz * Math.sin(a), wz = nx * Math.sin(a) + nz * Math.cos(a);
+    const nx = w.axis === 'z' ? sign : 0,
+      nz = w.axis === 'x' ? sign : 0;
+    const wx = nx * Math.cos(a) - nz * Math.sin(a),
+      wz = nx * Math.sin(a) + nz * Math.cos(a);
     const dot = wx * d[0] + wz * d[1];
     const s = dot * 1000 + (w.to - w.from);
-    if (dot > 0.5 && s > score) { score = s; best = w; }
+    if (dot > 0.5 && s > score) {
+      score = s;
+      best = w;
+    }
   }
   return best;
 }
@@ -231,8 +322,17 @@ export function runCommands(spec: SiteSpec, cmds: AiCommand[], selectedId: strin
     const li = clamp((c.level ?? 1) - 1, 0, b.levels.length - 1);
     const lev = b.levels[li]!;
     const label = `“${b.name}”`;
-    if (b.frame && c.op !== 'convert' && c.op !== 'rename' && c.op !== 'move' && c.op !== 'rotate' && c.op !== 'resize') {
-      res.errors.push(`${c.op}: ${label} is a greenhouse frame and cannot be edited this way (convert it to a building first)`);
+    if (
+      b.frame &&
+      c.op !== 'convert' &&
+      c.op !== 'rename' &&
+      c.op !== 'move' &&
+      c.op !== 'rotate' &&
+      c.op !== 'resize'
+    ) {
+      res.errors.push(
+        `${c.op}: ${label} is a greenhouse frame and cannot be edited this way (convert it to a building first)`,
+      );
       continue;
     }
     const ok = (msg: string): void => {
@@ -305,7 +405,10 @@ export function runCommands(spec: SiteSpec, cmds: AiCommand[], selectedId: strin
           res.errors.push('add_partition: needs x0, z0, x1, z1');
           break;
         }
-        const ax = r1(c.x0 * b.length), az = r1(c.z0 * b.width), bx = r1(c.x1 * b.length), bz = r1(c.z1 * b.width);
+        const ax = r1(c.x0 * b.length),
+          az = r1(c.z0 * b.width),
+          bx = r1(c.x1 * b.length),
+          bz = r1(c.z1 * b.width);
         const horizontal = Math.abs(bx - ax) >= Math.abs(bz - az);
         const a = horizontal ? { x: ax, z: r1((az + bz) / 2) } : { x: r1((ax + bx) / 2), z: az };
         const e = horizontal ? { x: bx, z: a.z } : { x: a.x, z: bz };
@@ -339,7 +442,9 @@ export function runCommands(spec: SiteSpec, cmds: AiCommand[], selectedId: strin
           // one wall only: the wall facing that way gets its own ruin level
           const w = b.footprint ? null : wallFacing(b, c.side);
           if (!w) {
-            res.errors.push(`set_ruin: ${label} has no ${c.side} wall it can ruin on its own (only plain rectangles can)`);
+            res.errors.push(
+              `set_ruin: ${label} has no ${c.side} wall it can ruin on its own (only plain rectangles can)`,
+            );
             break;
           }
           const key = w.axis === 'x' ? (w.at < 0 ? 'n' : 's') : w.at < 0 ? 'w' : 'e';
@@ -384,7 +489,9 @@ export function runCommands(spec: SiteSpec, cmds: AiCommand[], selectedId: strin
           top.roof = c.roof;
           if (c.turn !== undefined) top.roofTurn = c.turn;
           if (c.count !== undefined) top.roofCount = c.count;
-          ok(`${c.count && c.count > 1 ? `${c.count} × ` : ''}${c.roof} roof${top.roofTurn ? ' (turned)' : ''} on ${label}`);
+          ok(
+            `${c.count && c.count > 1 ? `${c.count} × ` : ''}${c.roof} roof${top.roofTurn ? ' (turned)' : ''} on ${label}`,
+          );
         }
         break;
       case 'cut_notch':
@@ -401,22 +508,33 @@ export function runCommands(spec: SiteSpec, cmds: AiCommand[], selectedId: strin
           const pos = c.position ?? 0.5;
           const run = s === 'n' || s === 's' ? b.length : b.width;
           const mid = -run / 2 + pos * run;
-          const lo = clamp(mid - size / 2, -run / 2, run / 2 - 0.5), hi = clamp(lo + size, lo + 0.5, run / 2);
+          const lo = clamp(mid - size / 2, -run / 2, run / 2 - 0.5),
+            hi = clamp(lo + size, lo + 0.5, run / 2);
           const out = c.op === 'add_wing' ? depth : 0;
           const inn = c.op === 'cut_notch' ? depth : 0.5;
-          rect = s === 'n' ? { x0: lo, x1: hi, z0: -b.width / 2 - out, z1: -b.width / 2 + inn }
-            : s === 's' ? { x0: lo, x1: hi, z0: b.width / 2 - inn, z1: b.width / 2 + out }
-            : s === 'w' ? { x0: -b.length / 2 - out, x1: -b.length / 2 + inn, z0: lo, z1: hi }
-            : { x0: b.length / 2 - inn, x1: b.length / 2 + out, z0: lo, z1: hi };
+          rect =
+            s === 'n'
+              ? { x0: lo, x1: hi, z0: -b.width / 2 - out, z1: -b.width / 2 + inn }
+              : s === 's'
+                ? { x0: lo, x1: hi, z0: b.width / 2 - inn, z1: b.width / 2 + out }
+                : s === 'w'
+                  ? { x0: -b.length / 2 - out, x1: -b.length / 2 + inn, z0: lo, z1: hi }
+                  : { x0: b.length / 2 - inn, x1: b.length / 2 + out, z0: lo, z1: hi };
         } else {
           if (c.op === 'add_wing') {
             res.errors.push('add_wing: choose north, south, east or west');
             break;
           }
           const [sx, sz] = localCorner(b, c.side);
-          rect = { x0: sx * b.length / 2, x1: sx * (b.length / 2 - size), z0: sz * b.width / 2, z1: sz * (b.width / 2 - depth) };
+          rect = {
+            x0: (sx * b.length) / 2,
+            x1: sx * (b.length / 2 - size),
+            z0: (sz * b.width) / 2,
+            z1: sz * (b.width / 2 - depth),
+          };
         }
-        if (reshapeBuilding(b, rect, c.op === 'cut_notch' ? 'cut' : 'add')) ok(`${c.op === 'cut_notch' ? 'cut a notch in' : 'added a wing to'} the ${c.side} of ${label}`);
+        if (reshapeBuilding(b, rect, c.op === 'cut_notch' ? 'cut' : 'add'))
+          ok(`${c.op === 'cut_notch' ? 'cut a notch in' : 'added a wing to'} the ${c.side} of ${label}`);
         else res.errors.push(`${c.op}: that would split ${label} or leave a hole`);
         break;
       }
@@ -447,10 +565,17 @@ export function runCommands(spec: SiteSpec, cmds: AiCommand[], selectedId: strin
         lev.columns ??= [];
         const seed = lev.columns.length;
         const margin = Math.max(1, size);
-        lev.columns.push({ x: pattern === 'grid' ? margin + 0.5 : margin + 1, z: pattern === 'grid' ? margin + 0.5 : b.width / 2, size });
+        lev.columns.push({
+          x: pattern === 'grid' ? margin + 0.5 : margin + 1,
+          z: pattern === 'grid' ? margin + 0.5 : b.width / 2,
+          size,
+        });
         const axis = (c.axis ?? (b.length >= b.width ? 'length' : 'width')) === 'length' ? 'x' : 'z';
         if (axis === 'z' && pattern === 'row') lev.columns[seed] = { x: b.length / 2, z: margin + 1, size };
-        const added = pattern === 'grid' ? columnGrid(b, li, seed, spacing, spacing, 0.8) : columnRow(b, li, seed, c.count ?? 4, spacing, axis) + 1;
+        const added =
+          pattern === 'grid'
+            ? columnGrid(b, li, seed, spacing, spacing, 0.8)
+            : columnRow(b, li, seed, c.count ?? 4, spacing, axis) + 1;
         ok(`${added} column(s) on floor ${li + 1} of ${label}`);
         break;
       }
@@ -520,24 +645,35 @@ export function runCommands(spec: SiteSpec, cmds: AiCommand[], selectedId: strin
 }
 
 /** Push a wall (or two halves with a door gap in the middle) onto a level's partition list. */
-function seg(out: [{ x: number; z: number }, { x: number; z: number }][], a: { x: number; z: number }, e: { x: number; z: number }, gap: number): void {
+function seg(
+  out: [{ x: number; z: number }, { x: number; z: number }][],
+  a: { x: number; z: number },
+  e: { x: number; z: number },
+  gap: number,
+): void {
   const len = Math.hypot(e.x - a.x, e.z - a.z);
   if (gap <= 0 || len < gap + 2) {
     out.push([a, e]);
     return;
   }
-  const t0 = (len / 2 - gap / 2) / len, t1 = (len / 2 + gap / 2) / len;
+  const t0 = (len / 2 - gap / 2) / len,
+    t1 = (len / 2 + gap / 2) / len;
   const at = (t: number): { x: number; z: number } => ({ x: r1(a.x + (e.x - a.x) * t), z: r1(a.z + (e.z - a.z) * t) });
   out.push([a, at(t0)], [at(t1), e]);
 }
 
 /** Adding / removing towers, bridges, stairs, vehicles ...: positions are metres east / north of the building (or the site origin). */
 function structureOp(spec: SiteSpec, c: AiCommand, selectedId: string, res: RunResult): void {
-  const anchor = typeof findBuilding(spec, c.building, selectedId) === 'string' ? null : (findBuilding(spec, c.building, selectedId) as BuildingSpec);
+  const anchor =
+    typeof findBuilding(spec, c.building, selectedId) === 'string'
+      ? null
+      : (findBuilding(spec, c.building, selectedId) as BuildingSpec);
   spec.structures ??= [];
   if (c.op === 'remove_structure') {
     const q = c.name?.toLowerCase();
-    const hits = spec.structures.filter((s) => (q ? s.name.toLowerCase().includes(q) : true) && (c.structure ? s.kind === c.structure : true));
+    const hits = spec.structures.filter(
+      (s) => (q ? s.name.toLowerCase().includes(q) : true) && (c.structure ? s.kind === c.structure : true),
+    );
     if (hits.length === 0) res.errors.push('remove_structure: nothing matches');
     else if (hits.length > 1 && !q) res.errors.push('remove_structure: several match, say which one by name');
     else {
@@ -549,7 +685,9 @@ function structureOp(spec: SiteSpec, c: AiCommand, selectedId: string, res: RunR
     return;
   }
   if (!c.structure) {
-    res.errors.push('add_structure: say what kind (chimney, silo, tank, water_tower, lattice_tower, bridge, stairs, ramp, tower_crane, container, car, truck, excavator)');
+    res.errors.push(
+      'add_structure: say what kind (chimney, silo, tank, water_tower, lattice_tower, bridge, stairs, ramp, tower_crane, container, car, truck, excavator)',
+    );
     return;
   }
   const d = STRUCTURE_DEFAULTS[c.structure];

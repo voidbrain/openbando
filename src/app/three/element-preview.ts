@@ -1,7 +1,16 @@
 import { basementBuilding } from '../core/basement';
 import * as THREE from 'three';
 import type { OpenSeg } from '../core/openings';
-import { emptySpec, type BuildingSpec, type ColumnSpec, type StructureSpec, type TreeSpec, type VoidSpec, type WallSpec, type Vec2 } from '../core/site-spec';
+import {
+  emptySpec,
+  type BuildingSpec,
+  type ColumnSpec,
+  type StructureSpec,
+  type TreeSpec,
+  type VoidSpec,
+  type WallSpec,
+  type Vec2,
+} from '../core/site-spec';
 import { buildStructure } from './structures';
 import { buildSiteFromSpec } from './site-model';
 
@@ -25,7 +34,13 @@ export type PartHighlight =
 
 const HILITE = '#ffd166';
 
-const stdMat = (color: string, emissive = 0): THREE.MeshStandardMaterial => new THREE.MeshStandardMaterial({ color, roughness: 0.7, emissive: new THREE.Color(color), emissiveIntensity: emissive });
+const stdMat = (color: string, emissive = 0): THREE.MeshStandardMaterial =>
+  new THREE.MeshStandardMaterial({
+    color,
+    roughness: 0.7,
+    emissive: new THREE.Color(color),
+    emissiveIntensity: emissive,
+  });
 
 /** An opaque box with a bright outline, so it reads clearly through the ghosted building. */
 function marker(w: number, h: number, d: number, color: string, x: number, y: number, z: number): THREE.Group {
@@ -83,7 +98,8 @@ export function targetRotationDeg(t: PreviewTarget): number {
 }
 
 function partGroup(b: BuildingSpec, li: number, p: PartHighlight): THREE.Group {
-  const L = b.length, W = b.width;
+  const L = b.length,
+    W = b.width;
   const lev = b.levels[Math.min(li, b.levels.length - 1)]!;
   const out = new THREE.Group();
   if (p.t === 'opening') {
@@ -91,13 +107,27 @@ function partGroup(b: BuildingSpec, li: number, p: PartHighlight): THREE.Group {
     const y0 = lev.baseY + (o.kind === 'door' ? 0 : Math.min(lev.height - 0.2, o.sill));
     const color = o.kind === 'door' ? '#ff9a2e' : '#4fc3f7';
     if (o.vector) {
-      const m = marker(o.w, o.h, 0.8, color, o.vector.a.x + o.c * o.vector.ux, y0 + o.h / 2, o.vector.a.z + o.c * o.vector.uz);
+      const m = marker(
+        o.w,
+        o.h,
+        0.8,
+        color,
+        o.vector.a.x + o.c * o.vector.ux,
+        y0 + o.h / 2,
+        o.vector.a.z + o.c * o.vector.uz,
+      );
       m.rotation.y = -Math.atan2(o.vector.uz, o.vector.ux);
       out.add(m);
-    } else out.add(o.axis === 'x' ? marker(o.w, o.h, 0.8, color, o.c, y0 + o.h / 2, o.at) : marker(0.8, o.h, o.w, color, o.at, y0 + o.h / 2, o.c));
+    } else
+      out.add(
+        o.axis === 'x'
+          ? marker(o.w, o.h, 0.8, color, o.c, y0 + o.h / 2, o.at)
+          : marker(0.8, o.h, o.w, color, o.at, y0 + o.h / 2, o.c),
+      );
   } else if (p.t === 'wall') {
     const len = Math.hypot(p.c.x - p.a.x, p.c.z - p.a.z);
-    const mx = (p.a.x + p.c.x) / 2 - L / 2, mz = (p.a.z + p.c.z) / 2 - W / 2;
+    const mx = (p.a.x + p.c.x) / 2 - L / 2,
+      mz = (p.a.z + p.c.z) / 2 - W / 2;
     const y = lev.baseY + lev.height / 2;
     if (Math.abs(p.a.x - p.c.x) < 0.01) out.add(marker(0.45, lev.height, len, HILITE, mx, y, mz));
     else {
@@ -107,7 +137,17 @@ function partGroup(b: BuildingSpec, li: number, p: PartHighlight): THREE.Group {
     }
   } else if (p.t === 'void') {
     const v = p.v;
-    out.add(marker(v.x1 - v.x0, 0.3, v.z1 - v.z0, v.water ? '#3d86b6' : '#111111', (v.x0 + v.x1) / 2 - L / 2, lev.baseY + 0.1, (v.z0 + v.z1) / 2 - W / 2));
+    out.add(
+      marker(
+        v.x1 - v.x0,
+        0.3,
+        v.z1 - v.z0,
+        v.water ? '#3d86b6' : '#111111',
+        (v.x0 + v.x1) / 2 - L / 2,
+        lev.baseY + 0.1,
+        (v.z0 + v.z1) / 2 - W / 2,
+      ),
+    );
   } else {
     const c = p.c;
     out.add(marker(c.size, lev.height, c.size, HILITE, c.x - L / 2, lev.baseY + lev.height / 2, c.z - W / 2));
@@ -119,7 +159,10 @@ function treeGroup(t: TreeSpec): THREE.Group {
   const g = new THREE.Group();
   const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.32, t.h * 0.45, 8), stdMat('#70533a'));
   trunk.position.y = t.h * 0.225;
-  const crown = new THREE.Mesh(t.kind === 'c' ? new THREE.ConeGeometry(t.r, t.h * 0.75, 8) : new THREE.IcosahedronGeometry(t.r, 1), stdMat(t.kind === 'c' ? '#2f6b3c' : '#4f9a4a'));
+  const crown = new THREE.Mesh(
+    t.kind === 'c' ? new THREE.ConeGeometry(t.r, t.h * 0.75, 8) : new THREE.IcosahedronGeometry(t.r, 1),
+    stdMat(t.kind === 'c' ? '#2f6b3c' : '#4f9a4a'),
+  );
   crown.position.y = t.kind === 'c' ? t.h * 0.6 : t.h * 0.62;
   g.add(trunk, crown);
   return g;
@@ -133,8 +176,7 @@ export function buildPreviewGroup(target: PreviewTarget): THREE.Group {
     const all = buildingGroup(target.b);
     ghost(all);
     root.add(all, buildingGroup(levelOnly(target.b, target.li)));
-  }
-  else if (target.kind === 'tree') root.add(treeGroup(target.t));
+  } else if (target.kind === 'tree') root.add(treeGroup(target.t));
   else if (target.kind === 'structure') root.add(buildStructure({ ...target.s, x: 0, z: 0, rotDeg: 0 }).object);
   else if (target.kind === 'pad') root.add(marker(target.w, 0.16, target.d, target.color, 0, 0.08, 0));
   else if (target.kind === 'fence') {
@@ -182,7 +224,11 @@ export class PreviewRenderer {
     this.scene.add(sun);
     this.compass.add(makeCompass());
     this.scene.add(this.compass);
-    const on = <K extends keyof HTMLElementEventMap>(t: K, f: (e: HTMLElementEventMap[K]) => void, o?: AddEventListenerOptions): void => {
+    const on = <K extends keyof HTMLElementEventMap>(
+      t: K,
+      f: (e: HTMLElementEventMap[K]) => void,
+      o?: AddEventListenerOptions,
+    ): void => {
       canvas.addEventListener(t, f as EventListener, o);
       this.off.push(() => canvas.removeEventListener(t, f as EventListener));
     };
@@ -206,11 +252,15 @@ export class PreviewRenderer {
       if (d && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 4) this.pickAt(e);
     });
     on('pointercancel', () => (this.dragging = null));
-    on('wheel', (e) => {
-      e.preventDefault();
-      this.dist = Math.min(this.maxDist, Math.max(this.minDist, this.dist * (1 + e.deltaY * 0.001)));
-      this.lastInput = performance.now();
-    }, { passive: false });
+    on(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        this.dist = Math.min(this.maxDist, Math.max(this.minDist, this.dist * (1 + e.deltaY * 0.001)));
+        this.lastInput = performance.now();
+      },
+      { passive: false },
+    );
     this.raf = requestAnimationFrame(this.tick);
   }
 
@@ -218,7 +268,10 @@ export class PreviewRenderer {
   private pickAt(e: PointerEvent): void {
     if (!this.content || !this.onPick) return;
     const r = this.canvas.getBoundingClientRect();
-    this.ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
+    this.ray.setFromCamera(
+      new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1),
+      this.camera,
+    );
     for (const hit of this.ray.intersectObject(this.content, true)) {
       for (let o: THREE.Object3D | null = hit.object; o; o = o.parent) {
         const p = o.userData['pick'] as { kind?: string; i?: number } | undefined;
@@ -286,7 +339,8 @@ export class PreviewRenderer {
     if (!c.isConnected || c.clientWidth < 8 || c.clientHeight < 8 || document.hidden || !c.offsetParent) return;
     const dt = Math.min(0.1, (now - this.last) / 1000);
     this.last = now;
-    const w = c.clientWidth, h = c.clientHeight;
+    const w = c.clientWidth,
+      h = c.clientHeight;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) {
       this.renderer.setPixelRatio(dpr);
@@ -296,7 +350,11 @@ export class PreviewRenderer {
     }
     if (this.spin && !this.dragging && now - this.lastInput > 1500) this.yaw += dt * 0.35; // slow turntable once you let go
     const cp = Math.cos(this.pitch);
-    this.camera.position.set(this.centre.x + this.dist * cp * Math.sin(this.yaw), this.centre.y + this.dist * Math.sin(this.pitch), this.centre.z + this.dist * cp * Math.cos(this.yaw));
+    this.camera.position.set(
+      this.centre.x + this.dist * cp * Math.sin(this.yaw),
+      this.centre.y + this.dist * Math.sin(this.pitch),
+      this.centre.z + this.dist * cp * Math.cos(this.yaw),
+    );
     this.camera.lookAt(this.centre);
     this.renderer.render(this.scene, this.camera);
   };
@@ -313,15 +371,28 @@ export class PreviewRenderer {
 /** A flat ring (unit radius) with a red arrow and an "N" at north (= -z before the group is turned). */
 function makeCompass(): THREE.Group {
   const g = new THREE.Group();
-  const ring = new THREE.Mesh(new THREE.RingGeometry(0.985, 1, 64), new THREE.MeshBasicMaterial({ color: '#9fb5a6', side: THREE.DoubleSide, transparent: true, opacity: 0.8 }));
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.985, 1, 64),
+    new THREE.MeshBasicMaterial({ color: '#9fb5a6', side: THREE.DoubleSide, transparent: true, opacity: 0.8 }),
+  );
   ring.rotation.x = -Math.PI / 2;
   g.add(ring);
-  const arrow = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.22, 10), new THREE.MeshBasicMaterial({ color: '#ff5a4d' }));
+  const arrow = new THREE.Mesh(
+    new THREE.ConeGeometry(0.07, 0.22, 10),
+    new THREE.MeshBasicMaterial({ color: '#ff5a4d' }),
+  );
   arrow.rotation.x = -Math.PI / 2; // the cone points along -z
   arrow.position.set(0, 0.02, -1.0);
   g.add(arrow);
-  for (const [x, z] of [[1, 0], [0, 1], [-1, 0]] as const) {
-    const tick = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.01, 0.1), new THREE.MeshBasicMaterial({ color: '#9fb5a6' }));
+  for (const [x, z] of [
+    [1, 0],
+    [0, 1],
+    [-1, 0],
+  ] as const) {
+    const tick = new THREE.Mesh(
+      new THREE.BoxGeometry(0.03, 0.01, 0.1),
+      new THREE.MeshBasicMaterial({ color: '#9fb5a6' }),
+    );
     tick.position.set(x * 0.97, 0.01, z * 0.97);
     tick.rotation.y = Math.atan2(x, z);
     g.add(tick);
@@ -335,7 +406,9 @@ function makeCompass(): THREE.Group {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('N', 32, 34);
-    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthTest: false, transparent: true }));
+    const sp = new THREE.Sprite(
+      new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthTest: false, transparent: true }),
+    );
     sp.scale.setScalar(0.3);
     sp.position.set(0, 0.1, -1.22);
     g.add(sp);

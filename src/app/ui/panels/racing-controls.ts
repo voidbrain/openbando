@@ -315,18 +315,12 @@ export class RacingControls {
   }
   protected join(): void {
     this.error.set('');
-    void this.links
-      .join(this.relay(), this.room(), this.token())
-      .catch((e) => this.error.set((e as Error).message));
+    void this.links.join(this.relay(), this.room(), this.token()).catch((e) => this.error.set((e as Error).message));
   }
   protected exportRace(): void {
     this.error.set('');
     try {
-      this.download.save(
-        'openbando.race.json',
-        JSON.stringify(this.race.pack()),
-        'application/json',
-      );
+      this.download.save('openbando.race.json', JSON.stringify(this.race.pack()), 'application/json');
     } catch (e) {
       this.error.set((e as Error).message);
     }

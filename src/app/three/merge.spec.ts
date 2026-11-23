@@ -16,9 +16,11 @@ describe('merged meshes for the flight view', () => {
   const merged = buildSiteFromSpec(spec, { merge: true });
 
   it('draws far fewer meshes, the same shapes in the same place', () => {
-    const a = meshes(plain.group).length, b = meshes(merged.group).length;
+    const a = meshes(plain.group).length,
+      b = meshes(merged.group).length;
     expect(b).toBeLessThan(a / 3);
-    const box = (g: THREE.Object3D): number[] => new THREE.Box3().setFromObject(g).min.toArray().concat(new THREE.Box3().setFromObject(g).max.toArray());
+    const box = (g: THREE.Object3D): number[] =>
+      new THREE.Box3().setFromObject(g).min.toArray().concat(new THREE.Box3().setFromObject(g).max.toArray());
     box(merged.group).forEach((v, i) => expect(v).toBeCloseTo(box(plain.group)[i]!, 3));
   });
 

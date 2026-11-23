@@ -303,7 +303,9 @@ export class AssistantBox {
 
   protected context(): string {
     const b = this.site.editor.building();
-    return b ? `Selected: ${b.name}` : `No building selected${this.site.editor.draft().buildings.length === 1 ? ' (only one: I will use it)' : ': name the building in your message'}`;
+    return b
+      ? `Selected: ${b.name}`
+      : `No building selected${this.site.editor.draft().buildings.length === 1 ? ' (only one: I will use it)' : ': name the building in your message'}`;
   }
 
   protected chk(e: Event): boolean {

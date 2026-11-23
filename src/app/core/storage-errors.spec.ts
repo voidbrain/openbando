@@ -11,6 +11,7 @@ describe('storage problems', () => {
     expect(storageProblem(null)).toBe('other');
   });
   it('always point to a backup', () => {
-    for (const p of ['quota', 'denied', 'interrupted', 'other'] as const) expect(storageAdvice(p)).toContain('Back up all');
+    for (const p of ['quota', 'denied', 'interrupted', 'other'] as const)
+      expect(storageAdvice(p)).toContain('Back up all');
   });
 });

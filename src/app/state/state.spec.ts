@@ -6,7 +6,8 @@ import { PlaybackStore } from './playback.store';
 import { RadioStore } from './radio.store';
 import { ViewStore } from './view.store';
 
-const saved = (key: string): Record<string, any> => JSON.parse(localStorage.getItem(key) ?? '{}') as Record<string, any>;
+const saved = (key: string): Record<string, any> =>
+  JSON.parse(localStorage.getItem(key) ?? '{}') as Record<string, any>;
 
 describe('stores', () => {
   beforeEach(() => {
@@ -72,9 +73,13 @@ describe('stores', () => {
 
     it('Reset after Hide all restores the previous panels at their default geometry', () => {
       const s = TestBed.inject(LayoutStore);
-      s.setVisible('welcome', false); s.setVisible('views', true); s.setVisible('timeline', true);
-      s.setVisible('video', true); s.moveTo('timeline', 125, 75);
-      s.hideAll(); s.hideAll();
+      s.setVisible('welcome', false);
+      s.setVisible('views', true);
+      s.setVisible('timeline', true);
+      s.setVisible('video', true);
+      s.moveTo('timeline', 125, 75);
+      s.hideAll();
+      s.hideAll();
       expect(s.panels().timeline.visible).toBe(false);
       s.reset();
       expect(s.panels().timeline.visible).toBe(true);
@@ -86,7 +91,10 @@ describe('stores', () => {
     });
 
     it('restores the saved layout in a new session and fills in panels added later', () => {
-      localStorage.setItem('abando-ng-layout', JSON.stringify({ panels: { flights: { x: 10, y: 20, visible: false } }, zTop: 40 }));
+      localStorage.setItem(
+        'abando-ng-layout',
+        JSON.stringify({ panels: { flights: { x: 10, y: 20, visible: false } }, zTop: 40 }),
+      );
       const s = TestBed.inject(LayoutStore);
       expect(s.panels().flights.x).toBe(10);
       expect(s.panels().flights.visible).toBe(false);
@@ -97,7 +105,17 @@ describe('stores', () => {
 
     it('opening the root URL always shows Welcome, whatever was saved', () => {
       // a session that closed Welcome (or an old tour that restored a snapshot with it closed) must not hide it on the next visit
-      localStorage.setItem('abando-ng-layout', JSON.stringify({ v: 4, panels: { welcome: { visible: false, minimized: false, ghost: false, x: null, y: null, z: 10, w: null, h: null }, views: { visible: true, minimized: false, ghost: false, x: null, y: null, z: 10, w: null, h: null } }, zTop: 10 }));
+      localStorage.setItem(
+        'abando-ng-layout',
+        JSON.stringify({
+          v: 4,
+          panels: {
+            welcome: { visible: false, minimized: false, ghost: false, x: null, y: null, z: 10, w: null, h: null },
+            views: { visible: true, minimized: false, ghost: false, x: null, y: null, z: 10, w: null, h: null },
+          },
+          zTop: 10,
+        }),
+      );
       const s = TestBed.inject(LayoutStore);
       expect(s.panels().welcome.visible).toBe(true);
       expect(s.panels().views.visible).toBe(false); // root starts with Welcome alone
@@ -194,5 +212,4 @@ describe('stores', () => {
       expect(f.active()).toBeNull();
     });
   });
-
 });

@@ -16,7 +16,10 @@ const isNum = (v: unknown): v is number => typeof v === 'number' && isFinite(v);
 
 /** Check the downloaded index: only well-formed rows, files inside `bandos/`, at most 50. */
 export function sanitizeExamples(raw: unknown): ExampleBando[] {
-  const list = raw && typeof raw === 'object' && Array.isArray((raw as { bandos?: unknown }).bandos) ? (raw as { bandos: unknown[] }).bandos : [];
+  const list =
+    raw && typeof raw === 'object' && Array.isArray((raw as { bandos?: unknown }).bandos)
+      ? (raw as { bandos: unknown[] }).bandos
+      : [];
   const out: ExampleBando[] = [];
   for (const r of list.slice(0, 50)) {
     const o = (r && typeof r === 'object' ? r : {}) as Record<string, unknown>;
@@ -37,7 +40,10 @@ export function sanitizeExamples(raw: unknown): ExampleBando[] {
 }
 
 /** A newer release of the example a bando was copied from, or null (not a copy, or up to date, or the example is gone). */
-export function newerExample(spec: { derivedFrom?: { example: string; release: number } }, examples: readonly ExampleBando[]): ExampleBando | null {
+export function newerExample(
+  spec: { derivedFrom?: { example: string; release: number } },
+  examples: readonly ExampleBando[],
+): ExampleBando | null {
   const d = spec.derivedFrom;
   const e = d ? examples.find((x) => x.file === d.example) : undefined;
   return e && d && e.release > d.release ? e : null;

@@ -10,7 +10,13 @@ export class AdjustGizmo {
   private readonly controls: TransformControls;
   private readonly helper: THREE.Object3D;
 
-  constructor(camera: THREE.Camera, dom: HTMLElement, private readonly scene: THREE.Scene, at: THREE.Vector3, onMove: (p: THREE.Vector3) => void) {
+  constructor(
+    camera: THREE.Camera,
+    dom: HTMLElement,
+    private readonly scene: THREE.Scene,
+    at: THREE.Vector3,
+    onMove: (p: THREE.Vector3) => void,
+  ) {
     this.proxy.position.copy(at);
     scene.add(this.proxy);
     this.controls = new TransformControls(camera, dom);

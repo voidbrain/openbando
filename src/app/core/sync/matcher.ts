@@ -1,8 +1,16 @@
 import { findFlips, findLiftoff } from '../flight/analysis';
 import type { FlipEvent, Flight } from '../models';
 import {
-  type Confidence, type LogFeatureKey, type VideoFeatureKey, type VideoSample,
-  confidenceOf, crossCorrelate, detectVideoOnset, gridFromSamples, logGrid, upGrid,
+  type Confidence,
+  type LogFeatureKey,
+  type VideoFeatureKey,
+  type VideoSample,
+  confidenceOf,
+  crossCorrelate,
+  detectVideoOnset,
+  gridFromSamples,
+  logGrid,
+  upGrid,
 } from './features';
 
 /** Everything the alignment plot needs. */
@@ -76,7 +84,14 @@ export function matchVideoToLog(samples: readonly VideoSample[], flight: Flight)
     const sure: Candidate[] = [];
     for (const [vf, lf] of PAIRS) {
       const x = crossCorrelate(F[lf], V[vf], t0, L0, L1, t0 - 5, t1);
-      const c: Candidate = { videoFeature: vf, logFeature: lf, off: x.off, r1: x.r1, r2: x.r2, score: x.r1 + Math.max(0, x.r1 - x.r2) };
+      const c: Candidate = {
+        videoFeature: vf,
+        logFeature: lf,
+        off: x.off,
+        r1: x.r1,
+        r2: x.r2,
+        score: x.r1 + Math.max(0, x.r1 - x.r2),
+      };
       if (!best || c.score > best.score) best = c;
       if (MOTION.includes(vf) && (!bestMotion || c.score > bestMotion.score)) bestMotion = c;
       if (MOTION.includes(vf) && confidenceOf(c) === 'high') sure.push(c);
@@ -90,7 +105,15 @@ export function matchVideoToLog(samples: readonly VideoSample[], flight: Flight)
     }
     const flip = findFlips(flight)[0];
     if (flip && best && !best.averaged && best.r1 > 0.3) {
-      const x2 = crossCorrelate(F[best.logFeature], V[best.videoFeature], t0, Math.max(0, flip.t - 4), Math.min(flight.dur, flip.t + 6), best.off - 1.5, best.off + 1.5);
+      const x2 = crossCorrelate(
+        F[best.logFeature],
+        V[best.videoFeature],
+        t0,
+        Math.max(0, flip.t - 4),
+        Math.min(flight.dur, flip.t + 6),
+        best.off - 1.5,
+        best.off + 1.5,
+      );
       if (x2.r1 >= 0.5 && Math.abs(x2.off - best.off) < 1.5) {
         best.off = x2.off;
         best.flip = flip;
@@ -114,7 +137,13 @@ export function matchVideoToLog(samples: readonly VideoSample[], flight: Flight)
   const onset = lift != null ? detectVideoOnset(samples) : null;
   if (onset && lift != null) {
     const why = best ? `whole-flight match weak, r=${best.r1.toFixed(2)}` : 'no telemetry';
-    return { offset: onset.t - lift, confidence: 'low', description: `lift-off onset only (${why}): low confidence`, anchor, features };
+    return {
+      offset: onset.t - lift,
+      confidence: 'low',
+      description: `lift-off onset only (${why}): low confidence`,
+      anchor,
+      features,
+    };
   }
   return { offset: null, confidence: null, description: 'no reliable match', anchor, features };
 }

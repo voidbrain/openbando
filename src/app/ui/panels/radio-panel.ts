@@ -100,7 +100,8 @@ export class RadioPanel {
       const v = axes[i] ?? 0;
       g.fillStyle = COLORS.dim;
       g.fillText(String(i), 2, y);
-      const x0 = 18, bw = w - x0 - 70;
+      const x0 = 18,
+        bw = w - x0 - 70;
       g.fillStyle = '#24332c';
       g.fillRect(x0, y - 4, bw, 8);
       g.fillStyle = names.has(i) ? COLORS.accent : '#6b7f74';

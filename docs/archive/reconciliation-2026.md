@@ -4,6 +4,8 @@ Dated reconciliation entries and archived `Other changes` entries moved from `do
 
 ## Archived Other changes (moved from BACKLOG.md on 2026-11-23)
 
+2026-11-23: harness reconciled from v3.1.1 to v10.3.0 (F-048, [#278](https://github.com/voidbrain/openbando/pull/278)): copied tools updated, completion percentages removed, human-action cues name their kind, this section archived. Prettier and ESLint adoption follows in F-049. Same PR: the [23 November full audit](audits/2026-11-23-full-openbando.md) of all eight areas at main `34f90c3` (no new product defect; F-051 opened), carried in #278 because `main` fails the audit gate and #278 holds the fresh maintenance receipt.
+
 2026-10-31: [#275](https://github.com/voidbrain/openbando/pull/275) adopts v3.1.1; its scoped review is [dated here](audits/2026-10-31-harness-v3.1.1.md). F-046 retains #274’s completed v2.2.2 CI evidence and owns current adoption acceptance; F-047 independently tracks full product audit coverage. Product human/device records, approved artwork/media and historical reports remain unchanged.
 
 Harness ownership clarification ([#273](https://github.com/voidbrain/openbando/pull/273), 2.0.1 source): adopted the merged [template #40](https://github.com/voidbrain/project-harness/pull/40), `9c3abc6`, into BACKLOG-RULES and AGENTS. Ownership review rejects foreign Issue/next-action/closure work, including hidden details; masters use owned fixtures/contracts and never wait for derived implementation, deployment or adoption. This project owns only its own reconciliation. Template release tags remain upstream maintenance, not an active OpenBando task. Estimate policy and the 2.0.0 layout are unchanged.

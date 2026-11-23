@@ -1,4 +1,17 @@
-import { Component, DestroyRef, ElementRef, afterNextRender, computed, effect, inject, input, output, signal, untracked, viewChild } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+  untracked,
+  viewChild,
+} from '@angular/core';
 import { CameraCompass } from '../widgets/camera-compass';
 import { CalibrationStore } from '../../state/calibration.store';
 import { basementOutline } from '../../core/basement';
@@ -94,12 +107,13 @@ export class SiteView {
   readonly indoorFloor = input<{ id: string; li: number } | null>(null);
   readonly drawPlaneY = input<number | null>(null);
   readonly handlesEnabled = input(false);
-  readonly basementVertexKey = output<{event: KeyboardEvent; index: number}>();
+  readonly basementVertexKey = output<{ event: KeyboardEvent; index: number }>();
   readonly basementVertexInsert = output<number>();
   readonly basementVertexRemove = output<number>();
   protected readonly basementVertices = computed(() => {
     const f = this.indoorFloor();
-    const b = f?.li === -1 && this.handlesEnabled() ? this.spec().buildings.find(item => item.id === f.id) : undefined;
+    const b =
+      f?.li === -1 && this.handlesEnabled() ? this.spec().buildings.find((item) => item.id === f.id) : undefined;
     return b?.basement ? basementOutline(b).map((_, index) => index) : [];
   });
   readonly transformed = output<{ phase: 'down' | 'move' | 'up'; handle: BuildingHandle; x: number; z: number }>();
@@ -118,7 +132,9 @@ export class SiteView {
   private readonly cv = viewChild.required<ElementRef<HTMLCanvasElement>>('cv');
   private r: SiteViewRenderer | null = null;
   private readonly calibration = inject(CalibrationStore);
-  protected orientCompass(angle: number): void { this.r?.orientCompass(angle, this.calibration.rot()); }
+  protected orientCompass(angle: number): void {
+    this.r?.orientCompass(angle, this.calibration.rot());
+  }
   protected readonly compassCamera = () => this.r?.compassCamera ?? null;
   private timer: ReturnType<typeof setTimeout> | undefined;
 
@@ -149,7 +165,10 @@ export class SiteView {
     });
     effect(() => {
       const enabled = this.handlesEnabled();
-      if (this.r) { this.r.handlesEnabled = enabled; this.r.setSelection(this.selection()); }
+      if (this.r) {
+        this.r.handlesEnabled = enabled;
+        this.r.setSelection(this.selection());
+      }
     });
     effect(() => {
       const y = this.drawPlaneY();
@@ -179,7 +198,8 @@ export class SiteView {
       untracked(() => this.r?.setSelection(sel));
     });
     effect(() => {
-      const f = this.flights(), m = this.speedMax();
+      const f = this.flights(),
+        m = this.speedMax();
       untracked(() => this.r?.setPaths(f, m));
     });
     effect(() => {

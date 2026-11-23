@@ -3,7 +3,14 @@ import { wrapDeg } from '../../core/math';
 import { latLonText, parseLatLon, siteFromLatLon } from '../../core/geo';
 import { SiteService } from '../../services/site.service';
 import { ToastService } from '../../services/toast.service';
-import { createPathView, dragPathView, drawFlightPath, resetPathView, zoomPathView, type PathViewMode } from '../../core/drawing/flight-path';
+import {
+  createPathView,
+  dragPathView,
+  drawFlightPath,
+  resetPathView,
+  zoomPathView,
+  type PathViewMode,
+} from '../../core/drawing/flight-path';
 import { FlightService } from '../../services/flight.service';
 import { PlaybackService } from '../../services/playback.service';
 import { AlignmentPositionService } from '../../services/alignment-position.service';
@@ -222,7 +229,11 @@ export class PathPanel {
     { mode: '3d', label: '3D view', icon: 'M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12v9M12 12L4 7.5' },
   ];
   /** The bando has its real place: the start is shown and typed as latitude, longitude (else as site metres). */
-  protected readonly placed = computed(() => this.site.active().privacy !== 'hidden' && !(this.site.active().origin.lat === 0 && this.site.active().origin.lon === 0));
+  protected readonly placed = computed(
+    () =>
+      this.site.active().privacy !== 'hidden' &&
+      !(this.site.active().origin.lat === 0 && this.site.active().origin.lon === 0),
+  );
   protected readonly hasFlight = signal(false);
   /** How many pins at moments the active flight has (B-017). */
   protected readonly pins = signal(0);
@@ -261,7 +272,8 @@ export class PathPanel {
   protected knobKey(e: KeyboardEvent): void {
     if (!this.alignment.atStart()) return;
     const step = e.shiftKey ? 10 : 1;
-    const d = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? step : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -step : 0;
+    const d =
+      e.key === 'ArrowRight' || e.key === 'ArrowUp' ? step : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -step : 0;
     if (!d) return;
     e.preventDefault();
     e.stopPropagation(); // the arrow keys also seek the replay (ShortcutsService): not while turning the path
@@ -286,7 +298,17 @@ export class PathPanel {
   protected readonly draw = (g: CanvasRenderingContext2D, w: number, h: number): void => {
     const all = this.flights.all;
     const active = this.flights.active;
-    const label = drawFlightPath(g, w, h, all, this.view, this.cal.calibration(), this.flights.speedMax, active ? this.playback.pose.p : null, active);
+    const label = drawFlightPath(
+      g,
+      w,
+      h,
+      all,
+      this.view,
+      this.cal.calibration(),
+      this.flights.speedMax,
+      active ? this.playback.pose.p : null,
+      active,
+    );
     if (label !== this.caption()) this.caption.set(label);
     // the start fields follow pins, the knob and typed values (cheap: the signals only change when the start moves)
     const s = active?.loc[0];

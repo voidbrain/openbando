@@ -18,7 +18,12 @@ export interface BackupFile {
 }
 
 /** The backup of `bandos` and `blocks`; `heights(key)` gives the registered ground of an embedded base (or null). */
-export function makeBackup(bandos: readonly { savedAt: number; spec: SiteSpec }[], blocks: readonly BlockSpec[], heights: (key: string) => Float32Array | null, now: number): BackupFile {
+export function makeBackup(
+  bandos: readonly { savedAt: number; spec: SiteSpec }[],
+  blocks: readonly BlockSpec[],
+  heights: (key: string) => Float32Array | null,
+  now: number,
+): BackupFile {
   return {
     format: BACKUP_FORMAT,
     v: 1,
@@ -37,7 +42,9 @@ export function makeBackup(bandos: readonly { savedAt: number; spec: SiteSpec }[
 }
 
 /** Read a backup file: every bando and block checked as if imported one by one (bad ones are dropped); null if it is not a backup. */
-export function readBackup(text: string): { bandos: { savedAt: number; spec: SiteSpec }[]; blocks: BlockSpec[]; dropped: number } | null {
+export function readBackup(
+  text: string,
+): { bandos: { savedAt: number; spec: SiteSpec }[]; blocks: BlockSpec[]; dropped: number } | null {
   let raw: unknown;
   try {
     raw = JSON.parse(text);
@@ -49,7 +56,7 @@ export function readBackup(text: string): { bandos: { savedAt: number; spec: Sit
   let dropped = 0;
   const bandos = o.bandos.flatMap((b) => {
     const spec = b && typeof b === 'object' ? sanitizeSpec((b as { spec?: unknown }).spec) : null;
-    if (!spec) return dropped++, [];
+    if (!spec) return (dropped++, []);
     const t = (b as { savedAt?: unknown }).savedAt;
     return [{ savedAt: typeof t === 'number' && isFinite(t) ? t : 0, spec }];
   });

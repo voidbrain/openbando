@@ -14,7 +14,10 @@ export type DrawFn = (g: CanvasRenderingContext2D, w: number, h: number) => void
  */
 @Component({
   selector: 'app-canvas',
-  host: { '[style.width]': 'width() === null ? "100%" : width() + "px"', '[style.height]': 'height() === null ? "100%" : height() + "px"' },
+  host: {
+    '[style.width]': 'width() === null ? "100%" : width() + "px"',
+    '[style.height]': 'height() === null ? "100%" : height() + "px"',
+  },
   template: `<canvas #cv [attr.data-capture]="capture() ? '' : null"></canvas>`,
   styles: `
     :host {

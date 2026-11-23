@@ -23,10 +23,18 @@ export function lonLatToPixel(lat: number, lon: number, z: number): { x: number;
 }
 
 /** The tiles (x, y at zoom z) covering a lat / lon box. */
-export function tilesFor(south: number, west: number, north: number, east: number, z: number): { x: number; y: number }[] {
-  const a = lonLatToPixel(north, west, z), b = lonLatToPixel(south, east, z);
+export function tilesFor(
+  south: number,
+  west: number,
+  north: number,
+  east: number,
+  z: number,
+): { x: number; y: number }[] {
+  const a = lonLatToPixel(north, west, z),
+    b = lonLatToPixel(south, east, z);
   const out: { x: number; y: number }[] = [];
-  for (let y = Math.floor(a.y / TILE); y <= Math.floor(b.y / TILE); y++) for (let x = Math.floor(a.x / TILE); x <= Math.floor(b.x / TILE); x++) out.push({ x, y });
+  for (let y = Math.floor(a.y / TILE); y <= Math.floor(b.y / TILE); y++)
+    for (let x = Math.floor(a.x / TILE); x <= Math.floor(b.x / TILE); x++) out.push({ x, y });
   return out;
 }
 
@@ -36,8 +44,12 @@ export function siteToLonLat(origin: { lat: number; lon: number }, x: number, z:
 }
 
 /** The lat / lon box a terrain grid covers (with a small margin). */
-export function terrainBox(t: Pick<TerrainSpec, 'half'>, origin: { lat: number; lon: number }): { south: number; west: number; north: number; east: number } {
-  const ne = siteToLonLat(origin, t.half.e + 10, -(t.half.n + 10)), sw = siteToLonLat(origin, -(t.half.e + 10), t.half.n + 10);
+export function terrainBox(
+  t: Pick<TerrainSpec, 'half'>,
+  origin: { lat: number; lon: number },
+): { south: number; west: number; north: number; east: number } {
+  const ne = siteToLonLat(origin, t.half.e + 10, -(t.half.n + 10)),
+    sw = siteToLonLat(origin, -(t.half.e + 10), t.half.n + 10);
   return { south: sw.lat, west: sw.lon, north: ne.lat, east: ne.lon };
 }
 
@@ -45,7 +57,12 @@ export function terrainBox(t: Pick<TerrainSpec, 'half'>, origin: { lat: number; 
  * Sample real heights onto the terrain grid. `sample(lat, lon)` answers metres above sea level (or NaN where no data);
  * the result is relative to the height at `datumAt` (the site origin by default), NaN replaced by the datum.
  */
-export function resampleToGrid(t: Pick<TerrainSpec, 'cell' | 'half'>, origin: { lat: number; lon: number }, sample: (lat: number, lon: number) => number, datumAt = { x: 0, z: 0 }): { heights: Float32Array; datum: number } {
+export function resampleToGrid(
+  t: Pick<TerrainSpec, 'cell' | 'half'>,
+  origin: { lat: number; lon: number },
+  sample: (lat: number, lon: number) => number,
+  datumAt = { x: 0, z: 0 },
+): { heights: Float32Array; datum: number } {
   const g = emptyGrid(t);
   const d0 = siteToLonLat(origin, datumAt.x, datumAt.z);
   const datum = sample(d0.lat, d0.lon);
@@ -68,9 +85,13 @@ export const baseKey = (origin: { lat: number; lon: number }, t: Pick<TerrainSpe
  * A sampler over decoded tiles: `tiles` maps "x/y" to the RGBA pixels of a 256 × 256 tile. Bilinear between pixels;
  * NaN where a tile is missing.
  */
-export function tileSampler(tiles: ReadonlyMap<string, Uint8ClampedArray>, z = ELEVATION_ZOOM): (lat: number, lon: number) => number {
+export function tileSampler(
+  tiles: ReadonlyMap<string, Uint8ClampedArray>,
+  z = ELEVATION_ZOOM,
+): (lat: number, lon: number) => number {
   const px = (gx: number, gy: number): number => {
-    const tx = Math.floor(gx / TILE), ty = Math.floor(gy / TILE);
+    const tx = Math.floor(gx / TILE),
+      ty = Math.floor(gy / TILE);
     const d = tiles.get(`${tx}/${ty}`);
     if (!d) return NaN;
     const k = ((gy - ty * TILE) * TILE + (gx - tx * TILE)) * 4;
@@ -78,8 +99,14 @@ export function tileSampler(tiles: ReadonlyMap<string, Uint8ClampedArray>, z = E
   };
   return (lat, lon) => {
     const p = lonLatToPixel(lat, lon, z);
-    const x = p.x - 0.5, y = p.y - 0.5;
-    const x0 = Math.floor(x), y0 = Math.floor(y), u = x - x0, v = y - y0;
-    return (px(x0, y0) * (1 - u) + px(x0 + 1, y0) * u) * (1 - v) + (px(x0, y0 + 1) * (1 - u) + px(x0 + 1, y0 + 1) * u) * v;
+    const x = p.x - 0.5,
+      y = p.y - 0.5;
+    const x0 = Math.floor(x),
+      y0 = Math.floor(y),
+      u = x - x0,
+      v = y - y0;
+    return (
+      (px(x0, y0) * (1 - u) + px(x0 + 1, y0) * u) * (1 - v) + (px(x0, y0 + 1) * (1 - u) + px(x0 + 1, y0 + 1) * u) * v
+    );
   };
 }

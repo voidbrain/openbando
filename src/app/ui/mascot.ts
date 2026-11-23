@@ -33,44 +33,84 @@ export class Mascot implements AfterViewInit {
     this.paused.set(media.matches);
     const change = () => this.paused.set(media.matches);
     media.addEventListener('change', change);
-    const images = MASCOT_POSES.map((name, i) => { const im = new Image(); im.src = `mascot/poses/${String(i).padStart(2, '0')}-${name}.png`; return im; });
-    const drone = new Image(); drone.src = 'mascot/drone.png';
-    const droneRight = new Image(); droneRight.src = 'mascot/drone-right.png';
-    let ms = 0, last = performance.now(), painted = false, wasVisible = false, revision = this.progress.revision;
+    const images = MASCOT_POSES.map((name, i) => {
+      const im = new Image();
+      im.src = `mascot/poses/${String(i).padStart(2, '0')}-${name}.png`;
+      return im;
+    });
+    const drone = new Image();
+    drone.src = 'mascot/drone.png';
+    const droneRight = new Image();
+    droneRight.src = 'mascot/drone-right.png';
+    let ms = 0,
+      last = performance.now(),
+      painted = false,
+      wasVisible = false,
+      revision = this.progress.revision;
     const stop = this.loop.add(FrameOrder.widgets, () => {
-      const now = performance.now(), dt = Math.min(100, now - last); last = now;
+      const now = performance.now(),
+        dt = Math.min(100, now - last);
+      last = now;
       const panel = this.layout.panels().welcome;
-      if (!panel.visible) { wasVisible = false; return; }
-      if (!wasVisible || revision !== this.progress.revision) { ms = 0; painted = false; wasVisible = true; revision = this.progress.revision; }
+      if (!panel.visible) {
+        wasVisible = false;
+        return;
+      }
+      if (!wasVisible || revision !== this.progress.revision) {
+        ms = 0;
+        painted = false;
+        wasVisible = true;
+        revision = this.progress.revision;
+      }
       if (panel.minimized || document.hidden || this.progress.paused) return;
       const still = this.paused();
       if (still && painted) return;
-      const f = mascotFrame(this.progress.holdAtEnd ? Math.min(ms, MASCOT_DURATION - 1) : ms), pilot = images[f.pose]!;
+      const f = mascotFrame(this.progress.holdAtEnd ? Math.min(ms, MASCOT_DURATION - 1) : ms),
+        pilot = images[f.pose]!;
       const quad = f.droneRight ? droneRight : drone;
       if (!pilot.complete || !pilot.naturalWidth || !quad.complete || !quad.naturalWidth) return;
-      const g = this.cv()?.nativeElement.getContext('2d'); if (!g) return;
+      const g = this.cv()?.nativeElement.getContext('2d');
+      if (!g) return;
       g.imageSmoothingEnabled = false;
       g.clearRect(0, 0, 320, 160);
       // Cover the fallback image only after every required asset has loaded.
       this.cv()!.nativeElement.previousElementSibling?.setAttribute('hidden', '');
       g.save();
-      if (f.mirror) { g.translate(176, 0); g.scale(-1, 1); }
-      g.drawImage(pilot, (f.phase.startsWith('poke-') || f.phase === 'pause-poke') ? 26 : 24, 24 + f.y); g.restore();
+      if (f.mirror) {
+        g.translate(176, 0);
+        g.scale(-1, 1);
+      }
+      g.drawImage(pilot, f.phase.startsWith('poke-') || f.phase === 'pause-poke' ? 26 : 24, 24 + f.y);
+      g.restore();
       if (f.droneVisible) {
-        const x=f.droneX-quad.width/2, y=f.droneY-quad.height/2;
-        g.drawImage(quad,x,y);
-        if(f.propellersSpinning) {
-          g.fillStyle=f.propellerFrame ? '#ffad35' : '#ff7a00';
-          for(const [px,py] of [[0.23,0.16],[0.77,0.16],[0.23,0.59],[0.77,0.59]]) {
-            const cx=Math.round(x+quad.width*px),cy=Math.round(y+quad.height*py);
-            g.fillRect(cx-(f.propellerFrame?5:3),cy, f.propellerFrame?10:6,1);
-            g.fillRect(cx-2,cy-1,4,3);
+        const x = f.droneX - quad.width / 2,
+          y = f.droneY - quad.height / 2;
+        g.drawImage(quad, x, y);
+        if (f.propellersSpinning) {
+          g.fillStyle = f.propellerFrame ? '#ffad35' : '#ff7a00';
+          for (const [px, py] of [
+            [0.23, 0.16],
+            [0.77, 0.16],
+            [0.23, 0.59],
+            [0.77, 0.59],
+          ]) {
+            const cx = Math.round(x + quad.width * px),
+              cy = Math.round(y + quad.height * py);
+            g.fillRect(cx - (f.propellerFrame ? 5 : 3), cy, f.propellerFrame ? 10 : 6, 1);
+            g.fillRect(cx - 2, cy - 1, 4, 3);
           }
         }
       }
       painted = true;
-      if (!still) { ms += dt; this.progress.elapsed += dt; painted = false; }
+      if (!still) {
+        ms += dt;
+        this.progress.elapsed += dt;
+        painted = false;
+      }
     });
-    this.destroy.onDestroy(() => { stop(); media.removeEventListener('change', change); });
+    this.destroy.onDestroy(() => {
+      stop();
+      media.removeEventListener('change', change);
+    });
   }
 }

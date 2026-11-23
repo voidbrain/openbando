@@ -42,8 +42,17 @@ export interface PlanePoint {
  * A similarity fit with fixed scale: the rotation comes from the direction between the corners, the shift centres the
  * remaining error between them. Returns null when the corners are too close together to give a stable rotation.
  */
-export function solveCalibration(real1: GeoPoint, real2: GeoPoint, model1: PlanePoint, model2: PlanePoint, origin: GeoPoint = siteOrigin()): CalibrationSolution | null {
-  const en = (p: GeoPoint): [number, number] => [(p.lon - origin.lon) * metresPerDegLon(origin.lat), (p.lat - origin.lat) * METRES_PER_DEG_LAT];
+export function solveCalibration(
+  real1: GeoPoint,
+  real2: GeoPoint,
+  model1: PlanePoint,
+  model2: PlanePoint,
+  origin: GeoPoint = siteOrigin(),
+): CalibrationSolution | null {
+  const en = (p: GeoPoint): [number, number] => [
+    (p.lon - origin.lon) * metresPerDegLon(origin.lat),
+    (p.lat - origin.lat) * METRES_PER_DEG_LAT,
+  ];
   const a = en(real1);
   const b = en(real2);
   const de = b[0] - a[0];
@@ -101,13 +110,20 @@ export function toGeo(x: number, z: number, cal: Calibration): [number, number] 
  * point that must not move (its pinned start) while its other end is aimed somewhere else.
  */
 export function rotateCalibrationAbout(cal: Calibration, pivot: { x: number; z: number }, deg: number): Calibration {
-  const a = deg * RAD, c = Math.cos(a), s = Math.sin(a);
-  const ox = cal.dx - pivot.x, oz = cal.dz - pivot.z;
+  const a = deg * RAD,
+    c = Math.cos(a),
+    s = Math.sin(a);
+  const ox = cal.dx - pivot.x,
+    oz = cal.dz - pivot.z;
   return { ...cal, rot: cal.rot + deg, dx: pivot.x + ox * c - oz * s, dz: pivot.z + ox * s + oz * c };
 }
 
 /** The turn (degrees) that aims the line from `pivot` through `from` at `to`, about the vertical. */
-export function turnTowards(pivot: { x: number; z: number }, from: { x: number; z: number }, to: { x: number; z: number }): number {
+export function turnTowards(
+  pivot: { x: number; z: number },
+  from: { x: number; z: number },
+  to: { x: number; z: number },
+): number {
   return (Math.atan2(to.z - pivot.z, to.x - pivot.x) - Math.atan2(from.z - pivot.z, from.x - pivot.x)) * DEG;
 }
 
@@ -117,10 +133,13 @@ export function turnTowards(pivot: { x: number; z: number }, from: { x: number; 
  */
 export function parseLatLon(text: string): GeoPoint | null {
   const t = text.trim();
-  const dms = [...t.matchAll(/(\d+(?:\.\d+)?)\s*°\s*(?:(\d+(?:\.\d+)?)\s*['′]\s*)?(?:(\d+(?:\.\d+)?)\s*["″]\s*)?([NSEWnsew])?/g)];
+  const dms = [
+    ...t.matchAll(/(\d+(?:\.\d+)?)\s*°\s*(?:(\d+(?:\.\d+)?)\s*['′]\s*)?(?:(\d+(?:\.\d+)?)\s*["″]\s*)?([NSEWnsew])?/g),
+  ];
   let lat: number, lon: number;
   if (dms.length === 2) {
-    const val = (m: RegExpMatchArray): number => (+m[1]! + +(m[2] ?? 0) / 60 + +(m[3] ?? 0) / 3600) * (/[SWsw]/.test(m[4] ?? '') ? -1 : 1);
+    const val = (m: RegExpMatchArray): number =>
+      (+m[1]! + +(m[2] ?? 0) / 60 + +(m[3] ?? 0) / 3600) * (/[SWsw]/.test(m[4] ?? '') ? -1 : 1);
     [lat, lon] = [val(dms[0]!), val(dms[1]!)];
     if (/[EWew]/.test(dms[0]![4] ?? '')) [lat, lon] = [lon, lat]; // written longitude first
   } else {
@@ -149,7 +168,10 @@ export function latLonText(origin: GeoPoint, p: { x: number; z: number }): strin
  * street or its number; the pilot then lands on the town or postcode and frames the area by hand.
  */
 export function coarserQueries(query: string): string[] {
-  const parts = query.split(',').map((p) => p.trim()).filter(Boolean);
+  const parts = query
+    .split(',')
+    .map((p) => p.trim())
+    .filter(Boolean);
   const out: string[] = [];
   const add = (q: string): void => {
     if (q && q !== query.trim() && !out.includes(q)) out.push(q);

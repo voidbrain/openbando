@@ -123,16 +123,13 @@ export class RaceService {
   set(id: string, patch: TrackOptions): void {
     if (patch.offset !== undefined && !Number.isFinite(patch.offset)) return;
     if (patch.color !== undefined && !/^#[0-9a-f]{6}$/i.test(patch.color)) return;
-    if (patch.name !== undefined)
-      patch = { ...patch, name: patch.name.trim().slice(0, 80) || 'Pilot' };
+    if (patch.name !== undefined) patch = { ...patch, name: patch.name.trim().slice(0, 80) || 'Pilot' };
     this.options.update((o) => ({
       ...o,
       [id]: {
         ...o[id],
         ...patch,
-        ...(patch.offset === undefined
-          ? {}
-          : { offset: Math.max(-86400, Math.min(86400, patch.offset)) }),
+        ...(patch.offset === undefined ? {} : { offset: Math.max(-86400, Math.min(86400, patch.offset)) }),
       },
     }));
   }
@@ -181,11 +178,9 @@ export class RaceService {
   }
   importPack(raw: unknown): void {
     const pack = parseRacePack(raw);
-    if (pack.frame !== this.frame())
-      throw new Error('Open the same bando and model scale before importing this race');
+    if (pack.frame !== this.frame()) throw new Error('Open the same bando and model scale before importing this race');
     const prefix = crypto.randomUUID();
-    if (this.tracks().length + pack.tracks.length > MAX_PILOTS)
-      throw new Error('Racing supports at most eight pilots');
+    if (this.tracks().length + pack.tracks.length > MAX_PILOTS) throw new Error('Racing supports at most eight pilots');
     this.external.update((es) => [
       ...es,
       ...pack.tracks.map((track, i) => ({
@@ -203,8 +198,7 @@ export class RaceService {
     if (frame !== this.frame()) return;
     const other = this.external().filter((e) => e.owner !== owner);
     const localCount = this.flights.all.filter((f) => f.loc.length >= 2).length;
-    if (localCount + other.length + tracks.length > MAX_PILOTS)
-      throw new Error('Racing supports at most eight pilots');
+    if (localCount + other.length + tracks.length > MAX_PILOTS) throw new Error('Racing supports at most eight pilots');
     const room = tracks.map((t) => ({
       track: { ...t, id: `peer:${owner}:${t.id}`, live: t.live },
       frame,
@@ -222,11 +216,9 @@ export class RaceService {
   /** Direct telemetry: caller already projected GPS into this bando. A full trace is bounded, never silently truncated. */
   livePoint(id: string, name: string, p: RacePoint): void {
     const existing = this.external().find((e) => e.track.id === id);
-    if (!existing && this.tracks().length >= MAX_PILOTS)
-      throw new Error('Racing supports at most eight pilots');
+    if (!existing && this.tracks().length >= MAX_PILOTS) throw new Error('Racing supports at most eight pilots');
     const points = existing?.track.points ?? [];
-    if (points.length >= MAX_POINTS)
-      throw new Error('Live trace limit reached; reconnect to start a new recording');
+    if (points.length >= MAX_POINTS) throw new Error('Live trace limit reached; reconnect to start a new recording');
     if (points.length && p.t <= points.at(-1)!.t) return;
     const track: RaceTrack = existing?.track ?? {
       id,
@@ -247,8 +239,6 @@ export class RaceService {
     this.external.update((es) => [...es.filter((e) => e.track.id !== id), e]);
   }
   finishLive(id: string): void {
-    this.external.update((es) =>
-      es.map((e) => (e.track.id === id ? { ...e, track: { ...e.track, live: false } } : e)),
-    );
+    this.external.update((es) => es.map((e) => (e.track.id === id ? { ...e, track: { ...e.track, live: false } } : e)));
   }
 }

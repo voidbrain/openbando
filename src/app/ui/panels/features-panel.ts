@@ -13,16 +13,30 @@ import type { PanelId } from '../panel-defs';
 })
 export class FeaturesPanel {
   private readonly layout = inject(LayoutStore);
-  protected readonly cards: {icon:string;title:string;text:string;panel:PanelId}[] = [
-    {icon:'▦',title:'Build your worlds',text:'Create and shape your own bando.',panel:'studio'},
-    {icon:'▶',title:'Relive the thrill',text:'Replay your flights with video and telemetry.',panel:'flights'},
-    {icon:'↗',title:'Share your adventures',text:'Export your bando and share your story.',panel:'studio'},
-    {icon:'⌂',title:'Keep control of your data',text:'Work locally; share only when you choose.',panel:'studio'},
-    {icon:'⚑',title:'Challenge your friends',text:'Compare flights and race together.',panel:'flights'},
-    {icon:'✚',title:'Take the controls',text:'Fly your world in the simulator.',panel:'simulator'},
-    {icon:'⌁',title:'See every detail',text:'Explore speed, attitude and telemetry.',panel:'timeline'},
-    {icon:'▣',title:'Create your own blocks',text:'Build a library of obstacles and structures.',panel:'studio'},
-    {icon:'◎',title:'Fly your own places',text:'Turn map data into a world to explore.',panel:'studio'},
+  protected readonly cards: { icon: string; title: string; text: string; panel: PanelId }[] = [
+    { icon: '▦', title: 'Build your worlds', text: 'Create and shape your own bando.', panel: 'studio' },
+    { icon: '▶', title: 'Relive the thrill', text: 'Replay your flights with video and telemetry.', panel: 'flights' },
+    { icon: '↗', title: 'Share your adventures', text: 'Export your bando and share your story.', panel: 'studio' },
+    {
+      icon: '⌂',
+      title: 'Keep control of your data',
+      text: 'Work locally; share only when you choose.',
+      panel: 'studio',
+    },
+    { icon: '⚑', title: 'Challenge your friends', text: 'Compare flights and race together.', panel: 'flights' },
+    { icon: '✚', title: 'Take the controls', text: 'Fly your world in the simulator.', panel: 'simulator' },
+    { icon: '⌁', title: 'See every detail', text: 'Explore speed, attitude and telemetry.', panel: 'timeline' },
+    {
+      icon: '▣',
+      title: 'Create your own blocks',
+      text: 'Build a library of obstacles and structures.',
+      panel: 'studio',
+    },
+    { icon: '◎', title: 'Fly your own places', text: 'Turn map data into a world to explore.', panel: 'studio' },
   ];
-  protected open(id:PanelId):void {this.layout.setVisible('features',false);this.layout.setVisible('welcome',false);this.layout.setVisible(id,true);}
+  protected open(id: PanelId): void {
+    this.layout.setVisible('features', false);
+    this.layout.setVisible('welcome', false);
+    this.layout.setVisible(id, true);
+  }
 }

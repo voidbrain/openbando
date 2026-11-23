@@ -40,8 +40,7 @@ export class RaceLinksService {
       }
     });
     const timer = setInterval(() => {
-      if (this.joined() && this.broadcastLive() && this.race.tracks().some((t) => t.live))
-        void this.publish();
+      if (this.joined() && this.broadcastLive() && this.race.tracks().some((t) => t.live)) void this.publish();
     }, 1000);
     inject(DestroyRef).onDestroy(() => {
       clearInterval(timer);
@@ -55,17 +54,11 @@ export class RaceLinksService {
   connect(name: string, url: string): void {
     if (this.links().length >= MAX_PILOTS) throw new Error('Racing supports at most eight pilots');
     const target = new URL(url);
-    if (
-      !['ws:', 'wss:', 'http:', 'https:'].includes(target.protocol) ||
-      target.username ||
-      target.password
-    )
+    if (!['ws:', 'wss:', 'http:', 'https:'].includes(target.protocol) || target.username || target.password)
       throw new Error('Use a WebSocket or event-stream URL');
     const id = `live:${crypto.randomUUID()}`,
       label = name.trim().slice(0, 80) || 'Pilot';
-    const src = /^https?:$/.test(target.protocol)
-      ? new EventSource(target.href)
-      : new WebSocket(target.href);
+    const src = /^https?:$/.test(target.protocol) ? new EventSource(target.href) : new WebSocket(target.href);
     this.sources.set(id, src);
     this.links.update((xs) => [...xs, { id, name: label, url: target.href, status: 'Connecting' }]);
     let start: number | null = null,
@@ -75,8 +68,7 @@ export class RaceLinksService {
       if (this.sources.get(id) === src) this.status(id, 'Waiting for GPS');
     };
     src.onmessage = (e: MessageEvent) => {
-      if (this.sources.get(id) !== src || typeof e.data !== 'string' || e.data.length > 65536)
-        return;
+      if (this.sources.get(id) !== src || typeof e.data !== 'string' || e.data.length > 65536) return;
       for (const line of e.data.split('\n')) {
         let m;
         try {
@@ -114,10 +106,7 @@ export class RaceLinksService {
           this.status(id, 'Receiving');
         } catch (e) {
           this.disconnect(id);
-          this.links.update((xs) => [
-            ...xs,
-            { id, name: label, url: target.href, status: (e as Error).message },
-          ]);
+          this.links.update((xs) => [...xs, { id, name: label, url: target.href, status: (e as Error).message }]);
           return;
         }
       }
@@ -166,13 +155,10 @@ export class RaceLinksService {
     this.abort = controller;
     this.roomStatus.set('Connecting');
     try {
-      const response = await fetch(
-        `${this.roomUrl}?frame=${encodeURIComponent(this.race.frame())}`,
-        {
-          headers: { Authorization: `Bearer ${token}`, 'X-Race-Client': this.clientId },
-          signal: controller.signal,
-        },
-      );
+      const response = await fetch(`${this.roomUrl}?frame=${encodeURIComponent(this.race.frame())}`, {
+        headers: { Authorization: `Bearer ${token}`, 'X-Race-Client': this.clientId },
+        signal: controller.signal,
+      });
       if (!response.ok || !response.body) throw new Error(`Relay HTTP ${response.status}`);
       this.joined.set(true);
       this.race.enabled.set(true);
@@ -197,8 +183,7 @@ export class RaceLinksService {
           if (data) this.snapshot(JSON.parse(data));
         }
       }
-      if (!controller.signal.aborted)
-        this.roomStatus.set('Relay disconnected; join again to reconnect');
+      if (!controller.signal.aborted) this.roomStatus.set('Relay disconnected; join again to reconnect');
     } catch (e) {
       if (!controller.signal.aborted) this.roomStatus.set((e as Error).message);
     } finally {
@@ -210,13 +195,7 @@ export class RaceLinksService {
     }
   }
   private snapshot(raw: unknown): void {
-    if (
-      !raw ||
-      typeof raw !== 'object' ||
-      !('owners' in raw) ||
-      !Array.isArray(raw.owners) ||
-      raw.owners.length > 8
-    )
+    if (!raw || typeof raw !== 'object' || !('owners' in raw) || !Array.isArray(raw.owners) || raw.owners.length > 8)
       throw new Error('Invalid relay snapshot');
     const seen = new Set<string>();
     for (const row of raw.owners) {
@@ -247,8 +226,7 @@ export class RaceLinksService {
     try {
       const pack = this.race.pack(true, true),
         body = JSON.stringify({ id: this.clientId, pack });
-      if (body.length > 2 * 1024 * 1024)
-        throw new Error('Race upload exceeds the relay limit; share fewer paths');
+      if (body.length > 2 * 1024 * 1024) throw new Error('Race upload exceeds the relay limit; share fewer paths');
       const response = await fetch(this.roomUrl, {
         method: 'POST',
         headers: { Authorization: `Bearer ${this.roomToken}`, 'Content-Type': 'application/json' },
@@ -258,8 +236,7 @@ export class RaceLinksService {
       if (!response.ok) throw new Error(`Relay HTTP ${response.status}`);
       this.roomStatus.set('Local paths shared');
     } catch (e) {
-      if (!(e instanceof DOMException && e.name === 'AbortError'))
-        this.roomStatus.set((e as Error).message);
+      if (!(e instanceof DOMException && e.name === 'AbortError')) this.roomStatus.set((e as Error).message);
     } finally {
       this.posting = false;
     }

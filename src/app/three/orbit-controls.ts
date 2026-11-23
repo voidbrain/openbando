@@ -40,7 +40,14 @@ export function attachOrbitControls(el: HTMLElement, target: ControlTarget): () 
 
   const down = (e: PointerEvent): void => {
     if (target.blocked?.()) return;
-    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, button: e.button, shift: e.shiftKey });
+    pointers.set(e.pointerId, {
+      x: e.clientX,
+      y: e.clientY,
+      x0: e.clientX,
+      y0: e.clientY,
+      button: e.button,
+      shift: e.shiftKey,
+    });
     try {
       el.setPointerCapture(e.pointerId);
     } catch {

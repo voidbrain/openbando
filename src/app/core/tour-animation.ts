@@ -9,15 +9,21 @@ export class TourAnimationClock {
       this.pausedAt = null;
     }
   }
-  time(now: number): number { return (this.pausedAt ?? now) - this.excluded; }
+  time(now: number): number {
+    return (this.pausedAt ?? now) - this.excluded;
+  }
 }
 
 /** Sample by elapsed active time, rather than stretching an animation to render every missed frame. */
-export async function animateTour(duration: number, draw: (fraction: number) => void, driver: {
-  now(): number;
-  wait(): Promise<void>;
-  skipped(): boolean;
-}): Promise<void> {
+export async function animateTour(
+  duration: number,
+  draw: (fraction: number) => void,
+  driver: {
+    now(): number;
+    wait(): Promise<void>;
+    skipped(): boolean;
+  },
+): Promise<void> {
   const start = driver.now();
   draw(0);
   let fraction = 0;

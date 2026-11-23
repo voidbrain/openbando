@@ -1,13 +1,32 @@
 import { computed, signal } from '@angular/core';
 import type { Pt } from '../../../core/footprint';
-import { ROADS, SURFACES, WATER_COLOR, insertPoint, layerShape, mergeWaters, pathLength, removePoint, roadDef, surfaceDef } from '../../../core/layers';
+import {
+  ROADS,
+  SURFACES,
+  WATER_COLOR,
+  insertPoint,
+  layerShape,
+  mergeWaters,
+  pathLength,
+  removePoint,
+  roadDef,
+  surfaceDef,
+} from '../../../core/layers';
 import type { RoadKind, RoadSpec, SurfaceKind } from '../../../core/site-spec';
 import { defaultTerrain } from '../../../core/terrain';
 import type { PickOption } from '../pick-menu';
 import { polyPts, type EditorHost } from './editor-host';
 
 const ROAD_ICON: Record<RoadKind, string> = { road: 'road', track: 'track', path: 'pathway', rail: 'rail' };
-const SURFACE_ICON: Record<SurfaceKind, string> = { grass: 'grassland', asphalt: 'asphalt', concrete: 'concrete', gravel: 'gravel', dirt: 'dirt', sand: 'sand', rubble: 'rubble' };
+const SURFACE_ICON: Record<SurfaceKind, string> = {
+  grass: 'grassland',
+  asphalt: 'asphalt',
+  concrete: 'concrete',
+  gravel: 'gravel',
+  dirt: 'dirt',
+  sand: 'sand',
+  rubble: 'rubble',
+};
 
 /** The ground layers tools (Road, Surface, Water): their options, the line being drawn, and edits of the selected one. */
 export class LayerTool {
@@ -20,9 +39,21 @@ export class LayerTool {
   /** Water is drawn as an outline (a pond) or along a centre line `waterWidth` wide (a canal). */
   readonly waterMode = signal<'outline' | 'line'>('outline');
   readonly waterWidth = signal(8);
-  readonly roadOptions: readonly PickOption[] = ROADS.map((r) => ({ id: r.id, label: r.label, icon: ROAD_ICON[r.id], hint: `${r.width} m wide by default` }));
-  readonly surfaceOptions: readonly PickOption[] = SURFACES.map((x) => ({ id: x.id, label: x.label, icon: SURFACE_ICON[x.id] }));
-  readonly roadSurfaceOptions: readonly PickOption[] = [{ id: '', label: 'As its kind', icon: 'road' }, ...this.surfaceOptions];
+  readonly roadOptions: readonly PickOption[] = ROADS.map((r) => ({
+    id: r.id,
+    label: r.label,
+    icon: ROAD_ICON[r.id],
+    hint: `${r.width} m wide by default`,
+  }));
+  readonly surfaceOptions: readonly PickOption[] = SURFACES.map((x) => ({
+    id: x.id,
+    label: x.label,
+    icon: SURFACE_ICON[x.id],
+  }));
+  readonly roadSurfaceOptions: readonly PickOption[] = [
+    { id: '', label: 'As its kind', icon: 'road' },
+    ...this.surfaceOptions,
+  ];
   readonly asRoad = (v: string): RoadKind => roadDef(v as RoadKind).id;
   readonly asSurface = (v: string): SurfaceKind => surfaceDef(v as SurfaceKind).id;
   readonly roadColor = (r: RoadSpec): string => (r.surface ? surfaceDef(r.surface).color : roadDef(r.kind).color);
@@ -66,7 +97,10 @@ export class LayerTool {
     e.stopPropagation();
     if (e.altKey) {
       const next = removePoint(ep.pts, k, ep.closed ? 3 : 2);
-      if (!next) return void this.h.toast.show(ep.closed ? 'An outline keeps at least 3 points.' : 'A road keeps at least 2 points.');
+      if (!next)
+        return void this.h.toast.show(
+          ep.closed ? 'An outline keeps at least 3 points.' : 'A road keeps at least 2 points.',
+        );
       this.setPts(ep.kind, ep.i, next);
       return;
     }
@@ -84,7 +118,11 @@ export class LayerTool {
   }
 
   /** A point being dragged (inside the drag's gesture: no undo step of its own). */
-  movePoint(s: { roads?: { pts: Pt[] }[]; surfaces?: { pts: Pt[] }[]; waters?: { pts: Pt[] }[] }, d: { kind: 'road' | 'surface' | 'water'; i: number; k: number }, p: Pt): void {
+  movePoint(
+    s: { roads?: { pts: Pt[] }[]; surfaces?: { pts: Pt[] }[]; waters?: { pts: Pt[] }[] },
+    d: { kind: 'road' | 'surface' | 'water'; i: number; k: number },
+    p: Pt,
+  ): void {
     const list = d.kind === 'road' ? s.roads : d.kind === 'surface' ? s.surfaces : s.waters;
     const x = list?.[d.i];
     if (x?.pts[d.k]) x.pts[d.k] = { x: Math.round(p.x * 10) / 10, z: Math.round(p.z * 10) / 10 };
@@ -139,7 +177,13 @@ export class LayerTool {
   }
 
   /** Edit the selected road / surface / water (one undo step). */
-  set(patch: { kind?: RoadKind | SurfaceKind; width?: number; surface?: SurfaceKind; depth?: number; level?: number }): void {
+  set(patch: {
+    kind?: RoadKind | SurfaceKind;
+    width?: number;
+    surface?: SurfaceKind;
+    depth?: number;
+    level?: number;
+  }): void {
     const p = this.h.pick();
     if (p?.t !== 'road' && p?.t !== 'surface' && p?.t !== 'water') return;
     this.h.ed.commitSite((s) => {

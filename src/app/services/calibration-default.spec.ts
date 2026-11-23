@@ -18,7 +18,10 @@ describe('the default flight alignment', () => {
   it('a GPS fix lands where the map puts the same point (Move to coordinates, map data): one frame for both', () => {
     const spec = emptySpec({ lat: 45.4642, lon: 9.19 });
     const cal = calibrationForSpec(spec);
-    for (const p of [{ lat: 45.4651, lon: 9.1912 }, { lat: 45.4633, lon: 9.1884 }]) {
+    for (const p of [
+      { lat: 45.4651, lon: 9.1912 },
+      { lat: 45.4633, lon: 9.1884 },
+    ]) {
       const [x, z] = toLocalAt(spec.origin, p.lat, p.lon, cal);
       const m = siteFromLatLon(spec.origin, p);
       expect(Math.hypot(x - m.x, z - m.z)).toBeLessThan(0.02);

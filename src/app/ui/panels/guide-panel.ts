@@ -132,8 +132,17 @@ const CLOSED_KEY = 'abando-float-guide-closed';
 })
 export class GuidePanel {
   protected readonly tour = inject(TourService);
-  protected readonly tours = computed(() => TOURS.map((t) => ({ ...t, tour: t, min: Math.max(1, Math.round(playTime(tourBeats(t).map((b) => b.beat)) / 60000)) })));
-  protected readonly sections = SECTIONS.map((s) => ({ ...s, snippets: SNIPPETS.filter((x) => x.section === s.id) })).filter((s) => s.snippets.length);
+  protected readonly tours = computed(() =>
+    TOURS.map((t) => ({
+      ...t,
+      tour: t,
+      min: Math.max(1, Math.round(playTime(tourBeats(t).map((b) => b.beat)) / 60000)),
+    })),
+  );
+  protected readonly sections = SECTIONS.map((s) => ({
+    ...s,
+    snippets: SNIPPETS.filter((x) => x.section === s.id),
+  })).filter((s) => s.snippets.length);
   protected checked = (e: Event): boolean => (e.target as HTMLInputElement).checked;
 
   /** Folded sections, remembered. */

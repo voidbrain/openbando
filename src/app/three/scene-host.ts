@@ -11,7 +11,9 @@ const SKY = '#b8d0c5';
 
 /** A spec with nothing built yet (the empty bando a first visit opens on). */
 export function isVoidSpec(spec: SiteSpec): boolean {
-  return !spec.buildings.length && !spec.trees.length && !spec.structures?.length && !spec.terrain && !spec.walls?.length;
+  return (
+    !spec.buildings.length && !spec.trees.length && !spec.structures?.length && !spec.terrain && !spec.walls?.length
+  );
 }
 
 /** The floor of the empty world: a fine and a coarse grid fading into the fog. */
@@ -19,7 +21,10 @@ function voidFloor(): THREE.Group {
   const g = new THREE.Group();
   const fine = new THREE.GridHelper(2400, 240, '#7fa58f', '#7fa58f');
   const coarse = new THREE.GridHelper(2400, 24, '#2f6b4a', '#2f6b4a');
-  for (const [h, op] of [[fine, 0.35], [coarse, 0.7]] as const) {
+  for (const [h, op] of [
+    [fine, 0.35],
+    [coarse, 0.7],
+  ] as const) {
     const m = h.material as THREE.LineBasicMaterial;
     m.transparent = true;
     m.opacity = op;
@@ -40,11 +45,23 @@ export interface FitResolution {
 }
 
 /** Render big panels at a capped pixel count (keeps several live views affordable). */
-export function fitResolution(w: number, h: number, maxPixels: number, pixelRatio: number, domWidth: number, domHeight: number): FitResolution {
+export function fitResolution(
+  w: number,
+  h: number,
+  maxPixels: number,
+  pixelRatio: number,
+  domWidth: number,
+  domHeight: number,
+): FitResolution {
   const rs = Math.min(pixelRatio, Math.sqrt(maxPixels / (w * h)));
   const vw = (w * rs) / pixelRatio;
   const vh = (h * rs) / pixelRatio;
-  return { vw, vh, w: Math.min(Math.max(1, Math.floor(vw * pixelRatio)), domWidth), h: Math.min(Math.max(1, Math.floor(vh * pixelRatio)), domHeight) };
+  return {
+    vw,
+    vh,
+    w: Math.min(Math.max(1, Math.floor(vw * pixelRatio)), domWidth),
+    h: Math.min(Math.max(1, Math.floor(vh * pixelRatio)), domHeight),
+  };
 }
 
 /**
@@ -120,7 +137,9 @@ export class SceneHost {
     const grid = this.site.ground.grid;
     if (grid) {
       // the terrain is built unscaled: march the ray in model metres, answer in world metres
-      const k = this.site.collider.scale || 1, o = this.raycaster.ray.origin, d = this.raycaster.ray.direction;
+      const k = this.site.collider.scale || 1,
+        o = this.raycaster.ray.origin,
+        d = this.raycaster.ray.direction;
       const p = rayGround(grid, { x: o.x / k, y: o.y / k, z: o.z / k }, d);
       return p ? { x: p.x * k, z: p.z * k } : null;
     }
@@ -152,7 +171,15 @@ export class SceneHost {
    * Render `camera` into the corner of the shared canvas and copy it into `target`. Used for floating view panels,
    * the map overlay and exports. `cssW` x `cssH` is the panel size, capped at `maxPixels` physical pixels.
    */
-  renderToCanvas(camera: THREE.PerspectiveCamera | THREE.OrthographicCamera, view: CameraView | null, ctx: RigContext, target: HTMLCanvasElement, cssW: number, cssH: number, maxPixels = 650000): void {
+  renderToCanvas(
+    camera: THREE.PerspectiveCamera | THREE.OrthographicCamera,
+    view: CameraView | null,
+    ctx: RigContext,
+    target: HTMLCanvasElement,
+    cssW: number,
+    cssH: number,
+    maxPixels = 650000,
+  ): void {
     const dom = this.renderer.domElement;
     const fit = fitResolution(cssW, cssH, maxPixels, this.renderer.getPixelRatio(), dom.width, dom.height);
     if (target.width !== fit.w || target.height !== fit.h) {

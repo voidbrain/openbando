@@ -1,5 +1,17 @@
 import { computed, signal } from '@angular/core';
-import { anglesAt, arcOf, chainClick, measureLabel, nearestSnap, orthoSnap, shiftEnds, snapTargets, type MeasureChain, type Pt, type Seg } from '../../../core/measure';
+import {
+  anglesAt,
+  arcOf,
+  chainClick,
+  measureLabel,
+  nearestSnap,
+  orthoSnap,
+  shiftEnds,
+  snapTargets,
+  type MeasureChain,
+  type Pt,
+  type Seg,
+} from '../../../core/measure';
 import type { Drag, EditorHost } from './editor-host';
 
 /**
@@ -11,9 +23,13 @@ export class MeasureTool {
 
   readonly chain = signal<MeasureChain>({ segs: [], a: null, start: null });
   readonly sel = signal<number | null>(null);
-  readonly selSeg = computed(() => (this.h.tool() === 'measure' && !this.chain().a ? (this.chain().segs[this.sel() ?? -1] ?? null) : null));
+  readonly selSeg = computed(() =>
+    this.h.tool() === 'measure' && !this.chain().a ? (this.chain().segs[this.sel() ?? -1] ?? null) : null,
+  );
   /** Measure lines only take the pointer while no chain is open (then a click always adds a point). */
-  readonly hit = computed(() => ((this.h.tool() === 'measure' || this.h.tool() === 'select') && !this.chain().a ? 'stroke' : 'none'));
+  readonly hit = computed(() =>
+    (this.h.tool() === 'measure' || this.h.tool() === 'select') && !this.chain().a ? 'stroke' : 'none',
+  );
   readonly expanded = signal<number | null>(null);
   /** What the pointer is magnetised to while measuring ('corner', 'tree' ...), or ''. */
   readonly snap = signal('');
@@ -21,9 +37,13 @@ export class MeasureTool {
   readonly hover = signal<Pt | null>(null);
   /** The angle arcs: radius 34 px, but never more than a third of the shorter arm. */
   readonly arcs = computed(() => {
-    const segs = this.chain().segs, r0 = 34 / Math.max(0.01, this.h.ppm());
+    const segs = this.chain().segs,
+      r0 = 34 / Math.max(0.01, this.h.ppm());
     return anglesAt(segs).map((a) => {
-      const arm = Math.min(Math.hypot(segs[a.i]!.b.x - segs[a.i]!.a.x, segs[a.i]!.b.z - segs[a.i]!.a.z), Math.hypot(segs[a.j]!.b.x - segs[a.j]!.a.x, segs[a.j]!.b.z - segs[a.j]!.a.z));
+      const arm = Math.min(
+        Math.hypot(segs[a.i]!.b.x - segs[a.i]!.a.x, segs[a.i]!.b.z - segs[a.i]!.a.z),
+        Math.hypot(segs[a.j]!.b.x - segs[a.j]!.a.x, segs[a.j]!.b.z - segs[a.j]!.a.z),
+      );
       return { ...arcOf(a.at, a.d1, a.d2, Math.min(r0, arm / 3)), deg: a.deg };
     });
   });
@@ -33,7 +53,9 @@ export class MeasureTool {
     return measureLabel(m, g.grid ? g.at : null);
   };
   readonly flat = (m: Seg): string => measureLabel(m, null);
-  toggleDetails(i: number): void { this.expanded.update((v) => v === i ? null : i); }
+  toggleDetails(i: number): void {
+    this.expanded.update((v) => (v === i ? null : i));
+  }
 
   /** Where a measure click or hover lands: magnet to elements within ~10 px, else straightened against the building axes. */
   point(raw: Pt): Pt {
@@ -103,7 +125,9 @@ export class MeasureTool {
       this.h.drag.set({ ...d, last: p });
       return;
     }
-    const others = this.chain().segs.filter((g) => Math.hypot(g.a.x - d.old.x, g.a.z - d.old.z) > 0.05 && Math.hypot(g.b.x - d.old.x, g.b.z - d.old.z) > 0.05);
+    const others = this.chain().segs.filter(
+      (g) => Math.hypot(g.a.x - d.old.x, g.a.z - d.old.z) > 0.05 && Math.hypot(g.b.x - d.old.x, g.b.z - d.old.z) > 0.05,
+    );
     const sn = nearestSnap(snapTargets(this.h.ed.draft(), others), p, 10 / Math.max(0.01, this.h.ppm()));
     const q = sn ? sn.pt : p;
     this.snap.set(sn?.kind ?? '');

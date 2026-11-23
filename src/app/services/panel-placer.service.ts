@@ -13,11 +13,17 @@ export class PanelPlacer {
 
   async open(ids: readonly PanelId[]): Promise<void> {
     const keep = new Set<PanelId>([...ids, 'views']);
-    for (const [id, p] of Object.entries(this.layout.panels()) as [PanelId, { visible: boolean }][]) if (p.visible && !keep.has(id)) this.layout.setVisible(id, false);
-    this.layout.restore(Object.fromEntries(ids.map((id) => [id, { visible: true, x: null, y: null, w: null, h: null, minimized: false, ghost: false }])));
+    for (const [id, p] of Object.entries(this.layout.panels()) as [PanelId, { visible: boolean }][])
+      if (p.visible && !keep.has(id)) this.layout.setVisible(id, false);
+    this.layout.restore(
+      Object.fromEntries(
+        ids.map((id) => [id, { visible: true, x: null, y: null, w: null, h: null, minimized: false, ghost: false }]),
+      ),
+    );
     for (const id of ids) this.layout.raise(id);
     await new Promise((r) => setTimeout(r, 60)); // drawn at their own size: measure them
-    const box = (id: PanelId): DOMRect | undefined => document.querySelector<HTMLElement>(`app-panel[data-id="${id}"]`)?.getBoundingClientRect();
+    const box = (id: PanelId): DOMRect | undefined =>
+      document.querySelector<HTMLElement>(`app-panel[data-id="${id}"]`)?.getBoundingClientRect();
     const views = this.layout.panels().views.visible ? box('views') : undefined;
     const x0 = views ? views.right + 12 : 12;
     const area = { x: x0, y: 56, w: Math.max(200, innerWidth - x0 - 12), h: innerHeight - 68 };
