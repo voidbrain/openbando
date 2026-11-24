@@ -8,7 +8,7 @@ The rules are split by trigger so an agent reads only what its task needs (F-076
 
 | Read before you | File | Sections |
 |---|---|---|
-| change any record | [records](backlog/records.md) | Record and evidence requirements (incl. "A bug fix starts with a failing test"), Visual cues and table integrity |
+| change any record (edit its source `docs/work/records/<ID>.md`, then `npm run work:build`; never `docs/BACKLOG.md` by hand) <!-- project --> | [records](backlog/records.md) | Record and evidence requirements (incl. "A bug fix starts with a failing test"), Visual cues and table integrity |
 | add or start a step | [steps](backlog/steps.md) | Owner steps and the steps table, Optional explicit tasks and source-owned records |
 | plan a feature up front or change an adopted plan | [feature plans](backlog/feature-plans.md) | Optional upfront feature plans |
 | close a step or re-estimate open steps | [estimates](backlog/estimates.md) | Estimate calibration |

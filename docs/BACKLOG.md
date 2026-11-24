@@ -660,7 +660,7 @@ Current work ledger, reviewed 24 November 2026 against main `8d28b42` (#284; its
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔹 P3 | 🟢 Small | — | — | — |
 
-💻 **→** Merge #285 once every check passes, then close this record with `npm run work:close`.
+💻 **→** Merge #285 once every check passes; close this record with `npm run work:close` after the template fixes its crash without a tasks folder (reconcile of 10.8.1).
 
 | | |
 |---|---|
@@ -719,4 +719,4 @@ Current work ledger, reviewed 31 October 2026 against main `37e2545` (merged #27
 
 Follow [Backlog rules](BACKLOG-RULES.md) for updating records, reconciling PR/CI evidence, stale-state review, closure/archiving, human dependencies and table validation. The lifecycle table above is the quick reference. Preserve stable IDs and existing user edits.
 
-Each item shows its ID and title, a summary table (status with its colour, priority, effort size), the human or next action (🧑 Procedure / Decision / Both, or 💻 No), and Issue / Reproduce / Check. Expand the closed details for next actions, estimate rationale, PR history, dates and verification. Effort, work still estimated in days: 🟢 Small ≤1 day · 🟡 Medium 2–3 days · 🔴 Large ≥4 days. Status and verification evidence describe progress; effort is an estimate of work still required. A `---` line ends every item.
+Each item shows its ID and title, a summary table (status with its colour, priority, effort size), the human or next action (🧑 Procedure / Decision / Both, or 💻 No), and Issue / Reproduce / Check. Expand the closed details for PR history, dates and verification; next actions and estimate rationale are in each record's source (“Full notes & evidence”). Effort, work still estimated in days: 🟢 Small ≤1 day · 🟡 Medium 2–3 days · 🔴 Large ≥4 days. Status and verification evidence describe progress; effort is an estimate of work still required. A `---` line ends every item.

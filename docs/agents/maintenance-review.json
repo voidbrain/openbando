@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-24T00:21:40.929Z",
+  "reviewed": "2026-11-24T00:24:52.649Z",
   "policy": "32c392a76cf51ee032943012e2389f5774912592454c3d7f3f1187814d90f25f",
   "inputs": {
-    "AGENTS.md": "436f11cf6506b32d5d04b291d11ddc4a3efef39e82db0e5fe4a49392a796c5c9",
+    "AGENTS.md": "fb112ec6bb27fb8b1766e2f6a8f967fe812577a572ffff28d9553701309e7b28",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
-    "docs/BACKLOG-RULES.md": "b9ec69529fce88862753599ea1b14ada22eb96a8ca4730071d19d2329fa692ad",
+    "docs/BACKLOG-RULES.md": "f776063c43bb4411a29dbab5299e252120d9c3466abfea8caba3804d3c525698",
     "docs/agents/adding-things.md": "36acde3c36530665aa9e113dea0ef4b1a6b190c0c7a65c630084f60c796fc06b",
     "docs/agents/angular.md": "ce4a2b6fd81fd5eae723cf2d1eb42203e253ab5d08c13457d656814aeaf2448e",
     "docs/agents/areas.md": "0daacda1e35deef9f4b01620b1cfc4ab4a5cb7175cfb72e9d825e9269fa7571c",
@@ -27,7 +27,7 @@
     "docs/agents/pull-requests.md": "5ebab444064a06518768ea87b9c2944571f3a79520d2bb63512c533ec4fe4f57",
     "docs/agents/session-start.md": "404f79eee1c0e2dbe3f9da2e38b9c93410a0bcc7b449bbb2749cc7d7853b88d7",
     "docs/backlog/closure.md": "5f85956517207edde97d13ee3e6470876c775433b1f6fce578cf22be16c5d872",
-    "docs/backlog/documentation.md": "838db4ce37ee0f43f3ac15de640a6577cde0a2a359ed7cd68a139283c4e66f2e",
+    "docs/backlog/documentation.md": "f646b5699dc0e64ba2af39c1bcd86cea2b32ddecde9dee86e9f356428d13a830",
     "docs/backlog/records.md": "82686fdc164437a05cdd263bba24fa2eb65f2970f6d43d4ba153055d74f4ce86",
     "docs/backlog/review.md": "553177fc99074b2bc3ac2c9b430f4d22eaac46247a41b5966b6a97734cfb73df",
     "tools/check-audits.mjs": "7c9d6ebfdb4e9341b07a80329015fd771d8ab66afb42321d25899b204d826ec8",
@@ -186,6 +186,12 @@
       "disposition": "implemented",
       "target": "tools/work-items.mjs",
       "evidence": "F-052: source-owned records adopted (owner request): 20 records migrated with the ledger preserved byte for byte, featurePlans off (no task files), check:work in CI, impact row record sources -> ledger; work:close now applies to the 10.7.0 closure paragraph."
+    },
+    {
+      "kind": "tool",
+      "disposition": "backlog",
+      "target": "F-052",
+      "evidence": "Review of #285: work:close crashes without docs/work/tasks (git keeps no empty folder; a placeholder is rejected by build); fix belongs in the template (patch), F-052 closes with work:close after that reconcile. Doc gaps fixed in #285."
     }
   ]
 }
