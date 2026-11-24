@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-23T23:58:26.054Z",
-  "policy": "aa82093e297866f33e5c2cb9e50ed0b4ed6146b953a300e52df2759e98bef297",
+  "reviewed": "2026-11-24T00:21:40.929Z",
+  "policy": "32c392a76cf51ee032943012e2389f5774912592454c3d7f3f1187814d90f25f",
   "inputs": {
     "AGENTS.md": "436f11cf6506b32d5d04b291d11ddc4a3efef39e82db0e5fe4a49392a796c5c9",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
@@ -37,7 +37,8 @@
     "tools/check-tooling.mjs": "c2362c9c06ead61ef1febad395cd59396a16719fce8a0b411fdf8caeb06cf2e4",
     "tools/coverage-table.mjs": "55f7f10f6cdde9cf3bc5445f2e5e011be62c4385ebfa93259d592dae55bc90f3",
     "tools/friction.mjs": "0b9956d4a2d1aa8a56d2def0f209faf1e8013f15c73a3dbd06b60ba25be0c3f9",
-    "tools/maintenance.mjs": "e9dfd2a1be530cc5f92b123e4c70f49f91230d4cfd14bcb790b1fb184f2350aa"
+    "tools/maintenance.mjs": "e9dfd2a1be530cc5f92b123e4c70f49f91230d4cfd14bcb790b1fb184f2350aa",
+    "tools/work-items.mjs": "c494fc066c6addc602cb3b4e4761c69ff3f70f7d71074678b5f1a7126abb4dcd"
   },
   "measurements": {
     "samples": 1,
@@ -179,6 +180,12 @@
       "disposition": "implemented",
       "target": "docs/backlog/closure.md",
       "evidence": "Reconciled to template v10.7.0: the closure paragraph names work:close for source-owned records (not adopted here, so the sentence is conditional and true); the project line about pre-layout archive headings is kept."
+    },
+    {
+      "kind": "tool",
+      "disposition": "implemented",
+      "target": "tools/work-items.mjs",
+      "evidence": "F-052: source-owned records adopted (owner request): 20 records migrated with the ledger preserved byte for byte, featurePlans off (no task files), check:work in CI, impact row record sources -> ledger; work:close now applies to the 10.7.0 closure paragraph."
     }
   ]
 }

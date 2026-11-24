@@ -38,7 +38,11 @@
     "verification:plan": "node tools/verification.mjs",
     "format": "prettier --write \"src/**/*.{ts,scss,html}\" \"e2e/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.{ts,scss,html}\" \"e2e/**/*.ts\"",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "work:build": "node tools/work-items.mjs build",
+    "check:work": "node tools/work-items.mjs check",
+    "work:close": "node tools/work-items.mjs close",
+    "work:next": "node tools/work-items.mjs next"
   },
   "private": true,
   "packageManager": "npm@11.17.0",
