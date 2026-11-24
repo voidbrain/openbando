@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 24 November 2026 against main `8d28b42` (#284; its CI green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 24 November 2026 against main `1111576` (#285; CI 45296964820 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -652,42 +652,11 @@ Current work ledger, reviewed 24 November 2026 against main `8d28b42` (#284; its
 
 
 
-### <a id="f-052"></a>[✨ F-052](#top)
-
-**Backlog records as source files (harness source-owned records)**
-
-| Status | Priority | Effort | Remaining | Procedures | Decisions |
-|---|---|---|---|:---:|:---:|
-| 🟡 Implemented | 🔹 P3 | 🟢 Small | — | — | — |
-
-💻 **→** Merge #285 once every check passes; close this record with `npm run work:close` after the template fixes its crash without a tasks folder (reconcile of 10.8.1).
-
-| | |
-|---|---|
-| **Issue** | Owner request 2026-11-24: standardize on the harness's source-owned records if it adds little noise. The hand-edited ledger made parallel PRs conflict and every closure a hand edit. |
-| **Reproduce** | Before: every record lived in `docs/BACKLOG.md`; closing one meant moving text by hand. |
-| **Check** | Each active record is `docs/work/records/<ID>.md`; `docs/BACKLOG.md` is generated (`npm run work:build`) and `check:work` in CI keeps it equal to its sources; `work:close` closes a record; no task files are required (`featurePlans` off). |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-052.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#285](https://github.com/voidbrain/openbando/pull/285) |
-| Opened | 2026-11-24 |
-| Verification | Script · 2026-11-24 · migrate preserved the ledger, check:work and check:backlog pass; CI · Pending |
-| Reviewed | 2026-11-24 |
-
-</details>
-
----
 ## Other changes
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-24: #284 (harness v10.7.0) merged on green CI. Backlog records moved to source files in [#285](https://github.com/voidbrain/openbando/pull/285) (F-052): `docs/BACKLOG.md` is now generated.
+2026-11-24: #285 (records as source files) merged on green CI; F-052 closed with `npm run work:close`. Harness reconciled to v10.8.1 in [#286](https://github.com/voidbrain/openbando/pull/286): procedure child files (human action, ledger header, skills discovery), and `work:close` works without a tasks folder.
 
 ## Reconciliation history
 

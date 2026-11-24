@@ -1406,7 +1406,10 @@ export async function closeRecord(
   const cue = /^.*Human action required:.*$/m.exec(text)?.[0] ?? '';
   if (!/Human action required: No\*\*<br \/>/.test(cue)) throw Error(`${id} still waits on a human action`);
   const tasksDir = local(root, config.tasks);
-  const steps = readdirSync(tasksDir)
+  if (config.featurePlans && !existsSync(tasksDir))
+    throw Error(`${id}: featurePlans is on but ${config.tasks} is missing`);
+  // Git keeps no empty folder: a project without task files (featurePlans off) has no tasks folder on a fresh clone.
+  const steps = (existsSync(tasksDir) ? readdirSync(tasksDir) : [])
     .filter((f) => f.endsWith('.json'))
     .map((f) => ({ file: join(tasksDir, f), task: readJSON(join(tasksDir, f)) }))
     .filter(({ task }) => task.parent === id);

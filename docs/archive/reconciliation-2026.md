@@ -4,6 +4,8 @@ Dated reconciliation entries and archived `Other changes` entries moved from `do
 
 ## Archived Other changes (moved from BACKLOG.md on 2026-11-23)
 
+2026-11-24: #284 (harness v10.7.0) merged on green CI. Backlog records moved to source files in [#285](https://github.com/voidbrain/openbando/pull/285) (F-052): `docs/BACKLOG.md` is now generated.
+
 2026-11-24: #282 (Angular 22.3) and #283 (harness v10.5.0) merged on green CI. Harness reconciled to v10.6.1 (friction samples survive worktrees; skills and rule-review guides) and v10.7.0 (the closure rule names `work:close`) in [#284](https://github.com/voidbrain/openbando/pull/284).
 
 2026-11-24: #281 (area notes) and #282 (Angular 22.3) merged on green CI: F-050 and F-051 closed. Harness reconciled to v10.5.0 in [#283](https://github.com/voidbrain/openbando/pull/283): lean AGENTS, always-loaded rules 3,454 / 3,500 tokens.
