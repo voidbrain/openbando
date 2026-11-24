@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 24 November 2026 against main `26389b8` (#282; CI 45286115366 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 24 November 2026 against main `e79097b` (#283; CI 45289332117 green, its Auto-sync note expected). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -702,7 +702,7 @@ Prototypes 2026-10-30 ([#263](https://github.com/voidbrain/openbando/pull/263), 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-24: #281 (area notes) and #282 (Angular 22.3) merged on green CI: F-050 and F-051 closed. Harness reconciled to v10.5.0 in [#283](https://github.com/voidbrain/openbando/pull/283): lean AGENTS, always-loaded rules 3,454 / 3,500 tokens.
+2026-11-24: #282 (Angular 22.3) and #283 (harness v10.5.0) merged on green CI. Harness reconciled to v10.6.1 (friction samples survive worktrees; skills and rule-review guides) and v10.7.0 (the closure rule names `work:close`) in [#284](https://github.com/voidbrain/openbando/pull/284).
 
 ## Reconciliation history
 

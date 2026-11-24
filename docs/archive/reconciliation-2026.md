@@ -4,6 +4,8 @@ Dated reconciliation entries and archived `Other changes` entries moved from `do
 
 ## Archived Other changes (moved from BACKLOG.md on 2026-11-23)
 
+2026-11-24: #281 (area notes) and #282 (Angular 22.3) merged on green CI: F-050 and F-051 closed. Harness reconciled to v10.5.0 in [#283](https://github.com/voidbrain/openbando/pull/283): lean AGENTS, always-loaded rules 3,454 / 3,500 tokens.
+
 2026-11-23: #279 (Prettier) and #280 (ESLint) merged on green CI: F-049 closed and archived; `check:tooling` in CI. Angular 22.3 in [#282](https://github.com/voidbrain/openbando/pull/282) (F-051).
 
 2026-11-23: [#278](https://github.com/voidbrain/openbando/pull/278) merged on green CI (harness v10.3.1 and the full audit); F-048 and B-052 closed and archived. Prettier adopted in [#279](https://github.com/voidbrain/openbando/pull/279) (F-049 step 1).

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-23T23:29:39.915Z",
+  "reviewed": "2026-11-23T23:58:26.054Z",
   "policy": "aa82093e297866f33e5c2cb9e50ed0b4ed6146b953a300e52df2759e98bef297",
   "inputs": {
     "AGENTS.md": "436f11cf6506b32d5d04b291d11ddc4a3efef39e82db0e5fe4a49392a796c5c9",
@@ -26,7 +26,7 @@
     "docs/agents/maintenance.md": "69f77d944551e4a442de20a0e46badf19a91e42f870bf8048f428c8a64f343a9",
     "docs/agents/pull-requests.md": "5ebab444064a06518768ea87b9c2944571f3a79520d2bb63512c533ec4fe4f57",
     "docs/agents/session-start.md": "404f79eee1c0e2dbe3f9da2e38b9c93410a0bcc7b449bbb2749cc7d7853b88d7",
-    "docs/backlog/closure.md": "d5aa9fc8aab175326d82ee4f95f2afb21b572e41d22b066058d1dcd5ef6c3431",
+    "docs/backlog/closure.md": "5f85956517207edde97d13ee3e6470876c775433b1f6fce578cf22be16c5d872",
     "docs/backlog/documentation.md": "838db4ce37ee0f43f3ac15de640a6577cde0a2a359ed7cd68a139283c4e66f2e",
     "docs/backlog/records.md": "82686fdc164437a05cdd263bba24fa2eb65f2970f6d43d4ba153055d74f4ce86",
     "docs/backlog/review.md": "553177fc99074b2bc3ac2c9b430f4d22eaac46247a41b5966b6a97734cfb73df",
@@ -36,7 +36,7 @@
     "tools/check-rules.mjs": "78bbe906bfe93a3d00bd7c5e9b078d660002ef9b5aa579f26eb2f6c3507f994e",
     "tools/check-tooling.mjs": "c2362c9c06ead61ef1febad395cd59396a16719fce8a0b411fdf8caeb06cf2e4",
     "tools/coverage-table.mjs": "55f7f10f6cdde9cf3bc5445f2e5e011be62c4385ebfa93259d592dae55bc90f3",
-    "tools/friction.mjs": "b64672f40a91635d0c83f3142d56ee0a4c9ddc3a4e49d8ab60722d8a2780e034",
+    "tools/friction.mjs": "0b9956d4a2d1aa8a56d2def0f209faf1e8013f15c73a3dbd06b60ba25be0c3f9",
     "tools/maintenance.mjs": "e9dfd2a1be530cc5f92b123e4c70f49f91230d4cfd14bcb790b1fb184f2350aa"
   },
   "measurements": {
@@ -167,6 +167,18 @@
       "disposition": "implemented",
       "target": "docs/agents/e2e.md",
       "evidence": "Review of #283: e2e conventions in their own guide with a procedures row (any Playwright test reaches them); tsc commands written out (racing included); note figure corrected."
+    },
+    {
+      "kind": "tool",
+      "disposition": "implemented",
+      "target": "tools/friction.mjs",
+      "evidence": "Copied from template v10.6.1 (B-049 there): friction samples land in the primary checkout, so a task worktree no longer needs the jsonl copied in; rule-review and skills guides copied; check-harness --strict matches."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "docs/backlog/closure.md",
+      "evidence": "Reconciled to template v10.7.0: the closure paragraph names work:close for source-owned records (not adopted here, so the sentence is conditional and true); the project line about pre-layout archive headings is kept."
     }
   ]
 }
