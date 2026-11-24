@@ -675,7 +675,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | this PR (route (a), COLMAP); [#288](https://github.com/voidbrain/openbando/pull/288) (route (b) trial and prototype, 2026-11-24); [#287](https://github.com/voidbrain/openbando/pull/287) (proposal recorded 2026-11-24; [Future](agents/areas/future.md) area note) |
+| PR / evidence | [#289](https://github.com/voidbrain/openbando/pull/289) (route (a), COLMAP); [#288](https://github.com/voidbrain/openbando/pull/288) (route (b) trial and prototype, 2026-11-24); [#287](https://github.com/voidbrain/openbando/pull/287) (proposal recorded 2026-11-24; [Future](agents/areas/future.md) area note) |
 | Opened | 2026-11-24 |
 | Verification | Pending (trial measured 2026-11-24: route (b) not traceable; route (a) crisp per piece, 2.2–3.0 m between pieces) |
 | Reviewed | 2026-11-24 |
