@@ -41,7 +41,7 @@ npm run check:freshness        # first, at session start
 npx ng test --watch=false && npx ng build && npm run lint && npm run format:check
 npx tsc -p tsconfig.app.json --noEmit --noUnusedLocals --noUnusedParameters
 npx tsc -p tools/examples/tsconfig.json && npx tsc -p tools/i18n/tsconfig.json && npx tsc -p tools/racing/tsconfig.json
-npm run check:i18n             # also check:contrast, check:backlog, check:conventions, check:rules, check:tooling,
+npm run check:i18n             # also check:contrast, check:backlog, check:work, check:conventions, check:rules, check:tooling,
                                # check:integrations, check:maintenance, check:audits (all in CI)
 npm run code:map -- <path>     # exports with line ranges: read those lines, not the whole file
 ```

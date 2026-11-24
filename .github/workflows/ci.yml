@@ -103,6 +103,9 @@ jobs:
       - name: Backlog records and layout
         run: npm run check:backlog
 
+      - name: Ledger matches its record sources (docs/work/records; F-052)
+        run: npm run check:work
+
       - name: Harness template, for the release check below
         # check-harness compares this project with the template's release tags; the template is public, so no token.
         run: |

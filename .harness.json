@@ -51,7 +51,8 @@
     "docs/agents/parallel-work-plans.md": "core/docs/agents/parallel-work-plans.md",
     "docs/agents/verification.md": "core/docs/agents/verification.md",
     "docs/agents/mcp-commands.md": "core/docs/agents/mcp-commands.md",
-    "docs/agents/claims.md": "core/docs/agents/claims.md"
+    "docs/agents/claims.md": "core/docs/agents/claims.md",
+    "tools/work-items.mjs": "core/tools/work-items.mjs"
   },
   "forked": {},
   "adapted": {
@@ -317,6 +318,17 @@
       "then": "when coverage changes on purpose (code removed, tests added), refresh the coverage table and its baseline",
       "run": "npm run coverage",
       "checked": "CI (warns when a folder drops more than 2 points)"
+    },
+    {
+      "id": "work-records",
+      "when": [
+        "docs/work/records/*.md",
+        "docs/work/tasks/*.json",
+        "docs/work/layout.json"
+      ],
+      "then": "regenerate the ledger docs/BACKLOG.md from the record sources (it is generated; never edit it by hand)",
+      "run": "npm run work:build",
+      "checked": "CI (check:work: the ledger matches its sources)"
     }
   ],
   "couplings": [
@@ -550,7 +562,8 @@
       "docs/agents/areas/languages.md",
       "docs/agents/areas/ui-chrome.md",
       "docs/agents/areas/harness.md",
-      "docs/agents/e2e.md"
+      "docs/agents/e2e.md",
+      "tools/work-items.mjs"
     ]
   },
   "audit": {
@@ -571,5 +584,13 @@
       "procedure": 2000,
       "trigger": 5000
     }
+  },
+  "workItems": {
+    "enabled": true,
+    "featurePlans": false,
+    "layout": "docs/work/layout.json",
+    "records": "docs/work/records",
+    "tasks": "docs/work/tasks",
+    "profiles": "docs/agents/model-profiles.json"
   }
 }

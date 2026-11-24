@@ -26,6 +26,7 @@ What must follow a change, and what must run again after it (docs/agents/change-
 | docs | `src/app/ui/**`, `src/app/three/**`, `src/app/core/**`, `src/app/services/**` |  | a new or changed feature updates the README (what the app does) and the area's notes in docs/agents/areas/ (one file per area) |  |  | nothing (BACKLOG-RULES, Documentation consistency) |
 | impact-page | `.harness.json` |  | regenerate the impact map page | `node tools/impact-map.mjs` |  | CI (impact map page matches the rows) |
 | coverage | `src/app/**/*.ts` |  | when coverage changes on purpose (code removed, tests added), refresh the coverage table and its baseline | `npm run coverage` |  | CI (warns when a folder drops more than 2 points) |
+| work-records | `docs/work/records/*.md`, `docs/work/tasks/*.json`, `docs/work/layout.json` |  | regenerate the ledger docs/BACKLOG.md from the record sources (it is generated; never edit it by hand) | `npm run work:build` |  | CI (check:work: the ledger matches its sources) |
 
 ## Content dependencies
 
