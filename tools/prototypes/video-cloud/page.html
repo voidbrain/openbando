@@ -1,0 +1,39 @@
+<!doctype html><meta charset="utf-8"><title>depth</title>
+<video id="v" src="/flight.mp4" muted playsinline preload="auto"></video>
+<script type="module">
+import { pipeline, RawImage } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.0';
+const W = 160, H = 90, FPS = Number(new URL(location.href).searchParams.get('fps') || 2);
+const v = document.getElementById('v');
+const log = (m) => { window.__log = (window.__log || []).concat(m); console.log(m); };
+window.__run = async () => {
+  const hasGpu = !!navigator.gpu && !!(await navigator.gpu.requestAdapter().catch(() => null));
+  log('webgpu ' + hasGpu);
+  const depth = await pipeline('depth-estimation', 'onnx-community/depth-anything-v2-small', { device: hasGpu ? 'webgpu' : 'wasm', dtype: hasGpu ? 'fp16' : 'q8' });
+  await new Promise((r) => (v.readyState >= 1 ? r() : v.addEventListener('loadedmetadata', r, { once: true })));
+  log(`video ${v.videoWidth}x${v.videoHeight} ${v.duration.toFixed(2)} s`);
+  const big = new OffscreenCanvas(v.videoWidth / 2, v.videoHeight / 2), bx = big.getContext('2d', { willReadFrequently: true });
+  const small = new OffscreenCanvas(W, H), sx = small.getContext('2d', { willReadFrequently: true });
+  const frames = [];
+  const t0 = performance.now();
+  for (let tv = 0.25; tv < v.duration - 0.1; tv += 1 / FPS) {
+    v.currentTime = tv;
+    await new Promise((r) => v.addEventListener('seeked', r, { once: true }));
+    bx.drawImage(v, 0, 0, big.width, big.height);
+    sx.drawImage(v, 0, 0, W, H);
+    const id = bx.getImageData(0, 0, big.width, big.height);
+    const img = new RawImage(id.data, big.width, big.height, 4).rgb();
+    const out = await depth(img);
+    const pd = out.predicted_depth; const [ph, pw] = pd.dims.slice(-2); const d = pd.data;
+    const disp = new Array(W * H);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const sx2 = Math.min(pw - 1, Math.round(((x + 0.5) / W) * pw - 0.5)), sy2 = Math.min(ph - 1, Math.round(((y + 0.5) / H) * ph - 0.5));
+      disp[y * W + x] = +d[sy2 * pw + sx2].toFixed(4);
+    }
+    const rgb = Array.from(sx.getImageData(0, 0, W, H).data.filter((_, i) => i % 4 !== 3));
+    frames.push({ tv: +tv.toFixed(3), disp, rgb });
+    if (frames.length % 20 === 0) log(`${frames.length} frames, ${((performance.now() - t0) / frames.length).toFixed(0)} ms/frame`);
+  }
+  log(`done ${frames.length} frames in ${((performance.now() - t0) / 1000).toFixed(1)} s`);
+  return JSON.stringify({ W, H, vw: v.videoWidth, vh: v.videoHeight, frames, msPerFrame: (performance.now() - t0) / frames.length, device: hasGpu ? 'webgpu' : 'wasm' });
+};
+</script>
