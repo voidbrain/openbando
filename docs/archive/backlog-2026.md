@@ -1688,3 +1688,37 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 </details>
 
 ---
+
+### F-052
+
+**Backlog records as source files (harness source-owned records)**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P3 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-24: #285 merged at 1111576 with every required check green (CI below); records migrated byte for byte; work:close works here since the v10.8.1 reconcile (#286), which this close exercises.
+
+| | |
+|---|---|
+| **Issue** | Owner request 2026-11-24: standardize on the harness's source-owned records if it adds little noise. The hand-edited ledger made parallel PRs conflict and every closure a hand edit. |
+| **Reproduce** | Before: every record lived in `docs/BACKLOG.md`; closing one meant moving text by hand. |
+| **Check** | Each active record is `docs/work/records/<ID>.md`; `docs/BACKLOG.md` is generated (`npm run work:build`) and `check:work` in CI keeps it equal to its sources; `work:close` closes a record; no task files are required (`featurePlans` off). |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-24: #285 merged at 1111576 with every required check green (CI below); records migrated byte for byte; work:close works here since the v10.8.1 reconcile (#286), which this close exercises. Review 2026-11-24 (fresh context): every record line migrated (only relative links rebased); blocker: `work:close` crashes on a fresh clone because git keeps no empty `docs/work/tasks` and the copied tool reads it even with featurePlans off; a placeholder file is no fix (the build rejects non-task files), so the fix goes to the template (patch 10.8.1) and this record closes with `work:close` after that reconcile. Its doc gaps are fixed: the ledger legend, the BACKLOG-RULES row and the documentation line name the record sources; AGENTS lists `check:work`. Done 2026-11-24 ([#285](https://github.com/voidbrain/openbando/pull/285)): `tools/work-items.mjs` copied from template v10.7.0; `workItems` enabled with `featurePlans` off; `work-items migrate` moved the 20 records into `docs/work/records/` and verified the rebuilt ledger byte for byte before the first build; `work:build`, `check:work`, `work:close` and `work:next` scripts; `check:work` in CI; an impact row (record sources → ledger). The migration found B-050 and B-051 filed under Features: moved to Bugs in ID order. Measured noise before adopting: no task files, one CI step, three small config files; the generated ledger is a short summary per record linking its source.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#285](https://github.com/voidbrain/openbando/pull/285) |
+| Opened | 2026-11-24 |
+| Verification | CI · 2026-11-24 · #285 check, e2e (1)–(4), race-browser, CodeQL green; work:close · 2026-11-24 · this closure without a tasks folder |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---

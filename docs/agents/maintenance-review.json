@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-24T00:24:52.649Z",
-  "policy": "32c392a76cf51ee032943012e2389f5774912592454c3d7f3f1187814d90f25f",
+  "reviewed": "2026-11-24T00:46:53.774Z",
+  "policy": "c2daa817f722a37f9cdbee4de239adb5fabce21daaeae844db8b14b460823b8d",
   "inputs": {
     "AGENTS.md": "fb112ec6bb27fb8b1766e2f6a8f967fe812577a572ffff28d9553701309e7b28",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
-    "docs/BACKLOG-RULES.md": "f776063c43bb4411a29dbab5299e252120d9c3466abfea8caba3804d3c525698",
+    "docs/BACKLOG-RULES.md": "2ca3e4646ae2e8039c5726602ce5283d387fa62af21a1d92b0b3f9be135d9116",
     "docs/agents/adding-things.md": "36acde3c36530665aa9e113dea0ef4b1a6b190c0c7a65c630084f60c796fc06b",
     "docs/agents/angular.md": "ce4a2b6fd81fd5eae723cf2d1eb42203e253ab5d08c13457d656814aeaf2448e",
     "docs/agents/areas.md": "0daacda1e35deef9f4b01620b1cfc4ab4a5cb7175cfb72e9d825e9269fa7571c",
@@ -28,8 +28,10 @@
     "docs/agents/session-start.md": "404f79eee1c0e2dbe3f9da2e38b9c93410a0bcc7b449bbb2749cc7d7853b88d7",
     "docs/backlog/closure.md": "5f85956517207edde97d13ee3e6470876c775433b1f6fce578cf22be16c5d872",
     "docs/backlog/documentation.md": "f646b5699dc0e64ba2af39c1bcd86cea2b32ddecde9dee86e9f356428d13a830",
-    "docs/backlog/records.md": "82686fdc164437a05cdd263bba24fa2eb65f2970f6d43d4ba153055d74f4ce86",
-    "docs/backlog/review.md": "553177fc99074b2bc3ac2c9b430f4d22eaac46247a41b5966b6a97734cfb73df",
+    "docs/backlog/human-action.md": "8c1e2e47da82dae9b6b533988d73d10bbeaa06e0c613fbd4e6d0e58e939c66ae",
+    "docs/backlog/ledger-header.md": "933a71e153faf8ab36f52f416de956b38338dc5f1dfe0851244136ede3b61c4c",
+    "docs/backlog/records.md": "d80a28c394282d1000b17ca23563922b281b04ab74de54fb5c7283e6e52d2d92",
+    "docs/backlog/review.md": "8477b52b1e32f23f957f14803cf487279ff14600b59df041453f6ad04fd35e6e",
     "tools/check-audits.mjs": "7c9d6ebfdb4e9341b07a80329015fd771d8ab66afb42321d25899b204d826ec8",
     "tools/check-freshness.mjs": "9ee82617f39e4bd6892370b4c56afdaadf4a84aee320f2a9e7c037d07b7feaf3",
     "tools/check-harness.mjs": "3f39c811a356269ad08301baa807a8c38cd24ef45835ba7f1c094b7fc6cf5021",
@@ -38,7 +40,7 @@
     "tools/coverage-table.mjs": "55f7f10f6cdde9cf3bc5445f2e5e011be62c4385ebfa93259d592dae55bc90f3",
     "tools/friction.mjs": "0b9956d4a2d1aa8a56d2def0f209faf1e8013f15c73a3dbd06b60ba25be0c3f9",
     "tools/maintenance.mjs": "e9dfd2a1be530cc5f92b123e4c70f49f91230d4cfd14bcb790b1fb184f2350aa",
-    "tools/work-items.mjs": "c494fc066c6addc602cb3b4e4761c69ff3f70f7d71074678b5f1a7126abb4dcd"
+    "tools/work-items.mjs": "eee2f7fff1c4cc24d74d9808b953ad9ec4c8e1f0fb821a01133db27c3419ad0a"
   },
   "measurements": {
     "samples": 1,
@@ -189,9 +191,15 @@
     },
     {
       "kind": "tool",
-      "disposition": "backlog",
-      "target": "F-052",
-      "evidence": "Review of #285: work:close crashes without docs/work/tasks (git keeps no empty folder; a placeholder is rejected by build); fix belongs in the template (patch), F-052 closes with work:close after that reconcile. Doc gaps fixed in #285."
+      "disposition": "implemented",
+      "target": "tools/work-items.mjs",
+      "evidence": "F-052 closed 2026-11-24 with work:close after the v10.8.1 reconcile (template B-050 fix: no tasks folder needed)."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "docs/BACKLOG-RULES.md",
+      "evidence": "Reconciled to v10.8.1: procedure child files (human-action, ledger-header, skills-discovery) and the BACKLOG-RULES rows that route to them; OpenBando lines kept (record-source row, ID start date)."
     }
   ]
 }
