@@ -675,7 +675,7 @@ Current work ledger, reviewed 24 November 2026 against main `5342bb0` (#286; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | — (proposal recorded 2026-11-24; [Future](agents/areas/future.md) area note) |
+| PR / evidence | [#287](https://github.com/voidbrain/openbando/pull/287) (proposal recorded 2026-11-24; [Future](agents/areas/future.md) area note) |
 | Opened | 2026-11-24 |
 | Verification | Pending |
 | Reviewed | 2026-11-24 |
@@ -687,7 +687,7 @@ Current work ledger, reviewed 24 November 2026 against main `5342bb0` (#286; CI 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-24: #286 (harness v10.8.1) merged on green CI (run 45300151877). F-053 added: a proposal to rebuild a bando as a point cloud from a flight video, with the blackbox and GPS giving scale and place.
+2026-11-24: #286 (harness v10.8.1) merged on green CI (run 45300151877). F-053 added ([#287](https://github.com/voidbrain/openbando/pull/287)): a proposal to rebuild a bando as a point cloud from a flight video, with the blackbox and GPS giving scale and place.
 
 ## Reconciliation history
 
