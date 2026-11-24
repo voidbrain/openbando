@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 45355936112 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 24 November 2026 against main `5c96a18` (#289; CI 45361085649 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -658,15 +658,15 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🔴 Large | — | — | 🤔 |
+| 🔴 Open | 🔹 P3 | 🔴 Large | — | 🧑‍🔧 | — |
 
-🧑 **→** Choose survey pass and import tool, in-app reconstruction, or stop: [options and results](../tools/prototypes/video-cloud/README.md#options-for-the-owner).
+🧑 **→** Fly one survey pass with video, blackbox and GPS, and give the agent the folder: [survey flight steps](../tools/prototypes/video-cloud/README.md#survey-flight-the-owners-step).
 
 | | |
 |---|---|
 | **Issue** | Measured bandos are modelled by hand from photos and top views; a flight's video already holds the geometry, and its blackbox and GPS hold the camera's attitude, scale and place. |
-| **Reproduce** | Take one flight with video, blackbox log and GPS (the demo flight); make a point cloud from the video in each approach of the trial and lay it over the bando in the editor. |
-| **Check** | A trial note names, per approach, whether it runs on a Mac without CUDA, its time per minute of video, and whether walls and roof lines can be traced within about 0.5 m; the owner then decides whether to build it. |
+| **Reproduce** | Fly the [survey flight](../tools/prototypes/video-cloud/README.md#survey-flight-the-owners-step) over a bando, then run `colmap.sh` on its video and log (auto-sync, COLMAP, placement by the log, score). |
+| **Check** | The survey flight gives one connected model placed by the log, walls spreading under about 0.5 m and parallel walls at the bando's measured sizes; only then an editor reference layer is built. |
 
 <details>
 <summary>Next action, estimates and PR history</summary>
@@ -675,7 +675,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#289](https://github.com/voidbrain/openbando/pull/289) (route (a), COLMAP); [#288](https://github.com/voidbrain/openbando/pull/288) (route (b) trial and prototype, 2026-11-24); [#287](https://github.com/voidbrain/openbando/pull/287) (proposal recorded 2026-11-24; [Future](agents/areas/future.md) area note) |
+| PR / evidence | this PR (decision, sync, any flight); [#289](https://github.com/voidbrain/openbando/pull/289) (route (a), COLMAP); [#288](https://github.com/voidbrain/openbando/pull/288) (route (b) trial and prototype, 2026-11-24); [#287](https://github.com/voidbrain/openbando/pull/287) (proposal recorded 2026-11-24; [Future](agents/areas/future.md) area note) |
 | Opened | 2026-11-24 |
 | Verification | Pending (trial measured 2026-11-24: route (b) not traceable; route (a) crisp per piece, 2.2–3.0 m between pieces) |
 | Reviewed | 2026-11-24 |
@@ -687,7 +687,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-24: [#288](https://github.com/voidbrain/openbando/pull/288) (F-053 route (b)) merged on green CI (run 45355936112). F-053's trial finished with route (a), COLMAP; the record waits on the owner's decision.
+2026-11-24: [#289](https://github.com/voidbrain/openbando/pull/289) (F-053 route (a)) merged on green CI (run 45361085649). The owner chose F-053 option 1 (survey pass, then an import tool); the record waits on the survey flight.
 
 ## Reconciliation history
 

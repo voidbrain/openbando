@@ -1,7 +1,8 @@
 // Route (a) of the F-053 trial: COLMAP's poses come from matching the frames; the log only gives scale, north and place.
 // Usage (README.md):
-//   node colmap.mjs refs  <repo> <colmapDir> [fps] [offset]   writes <colmapDir>/refs.txt (frame name, x y z in site metres)
-//   node colmap.mjs score <repo> <colmapDir> <points3D.txt> <outPrefix> [offset]
+//   node colmap.mjs refs  <log.csv> <colmapDir> [fps] [offset]   writes <colmapDir>/refs.txt (frame name, x y z in
+//                                                               metres from the first fix; no geographic coordinates)
+//   node colmap.mjs score <log.csv> <colmapDir> <points3D.txt> <outPrefix> [offset]
 import fs from 'node:fs';
 import { createFlight, prepareFlight } from '../../../src/app/core/flight/flight';
 import { parseLog } from '../../../src/app/core/flight/log-parser';
@@ -9,9 +10,9 @@ import { ReplayPose } from '../../../src/app/core/flight/replay';
 import type { Calibration } from '../../../src/app/core/models';
 import { score, type CloudPoint } from './score';
 
-const [, , mode, repo, dir, a4, a5, a6] = process.argv;
-const { pts, tel } = parseLog(fs.readFileSync(`${repo}/public/guide-demo/flight.csv`, 'utf8'));
-const f = createFlight('demo', pts, tel);
+const [, , mode, logFile, dir, a4, a5, a6] = process.argv;
+const { pts, tel } = parseLog(fs.readFileSync(logFile!, 'utf8'));
+const f = createFlight('survey', pts, tel);
 const cal: Calibration = { rot: 0, dx: 0, dz: 0, reference: { lat: pts[0]!.lat, lon: pts[0]!.lon } };
 prepareFlight(f, cal);
 // the site projection puts the open-sea test fix ~100 km out: start the flight at the origin
