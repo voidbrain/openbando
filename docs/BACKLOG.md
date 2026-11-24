@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 24 November 2026 against main `1111576` (#285; CI 45296964820 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 24 November 2026 against main `5342bb0` (#286; CI 45300151877 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -652,11 +652,42 @@ Current work ledger, reviewed 24 November 2026 against main `1111576` (#285; CI 
 
 
 
+### <a id="f-053"></a>[✨ F-053](#top)
+
+**Rebuild a bando as a point cloud from a flight's video, placed by its blackbox and GPS**
+
+| Status | Priority | Effort | Remaining | Procedures | Decisions |
+|---|---|---|---|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🔴 Large | — | — | — |
+
+💻 **→** Run the offline trial on the demo flight's video and log on a Mac and compare the approaches.
+
+| | |
+|---|---|
+| **Issue** | Measured bandos are modelled by hand from photos and top views; a flight's video already holds the geometry, and its blackbox and GPS hold the camera's attitude, scale and place. |
+| **Reproduce** | Take one flight with video, blackbox log and GPS (the demo flight); make a point cloud from the video in each approach of the trial and lay it over the bando in the editor. |
+| **Check** | A trial note names, per approach, whether it runs on a Mac without CUDA, its time per minute of video, and whether walls and roof lines can be traced within about 0.5 m; the owner then decides whether to build it. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-053.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | — (proposal recorded 2026-11-24; [Future](agents/areas/future.md) area note) |
+| Opened | 2026-11-24 |
+| Verification | Pending |
+| Reviewed | 2026-11-24 |
+
+</details>
+
+---
 ## Other changes
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-24: #285 (records as source files) merged on green CI; F-052 closed with `npm run work:close`. Harness reconciled to v10.8.1 in [#286](https://github.com/voidbrain/openbando/pull/286): procedure child files (human action, ledger header, skills discovery), and `work:close` works without a tasks folder.
+2026-11-24: #286 (harness v10.8.1) merged on green CI (run 45300151877). F-053 added: a proposal to rebuild a bando as a point cloud from a flight video, with the blackbox and GPS giving scale and place.
 
 ## Reconciliation history
 

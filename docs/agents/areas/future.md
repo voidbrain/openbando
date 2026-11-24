@@ -5,6 +5,10 @@ Area notes for OpenBando ([index](../areas.md)). Read before you change this are
 ### Not done yet (future)
 
 - National elevation data: the terrain uses the free worldwide AWS terrarium tiles; per-country high-resolution DEMs could replace them where available (an `ElevationService` source).
+- Bandos rebuilt from flight video (F-053): a point cloud made from a flight's video, its camera poses seeded and scaled
+  by the synced blackbox attitude and GPS, shown over the bando to trace walls and roofs. It has to run on a Mac without
+  CUDA (browser WebGPU / WASM); research models such as lingbot-map are references only. A point cloud of a private
+  place never enters the repository, an export or a hidden bando.
 - Multi-user authoring: the catalogue is published only by the maintainer (`library/` in this repo, read-only in the app). Letting any pilot publish blocks or bandos needs accounts, per-user rights and moderation (a server such as Supabase), plus queued offline edits that never overwrite another pilot's work.
 - Smarter AI editing: preview an edit before it is applied, a visual diff of what changed, overlap detection, multi-step
   plans with rollback, and saying why a command was rejected. Already there: the review list (`AiService.changes`, one
