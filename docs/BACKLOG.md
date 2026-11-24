@@ -675,7 +675,7 @@ Current work ledger, reviewed 24 November 2026 against main `6202363` (#287; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | this PR (route (b) trial and prototype, 2026-11-24); [#287](https://github.com/voidbrain/openbando/pull/287) (proposal recorded 2026-11-24; [Future](agents/areas/future.md) area note) |
+| PR / evidence | [#288](https://github.com/voidbrain/openbando/pull/288) (route (b) trial and prototype, 2026-11-24); [#287](https://github.com/voidbrain/openbando/pull/287) (proposal recorded 2026-11-24; [Future](agents/areas/future.md) area note) |
 | Opened | 2026-11-24 |
 | Verification | Pending (route (b) measured 2026-11-24: not traceable; the decision waits on route (a)) |
 | Reviewed | 2026-11-24 |
