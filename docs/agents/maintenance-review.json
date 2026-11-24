@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-24T00:46:53.774Z",
+  "reviewed": "2026-11-24T00:48:26.065Z",
   "policy": "c2daa817f722a37f9cdbee4de239adb5fabce21daaeae844db8b14b460823b8d",
   "inputs": {
     "AGENTS.md": "fb112ec6bb27fb8b1766e2f6a8f967fe812577a572ffff28d9553701309e7b28",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
-    "docs/BACKLOG-RULES.md": "2ca3e4646ae2e8039c5726602ce5283d387fa62af21a1d92b0b3f9be135d9116",
+    "docs/BACKLOG-RULES.md": "2d5615069069328a4076e3905ee12c5144c64c25217b000a1e8528ea8e421555",
     "docs/agents/adding-things.md": "36acde3c36530665aa9e113dea0ef4b1a6b190c0c7a65c630084f60c796fc06b",
     "docs/agents/angular.md": "ce4a2b6fd81fd5eae723cf2d1eb42203e253ab5d08c13457d656814aeaf2448e",
     "docs/agents/areas.md": "0daacda1e35deef9f4b01620b1cfc4ab4a5cb7175cfb72e9d825e9269fa7571c",
