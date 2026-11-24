@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 24 November 2026 against main `5342bb0` (#286; CI 45300151877 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 24 November 2026 against main `6202363` (#287; CI 45352748147 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -660,7 +660,7 @@ Current work ledger, reviewed 24 November 2026 against main `5342bb0` (#286; CI 
 |---|---|---|---|:---:|:---:|
 | 🔴 Open | 🔹 P3 | 🔴 Large | — | — | — |
 
-💻 **→** Run the offline trial on the demo flight's video and log on a Mac and compare the approaches.
+💻 **→** Run route (a): COLMAP's browser port and Brush on the demo flight's frames, with scale and north from the log.
 
 | | |
 |---|---|
@@ -675,9 +675,9 @@ Current work ledger, reviewed 24 November 2026 against main `5342bb0` (#286; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#287](https://github.com/voidbrain/openbando/pull/287) (proposal recorded 2026-11-24; [Future](agents/areas/future.md) area note) |
+| PR / evidence | [#288](https://github.com/voidbrain/openbando/pull/288) (route (b) trial and prototype, 2026-11-24); [#287](https://github.com/voidbrain/openbando/pull/287) (proposal recorded 2026-11-24; [Future](agents/areas/future.md) area note) |
 | Opened | 2026-11-24 |
-| Verification | Pending |
+| Verification | Pending (route (b) measured 2026-11-24: not traceable; the decision waits on route (a)) |
 | Reviewed | 2026-11-24 |
 
 </details>
@@ -687,7 +687,7 @@ Current work ledger, reviewed 24 November 2026 against main `5342bb0` (#286; CI 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-24: #286 (harness v10.8.1) merged on green CI (run 45300151877). F-053 added ([#287](https://github.com/voidbrain/openbando/pull/287)): a proposal to rebuild a bando as a point cloud from a flight video, with the blackbox and GPS giving scale and place.
+2026-11-24: [#287](https://github.com/voidbrain/openbando/pull/287) (F-053 proposal) merged on green CI (run 45352748147). F-053's first trial route (telemetry poses and in-browser depth) measured: fast, not traceable; the record names the next route.
 
 ## Reconciliation history
 

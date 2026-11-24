@@ -63,3 +63,5 @@ Harness template 1.20.1 (2026-10-31, the owner's find; template [#38](https://gi
 Completed documentation and backlog changes, with PR links and verification evidence, are in [the maintenance history](archive/backlog-2026.md#completed-maintenance-and-documentation). Product work and pending media checks remain in the bug/feature records above.
 
 2026-11-24: #285 (records as source files) merged on green CI; F-052 closed with `npm run work:close`. Harness reconciled to v10.8.1 in [#286](https://github.com/voidbrain/openbando/pull/286): procedure child files (human action, ledger header, skills discovery), and `work:close` works without a tasks folder.
+
+2026-11-24: #286 (harness v10.8.1) merged on green CI (run 45300151877). F-053 added ([#287](https://github.com/voidbrain/openbando/pull/287)): a proposal to rebuild a bando as a point cloud from a flight video, with the blackbox and GPS giving scale and place.
