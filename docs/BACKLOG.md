@@ -687,7 +687,7 @@ Current work ledger, reviewed 26 November 2026 against main `5c96a18` (#289; CI 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-26: harness reconciled from v10.8.1 to v10.21.3 in this PR: copied tools and guides updated, the ledger check runs before the maintenance check in CI, `work:pr` added; built views not adopted. Every open record now has steps with agent and owner hours (`docs/work/tasks/`, 54.25 h agent, 9.25 h owner, estimated from scope with no calibration samples) and its owner checks a copy-paste page ([owner checks](owner-checks.md)). F-039 unblocked: its upstream shipped in harness v3.3.0. #289 (F-053 route (a)) merged on green CI (run 45361085649).
+2026-11-26: harness reconciled from v10.8.1 to v10.21.3 in [#292](https://github.com/voidbrain/openbando/pull/292): copied tools and guides updated, the ledger check runs before the maintenance check in CI, `work:pr` added; built views not adopted. Every open record now has steps with agent and owner hours (`docs/work/tasks/`, 54.25 h agent, 9.25 h owner, estimated from scope with no calibration samples) and its owner checks a copy-paste page ([owner checks](owner-checks.md)). F-039 unblocked: its upstream shipped in harness v3.3.0. #289 (F-053 route (a)) merged on green CI (run 45361085649).
 
 ## Reconciliation history
 
