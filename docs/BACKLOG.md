@@ -14,12 +14,12 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔶 P2 | 🟢 Small | — | 🧑‍🔧 | — |
 
-🧑 **→** Manually check simulator entry, collisions and selected-flight/video replay.
+🧑 **→** Manually check simulator entry, collisions and selected-flight/video replay: [steps and expected results](owner-checks.md#b-009-simulator-and-selected-flight-replay).
 
 | | |
 |---|---|
 | **Issue** | Simulator entry, collisions and a selected flight with its video might regress after editor and racing changes. |
-| **Reproduce** | Live site: open a bando, Fly the simulator, hit a wall; then select a recorded flight with its video and play it. |
+| **Reproduce** | Live site: open a bando, Fly the simulator, hit a wall; then select a recorded flight with its video and play it. [Owner checks](owner-checks.md#b-009-simulator-and-selected-flight-replay). |
 | **Check** | The simulator starts on the pad, a crash stops it, the flight replays in step with its video. |
 
 <details>
@@ -46,12 +46,12 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔶 P2 | 🟢 Small | — | 🧑‍🔧 | — |
 
-🧑 **→** Pin the demo flight at your three moments on the live site (since #258) and say whether the replay then follows the video.
+🧑 **→** Pin the demo flight at your three moments on the live site (since #258) and say whether the replay then follows the video: [steps and expected results](owner-checks.md#b-017-villetta-replay-pinned-to-the-video).
 
 | | |
 |---|---|
 | **Issue** | The Villetta replay is displaced from the video by GPS drift: 14 m at the greenhouse's west face, 8 m mid-greenhouse, 6 m at the store. |
-| **Reproduce** | Live site, Villetta with the demo flight and its video: pause at 0:27.6, Path panel → Pin this moment, click the bottom of the west face; again at 1:13.1 (middle of the greenhouse) and 1:35.9 (leaving the store). |
+| **Reproduce** | Live site, Villetta with the demo flight and its video: pause at 0:27.6, Path panel → Pin this moment, click the bottom of the west face; again at 1:13.1 (middle of the greenhouse) and 1:35.9 (leaving the store). [Owner checks](owner-checks.md#b-017-villetta-replay-pinned-to-the-video). |
 | **Check** | At each pinned moment the drone is where the video shows it, the path between them follows the flight, the take-off stays on its pad; the pins come back after reloading the log, and × removes them. |
 
 <details>
@@ -78,12 +78,12 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔺 P1 | 🟡 Medium | — | 🧑‍🔧 | — |
 
-🧑 **→** Compare the corrected path with the real flight and test real GPS devices.
+🧑 **→** Compare the corrected path with the real flight and test real GPS devices: [steps and expected results](owner-checks.md#b-018-hidden-bando-flight-paths-and-live-gps).
 
 | | |
 |---|---|
 | **Issue** | Bandos without their place drew GPS paths with a false sideways bend. |
-| **Reproduce** | A hidden bando with your own recorded flight; then a live GPS device. |
+| **Reproduce** | A hidden bando with your own recorded flight; then a live GPS device. [Owner checks](owner-checks.md#b-018-hidden-bando-flight-paths-and-live-gps). |
 | **Check** | The path follows the real flight, and a live drone shows where it really is. |
 
 <details>
@@ -110,12 +110,12 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔶 P2 | 🟢 Small | — | 🧑‍🔧 | — |
 
-🧑 **→** On the live site after merge: open a hidden bando, then New; search a full street address; check the map, the matches list and Generate.
+🧑 **→** On the live site after merge: open a hidden bando, then New; search a full street address; check the map, the matches list and Generate: [steps and expected results](owner-checks.md#b-028-new-bando-after-a-hidden-one).
 
 | | |
 |---|---|
 | **Issue** | New bando: grey map after a hidden bando, full street addresses not found, Generate before a place. |
-| **Reproduce** | Live site: open a hidden bando, then New; search a full street address. |
+| **Reproduce** | Live site: open a hidden bando, then New; search a full street address. [Owner checks](owner-checks.md#b-028-new-bando-after-a-hidden-one). |
 | **Check** | The map shows, the matches list fills (first match chosen), Generate waits for a place. |
 
 <details>
@@ -240,12 +240,12 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔶 P2 | 🟢 Small | — | 🧑‍🔧 | — |
 
-🧑 **→** Review diagonal Cut/Wing editing and saved/imported outlines.
+🧑 **→** Review diagonal Cut/Wing editing and saved/imported outlines: [steps and expected results](owner-checks.md#f-001-cut-and-wing-on-diagonal-basements).
 
 | | |
 |---|---|
 | **Issue** | Cut and Wing on diagonal basement outlines. |
-| **Reproduce** | Editor: a building with a diagonal basement, Indoors −1, Cut and Wing; save, export, import. |
+| **Reproduce** | Editor: a building with a diagonal basement, Indoors −1, Cut and Wing; save, export, import. [Owner checks](owner-checks.md#f-001-cut-and-wing-on-diagonal-basements). |
 | **Check** | The edits work and the outline survives saving and importing. |
 
 <details>
@@ -272,12 +272,12 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔶 P2 | 🟡 Medium | — | 🧑‍🔧 | — |
 
-🧑 **→** Run the two-device race/GPS field checklist with real telemetry feeds.
+🧑 **→** Run the two-device race/GPS field checklist with real telemetry feeds: [steps and expected results](owner-checks.md#f-009-racing-on-two-real-devices).
 
 | | |
 |---|---|
 | **Issue** | Racing on real devices has never been checked in the field. |
-| **Reproduce** | Two devices with real telemetry, following docs/racing/README.md (field checklist). |
+| **Reproduce** | Two devices with real telemetry, following docs/racing/README.md (field checklist). [Owner checks](owner-checks.md#f-009-racing-on-two-real-devices). |
 | **Check** | Timing, GPS loss, relay disconnect and rejoin, crowded paths in every camera behave as the checklist says. |
 
 <details>
@@ -368,12 +368,12 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 |---|---|---|---|:---:|:---:|
 | 🔴 Open | 🔹 P3 | 🟡 Medium | — | — | 🤔 |
 
-🧑 **→** Say what the Fly checklist should do differently (steps, order, what it checks, when it opens).
+🧑 **→** Say what the Fly checklist should do differently (steps, order, what it checks, when it opens): [options and the reply to send](owner-checks.md#f-025-fly-checklist-rework-decision).
 
 | | |
 |---|---|
 | **Issue** | The Fly checklist needs a rework. |
-| **Reproduce** | Live site: Fly panel, the checklist. |
+| **Reproduce** | Live site: Fly panel, the checklist. [Owner checks](owner-checks.md#f-025-fly-checklist-rework-decision). |
 | **Check** | Say what it should do differently: steps, order, checks, when it opens. |
 
 <details>
@@ -400,12 +400,12 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 |---|---|---|---|:---:|:---:|
 | 🔴 Open | 🔹 P3 | 🟡 Medium | — | — | 🤔 |
 
-🧑 **→** Choose A (title-based tips), B (a tip per control) or C (remove tips).
+🧑 **→** Choose A (title-based tips), B (a tip per control) or C (remove tips): [options and the reply to send](owner-checks.md#f-026--tips-decision).
 
 | | |
 |---|---|
 | **Issue** | The panels' "?" tips explain 9 of 407 controls. |
-| **Reproduce** | docs/agents/element-map.md, Tips per file; the "?" in any panel title. |
+| **Reproduce** | docs/agents/element-map.md, Tips per file; the "?" in any panel title. [Owner checks](owner-checks.md#f-026--tips-decision). |
 | **Check** | Choose A (titles as tips, recommended), B (a tip for every control) or C (drop "?"). |
 
 <details>
@@ -432,12 +432,12 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔹 P3 | 🟡 Medium | — | 🧑‍🔧 | — |
 
-🧑 **→** Re-record and review the guide clips and Welcome films.
+🧑 **→** Re-record and review the guide clips and Welcome films: [steps and expected results](owner-checks.md#f-031-re-record-guide-clips-and-welcome-films).
 
 | | |
 |---|---|
 | **Issue** | The guide clips and Welcome films are older than the code they show. |
-| **Reproduce** | A machine with the GPU and ffmpeg: npm run clips, npm run films. |
+| **Reproduce** | A machine with the GPU and ffmpeg: npm run clips, npm run films. [Owner checks](owner-checks.md#f-031-re-record-guide-clips-and-welcome-films). |
 | **Check** | Watch the new recordings; check:media then reports them current. |
 
 <details>
