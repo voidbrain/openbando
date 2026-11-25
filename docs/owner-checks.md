@@ -1,86 +1,103 @@
-# Owner checks
+# Owner checks and decisions
 
-The checks and decisions that wait on the owner, one section per backlog step. Each says where it runs, what to do and what you should see. Reply in the chat with what you saw (or your choice); the agent records it in the record and closes or reopens it.
+The steps for every backlog record that waits on the owner: what to open, what to do, and what you should see after each step. The live site is <https://voidbrain.github.io/openbando/>. Report the result in a session of this repository, with the message given at the end of each section; a step that does not behave as written is a new finding on its record.
 
-The live site is <https://voidbrain.github.io/openbando/>. Use a desktop browser (Chrome or Safari) unless a section says otherwise.
+## B-009 simulator and selected-flight replay
 
-## B-009: simulator and selected-flight replay
+On the live site, in a desktop browser:
 
-On a desktop browser:
+1. Open any bando, then **Fly** → start the simulator. Expected: the drone starts on the pad.
+2. Fly into a wall. Expected: the crash stops the simulator.
+3. Leave the simulator, select a recorded flight that has a video, and play it. Expected: the flight replays in step with its video.
 
-1. Open `https://voidbrain.github.io/openbando/`, open the Villetta example, then in the Simulator panel press **Arm + record**. Expected: the drone starts on the take-off pad.
-2. Fly into a wall. Expected: the crash stops the flight.
-3. Leave the simulator; in the **Flights** panel select the demo flight with its video and press Play. Expected: the replay moves in step with the video.
+Message to send: `B-009: simulator start, crash and flight/video replay pass` (or name the step that failed).
 
-Reply: `B-009: pass` or `B-009: fails at step N: <what you saw>`.
+## B-017 Villetta replay pinned to the video
 
-## B-017: Villetta replay follows the video after moment pins
+On the live site, open Villetta with the demo flight and its video:
 
-On a desktop browser, Villetta with the demo flight and its video:
+1. Pause at 0:27.6, **Path** panel → **Pin this moment**, then click the bottom of the greenhouse's west face. Expected: the drone moves to that point.
+2. Do the same at 1:13.1 (middle of the greenhouse) and at 1:35.9 (leaving the store). Expected: at each pinned moment the drone is where the video shows it; the path between pins follows the flight; the take-off stays on its pad.
+3. Reload the log. Expected: the three pins come back. Click **×** on one. Expected: it is removed.
 
-1. Pause at 0:27.6; Flight path panel → **Pin this moment**, click the bottom of the west face.
-2. Repeat at 1:13.1 (middle of the greenhouse) and 1:35.9 (leaving the store).
-3. Play from the start. Expected: at each pinned moment the drone is where the video shows it; between them the path follows the flight; the take-off stays on its pad.
-4. Reload the log. Expected: the pins come back; × removes one.
+Message to send: `B-017: the replay follows the video at the three pins` (or the moment where it does not).
 
-Reply: `B-017: pass` or `B-017: fails at step N: <what you saw>`.
+## B-018 hidden-bando flight paths and live GPS
 
-## B-018: hidden-origin GPS projection
+1. Open a bando whose place is hidden and load a flight you recorded there. Expected: the path follows the real flight, with no sideways bend.
+2. Connect a live GPS device (**Live link**) at that place. Expected: the live drone is shown where it really is.
 
-On a desktop browser with one of your own recorded flights, then a live GPS device:
+Message to send: `B-018: hidden-bando path and live GPS position match reality` (or what is off, and by how much).
 
-1. Open a hidden bando, load your own flight (log and video). Expected: the path follows the real flight, without a sideways drift.
-2. Connect a live GPS device (racing relay). Expected: the live drone shows where it really is.
+## B-028 new bando after a hidden one
 
-Reply: `B-018: pass` or `B-018: fails at step N: <what you saw>` (no coordinates in the reply).
+On the live site:
 
-## B-028: New bando after a hidden bando
+1. Open a hidden bando, then **Bandos** → **New**. Expected: the map shows (no grey map, no "place hidden"); the Area step is enabled.
+2. Search a full street address, house number included. Expected: the matches list fills and the map moves to the first match; another row moves the map there.
+3. Before choosing a place, look at **Generate 3D**. Expected: it waits until a match is picked, coordinates are typed or the map is dragged.
 
-On a desktop browser:
+Message to send: `B-028: map, matches list and Generate behave as written` (or the step that failed).
 
-1. Open a hidden bando, then in the **Bandos editor** panel press **＋ New bando**. Expected: the map shows (not grey).
-2. Search a full street address (street and number). Expected: the matches list fills and the first match is chosen.
-3. Before choosing a place, look at **Generate 3D**. Expected: it waits for a place.
+## F-001 Cut and Wing on diagonal basements
 
-Reply: `B-028: pass` or `B-028: fails at step N: <what you saw>` (no address in the reply).
+In the editor:
 
-## F-001: Cut and Wing on diagonal basement outlines
+1. Pick a building with a diagonal basement outline, switch to **Indoors −1**, and use **Cut** and **Wing** on a diagonal edge. Expected: both edits apply along the diagonal, and the 3D floor-height preview follows.
+2. Save, export the bando, and import it again. Expected: the edited outline is unchanged after import.
 
-On a desktop browser, in the editor:
+Message to send: `F-001: diagonal Cut/Wing and save/import pass` (or the step that failed).
 
-1. Take a building with a diagonal basement, press **Indoors**, then **−1**, use **Cut** and **Wing** on a diagonal edge. Expected: the edits apply along the diagonal and the 3D preview follows.
-2. Save, export, then import the file. Expected: the outline is the same after import.
+## F-009 racing on two real devices
 
-Reply: `F-001: pass` or `F-001: fails at step N: <what you saw>`.
+Two devices with real GPS telemetry at the same bando; background in [racing](racing/README.md):
 
-## F-025: what the Fly checklist should do
+1. On both devices open the same exported bando, then **Multiple live sources** → add each pilot's **Telemetry URL**. Expected: both pilots' ghosts move with their drones.
+2. Fly a lap each. Expected: lap times on both devices agree within a second.
+3. Cut one drone's GPS (cover it or switch off the bridge). Expected: after about 5 s its ghost is hidden and marked stale; its trace stays.
+4. Start the relay on a machine both devices reach, then join the same **Shared race room** on both:
 
-On a desktop browser: open any bando, open the **Views** panel and turn on **Fly checklist**, then read it.
+   ```bash
+   export RACE_TOKEN="$(node -e 'process.stdout.write(require("node:crypto").randomBytes(24).toString("hex"))')"
+   export RACE_ORIGINS='https://voidbrain.github.io'
+   RACE_HOST=0.0.0.0 npm run race:relay
+   ```
 
-Decide, in one reply: which steps to add, drop or reorder; what it should check; when it should open. Example reply: `F-025: drop step 3, add a battery check first, open only before the first flight`.
+   The published site needs the relay behind your own HTTPS reverse proxy ([racing](racing/README.md), "Optional shared room relay"). Expected: each device sees the other's paths after **Share local paths**.
+5. Disconnect one device from the relay and rejoin. Expected: its publication disappears, then comes back.
+6. Fly both drones close together and look in every camera. Expected: both paths stay readable.
 
-## F-026: the panels' "?" tips
+Message to send: `F-009: two-device timing, GPS loss, relay rejoin and crowded paths pass` (or the step that failed).
 
-Read the tips per file in [the element map](agents/element-map.md), and try the "?" in any panel's title bar. Choose one:
+## F-025 Fly checklist rework (decision)
 
-- **A** (recommended): a control's title is its tip; the check makes every control have one.
-- **B**: a written tip for every control.
-- **C**: remove the "?" tips.
+Open the live site's **Fly** panel and its checklist. Decide what it should do differently. Message to send, filled in:
 
-Reply: `F-026: A`, `F-026: B` or `F-026: C`.
+```text
+F-025: steps: <add, drop or rename>; order: <new order>; checks: <what each step should verify>; opens: <when the checklist should open>
+```
 
-## F-031: re-record the guide clips and Welcome films
+## F-026 "?" tips (decision)
 
-On the Mac with the GPU and ffmpeg, in a checkout of `main`:
+With **?** on, tips explain 9 of 407 controls (inventory in [element map](agents/element-map.md), "Tips per file"). Options:
+
+- **A (recommended)**: a control no guide step explains shows its title (or accessible name) in the same tip box; titles are added where missing; the element-map check fails on an icon-only control with neither.
+- **B**: a written, translated tip for every control (about 400 texts).
+- **C**: remove **?** and rely on browser titles.
+
+Message to send: `F-026: A` (or `B`, or `C`).
+
+## F-031 re-record guide clips and Welcome films
+
+On a machine with the GPU and ffmpeg, in a checkout of `main`:
 
 ```bash
 npm ci
-npx playwright install chromium
 npm run clips
 npm run films
 npm run check:media
 ```
 
-Expected: the two recordings finish; `check:media` then reports both sets current. Watch a few clips and the three films: they show the current app.
+Expected: both recordings finish; `check:media` reports the clips and films current. Watch the new clips and films. Expected: they show the current app (the new palette included).
 
-Reply: `F-031: recorded, look right` or what looked wrong; the agent commits the recordings.
+Message to send: `F-031: clips and films re-recorded and reviewed` (or the clip that looks wrong).
