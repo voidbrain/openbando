@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "B-050-T01",
+  "parent": "B-050",
+  "title": "Deferred-completion regression for AI replies against a changed draft",
+  "goal": "Write the deferred-completion regression; fix only if it reproduces the stale-response hypothesis",
+  "status": "planned",
+  "acceptance": [
+    "A regression confirms or refutes the hypothesis; a fix only with a failing test first"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "src/app/core/**",
+    "src/app/services/**",
+    "docs/work/records/B-050.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "1.5 h agent",
+    "basis": "The async boundary is identified; a unit regression and a small guard if reproduced. Guess for the fix part. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1.5,
+    "ownerHours": 0,
+    "baselineAgentHours": 1.5,
+    "estimateAgentHours": 1.5
+  }
+}

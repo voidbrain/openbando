@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "id": "F-041-T01",
+  "parent": "F-041",
+  "title": "Collision detector for a replay: moments inside a solid, one click to fix",
+  "goal": "Detect the moments where the replay passes through a solid and offer a one-click fix by hand",
+  "status": "planned",
+  "acceptance": [
+    "Unit tests on the detector; a browser case lists a known collision and fixes it"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "src/app/core/flight/**",
+    "src/app/three/**",
+    "src/app/ui/panels/**",
+    "e2e/**",
+    "docs/work/records/F-041.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "4 h agent",
+    "basis": "Step 1 of the owner's 2026-10-30 plan; geometry queries exist. Guess. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 4,
+    "ownerHours": 0,
+    "baselineAgentHours": 4,
+    "estimateAgentHours": 4
+  }
+}

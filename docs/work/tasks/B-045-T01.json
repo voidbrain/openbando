@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "B-045-T01",
+  "parent": "B-045",
+  "title": "Reproduce the stuck video after a timeline click, find the cause and fix it",
+  "goal": "A browser case clicks the timeline while paused and playing and checks the video time and frame; the cause is named and fixed",
+  "status": "planned",
+  "acceptance": [
+    "A browser case fails before the fix and passes after it, in Chromium",
+    "The cause is named in the record; Safari noted if it cannot run in CI"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "src/app/ui/**",
+    "src/app/services/**",
+    "e2e/**",
+    "docs/work/records/B-045.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "3 h agent",
+    "basis": "Investigation with an unknown cause: reproduction, diagnosis, fix, browser case, review and e2e CI. Guess; could be half or double. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 3,
+    "ownerHours": 0,
+    "baselineAgentHours": 3,
+    "estimateAgentHours": 3
+  }
+}

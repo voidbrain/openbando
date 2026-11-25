@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "id": "F-043-T01",
+  "parent": "F-043",
+  "title": "Line tools draw by click A, live preview, click B, keeping the drag",
+  "goal": "Shared two-click handling for Fence, Wall, Road, Water line, Tunnel and Bridge, with a case per tool and the guide reviewed",
+  "status": "planned",
+  "acceptance": [
+    "A browser case per line tool draws by two clicks and by drag",
+    "The guide steps that show these tools are reviewed"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "src/app/ui/studio/**",
+    "src/app/core/tour.ts",
+    "e2e/**",
+    "docs/work/records/F-043.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "large",
+    "estimate": "6 h agent",
+    "basis": "Shared pointer handling plus six tool cases and a guide review; Large. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 6,
+    "ownerHours": 0,
+    "baselineAgentHours": 6,
+    "estimateAgentHours": 6
+  }
+}

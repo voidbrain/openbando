@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "id": "F-009-T02",
+  "parent": "F-009",
+  "title": "Record the field results and open fixes for failures",
+  "goal": "Record the field checklist results; close on pass, or open a step per failure",
+  "status": "planned",
+  "acceptance": [
+    "The record names the dated field results; each failure has its own step"
+  ],
+  "dependsOn": [
+    "F-009-T01"
+  ],
+  "resources": [
+    "docs/work/records/F-009.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.5 h agent",
+    "basis": "Record update; fixes are estimated as their own steps. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0.5,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5
+  }
+}
