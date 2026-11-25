@@ -511,7 +511,7 @@ Current work ledger, reviewed 26 November 2026 against main `5c96a18` (#289; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Split from F-038, 2026-10-30 |
+| PR / evidence | Split from F-038, 2026-10-30; [#292](https://github.com/voidbrain/openbando/pull/292) |
 | Opened | 2026-10-30 |
 | Verification | Not implemented |
 | Reviewed | 2026-11-26 |
