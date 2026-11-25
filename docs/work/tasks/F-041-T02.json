@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "F-041-T02",
+  "parent": "F-041",
+  "title": "Measure learned image features in place of edges on the three moments",
+  "goal": "Run the learned-feature alignment experiment on the three marked moments and record the measured result, before any UI",
+  "status": "planned",
+  "acceptance": [
+    "A dated result table on the three moments in the record or its prototype note"
+  ],
+  "dependsOn": [
+    "F-041-T01"
+  ],
+  "resources": [
+    "tools/prototypes/**",
+    "docs/work/records/F-041.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "4 h agent",
+    "basis": "Step 2 of the plan, an experiment with an uncertain outcome; time-boxed at 4 h. Guess. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 4,
+    "ownerHours": 0,
+    "baselineAgentHours": 4,
+    "estimateAgentHours": 4
+  }
+}

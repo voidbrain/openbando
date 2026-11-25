@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "F-026-T02",
+  "parent": "F-026",
+  "title": "Implement the chosen tips option with an automated check in CI",
+  "goal": "Implement the F-026 choice and a check that every control of a panel has its tip, run in CI",
+  "status": "planned",
+  "acceptance": [
+    "The chosen option is implemented; a check in CI fails on a control without its tip"
+  ],
+  "dependsOn": [
+    "F-026-T01"
+  ],
+  "resources": [
+    "src/app/ui/**",
+    "tools/**",
+    ".github/workflows/ci.yml",
+    "docs/work/records/F-026.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "4 h agent",
+    "basis": "Estimated for option A (recommended); B is larger, C smaller. Re-estimate when T01 is answered. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 4,
+    "ownerHours": 0,
+    "baselineAgentHours": 4,
+    "estimateAgentHours": 4
+  }
+}

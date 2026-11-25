@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "id": "F-031-T01",
+  "parent": "F-031",
+  "title": "Owner re-records the guide clips and Welcome films and watches them",
+  "goal": "Run npm run clips and npm run films on the GPU machine and say whether they look right",
+  "status": "planned",
+  "acceptance": [
+    "Both recordings finish; check:media reports them current; the owner says they look right"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/F-031.md"
+  ],
+  "capabilities": [
+    "owner-check"
+  ],
+  "privacy": "The owner's reply is recorded without coordinates, addresses or private flight data",
+  "validation": [
+    "The owner's dated reply in the record"
+  ],
+  "escalation": [
+    "A failure reopens the record with a failing case before any fix"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h owner",
+    "basis": "Two browser recordings and a viewing; the machine needs Playwright's browser. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 1,
+    "ownerKind": "procedure"
+  },
+  "ownerLink": "docs/owner-checks.md#f-031-re-record-guide-clips-and-welcome-films"
+}

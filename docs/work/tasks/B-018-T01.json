@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "id": "B-018-T01",
+  "parent": "B-018",
+  "title": "Owner checks the corrected path against a real flight and a live GPS device",
+  "goal": "Run the B-018 check with an own flight and a live GPS device and reply pass or the failing step",
+  "status": "planned",
+  "acceptance": [
+    "The owner replies pass, or names the failing step and what was seen, with no coordinates"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/B-018.md"
+  ],
+  "capabilities": [
+    "owner-check"
+  ],
+  "privacy": "The owner's reply is recorded without coordinates, addresses or private flight data",
+  "validation": [
+    "The owner's dated reply in the record"
+  ],
+  "escalation": [
+    "A failure reopens the record with a failing case before any fix"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h owner",
+    "basis": "Needs a private flight and a live device set up; about an hour. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 1,
+    "ownerKind": "procedure"
+  },
+  "ownerLink": "docs/owner-checks.md#b-018-hidden-bando-flight-paths-and-live-gps"
+}

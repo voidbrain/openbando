@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "F-021-T01",
+  "parent": "F-021",
+  "title": "Three take-off pad drag fixes: live 3D preview, drag the pad itself, pad on a raised building",
+  "goal": "Fix the three defects from the owner's 2026-10-31 check, each with a browser case",
+  "status": "planned",
+  "acceptance": [
+    "A browser case per defect fails before and passes after its fix",
+    "Every drag previews its result live"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "src/app/ui/studio/**",
+    "src/app/three/**",
+    "e2e/**",
+    "docs/work/records/F-021.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "4 h agent",
+    "basis": "Three concrete editor defects with known reproductions; 3D picking and the raised-building case are the risk. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 4,
+    "ownerHours": 0,
+    "baselineAgentHours": 4,
+    "estimateAgentHours": 4
+  }
+}

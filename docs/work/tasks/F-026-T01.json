@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "id": "F-026-T01",
+  "parent": "F-026",
+  "title": "Owner chooses A, B or C for the panels' \"?\" tips",
+  "goal": "The owner chooses title-based tips (A), a tip per control (B) or removing the tips (C)",
+  "status": "planned",
+  "acceptance": [
+    "The owner's choice is recorded with its date"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/F-026.md"
+  ],
+  "capabilities": [
+    "owner-check"
+  ],
+  "privacy": "The owner's reply is recorded without coordinates, addresses or private flight data",
+  "validation": [
+    "The owner's dated reply in the record"
+  ],
+  "escalation": [
+    "A failure reopens the record with a failing case before any fix"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "One choice from three written options. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "ownerKind": "decision"
+  },
+  "ownerLink": "docs/owner-checks.md#f-026--tips-decision"
+}

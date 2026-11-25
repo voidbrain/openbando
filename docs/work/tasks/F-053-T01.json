@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "id": "F-053-T01",
+  "parent": "F-053",
+  "title": "Owner chooses survey pass and import tool, in-app reconstruction, or stop",
+  "goal": "The owner chooses one of the three options after the trial",
+  "status": "closed",
+  "acceptance": [
+    "The owner's choice is recorded with its date"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/F-053.md"
+  ],
+  "capabilities": [
+    "owner-check"
+  ],
+  "privacy": "The owner's reply is recorded without coordinates, addresses or private flight data",
+  "validation": [
+    "The owner's dated reply in the record"
+  ],
+  "escalation": [
+    "A failure reopens the record with a failing case before any fix"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Decided 2026-11-24 by the owner: option 1, survey pass then an import tool (recorded in #290). No actual: the decision time was not recorded.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 0,
+    "ownerKind": "decision"
+  },
+  "ownerLink": "tools/prototypes/video-cloud/README.md#options-for-the-owner"
+}

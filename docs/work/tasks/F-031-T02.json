@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "F-031-T02",
+  "parent": "F-031",
+  "title": "Commit the recordings and close F-031",
+  "goal": "Commit the re-recorded media, confirm check:media is clean in CI, and close the record",
+  "status": "planned",
+  "acceptance": [
+    "check:media reports both sets current on the merged PR"
+  ],
+  "dependsOn": [
+    "F-031-T01"
+  ],
+  "resources": [
+    "docs/guide/**",
+    "public/**",
+    "docs/work/records/F-031.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm run check:work",
+    "npm run check:backlog"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h agent",
+    "basis": "A commit of generated media and a record update. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0.25,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.25,
+    "estimateAgentHours": 0.25
+  }
+}

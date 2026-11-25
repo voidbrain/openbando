@@ -45,6 +45,23 @@ jobs:
       - name: Optional integration recommendation metadata
         run: npm run check:integrations
 
+      - name: Ledger matches its record sources (docs/work/records; F-052)
+        # Before every step that reads docs/BACKLOG.md: with workItems.views "built" it writes the fresh ledger (F-096).
+        run: npm run check:work
+
+      - name: Which backlog views
+        id: views
+        run: echo "built=$(node -p "const w = require('./.harness.json').workItems; Boolean(w?.enabled && w.views === 'built')")" >> "$GITHUB_OUTPUT"
+
+      - name: Built backlog views, attached to the run (F-096)
+        if: steps.views.outputs.built == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: backlog-views
+          path: docs/BACKLOG.md
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Required maintenance evidence
         run: npm run check:maintenance
 
@@ -102,9 +119,6 @@ jobs:
 
       - name: Backlog records and layout
         run: npm run check:backlog
-
-      - name: Ledger matches its record sources (docs/work/records; F-052)
-        run: npm run check:work
 
       - name: Harness template, for the release check below
         # check-harness compares this project with the template's release tags; the template is public, so no token.

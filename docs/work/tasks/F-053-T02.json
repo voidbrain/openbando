@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "id": "F-053-T02",
+  "parent": "F-053",
+  "title": "Owner flies one survey pass with video, blackbox and GPS",
+  "goal": "Fly a survey pass over a bando and hand the agent the folder",
+  "status": "planned",
+  "acceptance": [
+    "The survey flight's video, log and GPS are available to the agent"
+  ],
+  "dependsOn": [
+    "F-053-T01"
+  ],
+  "resources": [
+    "docs/work/records/F-053.md"
+  ],
+  "capabilities": [
+    "owner-check"
+  ],
+  "privacy": "The owner's reply is recorded without coordinates, addresses or private flight data",
+  "validation": [
+    "The owner's dated reply in the record"
+  ],
+  "escalation": [
+    "A failure reopens the record with a failing case before any fix"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h owner",
+    "basis": "One flight plus copying the files; estimated for option 1. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 1,
+    "ownerKind": "procedure"
+  },
+  "ownerLink": "tools/prototypes/video-cloud/README.md#survey-flight-the-owners-step"
+}

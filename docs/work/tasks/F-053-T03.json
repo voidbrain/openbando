@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "F-053-T03",
+  "parent": "F-053",
+  "title": "Run COLMAP on the survey flight and score it",
+  "goal": "Run colmap.sh on the survey video and log, score it against the Check and record the result",
+  "status": "planned",
+  "acceptance": [
+    "The record names the score: one connected model, wall spread, parallel walls against measured sizes"
+  ],
+  "dependsOn": [
+    "F-053-T02"
+  ],
+  "resources": [
+    "tools/prototypes/video-cloud/**",
+    "docs/work/records/F-053.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "structured-tools"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "1.5 h agent",
+    "basis": "Scripts exist from the trial; run time on the CPU dominates. Option 1 only. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1.5,
+    "ownerHours": 0,
+    "baselineAgentHours": 1.5,
+    "estimateAgentHours": 1.5
+  }
+}

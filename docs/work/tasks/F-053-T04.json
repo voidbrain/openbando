@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "id": "F-053-T04",
+  "parent": "F-053",
+  "title": "Import tool and editor reference layer for a scored point cloud",
+  "goal": "Import a scored cloud and show it as a reference layer in the editor, privacy as recorded",
+  "status": "planned",
+  "acceptance": [
+    "A unit test on the import; a browser case shows the layer; a hidden bando shares no cloud"
+  ],
+  "dependsOn": [
+    "F-053-T03"
+  ],
+  "resources": [
+    "tools/prototypes/video-cloud/**",
+    "src/app/ui/studio/**",
+    "src/app/three/**",
+    "e2e/**",
+    "docs/work/records/F-053.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "large",
+    "estimate": "6 h agent",
+    "basis": "Only if T03 meets the Check; an import step and an editor layer. Large, guess. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 6,
+    "ownerHours": 0,
+    "baselineAgentHours": 6,
+    "estimateAgentHours": 6
+  }
+}

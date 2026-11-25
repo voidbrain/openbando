@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "id": "B-018-T02",
+  "parent": "B-018",
+  "title": "Record the B-018 result and close or reopen",
+  "goal": "Record the owner's B-018 result as dated evidence; close on pass, or reopen with a failing case",
+  "status": "planned",
+  "acceptance": [
+    "The record names the dated owner result and its next state, with no private location"
+  ],
+  "dependsOn": [
+    "B-018-T01"
+  ],
+  "resources": [
+    "docs/work/records/B-018.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm run check:work",
+    "npm run check:backlog"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.5 h agent",
+    "basis": "A record update; more if a failure needs a regression first. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0.5,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5
+  }
+}

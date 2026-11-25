@@ -42,7 +42,8 @@
     "work:build": "node tools/work-items.mjs build",
     "check:work": "node tools/work-items.mjs check",
     "work:close": "node tools/work-items.mjs close",
-    "work:next": "node tools/work-items.mjs next"
+    "work:next": "node tools/work-items.mjs next",
+    "work:pr": "node tools/work-items.mjs pr"
   },
   "private": true,
   "packageManager": "npm@11.17.0",

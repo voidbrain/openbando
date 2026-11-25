@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "F-040-T01",
+  "parent": "F-040",
+  "title": "Find and fix the height pin that resets about a metre later",
+  "goal": "Reproduce on the demo flight with one height pin at 0:28, name the cause (blend, missing height on a later pin, or ground clamp) and fix it with a test",
+  "status": "planned",
+  "acceptance": [
+    "A unit test reproduces the reset and passes after the fix",
+    "The cause is named in the record"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "src/app/core/flight/**",
+    "src/app/ui/panels/**",
+    "e2e/**",
+    "docs/work/records/F-040.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript",
+    "regression-design"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "3 h agent",
+    "basis": "Investigation with three candidate causes; the editor height control is part of this step. Guess. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 3,
+    "ownerHours": 0,
+    "baselineAgentHours": 3,
+    "estimateAgentHours": 3
+  }
+}

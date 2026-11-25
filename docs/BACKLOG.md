@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 45355936112 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 26 November 2026 against main `791a376` (#291; CI 45720672388 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -12,7 +12,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟢 Small | — | 🧑‍🔧 | — |
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h agent + 0.5 h owner | 🧑‍🔧 | — |
 
 🧑 **→** Manually check simulator entry, collisions and selected-flight/video replay: [steps and expected results](owner-checks.md#b-009-simulator-and-selected-flight-replay).
 
@@ -44,7 +44,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟢 Small | — | 🧑‍🔧 | — |
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h agent + 0.5 h owner | 🧑‍🔧 | — |
 
 🧑 **→** Pin the demo flight at your three moments on the live site (since #258) and say whether the replay then follows the video: [steps and expected results](owner-checks.md#b-017-villetta-replay-pinned-to-the-video).
 
@@ -76,7 +76,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟡 Implemented | 🔺 P1 | 🟡 Medium | — | 🧑‍🔧 | — |
+| 🟡 Implemented | 🔺 P1 | 🟢 Small | 0.5 h agent + 1 h owner | 🧑‍🔧 | — |
 
 🧑 **→** Compare the corrected path with the real flight and test real GPS devices: [steps and expected results](owner-checks.md#b-018-hidden-bando-flight-paths-and-live-gps).
 
@@ -108,7 +108,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟢 Small | — | 🧑‍🔧 | — |
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h agent + 0.25 h owner | 🧑‍🔧 | — |
 
 🧑 **→** On the live site after merge: open a hidden bando, then New; search a full street address; check the map, the matches list and Generate: [steps and expected results](owner-checks.md#b-028-new-bando-after-a-hidden-one).
 
@@ -140,7 +140,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟠 Investigate | 🔶 P2 | 🟡 Medium | — | — | — |
+| 🟠 Investigate | 🔶 P2 | 🟡 Medium | 3 h | — | — |
 
 💻 **→** Next: reproduce the stuck video after a timeline click (Safari and Chromium) and find the cause.
 
@@ -172,7 +172,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟠 Investigate | 🔶 P2 | 🟢 Small | — | — | — |
+| 🟠 Investigate | 🔶 P2 | 🟡 Medium | 1.5 h | — | — |
 
 💻 **→** Write the deferred-completion regression to confirm or refute the stale-response hypothesis; fix only if reproduced.
 
@@ -204,7 +204,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟠 Investigate | 🔶 P2 | 🟢 Small | — | — | — |
+| 🟠 Investigate | 🔶 P2 | 🟡 Medium | 1.5 h | — | — |
 
 💻 **→** Add a deferred-scan service/browser test to confirm or refute stale pair application; keep separate from the fixed saved-offset leak B-047.
 
@@ -238,7 +238,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟢 Small | — | 🧑‍🔧 | — |
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h agent + 0.5 h owner | 🧑‍🔧 | — |
 
 🧑 **→** Review diagonal Cut/Wing editing and saved/imported outlines: [steps and expected results](owner-checks.md#f-001-cut-and-wing-on-diagonal-basements).
 
@@ -270,7 +270,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟡 Medium | — | 🧑‍🔧 | — |
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.5 h agent + 3 h owner | 🧑‍🔧 | — |
 
 🧑 **→** Run the two-device race/GPS field checklist with real telemetry feeds: [steps and expected results](owner-checks.md#f-009-racing-on-two-real-devices).
 
@@ -302,7 +302,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟡 Medium | — | — | — |
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 4 h | — | — |
 
 💻 **→** Next: three fixes from the owner's check (live preview in 3D, drag the pad itself, the pad on a raised building).
 
@@ -334,7 +334,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟢 Small | — | — | — |
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 1.5 h | — | — |
 
 💻 **→** Next: when the pad moves from indoors onto the roof, show the roof again (and the pad on it).
 
@@ -366,7 +366,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟡 Medium | — | — | 🤔 |
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 4 h agent + 0.5 h owner | — | 🤔 |
 
 🧑 **→** Say what the Fly checklist should do differently (steps, order, what it checks, when it opens): [options and the reply to send](owner-checks.md#f-025-fly-checklist-rework-decision).
 
@@ -398,7 +398,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟡 Medium | — | — | 🤔 |
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 4 h agent + 0.25 h owner | — | 🤔 |
 
 🧑 **→** Choose A (title-based tips), B (a tip per control) or C (remove tips): [options and the reply to send](owner-checks.md#f-026--tips-decision).
 
@@ -430,7 +430,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟡 Implemented | 🔹 P3 | 🟡 Medium | — | 🧑‍🔧 | — |
+| 🟡 Implemented | 🔹 P3 | 🟢 Small | 0.25 h agent + 1 h owner | 🧑‍🔧 | — |
 
 🧑 **→** Re-record and review the guide clips and Welcome films: [steps and expected results](owner-checks.md#f-031-re-record-guide-clips-and-welcome-films).
 
@@ -462,7 +462,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟢 Small | — | 🧑‍🔧 | — |
+| 🟡 Implemented | 🔶 P2 | 🟢 Small | 1 h agent + 0.5 h owner | 🧑‍🔧 | — |
 
 🧑 **→** Read `docs/agents/impact-map.md` and say what is missing or wrong: it is meant to list everything that follows a change.
 
@@ -494,9 +494,9 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟣 Blocked | ◻️ P3 | 🔴 Large | — | — | — |
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 4 h | — | — |
 
-💻 **→** Waiting for an upstream published browser-coverage contract; then wire OpenBando’s collection and CI.
+💻 **→** Adopt the harness browser coverage collector (shipped in 3.3.0): Playwright fixture, shard artifacts merged in CI.
 
 | | |
 |---|---|
@@ -511,10 +511,10 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Split from F-038, 2026-10-30 |
+| PR / evidence | Split from F-038, 2026-10-30; [#292](https://github.com/voidbrain/openbando/pull/292) |
 | Opened | 2026-10-30 |
 | Verification | Not implemented |
-| Reviewed | 2026-10-31 |
+| Reviewed | 2026-11-26 |
 
 </details>
 
@@ -526,7 +526,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟡 Medium | — | — | — |
+| 🔴 Open | 🔶 P2 | 🟡 Medium | 3 h | — | — |
 
 💻 **→** Next: find why a height set with Adjust position goes back to the wrong height about a metre later.
 
@@ -558,7 +558,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🔴 Large | — | — | — |
+| 🔴 Open | 🔹 P3 | 🔴 Large | 8 h | — | — |
 
 💻 **→** Build the collision detector, then measure the learned-feature experiment.
 
@@ -590,7 +590,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🟡 Medium | — | — | — |
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 3 h | — | — |
 
 💻 **→** Next: open the plan's context menu on a right-click on any element (or the ground) in the 3D view.
 
@@ -622,7 +622,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🔴 Large | — | — | — |
+| 🔴 Open | 🔹 P3 | 🔴 Large | 6 h | — | — |
 
 💻 **→** Implement two-click drawing alongside drag for every line tool.
 
@@ -658,7 +658,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🔴 Large | — | — | 🤔 |
+| 🔴 Open | 🔹 P3 | 🔴 Large | 7.5 h agent + 1 h owner | 🧑‍🔧 | 🤔 |
 
 🧑 **→** Choose survey pass and import tool, in-app reconstruction, or stop: [options and results](../tools/prototypes/video-cloud/README.md#options-for-the-owner).
 
@@ -687,7 +687,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-24: [#288](https://github.com/voidbrain/openbando/pull/288) (F-053 route (b)) merged on green CI (run 45355936112). F-053's trial finished with route (a), COLMAP; the record waits on the owner's decision.
+2026-11-26: harness reconciled from v10.8.1 to v10.21.3 in [#292](https://github.com/voidbrain/openbando/pull/292): copied tools and guides updated, the ledger check runs before the maintenance check in CI, `work:pr` added; built views not adopted. Every open record now has steps with agent and owner hours (`docs/work/tasks/`, 54.25 h agent, 9 h owner, estimated from scope with no calibration samples) whose owner steps link their section of [owner checks](owner-checks.md) (#291, merged on green CI, run 45720672388). F-039 unblocked: its upstream shipped in harness v3.3.0. #289 (F-053 route (a)) merged on green CI (run 45361085649).
 
 ## Reconciliation history
 

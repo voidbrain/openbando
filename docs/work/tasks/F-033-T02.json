@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "id": "F-033-T02",
+  "parent": "F-033",
+  "title": "Apply the owner's impact map corrections",
+  "goal": "Add the missing rows or fix the wrong ones in .harness.json and regenerate the page",
+  "status": "planned",
+  "acceptance": [
+    "Each correction is in .harness.json; the page is regenerated and CI checks it matches"
+  ],
+  "dependsOn": [
+    "F-033-T01"
+  ],
+  "resources": [
+    ".harness.json",
+    "docs/agents/impact-map.md",
+    "docs/work/records/F-033.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h agent",
+    "basis": "Depends on the reply; a few rows is an hour, a new chain more. Guess. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1,
+    "ownerHours": 0,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  }
+}

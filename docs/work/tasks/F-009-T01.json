@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "id": "F-009-T01",
+  "parent": "F-009",
+  "title": "Owner runs the two-device racing field checklist",
+  "goal": "Run the racing field checklist with two devices and real telemetry and report each item",
+  "status": "planned",
+  "acceptance": [
+    "Each field checklist item is reported pass or fail by the owner"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/F-009.md"
+  ],
+  "capabilities": [
+    "owner-check"
+  ],
+  "privacy": "The owner's reply is recorded without coordinates, addresses or private flight data",
+  "validation": [
+    "The owner's dated reply in the record"
+  ],
+  "escalation": [
+    "A failure reopens the record with a failing case before any fix"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "3 h owner",
+    "basis": "A field session with two devices and real GPS streams, set-up included; guess. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 3,
+    "ownerKind": "procedure"
+  },
+  "ownerLink": "docs/owner-checks.md#f-009-racing-on-two-real-devices"
+}

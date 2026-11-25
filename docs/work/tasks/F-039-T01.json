@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "id": "F-039-T01",
+  "parent": "F-039",
+  "title": "Browser and combined coverage in the coverage table",
+  "goal": "Adopt the harness browser coverage collector (released in 3.3.0): Playwright fixture, per-shard artifacts merged in CI, Browser and Combined tables",
+  "status": "planned",
+  "acceptance": [
+    "The coverage page shows Browser and Combined tables built in CI from all e2e shards",
+    "Unit coverage figures are unchanged"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "tools/**",
+    "e2e/**",
+    ".github/workflows/ci.yml",
+    ".harness.json",
+    "docs/agents/coverage.md",
+    "docs/work/records/F-039.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript",
+    "structured-tools"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "4 h agent",
+    "basis": "The upstream contract shipped in harness 3.3.0, so the blocker is gone; fixture, CI artifact merge across four shards and the page. CI round trips dominate. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 4,
+    "ownerHours": 0,
+    "baselineAgentHours": 4,
+    "estimateAgentHours": 4
+  }
+}

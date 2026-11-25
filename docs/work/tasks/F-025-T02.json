@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "id": "F-025-T02",
+  "parent": "F-025",
+  "title": "Rework the Fly checklist as decided",
+  "goal": "Implement the owner's F-025 decision in the Fly checklist, guide and tests",
+  "status": "planned",
+  "acceptance": [
+    "The checklist matches the recorded decision; unit and browser cases cover it; the guide step follows"
+  ],
+  "dependsOn": [
+    "F-025-T01"
+  ],
+  "resources": [
+    "src/app/core/fly-guide.ts",
+    "src/app/ui/panels/fly-panel.ts",
+    "src/app/core/tour.ts",
+    "e2e/**",
+    "docs/work/records/F-025.md"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "typescript"
+  ],
+  "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
+  "validation": [
+    "npm test",
+    "CI check and e2e jobs"
+  ],
+  "escalation": [
+    "Do not weaken assertions or widen timeouts to pass",
+    "Stop and record findings if the cause needs a design decision"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "4 h agent",
+    "basis": "Unscoped until the decision: guess, re-estimate when T01 is answered. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 4,
+    "ownerHours": 0,
+    "baselineAgentHours": 4,
+    "estimateAgentHours": 4
+  }
+}
