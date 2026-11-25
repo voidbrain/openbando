@@ -29,7 +29,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | —; owner check page [#291](https://github.com/voidbrain/openbando/pull/291) |
 | Opened | 2026-10-27 |
 | Verification | Pending — see PR/evidence for partial automated coverage |
 | Reviewed | 2026-10-31 |
@@ -61,7 +61,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#112](https://github.com/voidbrain/openbando/pull/112) (report and arch label; alignment remains open); [#114](https://github.com/voidbrain/openbando/pull/114) (raised greenhouse; visual review pending); [#113](https://github.com/voidbrain/openbando/pull/113) (spatial investigation) |
+| PR / evidence | [#112](https://github.com/voidbrain/openbando/pull/112) (report and arch label; alignment remains open); [#114](https://github.com/voidbrain/openbando/pull/114) (raised greenhouse; visual review pending); [#113](https://github.com/voidbrain/openbando/pull/113) (spatial investigation); owner check page [#291](https://github.com/voidbrain/openbando/pull/291) |
 | Opened | 2026-10-27 |
 | Verification | Pending; Unit + Browser · 2026-10-30 · pin offsets, pinned moment and restore, workflow e2e passed locally; owner's check with the demo flight · Pending |
 | Reviewed | 2026-10-31 |
@@ -93,7 +93,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#113](https://github.com/voidbrain/openbando/pull/113) (investigation); [#115](https://github.com/voidbrain/openbando/pull/115) (merged projection fix); [#118](https://github.com/voidbrain/openbando/pull/118) (merged live-first correction; real-flight verification pending) |
+| PR / evidence | [#113](https://github.com/voidbrain/openbando/pull/113) (investigation); [#115](https://github.com/voidbrain/openbando/pull/115) (merged projection fix); [#118](https://github.com/voidbrain/openbando/pull/118) (merged live-first correction; real-flight verification pending); owner check page [#291](https://github.com/voidbrain/openbando/pull/291) |
 | Opened | 2026-10-27 |
 | Verification | Unit/integration · 2026-10-27 · regression tests in #118; Human + Real-device · Pending |
 | Reviewed | 2026-10-31 |
@@ -125,7 +125,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#201](https://github.com/voidbrain/openbando/pull/201) (all CI jobs green, no retries); report 2026-10-29 |
+| PR / evidence | [#201](https://github.com/voidbrain/openbando/pull/201) (all CI jobs green, no retries); report 2026-10-29; owner check page [#291](https://github.com/voidbrain/openbando/pull/291) |
 | Opened | 2026-10-29 |
 | Verification | Unit/browser · 2026-10-29 · unit suite, `new-bando.e2e.ts` and the guide steps passed locally and in #201's CI; live-site check · Pending |
 | Reviewed | 2026-10-31 |
@@ -255,7 +255,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#101](https://github.com/voidbrain/openbando/pull/101) (context); [#117](https://github.com/voidbrain/openbando/pull/117) (merged to former feature branch); [#121](https://github.com/voidbrain/openbando/pull/121) (recovery targeting main) |
+| PR / evidence | [#101](https://github.com/voidbrain/openbando/pull/101) (context); [#117](https://github.com/voidbrain/openbando/pull/117) (merged to former feature branch); [#121](https://github.com/voidbrain/openbando/pull/121) (recovery targeting main); owner check page [#291](https://github.com/voidbrain/openbando/pull/291) |
 | Opened | 2026-10-27 |
 | Verification | Unit/integration · 2026-10-28 · 504 tests passed locally; Browser/accessibility + Human · Pending |
 | Reviewed | 2026-10-31 |
@@ -287,7 +287,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | — |
+| PR / evidence | —; owner check page [#291](https://github.com/voidbrain/openbando/pull/291) |
 | Opened | 2026-10-27 |
 | Verification | Real-device · Pending |
 | Reviewed | 2026-10-31 |
@@ -383,7 +383,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Request 2026-10-29 |
+| PR / evidence | Request 2026-10-29; owner check page [#291](https://github.com/voidbrain/openbando/pull/291) |
 | Opened | 2026-10-29 |
 | Verification | Not started |
 | Reviewed | 2026-10-31 |
@@ -415,7 +415,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#238](https://github.com/voidbrain/openbando/pull/238) (inventory); request 2026-10-29 |
+| PR / evidence | [#238](https://github.com/voidbrain/openbando/pull/238) (inventory); request 2026-10-29; owner check page [#291](https://github.com/voidbrain/openbando/pull/291) |
 | Opened | 2026-10-29 |
 | Verification | Inventory · 2026-10-30 · Tips per file table (element map) |
 | Reviewed | 2026-10-31 |
@@ -447,7 +447,7 @@ Current work ledger, reviewed 24 November 2026 against main `ffa148c` (#288; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#220](https://github.com/voidbrain/openbando/pull/220); request 2026-10-29 |
+| PR / evidence | [#220](https://github.com/voidbrain/openbando/pull/220); request 2026-10-29; owner check page [#291](https://github.com/voidbrain/openbando/pull/291) |
 | Opened | 2026-10-29 |
 | Verification | Script · 2026-10-29 · `check:media` lists 12 / 15 changed files; `--stamp` writes the current commit (tried and restored); re-recording · Pending |
 | Reviewed | 2026-10-31 |
