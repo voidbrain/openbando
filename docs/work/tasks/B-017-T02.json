@@ -15,13 +15,12 @@
     "docs/work/records/B-017.md"
   ],
   "capabilities": [
-    "bounded-edit",
-    "typescript"
+    "bounded-edit"
   ],
   "privacy": "Neutral repository fixtures only; no private flights, coordinates or addresses",
   "validation": [
-    "npm test",
-    "CI check and e2e jobs"
+    "npm run check:work",
+    "npm run check:backlog"
   ],
   "escalation": [
     "Do not weaken assertions or widen timeouts to pass",

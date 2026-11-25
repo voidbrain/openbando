@@ -14,12 +14,12 @@ Current work ledger, reviewed 26 November 2026 against main `5c96a18` (#289; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h agent + 0.5 h owner | 🧑‍🔧 | — |
 
-🧑 **→** Manually check simulator entry, collisions and selected-flight/video replay.
+🧑 **→** Manually check simulator entry, collisions and selected-flight/video replay. [Steps](owner-checks.md#b-009-simulator-and-selected-flight-replay).
 
 | | |
 |---|---|
 | **Issue** | Simulator entry, collisions and a selected flight with its video might regress after editor and racing changes. |
-| **Reproduce** | Live site: open a bando, Fly the simulator, hit a wall; then select a recorded flight with its video and play it. |
+| **Reproduce** | [Steps](owner-checks.md#b-009-simulator-and-selected-flight-replay). Live site: open a bando, Fly the simulator, hit a wall; then select a recorded flight with its video and play it. |
 | **Check** | The simulator starts on the pad, a crash stops it, the flight replays in step with its video. |
 
 <details>
@@ -46,12 +46,12 @@ Current work ledger, reviewed 26 November 2026 against main `5c96a18` (#289; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h agent + 0.5 h owner | 🧑‍🔧 | — |
 
-🧑 **→** Pin the demo flight at your three moments on the live site (since #258) and say whether the replay then follows the video.
+🧑 **→** Pin the demo flight at your three moments on the live site (since #258) and say whether the replay then follows the video. [Steps](owner-checks.md#b-017-villetta-replay-follows-the-video-after-moment-pins).
 
 | | |
 |---|---|
 | **Issue** | The Villetta replay is displaced from the video by GPS drift: 14 m at the greenhouse's west face, 8 m mid-greenhouse, 6 m at the store. |
-| **Reproduce** | Live site, Villetta with the demo flight and its video: pause at 0:27.6, Path panel → Pin this moment, click the bottom of the west face; again at 1:13.1 (middle of the greenhouse) and 1:35.9 (leaving the store). |
+| **Reproduce** | [Steps](owner-checks.md#b-017-villetta-replay-follows-the-video-after-moment-pins). Live site, Villetta with the demo flight and its video: pause at 0:27.6, Path panel → Pin this moment, click the bottom of the west face; again at 1:13.1 (middle of the greenhouse) and 1:35.9 (leaving the store). |
 | **Check** | At each pinned moment the drone is where the video shows it, the path between them follows the flight, the take-off stays on its pad; the pins come back after reloading the log, and × removes them. |
 
 <details>
@@ -78,12 +78,12 @@ Current work ledger, reviewed 26 November 2026 against main `5c96a18` (#289; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔺 P1 | 🟢 Small | 0.5 h agent + 1 h owner | 🧑‍🔧 | — |
 
-🧑 **→** Compare the corrected path with the real flight and test real GPS devices.
+🧑 **→** Compare the corrected path with the real flight and test real GPS devices. [Steps](owner-checks.md#b-018-hidden-origin-gps-projection).
 
 | | |
 |---|---|
 | **Issue** | Bandos without their place drew GPS paths with a false sideways bend. |
-| **Reproduce** | A hidden bando with your own recorded flight; then a live GPS device. |
+| **Reproduce** | [Steps](owner-checks.md#b-018-hidden-origin-gps-projection). A hidden bando with your own recorded flight; then a live GPS device. |
 | **Check** | The path follows the real flight, and a live drone shows where it really is. |
 
 <details>
@@ -110,12 +110,12 @@ Current work ledger, reviewed 26 November 2026 against main `5c96a18` (#289; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h agent + 0.25 h owner | 🧑‍🔧 | — |
 
-🧑 **→** On the live site after merge: open a hidden bando, then New; search a full street address; check the map, the matches list and Generate.
+🧑 **→** On the live site after merge: open a hidden bando, then New; search a full street address; check the map, the matches list and Generate. [Steps](owner-checks.md#b-028-new-bando-after-a-hidden-bando).
 
 | | |
 |---|---|
 | **Issue** | New bando: grey map after a hidden bando, full street addresses not found, Generate before a place. |
-| **Reproduce** | Live site: open a hidden bando, then New; search a full street address. |
+| **Reproduce** | [Steps](owner-checks.md#b-028-new-bando-after-a-hidden-bando). Live site: open a hidden bando, then New; search a full street address. |
 | **Check** | The map shows, the matches list fills (first match chosen), Generate waits for a place. |
 
 <details>
@@ -240,12 +240,12 @@ Current work ledger, reviewed 26 November 2026 against main `5c96a18` (#289; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔶 P2 | 🟢 Small | 0.25 h agent + 0.5 h owner | 🧑‍🔧 | — |
 
-🧑 **→** Review diagonal Cut/Wing editing and saved/imported outlines.
+🧑 **→** Review diagonal Cut/Wing editing and saved/imported outlines. [Steps](owner-checks.md#f-001-cut-and-wing-on-diagonal-basement-outlines).
 
 | | |
 |---|---|
 | **Issue** | Cut and Wing on diagonal basement outlines. |
-| **Reproduce** | Editor: a building with a diagonal basement, Indoors −1, Cut and Wing; save, export, import. |
+| **Reproduce** | [Steps](owner-checks.md#f-001-cut-and-wing-on-diagonal-basement-outlines). Editor: a building with a diagonal basement, Indoors −1, Cut and Wing; save, export, import. |
 | **Check** | The edits work and the outline survives saving and importing. |
 
 <details>
@@ -368,12 +368,12 @@ Current work ledger, reviewed 26 November 2026 against main `5c96a18` (#289; CI 
 |---|---|---|---|:---:|:---:|
 | 🔴 Open | 🔹 P3 | 🟡 Medium | 4 h agent + 0.5 h owner | — | 🤔 |
 
-🧑 **→** Say what the Fly checklist should do differently (steps, order, what it checks, when it opens).
+🧑 **→** Say what the Fly checklist should do differently (steps, order, what it checks, when it opens). [Steps](owner-checks.md#f-025-what-the-fly-checklist-should-do).
 
 | | |
 |---|---|
 | **Issue** | The Fly checklist needs a rework. |
-| **Reproduce** | Live site: Fly panel, the checklist. |
+| **Reproduce** | [Steps](owner-checks.md#f-025-what-the-fly-checklist-should-do). Live site: Fly panel, the checklist. |
 | **Check** | Say what it should do differently: steps, order, checks, when it opens. |
 
 <details>
@@ -400,12 +400,12 @@ Current work ledger, reviewed 26 November 2026 against main `5c96a18` (#289; CI 
 |---|---|---|---|:---:|:---:|
 | 🔴 Open | 🔹 P3 | 🟡 Medium | 4 h agent + 0.25 h owner | — | 🤔 |
 
-🧑 **→** Choose A (title-based tips), B (a tip per control) or C (remove tips).
+🧑 **→** Choose A (title-based tips), B (a tip per control) or C (remove tips). [Steps](owner-checks.md#f-026-the-panels-tips).
 
 | | |
 |---|---|
 | **Issue** | The panels' "?" tips explain 9 of 407 controls. |
-| **Reproduce** | docs/agents/element-map.md, Tips per file; the "?" in any panel title. |
+| **Reproduce** | [Steps](owner-checks.md#f-026-the-panels-tips). docs/agents/element-map.md, Tips per file; the "?" in any panel title. |
 | **Check** | Choose A (titles as tips, recommended), B (a tip for every control) or C (drop "?"). |
 
 <details>
@@ -432,12 +432,12 @@ Current work ledger, reviewed 26 November 2026 against main `5c96a18` (#289; CI 
 |---|---|---|---|:---:|:---:|
 | 🟡 Implemented | 🔹 P3 | 🟢 Small | 0.25 h agent + 1 h owner | 🧑‍🔧 | — |
 
-🧑 **→** Re-record and review the guide clips and Welcome films.
+🧑 **→** Re-record and review the guide clips and Welcome films. [Steps](owner-checks.md#f-031-re-record-the-guide-clips-and-welcome-films).
 
 | | |
 |---|---|
 | **Issue** | The guide clips and Welcome films are older than the code they show. |
-| **Reproduce** | A machine with the GPU and ffmpeg: npm run clips, npm run films. |
+| **Reproduce** | [Steps](owner-checks.md#f-031-re-record-the-guide-clips-and-welcome-films). A machine with the GPU and ffmpeg: npm run clips, npm run films. |
 | **Check** | Watch the new recordings; check:media then reports them current. |
 
 <details>
@@ -658,7 +658,7 @@ Current work ledger, reviewed 26 November 2026 against main `5c96a18` (#289; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🔴 Open | 🔹 P3 | 🔴 Large | 7.5 h agent + 1.25 h owner | — | 🤔 |
+| 🔴 Open | 🔹 P3 | 🔴 Large | 7.5 h agent + 1 h owner | 🧑‍🔧 | 🤔 |
 
 🧑 **→** Choose survey pass and import tool, in-app reconstruction, or stop: [options and results](../tools/prototypes/video-cloud/README.md#options-for-the-owner).
 
@@ -687,7 +687,7 @@ Current work ledger, reviewed 26 November 2026 against main `5c96a18` (#289; CI 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-26: harness reconciled from v10.8.1 to v10.21.3 in [#292](https://github.com/voidbrain/openbando/pull/292): copied tools and guides updated, the ledger check runs before the maintenance check in CI, `work:pr` added; built views not adopted. Every open record now has steps with agent and owner hours (`docs/work/tasks/`, 54.25 h agent, 9.25 h owner, estimated from scope with no calibration samples) and its owner checks a copy-paste page ([owner checks](owner-checks.md)). F-039 unblocked: its upstream shipped in harness v3.3.0. #289 (F-053 route (a)) merged on green CI (run 45361085649).
+2026-11-26: harness reconciled from v10.8.1 to v10.21.3 in [#292](https://github.com/voidbrain/openbando/pull/292): copied tools and guides updated, the ledger check runs before the maintenance check in CI, `work:pr` added; built views not adopted. Every open record now has steps with agent and owner hours (`docs/work/tasks/`, 54.25 h agent, 9 h owner, estimated from scope with no calibration samples) and its owner checks a copy-paste page ([owner checks](owner-checks.md)). F-039 unblocked: its upstream shipped in harness v3.3.0. #289 (F-053 route (a)) merged on green CI (run 45361085649).
 
 ## Reconciliation history
 

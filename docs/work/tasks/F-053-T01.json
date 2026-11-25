@@ -4,7 +4,7 @@
   "parent": "F-053",
   "title": "Owner chooses survey pass and import tool, in-app reconstruction, or stop",
   "goal": "The owner chooses one of the three options after the trial",
-  "status": "planned",
+  "status": "closed",
   "acceptance": [
     "The owner's choice is recorded with its date"
   ],
@@ -24,11 +24,11 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "0.25 h owner",
-    "basis": "One choice from three written options. The steps after it are estimated for option 1. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
+    "estimate": "0 remaining",
+    "basis": "Decided 2026-11-24 by the owner: option 1, survey pass then an import tool (recorded in #290). No actual: the decision time was not recorded.",
     "reviewed": "2026-11-26",
     "agentHours": 0,
-    "ownerHours": 0.25,
+    "ownerHours": 0,
     "ownerKind": "decision"
   },
   "ownerLink": "tools/prototypes/video-cloud/README.md#options-for-the-owner"
