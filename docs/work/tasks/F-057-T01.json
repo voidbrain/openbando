@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "id": "F-057-T01",
+  "parent": "F-057",
+  "title": "Pin gauntlet-protocol, validate in CI, record the skip and the grader route",
+  "goal": "The pack's frame exists",
+  "status": "planned",
+  "acceptance": [
+    "Owner decision 2026-11-26 in chat: \"ok to all\" (accepts proposal 1 of the shared-asset review, solution:F-016-T07); same message: \"nerv and all modules will need to work with Italian\".",
+    "@voidbrain/gauntlet-protocol is a pinned devDependency and `gauntlet validate` runs in CI",
+    "The block-from-description skip is recorded with its reason (docs)",
+    "If json-match (gauntlet-protocol:F-032) is not released, a project runner applies normalizeCommands and compares the commands only, ignoring reply, with positions within a tolerance"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "package.json",
+    "tools/**",
+    "docs/**",
+    ".github/workflows/**",
+    "evals/gauntlet/**",
+    "docs/work/records/F-057.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "regression-design"
+  ],
+  "privacy": "Neutral invented data only; no secrets, tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1.0 h agent",
+    "basis": "A pin, a CI step, a doc note and possibly a small runner. Estimated 2026-11-26 at agent speed from the solution:F-016 shared-asset review. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1.0,
+    "baselineAgentHours": 1.0,
+    "estimateAgentHours": 1.0
+  }
+}

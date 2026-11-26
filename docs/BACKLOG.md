@@ -776,6 +776,37 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 </details>
 
 ---
+### <a id="f-057"></a>[✨ F-057](#top)
+
+**Gauntlet pack for the site-edit assistant (openbando-v1), Italian and English**
+
+| Status | Priority | Effort | Remaining | Procedures | Decisions |
+|---|---|---|---|:---:|:---:|
+| 🔴 Open | 🔶 P2 | 🟡 Medium | 3 h agent + 0.25 h owner | — | — |
+
+💻 **→** Next: F-057-T01, pin gauntlet-protocol and validate in CI.
+
+| | |
+|---|---|
+| **Issue** | The assistant offers six models (`AI_MODELS`, `src/app/services/ai.service.ts:21`; the review counted four) and any OpenAI-compatible server, and no case says which of them turns a request into the right commands (`{reply, commands}`, at most 8 of about 40 operations). The pilot types requests in Italian too, so every case set includes Italian phrasings. Owner decision 2026-11-26 in chat: "ok to all" (accepts proposal 1 of the shared-asset review, solution:F-016-T07); same message: "nerv and all modules will need to work with Italian". |
+| **Reproduce** | `ls evals/gauntlet` finds nothing; no pin of `@voidbrain/gauntlet-protocol`; `src/app/core/ai-prompt.ts` has English examples only. |
+| **Check** | `evals/gauntlet/openbando-v1.json`, model layer, regression and holdout splits, Italian and English requests over invented sites, graded on the normalised commands with `reply` ignored and positions within a tolerance (json-match, gauntlet-protocol:F-032, or a project runner that applies `normalizeCommands` then compares); `gauntlet validate` in CI from a pinned devDependency; the block-from-description skip recorded (the pilot reviews every block and `sanitizeBlock` bounds it); an owner-approved first run of the base models through Ollama sets the recommended entry in `AI_MODELS`, the page saying the quantisation differs from WebLLM's 4-bit MLC builds. |
+
+<details>
+<summary>Next action, estimates and evidence</summary>
+
+[Full notes & evidence](work/records/F-057.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#300](https://github.com/voidbrain/openbando/pull/300) (plan); [review page](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-shared-assets/gauntlet-openbando.md); owner decision 2026-11-26 |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
 ## Other changes
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).

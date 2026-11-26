@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "id": "F-057-T02",
+  "parent": "F-057",
+  "title": "Command and clarification cases, Italian and English",
+  "goal": "The request-to-commands mapping is measured",
+  "status": "planned",
+  "acceptance": [
+    "Owner decision 2026-11-26 in chat: \"ok to all\" (accepts proposal 1 of the shared-asset review, solution:F-016-T07); same message: \"nerv and all modules will need to work with Italian\".",
+    "Cases over invented sites cover commands (add_door, add_window, split_rooms, add_floor, set_roof, add_structure and others), building names and sides, and clarification (an unclear or impossible request returns no commands and one question, ai-prompt.ts:84)",
+    "Each in Italian and English, e.g. \"aggiungi due finestre sul lato nord\", \"metti una porta sulla parete sud\", \"dividi la stanza in due\", \"alza il tetto\" and the English prompt example (\"two windows on the north wall\"); regression and holdout splits"
+  ],
+  "dependsOn": [
+    "F-057-T01"
+  ],
+  "resources": [
+    "evals/gauntlet/openbando-v1.json",
+    "test/**",
+    "docs/work/records/F-057.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit",
+    "regression-design"
+  ],
+  "privacy": "Neutral invented data only; no secrets, tokens or personal data in Git.",
+  "validation": [
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "1.5 h agent",
+    "basis": "About 16 to 20 cases, half Italian. Estimated 2026-11-26 at agent speed from the solution:F-016 shared-asset review. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1.5,
+    "baselineAgentHours": 1.5,
+    "estimateAgentHours": 1.5
+  }
+}
