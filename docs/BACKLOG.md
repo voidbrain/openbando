@@ -189,7 +189,7 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md); [#295](https://github.com/voidbrain/openbando/pull/295) |
 | Opened | 2026-10-31 |
 | Verification | Reproduced and fixed 2026-11-26 in `ai.service.spec.ts` (unit, service level) |
 | Reviewed | 2026-11-26 |
