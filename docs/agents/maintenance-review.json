@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-26T17:31:10.523Z",
+  "reviewed": "2026-11-26T17:32:15.422Z",
   "policy": "c2daa817f722a37f9cdbee4de239adb5fabce21daaeae844db8b14b460823b8d",
   "inputs": {
     "AGENTS.md": "3754525b0135abaf4e4f577f84196cf4288a5bb25452b4f3fd39627e43796f87",
@@ -95,6 +95,30 @@
     }
   },
   "outcomes": [
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "AGENTS.md",
+      "evidence": "Coverage project line: coverage.enforce is true (owner, chat 2026-11-26, \"coverage enforcement all\"); CI's coverage table now fails on a drop over coverage.drop (F-055-T01)."
+    },
+    {
+      "kind": "tool",
+      "disposition": "implemented",
+      "target": ".github/workflows/ci.yml",
+      "evidence": "CI type check also runs tsconfig.spec.json and the new tsconfig.e2e.json (B-059-T01, dormant-checks sweep T4/T5); both pass with no error."
+    },
+    {
+      "kind": "none",
+      "disposition": "backlog",
+      "target": "F-055",
+      "evidence": "Dormant-checks sweep 2026-11-26: reviews (30 days), workUsage and behaviour.runner set in .harness.json; first architecture review written; token and skills reviews are F-055-T03; work-usage and behaviour tools arrive at the next reconcile (project-harness, sweep proposal 11)."
+    },
+    {
+      "kind": "rule",
+      "disposition": "implemented",
+      "target": "AGENTS.md",
+      "evidence": "2026-11-26: reconcile to project-harness v10.24.1: copied files byte-identical from the tag, behaviour-checks page registered, procedures table and agent-rule lines merged, project lines kept; owner authorised the reconcile in chat 2026-11-26 ('ok to all') although the template backlog is not empty."
+    },
     {
       "kind": "none",
       "disposition": "no-change",
