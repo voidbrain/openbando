@@ -6,7 +6,7 @@
   "goal": "The first run is cleared",
   "status": "planned",
   "acceptance": [
-    "Owner decision 2026-11-26 in chat: \"ok to all\" (accepts proposal 1 of the shared-asset review, solution:F-016-T07); same message: \"nerv and all modules will need to work with Italian\".",
+    "Owner decision 2026-11-26 in chat: \"ok to all\" (accepts proposal 1 of the shared-asset review, coordinator:F-016-T07); same message: \"nerv and all modules will need to work with Italian\".",
     "The owner approves running the base models through Ollama (qwen2.5:1.5b, qwen2.5:3b, llama3.2:3b, qwen3:4b, and phi4-mini and qwen2.5:7b if the host can) as a proxy for WebLLM; the approval and date are recorded"
   ],
   "dependsOn": [
@@ -29,7 +29,7 @@
   "effort": {
     "size": "small",
     "estimate": "0.25 h owner",
-    "basis": "A decision and its recording. Estimated 2026-11-26 at agent speed from the solution:F-016 shared-asset review. Not a measurement.",
+    "basis": "A decision and its recording. Estimated 2026-11-26 at agent speed from the coordinator:F-016 shared-asset review. Not a measurement.",
     "reviewed": "2026-11-26",
     "agentHours": 0,
     "baselineAgentHours": 0,
