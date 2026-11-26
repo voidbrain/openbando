@@ -1722,3 +1722,39 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 </details>
 
 ---
+
+## Closed 2026-11-26
+
+### F-054
+
+**Skip: bricks (openbando keeps its own design system)**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P3 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-26: owner decision 2026-11-26, records only; PR #297, green CI.
+
+| | |
+|---|---|
+| **Issue** | The solution's shared-assets rule (coordinator DOMAINS.md, "Shared assets" and "Recorded skips") asks a project that does not use a shared asset to record the skip with its reason. openbando has its own design system ([design-system](../design-system/README.md): tokens and component guides) and had neither a bricks adoption record nor a recorded skip (cross-project audit 2026-11-26, proposal 14). |
+| **Reproduce** | `design-system/` exists; no record mentions bricks. |
+| **Check** | `Skip: bricks, own design system` is recorded with its reason. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-26: owner decision 2026-11-26, records only; PR #297, green CI. 2026-11-26: **Skip: bricks.** Reason: openbando has its own design system (`design-system/`: tokens, component guides, the mascot and the racing look) that the app and its guides are built on, and bricks adds components only on real demand, with no openbando demand. The owner accepted all 17 cross-project audit proposals in chat on 2026-11-26 ("accept all 17 proposals"); this is proposal 14, the recommended skip. If openbando later wants bricks, it opens an adoption record and bricks gets an openbando inventory then. The coordinator lists whole-project skips in DOMAINS.md "Recorded skips" (its own change). PR [#297](https://github.com/voidbrain/openbando/pull/297).
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#297](https://github.com/voidbrain/openbando/pull/297) |
+| Opened | 2026-11-26 |
+| Verification | Decision recorded 2026-11-26; no code |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
