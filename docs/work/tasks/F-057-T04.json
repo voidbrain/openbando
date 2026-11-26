@@ -6,7 +6,7 @@
   "goal": "The recommended model rests on a measurement",
   "status": "planned",
   "acceptance": [
-    "Owner decision 2026-11-26 in chat: \"ok to all\" (accepts proposal 1 of the shared-asset review, solution:F-016-T07); same message: \"nerv and all modules will need to work with Italian\".",
+    "Owner decision 2026-11-26 in chat: \"ok to all\" (accepts proposal 1 of the shared-asset review, coordinator:F-016-T07); same message: \"nerv and all modules will need to work with Italian\".",
     "The run is recorded; the result sets the recommended entry in AI_MODELS (Italian and English results reported separately); the page says the quantisation differs"
   ],
   "dependsOn": [
@@ -33,7 +33,7 @@
   "effort": {
     "size": "small",
     "estimate": "0.5 h agent",
-    "basis": "One run and one label change. Estimated 2026-11-26 at agent speed from the solution:F-016 shared-asset review. Not a measurement.",
+    "basis": "One run and one label change. Estimated 2026-11-26 at agent speed from the coordinator:F-016 shared-asset review. Not a measurement.",
     "reviewed": "2026-11-26",
     "agentHours": 0.5,
     "baselineAgentHours": 0.5,
