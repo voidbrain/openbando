@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "id": "B-045-T02",
+  "parent": "B-045",
+  "title": "Owner tries the stuck video on the machine where it happened",
+  "goal": "Run the B-045 owner check and reply with the browser, the click pattern and the console line, or not reproduced",
+  "status": "planned",
+  "acceptance": [
+    "The owner replies not reproduced, or names the browser, the click pattern and the console line"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/work/records/B-045.md",
+    "docs/owner-checks.md"
+  ],
+  "capabilities": [
+    "owner-check"
+  ],
+  "privacy": "The owner's reply is recorded without coordinates, addresses or private flight data",
+  "validation": [
+    "The owner's dated reply in the record"
+  ],
+  "escalation": [
+    "A reproduction goes back to B-045-T01 with a failing case before any fix"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h owner",
+    "basis": "A few minutes of timeline clicks on the live site and one console line. Estimated 2026-11-26; estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 0.25,
+    "ownerKind": "procedure"
+  },
+  "ownerLink": "docs/owner-checks.md#b-045-stuck-video-after-a-timeline-click"
+}

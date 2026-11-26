@@ -9,7 +9,9 @@
     "A browser case fails before the fix and passes after it, in Chromium",
     "The cause is named in the record; Safari noted if it cannot run in CI"
   ],
-  "dependsOn": [],
+  "dependsOn": [
+    "B-045-T02"
+  ],
   "resources": [
     "src/app/ui/**",
     "src/app/services/**",
