@@ -683,37 +683,6 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 </details>
 
 ---
-### <a id="f-054"></a>[✨ F-054](#top)
-
-**Skip: bricks (openbando keeps its own design system)**
-
-| Status | Priority | Effort | Remaining | Procedures | Decisions |
-|---|---|---|---|:---:|:---:|
-| 🟢 Verified | 🔹 P3 | 🟢 Small | — | — | — |
-
-💻 **→** Next: close the record.
-
-| | |
-|---|---|
-| **Issue** | The solution's shared-assets rule (coordinator DOMAINS.md, "Shared assets" and "Recorded skips") asks a project that does not use a shared asset to record the skip with its reason. openbando has its own design system ([design-system](design-system/README.md): tokens and component guides) and had neither a bricks adoption record nor a recorded skip (cross-project audit 2026-11-26, proposal 14). |
-| **Reproduce** | `design-system/` exists; no record mentions bricks. |
-| **Check** | `Skip: bricks, own design system` is recorded with its reason. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/F-054.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | PRN |
-| Opened | 2026-11-26 |
-| Verification | Decision recorded 2026-11-26 (no code); this record is the evidence |
-| Reviewed | 2026-11-26 |
-
-</details>
-
----
 ## Other changes
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
