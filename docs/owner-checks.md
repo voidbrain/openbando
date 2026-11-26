@@ -101,3 +101,18 @@ npm run check:media
 Expected: both recordings finish; `check:media` reports the clips and films current. Watch the new clips and films. Expected: they show the current app (the new palette included).
 
 Message to send: `F-031: clips and films re-recorded and reviewed` (or the clip that looks wrong).
+
+## B-045 stuck video after a timeline click
+
+The browser runs in CI did not reproduce it (Chromium and WebKit, 2026-11-26), so it needs your browser. On the live site, on the machine where you saw it:
+
+1. Open any bando, **Flights** → load a log, **Video** → load its video. Expected: the video shows a frame.
+2. Pause. Click the **Timeline** chart about ten times at different places, some quickly one after another. Expected: after each click the video shows the moment under the playhead.
+3. Press **▶**, and while it plays click the chart a few times. Expected: each click pauses on the clicked moment and the video shows it.
+4. If the picture stays old: note the browser and its version, whether the clicks were quick, and whether the time in the Timeline panel still moves. Then open the browser console (⌥⌘J in Chrome, ⌥⌘C in Safari), paste the line below and press Enter. Expected: it prints the video's time, its state and its size.
+
+   ```js
+   (v => ({ t: v.currentTime, paused: v.paused, seeking: v.seeking, ready: v.readyState, w: v.videoWidth, h: v.videoHeight }))(document.querySelector('video'))
+   ```
+
+Message to send: `B-045: not reproduced in <browser version>` or `B-045: stuck in <browser version> after <quick/slow> clicks, <paused/playing>, console: <the printed line>`.

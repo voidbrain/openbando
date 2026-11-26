@@ -140,14 +140,14 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟠 Investigate | 🔶 P2 | 🟡 Medium | 3 h | — | — |
+| 🟠 Investigate | 🔶 P2 | 🟡 Medium | 3 h agent + 0.25 h owner | 🧑‍🔧 | — |
 
-💻 **→** Next: reproduce the stuck video after a timeline click (Safari and Chromium) and find the cause.
+🧑 **→** Not reproduced in CI browsers: try it on the machine where it happened and report what you see: [steps and expected results](owner-checks.md#b-045-stuck-video-after-a-timeline-click).
 
 | | |
 |---|---|
 | **Issue** | After a timeline click the video can stay stuck on an old frame. |
-| **Reproduce** | Load a flight and video; click the timeline repeatedly while paused and playing in Safari and Chromium. |
+| **Reproduce** | Load a flight and video; click the timeline repeatedly while paused and playing in Safari and Chromium. [Owner checks](owner-checks.md#b-045-stuck-video-after-a-timeline-click). |
 | **Check** | Each seek presents the matching video frame; Play resumes without returning to the first frame. |
 
 <details>
@@ -157,10 +157,10 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 (and 2026-10-30) |
+| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 (and 2026-10-30); not reproduced 2026-11-26; [#294](https://github.com/voidbrain/openbando/pull/294) |
 | Opened | 2026-10-31 |
 | Verification | Pending |
-| Reviewed | 2026-10-31 |
+| Reviewed | 2026-11-26 |
 
 </details>
 
