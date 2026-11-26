@@ -4,7 +4,7 @@
   "parent": "B-050",
   "title": "Deferred-completion regression for AI replies against a changed draft",
   "goal": "Write the deferred-completion regression; fix only if it reproduces the stale-response hypothesis",
-  "status": "planned",
+  "status": "implemented",
   "acceptance": [
     "A regression confirms or refutes the hypothesis; a fix only with a failing test first"
   ],

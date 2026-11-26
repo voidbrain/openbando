@@ -246,6 +246,22 @@ export class AiService {
         { role: 'user', content: t },
       ];
       const parsed = parseReply(scripted ?? (await this.complete(msgs)));
+      // The answer was written for the draft as it was when asked. Another bando opened, or an edit made, while the
+      // model was thinking would get commands meant for something else (B-050): apply nothing, say so.
+      if (ed.draft() !== spec) {
+        this.canUndo.set(false);
+        this.messages.update((m) => [
+          ...m,
+          {
+            role: 'ai',
+            text: 'Nothing was changed: the bando was edited or another one opened while the model was answering. Ask again.',
+            raw: parsed.commands,
+            changed: false,
+            understood: parsed.commands.map((c) => describe(c)),
+          },
+        ]);
+        return;
+      }
       const probe = cloneSpec(spec);
       const dry = runCommands(probe, parsed.commands, sel);
       // the same commands one by one on another copy, to know which change belongs to which building
