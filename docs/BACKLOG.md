@@ -811,7 +811,7 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-26: harness reconciled from v10.21.3 to v10.21.4 in [#293](https://github.com/voidbrain/openbando/pull/293) (version bump only: no copied or adapted file changed for this project); ledger header moved to main `cbf2beb` (#292, merged on green CI, run 45722994630).
+2026-11-26: harness reconciled to v10.24.1 in [#301](https://github.com/voidbrain/openbando/pull/301) (the owner authorised it in chat, "ok to all", although the template backlog is not empty), after v10.21.3 to v10.21.4 in [#293](https://github.com/voidbrain/openbando/pull/293) (version bump only); ledger header moved to main `cbf2beb` (#292, merged on green CI, run 45722994630).
 
 ## Reconciliation history
 
