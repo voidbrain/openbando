@@ -768,7 +768,7 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| PR / evidence | [#299](https://github.com/voidbrain/openbando/pull/299) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
