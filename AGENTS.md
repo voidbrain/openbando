@@ -52,7 +52,7 @@ npm run code:map -- <path>     # exports with line ranges: read those lines, not
 - Replacing a feature removes its state, helpers and tests too: no dead code.
 - A lint rule is disabled only on its line, with the reason after `--`; the copied harness tools and `tools/prototypes/` are not linted. <!-- project -->
 - A panel removed means its store, helpers and tests go too. <!-- project -->
-- Coverage: OpenBando keeps `coverage.enforce: false`; the [coverage guide](docs/agents/coverage-guide.md) says how the page in `docs/agents/coverage.md` is read and refreshed. <!-- project -->
+- Coverage: OpenBando sets `coverage.enforce: true` (owner, 2026-11-26), so a folder that drops more than `coverage.drop` points fails CI; the [coverage guide](docs/agents/coverage-guide.md) says how the page in `docs/agents/coverage.md` is read and refreshed. <!-- project -->
 
 ### Changing a harness file
 

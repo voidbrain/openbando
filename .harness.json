@@ -520,7 +520,7 @@
       "src/app/ui/"
     ],
     "drop": 2,
-    "enforce": false
+    "enforce": true
   },
   "integrations": {
     "schemaVersion": 1,
@@ -597,5 +597,24 @@
     "records": "docs/work/records",
     "tasks": "docs/work/tasks",
     "profiles": "docs/agents/model-profiles.json"
+  },
+  "workUsage": {
+    "enabled": true,
+    "pauseGapMinutes": 15
+  },
+  "behaviour": {
+    "times": 3,
+    "runner": "claude -p --permission-mode acceptEdits --allowedTools \"Bash(git:*)\" \"Bash(npm:*)\" \"Bash(node:*)\" -- \"$(cat \"$HARNESS_TASK_FILE\")\""
+  },
+  "reviews": {
+    "token": {
+      "days": 30
+    },
+    "architecture": {
+      "days": 30
+    },
+    "skills": {
+      "days": 30
+    }
   }
 }

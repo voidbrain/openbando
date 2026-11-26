@@ -108,7 +108,7 @@ jobs:
         # every source file is included, so a file no test runs shows at 0 % instead of being left out
         run: npx ng test --watch=false --coverage --coverage-reporters=json-summary --coverage-include='src/**/*.ts' --coverage-exclude='**/*.spec.ts'
 
-      - name: Code coverage table (warnings; optional enforcement)
+      - name: Code coverage table (enforced since 2026-11-26)
         run: node tools/coverage-table.mjs --check --github
 
       - name: Race relay integration
@@ -141,7 +141,7 @@ jobs:
         run: npm run check:conventions
 
       - name: Type check
-        run: npx tsc -p tsconfig.app.json --noEmit --noUnusedLocals --noUnusedParameters && npx tsc -p tools/examples/tsconfig.json && npx tsc -p tools/i18n/tsconfig.json && npx tsc -p tools/racing/tsconfig.json
+        run: npx tsc -p tsconfig.app.json --noEmit --noUnusedLocals --noUnusedParameters && npx tsc -p tools/examples/tsconfig.json && npx tsc -p tools/i18n/tsconfig.json && npx tsc -p tools/racing/tsconfig.json && npx tsc -p tsconfig.spec.json --noEmit && npx tsc -p tsconfig.e2e.json
 
       - name: Build
         run: npm run build
