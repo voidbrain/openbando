@@ -204,13 +204,13 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟠 Investigate | 🔶 P2 | 🟡 Medium | 1.5 h | — | — |
+| 🟡 Implemented | 🔶 P2 | 🟡 Medium | 1.5 h | — | — |
 
-💻 **→** Add a deferred-scan service/browser test to confirm or refute stale pair application; keep separate from the fixed saved-offset leak B-047.
+💻 **→** Close once the fix's PR has merged on green CI.
 
 | | |
 |---|---|
-| **Issue** | Auto-sync captures its initial flight/video but later applySync uses current selection; a pair-generation guard is not apparent. UI entry paths need a deferred-scan test. |
+| **Issue** | Auto-sync scanned the flight and video it started with, but `applySync` stored the offset under the pair selected when the scan ended: choosing another flight during the scan synced that flight with the old result. Reproduced 2026-11-26. |
 | **Reproduce** | Hold an Auto-sync scan, load a different video or select another flight, then release the scan. |
 | **Check** | Old work cannot store an offset or diagnostics on the new pair; cancellation cleans decoding resources and busy state. |
 
@@ -223,8 +223,8 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 |---|---|
 | PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
 | Opened | 2026-10-31 |
-| Verification | Source review · 2026-10-31 · async boundary identified; reproduction and fix not established |
-| Reviewed | 2026-10-31 |
+| Verification | Reproduced and fixed 2026-11-26 in `e2e/autosync-pair.e2e.ts` (Chromium) |
+| Reviewed | 2026-11-26 |
 
 </details>
 

@@ -66,6 +66,8 @@ export class VideoService {
   private lastSeekTarget = -1;
   /** A seek of the video alone (manual sync): the replay must not follow it. */
   private ownSeek = false;
+  /** Stops the Auto-sync scan in progress, if any: its video + flight pair changed (B-051). */
+  private stopScan: (() => void) | null = null;
 
   constructor() {
     this.playback.clock = {
@@ -187,6 +189,14 @@ export class VideoService {
     if (!this.loaded() || !this.objectUrl) return this.toast.show('Load the video first');
     if (!f) return this.toast.show('Load a log first');
     const lift = this.flights.liftoff(f);
+    // Another video or flight while scanning (restoreSync) stops the scan: its result belongs to the old pair (B-051).
+    let stopped = false;
+    const stop = new Promise<never>((_, reject) => {
+      this.stopScan = () => {
+        stopped = true;
+        reject(new Error('stopped'));
+      };
+    });
     const v = document.createElement('video');
     v.muted = true;
     v.playsInline = true;
@@ -194,11 +204,14 @@ export class VideoService {
     this.busy.set(true);
     this.status.set('opening video…');
     try {
-      await new Promise<void>((resolve, reject) => {
-        v.onloadedmetadata = () => resolve();
-        v.onerror = () => reject(new Error('this browser cannot decode the video (try a 1080p H.264 proxy)'));
-        setTimeout(() => reject(new Error('video did not open')), 15000);
-      });
+      await Promise.race([
+        stop,
+        new Promise<void>((resolve, reject) => {
+          v.onloadedmetadata = () => resolve();
+          v.onerror = () => reject(new Error('this browser cannot decode the video (try a 1080p H.264 proxy)'));
+          setTimeout(() => reject(new Error('video did not open')), 15000);
+        }),
+      ]);
       const from = Math.max(0, fromSeconds || 0);
       const to = Math.min(from + (lengthSeconds || 90), v.duration || 1e9);
       // fast first; when that decodes too few frames or finds no match (a 4K file the browser cannot keep up with), slowly
@@ -207,13 +220,10 @@ export class VideoService {
         samples: Awaited<ReturnType<typeof scanVideo>> = [];
       for (const [i, rate] of rates.entries()) {
         const slow = i > 0 ? ' (again, slower)' : '';
-        samples = await scanVideo(
-          v,
-          from,
-          to,
-          (t) => this.status.set(`scanning ${t.toFixed(0)} / ${to.toFixed(0)} s${slow}`),
-          rate,
-        );
+        samples = await Promise.race([
+          stop,
+          scanVideo(v, from, to, (t) => this.status.set(`scanning ${t.toFixed(0)} / ${to.toFixed(0)} s${slow}`), rate),
+        ]);
         outcome = samples.length >= 40 ? matchVideoToLog(samples, f) : null;
         if (outcome?.offset != null) break;
       }
@@ -228,10 +238,16 @@ export class VideoService {
       }
       this.applySync(outcome.offset, outcome.description, lift ?? 0);
     } catch (e) {
+      if (stopped) {
+        this.toast.show('Auto-sync stopped: the video or the flight changed');
+        return;
+      }
       this.status.set('');
       this.toast.show(`Auto-sync: ${(e as Error).message}`);
     } finally {
+      this.stopScan = null;
       this.busy.set(false);
+      v.pause();
       v.removeAttribute('src');
       v.load();
     }
@@ -284,6 +300,7 @@ export class VideoService {
   }
 
   private restoreSync(notify = true): void {
+    this.stopScan?.();
     const key = this.syncKey();
     const saved = key ? this.storage.readRaw(key) : null;
     const offset = saved === null ? null : Number(saved);
