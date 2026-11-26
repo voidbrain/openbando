@@ -253,7 +253,7 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Pending; [#298](https://github.com/voidbrain/openbando/pull/298) |
+| PR / evidence | [#298](https://github.com/voidbrain/openbando/pull/298) |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
@@ -737,7 +737,7 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Pending; [#298](https://github.com/voidbrain/openbando/pull/298) |
+| PR / evidence | [#298](https://github.com/voidbrain/openbando/pull/298) |
 | Opened | 2026-11-26 |
 | Verification | Pending |
 | Reviewed | 2026-11-26 |
