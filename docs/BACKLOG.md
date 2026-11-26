@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 26 November 2026 against main `791a376` (#291; CI 45720672388 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 45722994630 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -687,7 +687,7 @@ Current work ledger, reviewed 26 November 2026 against main `791a376` (#291; CI 
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
 
-2026-11-26: harness reconciled from v10.8.1 to v10.21.3 in [#292](https://github.com/voidbrain/openbando/pull/292): copied tools and guides updated, the ledger check runs before the maintenance check in CI, `work:pr` added; built views not adopted. Every open record now has steps with agent and owner hours (`docs/work/tasks/`, 54.25 h agent, 9 h owner, estimated from scope with no calibration samples) whose owner steps link their section of [owner checks](owner-checks.md) (#291, merged on green CI, run 45720672388). F-039 unblocked: its upstream shipped in harness v3.3.0. #289 (F-053 route (a)) merged on green CI (run 45361085649).
+2026-11-26: harness reconciled from v10.21.3 to v10.21.4 in [#293](https://github.com/voidbrain/openbando/pull/293) (version bump only: no copied or adapted file changed for this project); ledger header moved to main `cbf2beb` (#292, merged on green CI, run 45722994630).
 
 ## Reconciliation history
 
