@@ -2,7 +2,7 @@
 
 All applicable rules are binding from the start. An index can reduce repeated navigation, but never defers reading relevant instructions or makes ownership, evidence, privacy or safety optional.
 
-Moved to [rule review](rule-review.md): "Measure actual friction", "Agent-behaviour checks", "Periodic rule consolidation".
+Moved to [rule review](rule-review.md): "Measure actual friction", "Periodic rule consolidation"; "Agent-behaviour checks" now in [behaviour checks](behaviour-checks.md).
 
 ## In short
 
@@ -27,7 +27,7 @@ node tools/reconcile-preview.mjs --template=/path/to/project-harness --to=v2.2.2
 node tools/reconcile-preview.mjs --template=/path/to/project-harness --to=v2.2.2 --json
 ```
 
-Select an actually published release tag (the examples use v2.2.2), not an untagged prepared version. Run from the applied project through its copied script. It reads the project stamp and release-tag content, lists copy updates, local/conflicting differences, missing sources/base tags and adapted-file review, and shows marked project rules plus required checks. It never fetches, writes, merges or applies. Verify the remote release under APPLY first; a local tag alone is not proof of publication. Dirty template state is reported. All project-specific content must survive adaptation, including unmarked rules: marker extraction cannot prove semantic preservation. Missing ancestry requires manual review rather than a guessed common base. Fork conflict classification is conservative; existing check-harness three-way merge remains a separate explicit operation.
+Select an actually published release tag (the examples use v2.2.2), not an untagged prepared version. Run from the applied project through its copied script. It reads the project stamp and release-tag content, lists copy updates, local/conflicting differences, missing sources/base tags, adapted-file review and files a release adds to a template copied list that the stamp does not map yet (`new-in-template-review`), and shows marked project rules plus required checks. It never fetches, writes, merges or applies. Verify the remote release under APPLY first; a local tag alone is not proof of publication. Dirty template state is reported. All project-specific content must survive adaptation, including unmarked rules: marker extraction cannot prove semantic preservation. Missing ancestry requires manual review rather than a guessed common base. Fork conflict classification is conservative; existing check-harness three-way merge remains a separate explicit operation.
 
 Review the plan and record unresolved conflicts on the owning outcome before editing. Re-run it when source/target revisions change. A preview does not authorize edits, waive checks or establish that a rule is correct.
 

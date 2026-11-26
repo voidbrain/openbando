@@ -50,6 +50,9 @@ npm run code:map -- <path>     # exports with line ranges: read those lines, not
 - A failing test is evidence until shown otherwise: change its expectation only when the requirement deliberately changed, and say which; otherwise fix the code.
 - A bug fix starts with a committed test that fails without the fix; the fix never edits that test to pass (BACKLOG-RULES, "A bug fix starts with a failing test").
 - Replacing a feature removes its state, helpers and tests too: no dead code.
+- Change what the task needs: no reformatting, refactoring or "improvements" of code the task does not touch; record an unrelated problem instead of fixing it.
+- Write the least code the agreed outcome needs: no unrequested features, options or configuration, no abstraction with one use, no handling for cases that cannot occur.
+- A refactor keeps behaviour: the same tests, unchanged, pass before and after. New input validation comes with tests for the invalid input.
 - A lint rule is disabled only on its line, with the reason after `--`; the copied harness tools and `tools/prototypes/` are not linted. <!-- project -->
 - A panel removed means its store, helpers and tests go too. <!-- project -->
 - Coverage: OpenBando sets `coverage.enforce: true` (owner, 2026-11-26), so a folder that drops more than `coverage.drop` points fails CI; the [coverage guide](docs/agents/coverage-guide.md) says how the page in `docs/agents/coverage.md` is read and refreshed. <!-- project -->
@@ -84,7 +87,8 @@ Each procedure is binding when its trigger applies: read it before the task; a s
 | work across repositories of a solution | [solution profile](docs/agents/solution-profile.md) (refresh inside) |
 | add or use a shared skill | [skills](docs/agents/skills.md) |
 | adopt or reconcile the harness, or review maintenance evidence | [maintenance](docs/agents/maintenance.md) |
-| change AGENTS.md, CLAUDE.md, BACKLOG-RULES or `docs/backlog/`; measure friction; consolidate rules | [rule review](docs/agents/rule-review.md) (agent-behaviour checks when a runner is set) |
+| change AGENTS.md, CLAUDE.md, BACKLOG-RULES or `docs/backlog/`; measure friction; consolidate rules | [rule review](docs/agents/rule-review.md) |
+| run the agent-behaviour checks or measure a rule change, when a runner is set | [behaviour checks](docs/agents/behaviour-checks.md) |
 | run an audit, or record its findings or an improvement proposal | [audit](docs/agents/audit.md) ([findings](docs/agents/audit-findings.md)) |
 
 ### Testing the joins
@@ -130,4 +134,5 @@ OpenBando keeps one file per area under `docs/agents/areas/`, linked in the tabl
 - This backlog owns only this repository's work: reject foreign next actions and closure conditions; a master never waits on what derives from it (BACKLOG-RULES, "One repository, one backlog").
 - Keep a confirmed bug, a candidate fix, an unimplemented feature and a completed check distinct: a merge is not verification, a unit test is not a visual, pointer or device check, a green CI run proves only the checks it ran. Archives and audits are dated evidence, not current status.
 - A plan or promise given to the user (steps, a table to build, a later fix) becomes backlog records in the same change, and the reply names them. Nothing promised lives only in the conversation.
+- When a request reads two ways that change the result, name both and ask before working; when the choice is cheap to undo, state the assumption in the record and the PR and go on. Never pick silently.
 - Keep real-device, pointer/visual and untested tool combinations explicit. <!-- project -->
