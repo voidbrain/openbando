@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "id": "F-056-T02",
+  "parent": "F-056",
+  "title": "Write the threat map",
+  "goal": "The risks of openbando are listed with their evidence",
+  "status": "planned",
+  "acceptance": [
+    "`docs/security/threats.md` has one row per applicable LLM top 10 risk: what reaches the model, a tool or a key, the control, the test that proves it or the gap record (a real record id) that owns the fix",
+    "Every gap opens or cites a record with an owner; the checker passes in CI",
+    "No secret values or personal data in the page"
+  ],
+  "dependsOn": [
+    "F-056-T01"
+  ],
+  "resources": [
+    "docs/security/threats.md",
+    "docs/work/records/F-056.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral content only; no secrets, tokens or personal data in Git. Fixtures are invented.",
+  "validation": [
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "medium",
+    "estimate": "1.5 h agent",
+    "basis": "Reading the repository once for external input, tools and keys, then 8 to 12 rows. Estimated 2026-11-26 at agent speed from the report's effort column. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1.5,
+    "baselineAgentHours": 1.5,
+    "estimateAgentHours": 1.5
+  }
+}

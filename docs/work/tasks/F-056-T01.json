@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "id": "F-056-T01",
+  "parent": "F-056",
+  "title": "Threat-map checker with the closed-gap rule",
+  "goal": "A checker that validates the map rows and fails on a gap citing a closed record",
+  "status": "planned",
+  "acceptance": [
+    "`tools/check-threat-map.mjs` and `npm run check:threat-map` (in `check:fast` and CI) fail on a row with neither a cited test nor a gap record, on a cited test file that does not exist and on a gap record that is closed",
+    "Fixtures: valid map, row without evidence, missing test file, closed gap record",
+    "Failing test committed first: each failing fixture expects exit 1 against an empty tool; the change never edits that test to pass"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "tools/check-threat-map.mjs",
+    "package.json",
+    ".github/workflows/ci.yml",
+    "docs/work/records/F-056.md",
+    "generated:backlog-views"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral content only; no secrets, tokens or personal data in Git. Fixtures are invented.",
+  "validation": [
+    "npm run check:fast; final applicable CI"
+  ],
+  "escalation": [
+    "Material scope growth or effort increase goes to the owner before adoption"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h agent",
+    "basis": "The report's 2 h for map and checker, with the checker first and the closed-gap rule added (N6). Estimated 2026-11-26 at agent speed from the report's effort column. Not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1
+  }
+}

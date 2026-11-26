@@ -745,6 +745,37 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 </details>
 
 ---
+### <a id="f-056"></a>[✨ F-056](#top)
+
+**Threat map with the NERV checker**
+
+| Status | Priority | Effort | Remaining | Procedures | Decisions |
+|---|---|---|---|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟡 Medium | 2.5 h | — | — |
+
+💻 **→** Next: F-056-T01, the threat-map checker with the closed-gap rule.
+
+| | |
+|---|---|
+| **Issue** | openbando: `tools/ai-proxy.php` adds a paid key server-side, so a visitor's input reaches a model through a key the visitor never sees. NERV keeps a threat map (OWASP LLM top 10 rows, each citing a test or a gap record) and a checker (`tools/check-threat-map.mjs`, `docs/security/agentic-threats.md`); no other repository has either. NERV's map still cites closed records as gaps (report N6), so the checker here also fails on a gap that cites a closed record. Evidence: [NERV practices transfer report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md), inventory 10; class B item B1; N6. Owner decision 2026-11-26 in chat: "NERV practices inventory accept all" (all 22 proposals of the [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); this record is proposal 18). |
+| **Reproduce** | Search openbando for a threat map or a security page naming prompt injection, tool or key misuse: none. |
+| **Check** | A short threat map lists each applicable LLM top 10 risk with the test or the gap record that covers it, and a checker in CI fails on a row without either and on a gap that cites a closed record (F-056-T01, F-056-T02). The map covers the proxy first: input limits, key exposure, cost abuse and output handling. |
+
+<details>
+<summary>Next action, estimates and evidence</summary>
+
+[Full notes & evidence](work/records/F-056.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#299](https://github.com/voidbrain/openbando/pull/299) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
 ## Other changes
 
 Older entries: [reconciliation log](archive/reconciliation-2026.md).
