@@ -172,13 +172,13 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 | Status | Priority | Effort | Remaining | Procedures | Decisions |
 |---|---|---|---|:---:|:---:|
-| 🟠 Investigate | 🔶 P2 | 🟡 Medium | 1.5 h | — | — |
+| 🟡 Implemented | 🔶 P2 | 🟡 Medium | 1.5 h | — | — |
 
-💻 **→** Write the deferred-completion regression to confirm or refute the stale-response hypothesis; fix only if reproduced.
+💻 **→** Close once the fix's PR has merged on green CI.
 
 | | |
 |---|---|
-| **Issue** | Source captures the initial spec for AI context but commits commands to the current draft after awaiting a response; no draft-generation guard is apparent. This is a hypothesis, not a reproduced defect. |
+| **Issue** | `AiService.send` built the prompt from the draft at the time of asking but ran the answer's commands on the current draft: an answer arriving after another bando was opened, or after an edit, changed that bando or overwrote the edit. Reproduced 2026-11-26. |
 | **Reproduce** | Hold an AI completion, switch or edit the bando, then release the deferred reply in a service test. |
 | **Check** | A stale reply cannot modify another bando or silently overwrite intervening edits; unchanged-draft responses still apply through undo. |
 
@@ -191,8 +191,8 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 |---|---|
 | PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md) |
 | Opened | 2026-10-31 |
-| Verification | Source review · 2026-10-31 · async boundary identified; reproduction and fix not established |
-| Reviewed | 2026-10-31 |
+| Verification | Reproduced and fixed 2026-11-26 in `ai.service.spec.ts` (unit, service level) |
+| Reviewed | 2026-11-26 |
 
 </details>
 
