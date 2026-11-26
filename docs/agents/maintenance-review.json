@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-26T15:20:52.669Z",
+  "reviewed": "2026-11-26T17:31:10.523Z",
   "policy": "c2daa817f722a37f9cdbee4de239adb5fabce21daaeae844db8b14b460823b8d",
   "inputs": {
-    "AGENTS.md": "2eb6569c7f48a3a3df38e193fc54ec906997adfa07316047f09326fd0d741fe9",
+    "AGENTS.md": "3754525b0135abaf4e4f577f84196cf4288a5bb25452b4f3fd39627e43796f87",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
     "docs/BACKLOG-RULES.md": "2d5615069069328a4076e3905ee12c5144c64c25217b000a1e8528ea8e421555",
     "docs/agents/adding-things.md": "36acde3c36530665aa9e113dea0ef4b1a6b190c0c7a65c630084f60c796fc06b",
@@ -23,7 +23,7 @@
     "docs/agents/areas/welcome.md": "776dccf506de28490a762f91ca583c64abf9a37441ab1115bdc16e5089ba6992",
     "docs/agents/audit.md": "e58480c21e8afe9a825df4726fa93b8a7f841557f4267f1fc2c61ac3dac8f642",
     "docs/agents/e2e.md": "cf9d1e0f358d5efc09eb942178b7445bd04862ca038f628432cdf400b9dbb73d",
-    "docs/agents/maintenance.md": "b1da148c92f0f882f14804e16f60b11051a4a620d37764b6710e7839123da08b",
+    "docs/agents/maintenance.md": "32c077eeab35a9bbe769ea4afa93454ca15631b398794b0bc423591e62f0cbe9",
     "docs/agents/pull-requests.md": "3d3c62baf2901684369aad4bdd028fe8a2bbc162a8675f850828365d770041dc",
     "docs/agents/session-start.md": "79a15ec63225d15ce85eb4baf3015ca3028732562b000e7a67d6ab783317766f",
     "docs/backlog/closure.md": "5f85956517207edde97d13ee3e6470876c775433b1f6fce578cf22be16c5d872",
@@ -34,7 +34,7 @@
     "docs/backlog/review.md": "ef87c07f91c8bf43b56d200dc3ab5d32326fcc35d13733e99a0da2cf5c094d2a",
     "tools/check-audits.mjs": "7c9d6ebfdb4e9341b07a80329015fd771d8ab66afb42321d25899b204d826ec8",
     "tools/check-freshness.mjs": "060a041f8c71ce22d27dee9b7c77d4426f5ec43eb97d209a7ea60b7e4deef802",
-    "tools/check-harness.mjs": "3f39c811a356269ad08301baa807a8c38cd24ef45835ba7f1c094b7fc6cf5021",
+    "tools/check-harness.mjs": "6961d181cdae5b9deb53c58f1063fc73b5513b08ef3a8faa33fc4841c35e0c5b",
     "tools/check-rules.mjs": "78bbe906bfe93a3d00bd7c5e9b078d660002ef9b5aa579f26eb2f6c3507f994e",
     "tools/check-tooling.mjs": "c2362c9c06ead61ef1febad395cd59396a16719fce8a0b411fdf8caeb06cf2e4",
     "tools/coverage-table.mjs": "55f7f10f6cdde9cf3bc5445f2e5e011be62c4385ebfa93259d592dae55bc90f3",
@@ -96,28 +96,9 @@
   },
   "outcomes": [
     {
-      "kind": "rule",
-      "disposition": "implemented",
-      "target": "AGENTS.md",
-      "evidence": "Coverage project line: coverage.enforce is true (owner, chat 2026-11-26, \"coverage enforcement all\"); CI's coverage table now fails on a drop over coverage.drop (F-055-T01)."
-    },
-    {
-      "kind": "tool",
-      "disposition": "implemented",
-      "target": ".github/workflows/ci.yml",
-      "evidence": "CI type check also runs tsconfig.spec.json and the new tsconfig.e2e.json (B-059-T01, dormant-checks sweep T4/T5); both pass with no error."
-    },
-    {
       "kind": "none",
-      "disposition": "backlog",
-      "target": "F-055",
-      "evidence": "Dormant-checks sweep 2026-11-26: reviews (30 days), workUsage and behaviour.runner set in .harness.json; first architecture review written; token and skills reviews are F-055-T03; work-usage and behaviour tools arrive at the next reconcile (project-harness, sweep proposal 11)."
-    },
-    {
-      "kind": "rule",
-      "disposition": "implemented",
-      "target": "AGENTS.md",
-      "evidence": "2026-11-26: reconcile to project-harness v10.24.1: copied files byte-identical from the tag, behaviour-checks page registered, procedures table and agent-rule lines merged, project lines kept; owner authorised the reconcile in chat 2026-11-26 ('ok to all') although the template backlog is not empty."
+      "disposition": "no-change",
+      "evidence": "Reconciled to harness v10.24.2: coordinator-only pages moved to the solution stack; openbando has no copies to delete; copied tools and pages match the tag, AGENTS.md row adapted. No rule or tool change needed."
     }
   ]
 }
