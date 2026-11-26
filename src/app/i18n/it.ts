@@ -394,6 +394,8 @@ export const IT: Readonly<Record<string, string>> = {
     'Serve un log con un colpo di imbardata dopo il decollo, e un video caricato',
   'Load the video first': 'Carica prima il video',
   'Auto-sync failed': 'Sincronizzazione automatica non riuscita',
+  'Auto-sync stopped: the video or the flight changed':
+    'Sincronizzazione automatica interrotta: il video o il volo sono cambiati',
   'Auto-synced: offset {0} s': 'Sincronizzato: scarto {0} s',
   'Restored saved sync (offset {0} s)': 'Ripristinata la sincronizzazione salvata (scarto {0} s)',
   'opening video…': 'apertura video…',

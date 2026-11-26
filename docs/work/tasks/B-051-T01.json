@@ -4,7 +4,7 @@
   "parent": "B-051",
   "title": "Deferred-scan test for an Auto-sync result after changing its pair",
   "goal": "Add a deferred-scan service or browser test to confirm or refute stale pair application; fix only if reproduced",
-  "status": "planned",
+  "status": "implemented",
   "acceptance": [
     "A test confirms or refutes stale pair application; a fix only with a failing test first"
   ],
