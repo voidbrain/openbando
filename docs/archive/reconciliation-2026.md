@@ -2,6 +2,10 @@
 
 Dated reconciliation entries and archived `Other changes` entries moved from `docs/BACKLOG.md`.
 
+## Archived Other changes (moved from BACKLOG.md on 2026-11-26)
+
+2026-11-26: harness reconciled from v10.8.1 to v10.21.3 in [#292](https://github.com/voidbrain/openbando/pull/292): copied tools and guides updated, the ledger check runs before the maintenance check in CI, `work:pr` added; built views not adopted. Every open record now has steps with agent and owner hours (`docs/work/tasks/`, 54.25 h agent, 9 h owner, estimated from scope with no calibration samples) whose owner steps link their section of [owner checks](owner-checks.md) (#291, merged on green CI, run 45720672388). F-039 unblocked: its upstream shipped in harness v3.3.0. #289 (F-053 route (a)) merged on green CI (run 45361085649).
+
 ## Archived Other changes (moved from BACKLOG.md on 2026-11-23)
 
 2026-11-24: [#288](https://github.com/voidbrain/openbando/pull/288) (F-053 route (b)) merged on green CI (run 45355936112). F-053's trial finished with route (a), COLMAP; the record waits on the owner's decision.
