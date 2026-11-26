@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "reviewed": "2026-11-25T23:22:43.261Z",
+  "reviewed": "2026-11-26T10:00:20.673Z",
   "policy": "c2daa817f722a37f9cdbee4de239adb5fabce21daaeae844db8b14b460823b8d",
   "inputs": {
-    "AGENTS.md": "fb112ec6bb27fb8b1766e2f6a8f967fe812577a572ffff28d9553701309e7b28",
+    "AGENTS.md": "cd9e6796ee9affbb9cb3cfdfb1bba1b25f4302535f1499a51cf2fc19dccf507f",
     "design-system/README.md": "e02c8a201588ec39bdbd323708069d2ae1df0f4c96d3045267473f8cd006f3d9",
     "docs/BACKLOG-RULES.md": "2d5615069069328a4076e3905ee12c5144c64c25217b000a1e8528ea8e421555",
     "docs/agents/adding-things.md": "36acde3c36530665aa9e113dea0ef4b1a6b190c0c7a65c630084f60c796fc06b",
@@ -99,124 +99,19 @@
       "kind": "rule",
       "disposition": "implemented",
       "target": "AGENTS.md",
-      "evidence": "Reconciled to harness v10.3.0 (F-048): safety rules stay in AGENTS, procedures moved to docs/agents and docs/backlog, Angular rules to docs/agents/angular.md; every project line kept and marked; check:rules passes."
-    },
-    {
-      "kind": "rule",
-      "disposition": "implemented",
-      "target": "docs/BACKLOG-RULES.md",
-      "evidence": "Split into docs/backlog/*.md per template v10.3.0 with OpenBando lines (design-system, mascot guides, pre-layout archive heading, ID start date) marked project; ledger migrated (no percentages, cue kinds, Other changes archived); check:backlog passes."
+      "evidence": "Coverage project line: coverage.enforce is true (owner, chat 2026-11-26, \"coverage enforcement all\"); CI's coverage table now fails on a drop over coverage.drop (F-055-T01)."
     },
     {
       "kind": "tool",
       "disposition": "implemented",
-      "target": "tools/check-tooling.mjs",
-      "evidence": "F-049 closed 2026-11-23: Prettier (#279) and ESLint (#280) merged on green CI; format:check, lint and check:tooling run in CI."
-    },
-    {
-      "kind": "rule",
-      "disposition": "implemented",
-      "target": "AGENTS.md",
-      "evidence": "Fresh-context review of #278: backlog legend migrated, missing project marker added in docs/backlog/documentation.md, audit scope project line restored (guides, clips, design system, accessibility); check:rules and check:backlog pass."
+      "target": ".github/workflows/ci.yml",
+      "evidence": "CI type check also runs tsconfig.spec.json and the new tsconfig.e2e.json (B-059-T01, dormant-checks sweep T4/T5); both pass with no error."
     },
     {
       "kind": "none",
-      "disposition": "no-change",
-      "evidence": "23 November full audit: the 7-day audit gate and daily maintenance check blocked all PRs after an idle week; kept as the owner set it on 31 October, proposal recorded report-only in docs/audits/2026-11-23-full-openbando.md."
-    },
-    {
-      "kind": "tool",
-      "disposition": "implemented",
-      "target": "tools/check-rules.mjs",
-      "evidence": "Copied from template v10.3.1 (B-048 there): glob regex characters escaped; clears the CodeQL js/incomplete-sanitization alert on #278."
-    },
-    {
-      "kind": "tool",
-      "disposition": "implemented",
-      "target": "AGENTS.md",
-      "evidence": "F-049 step 1: Prettier adopted (format:check in CI and in the AGENTS command block); check-i18n and build-element-map fixed to read Prettier-formatted templates, same output on old and new source."
-    },
-    {
-      "kind": "tool",
-      "disposition": "implemented",
-      "target": "AGENTS.md",
-      "evidence": "F-049 step 2: ESLint adopted (lint, format:check and check:tooling in CI; AGENTS command block and project line); core/ import rule mirrors check:conventions; disables only per line with a reason."
-    },
-    {
-      "kind": "rule",
-      "disposition": "implemented",
-      "target": "AGENTS.md",
-      "evidence": "F-050: area notes split into docs/agents/areas/ (13 files, index kept), Adding things recipes into docs/agents/adding-things.md, area pitfalls into their area files; no rule removed (check:rules passes, never rule stays in AGENTS); AGENTS 4,665 -> 4,365 tokens."
-    },
-    {
-      "kind": "none",
-      "disposition": "no-change",
-      "evidence": "Residual check:rule-load warnings kept visible with reasons in F-050: the template AGENTS alone is ~3,160 tokens against a 3,500 always-loaded budget, so the budget is a template question raised to the owner; five area files at 2,100-3,100 tokens stay whole per area."
-    },
-    {
-      "kind": "rule",
-      "disposition": "implemented",
-      "target": "AGENTS.md",
-      "evidence": "Review of #281: calibration-through-the-store and userData.pick kept in AGENTS (they reach flight and builder code); template Area notes sentence restored with a separate project line; recipe names userData.pick; Overpass noted in terrain too."
-    },
-    {
-      "kind": "rule",
-      "disposition": "implemented",
-      "target": "AGENTS.md",
-      "evidence": "Reconciled to harness v10.5.0 (lean AGENTS, landing queue): AGENTS rebuilt on the template, safety block verbatim, every OpenBando sentence traced to AGENTS or its area file; always-loaded 4,557 -> 3,454 tokens within 3,500; F-050 closed."
-    },
-    {
-      "kind": "rule",
-      "disposition": "implemented",
-      "target": "docs/agents/e2e.md",
-      "evidence": "Review of #283: e2e conventions in their own guide with a procedures row (any Playwright test reaches them); tsc commands written out (racing included); note figure corrected."
-    },
-    {
-      "kind": "tool",
-      "disposition": "implemented",
-      "target": "tools/friction.mjs",
-      "evidence": "Copied from template v10.6.1 (B-049 there): friction samples land in the primary checkout, so a task worktree no longer needs the jsonl copied in; rule-review and skills guides copied; check-harness --strict matches."
-    },
-    {
-      "kind": "rule",
-      "disposition": "implemented",
-      "target": "docs/backlog/closure.md",
-      "evidence": "Reconciled to template v10.7.0: the closure paragraph names work:close for source-owned records (not adopted here, so the sentence is conditional and true); the project line about pre-layout archive headings is kept."
-    },
-    {
-      "kind": "tool",
-      "disposition": "implemented",
-      "target": "tools/work-items.mjs",
-      "evidence": "F-052: source-owned records adopted (owner request): 20 records migrated with the ledger preserved byte for byte, featurePlans off (no task files), check:work in CI, impact row record sources -> ledger; work:close now applies to the 10.7.0 closure paragraph."
-    },
-    {
-      "kind": "tool",
-      "disposition": "implemented",
-      "target": "tools/work-items.mjs",
-      "evidence": "F-052 closed 2026-11-24 with work:close after the v10.8.1 reconcile (template B-050 fix: no tasks folder needed)."
-    },
-    {
-      "kind": "rule",
-      "disposition": "implemented",
-      "target": "docs/BACKLOG-RULES.md",
-      "evidence": "Reconciled to v10.8.1: procedure child files (human-action, ledger-header, skills-discovery) and the BACKLOG-RULES rows that route to them; OpenBando lines kept (record-source row, ID start date)."
-    },
-    {
-      "kind": "tool",
-      "disposition": "implemented",
-      "target": "tools/work-items.mjs",
-      "evidence": "Reconciled to harness v10.21.3: copied tools and guides updated from the tag; check:work, check:backlog, check:rules and check:conventions pass."
-    },
-    {
-      "kind": "rule",
-      "disposition": "implemented",
-      "target": "docs/agents/pull-requests.md",
-      "evidence": "Adapted pull-requests, review, ordering and angular guides carry the v10.9.0-v10.21.3 sentences (work:pr, external step prerequisites, built views wording, conventions.sourceDirs); built views not adopted, so the ledger stays committed."
-    },
-    {
-      "kind": "none",
-      "disposition": "no-change",
-      "evidence": "Built views (workItems.views), publishHooks and the solution coordinator files are not adopted: the owner asked not to enable built views; openbando is a solution component, not a coordinator."
+      "disposition": "backlog",
+      "target": "F-055",
+      "evidence": "Dormant-checks sweep 2026-11-26: reviews (30 days), workUsage and behaviour.runner set in .harness.json; first architecture review written; token and skills reviews are F-055-T03; work-usage and behaviour tools arrive at the next reconcile (project-harness, sweep proposal 11)."
     }
   ]
 }

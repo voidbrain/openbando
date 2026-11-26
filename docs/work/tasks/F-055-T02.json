@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "id": "F-055-T02",
+  "parent": "F-055",
+  "title": "First architecture review with outside-landscape comparison",
+  "goal": "docs/reviews/architecture/2026-11-26.md",
+  "status": "implemented",
+  "acceptance": [
+    "Dated report with baseline, scope, generic queries and an adopt/adapt/reject/watch table with level, why, why not and evidence"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/reviews/architecture/**"
+  ],
+  "capabilities": [
+    "research"
+  ],
+  "privacy": "Neutral invented fixtures only; no personal data, credentials or private reports in Git.",
+  "validation": [
+    "npm run check:freshness"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-26 with three generic web searches. Not timed.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5,
+    "days": 0,
+    "baselineDays": 0
+  }
+}

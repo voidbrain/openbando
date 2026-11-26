@@ -230,6 +230,37 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 ---
 
+### <a id="b-059"></a>[🐞 B-059](#top)
+
+**Playwright specs and Angular specs are type-checked in CI**
+
+| Status | Priority | Effort | Remaining | Procedures | Decisions |
+|---|---|---|---|:---:|:---:|
+| 🔴 Open | 🔶 P2 | 🟢 Small | 0 h | — | — |
+
+💻 **→** Close once the PR merges on green CI.
+
+| | |
+|---|---|
+| **Issue** | The 23 Playwright specs and their helpers (`e2e/contrast.ts` among them) were in no `tsconfig`, and the Angular spec files were outside the CI type check (it ran `tsconfig.app.json`, which excludes `*.spec.ts`). Playwright and Vitest strip types without checking them, so a wrong call in a test ran unchecked. Found by the coordinator's dormant-checks sweep, 2026-11-26 (T4, T5; proposals 5 and 9). |
+| **Reproduce** | On `main` `87e96f2`: `.github/workflows/ci.yml` Type check runs `tsconfig.app.json` and three tool folders only; no `tsconfig` names `e2e/`. |
+| **Check** | CI's Type check also runs `tsc -p tsconfig.spec.json --noEmit` and `tsc -p tsconfig.e2e.json` (new, like bricks' `tsconfig.e2e.json`); both pass on the branch. Both found no error when added (2026-11-26), so no test changed. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-059.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#298](https://github.com/voidbrain/openbando/pull/298) |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
+
+</details>
+
+---
 ## Features and limitations
 
 ### <a id="f-001"></a>[✨ F-001](#top)
@@ -679,6 +710,37 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 | Opened | 2026-11-24 |
 | Verification | Pending (trial measured 2026-11-24: route (b) not traceable; route (a) crisp per piece, 2.2–3.0 m between pieces) |
 | Reviewed | 2026-11-24 |
+
+</details>
+
+---
+### <a id="f-055"></a>[✨ F-055](#top)
+
+**Turn on the dormant procedure settings: reviews, coverage enforcement, work usage, behaviour runner**
+
+| Status | Priority | Effort | Remaining | Procedures | Decisions |
+|---|---|---|---|:---:|:---:|
+| 🔴 Open | 🔹 P3 | 🟢 Small | 1 h | — | — |
+
+💻 **→** Next: F-055-T03, the first token and skills reviews.
+
+| | |
+|---|---|
+| **Issue** | The 2026-11-26 dormant-checks sweep (coordinator `docs/audits/2026-11-26-dormant-checks.md`, rows S1, S2, S3, S5) found no periodic reviews (`reviews` unset), coverage regressions that only warn (`coverage.enforce: false`), work-usage measurement off and no `behaviour.runner`. |
+| **Reproduce** | `.harness.json` on `main` `87e96f2`: no `reviews`, `coverage.enforce: false`, no `workUsage`, no `behaviour`. |
+| **Check** | `.harness.json` sets `reviews` (token, architecture, skills at 30 days), `coverage.enforce: true`, `workUsage.enabled: true` and `behaviour.runner`; the first architecture review with its outside-landscape comparison is in `docs/reviews/architecture/2026-11-26.md`; CI passes with enforcement on (or a real coverage drop is fixed or recorded). First token and skills reviews: F-055-T03. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/F-055.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#298](https://github.com/voidbrain/openbando/pull/298) |
+| Opened | 2026-11-26 |
+| Verification | Pending |
+| Reviewed | 2026-11-26 |
 
 </details>
 

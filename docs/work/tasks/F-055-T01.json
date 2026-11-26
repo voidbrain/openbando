@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "id": "F-055-T01",
+  "parent": "F-055",
+  "title": "Reviews, coverage enforcement, work usage and behaviour runner settings",
+  "goal": "The four settings are on in .harness.json",
+  "status": "implemented",
+  "acceptance": [
+    "`reviews` token, architecture, skills at 30 days",
+    "`coverage.enforce` true and the AGENTS.md coverage line says so",
+    "`workUsage.enabled` true",
+    "`behaviour.runner` is the Claude Code `claude -p` command from rule-review, no campaign run"
+  ],
+  "dependsOn": [],
+  "resources": [
+    ".harness.json",
+    "AGENTS.md",
+    ".github/workflows/ci.yml"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral invented fixtures only; no personal data, credentials or private reports in Git.",
+  "validation": [
+    "npm run check:freshness",
+    "CI check job (coverage table enforced)"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-26 in one PR from the dormant-checks sweep, owner decisions in chat that day. Not timed.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.25,
+    "estimateAgentHours": 0.25,
+    "days": 0,
+    "baselineDays": 0
+  }
+}

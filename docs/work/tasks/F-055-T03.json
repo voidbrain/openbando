@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "id": "F-055-T03",
+  "parent": "F-055",
+  "title": "First token and skills reviews",
+  "goal": "docs/reviews/token/<date>.md and docs/reviews/skills/<date>.md",
+  "status": "planned",
+  "acceptance": [
+    "Token review per rule-review \"Periodic token review\"",
+    "Skills review per skills \"Skill discovery review\""
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/reviews/**"
+  ],
+  "capabilities": [
+    "research"
+  ],
+  "privacy": "Neutral invented fixtures only; no personal data, credentials or private reports in Git.",
+  "validation": [
+    "npm run check:freshness shows neither review missing"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "1 h agent",
+    "basis": "Two short reviews like those of nerv and gauntlet-protocol. Estimate, not a measurement.",
+    "reviewed": "2026-11-26",
+    "agentHours": 1,
+    "ownerHours": 0,
+    "baselineAgentHours": 1,
+    "estimateAgentHours": 1,
+    "days": 0,
+    "baselineDays": 0
+  }
+}

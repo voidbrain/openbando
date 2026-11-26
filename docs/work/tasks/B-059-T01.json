@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "id": "B-059-T01",
+  "parent": "B-059",
+  "title": "Type-check Playwright and Angular specs in CI",
+  "goal": "tsconfig.e2e.json and tsconfig.spec.json run in the CI type check",
+  "status": "implemented",
+  "acceptance": [
+    "`tsconfig.e2e.json` includes `e2e/**/*.ts` and `playwright.config.ts`",
+    "CI Type check runs `tsc -p tsconfig.spec.json --noEmit` and `tsc -p tsconfig.e2e.json` and passes"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "tsconfig.e2e.json",
+    ".github/workflows/ci.yml",
+    "docs/work/records/B-059.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "Neutral invented fixtures only; no personal data, credentials or private reports in Git.",
+  "validation": [
+    "npx tsc -p tsconfig.e2e.json",
+    "npx tsc -p tsconfig.spec.json --noEmit",
+    "CI check job"
+  ],
+  "escalation": [
+    "A material scope or effort increase goes to the owner"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0 remaining",
+    "basis": "Done 2026-11-26 in one PR from the dormant-checks sweep; both configs passed with no error. Not timed.",
+    "reviewed": "2026-11-26",
+    "agentHours": 0,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.5,
+    "estimateAgentHours": 0.5,
+    "days": 0,
+    "baselineDays": 0
+  }
+}
