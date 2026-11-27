@@ -4,7 +4,7 @@
   "parent": "F-055",
   "title": "First architecture review with outside-landscape comparison",
   "goal": "docs/reviews/architecture/2026-11-26.md",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "Dated report with baseline, scope, generic queries and an adopt/adapt/reject/watch table with level, why, why not and evidence"
   ],
@@ -25,8 +25,8 @@
   "effort": {
     "size": "small",
     "estimate": "0 remaining",
-    "basis": "Done 2026-11-26 with three generic web searches. Not timed.",
-    "reviewed": "2026-11-26",
+    "basis": "Done 2026-11-26 in #298 (CI 45797342863 green) with three generic web searches. No actual: reconciled in a later session without job timing. Closed 2026-11-27.",
+    "reviewed": "2026-11-27",
     "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 0.5,

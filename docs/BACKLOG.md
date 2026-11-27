@@ -2,7 +2,7 @@
 
 Full review: 31 October 2026 against main `3f7b844` (#275); its CI 41245176140 and CodeQL passed. [Full audit](audits/2026-10-31-full-openbando.md) records current findings and limits.
 
-Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 45722994630 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
+Current work ledger, reviewed 27 November 2026 against main `1c7ef9b` (#302; CI 45894764840 green). [Rules](BACKLOG-RULES.md) · [Archive](archive/backlog-2026.md) · [Reading the records](#how-to-use-this-file).
 
 ## Bugs and reliability
 
@@ -157,110 +157,15 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 (and 2026-10-30); not reproduced 2026-11-26; [#294](https://github.com/voidbrain/openbando/pull/294) |
+| PR / evidence | [#268](https://github.com/voidbrain/openbando/pull/268) (recorded); Report 2026-10-31 (and 2026-10-30); not reproduced 2026-11-26; [#294](https://github.com/voidbrain/openbando/pull/294) (CI 45787470167 green) |
 | Opened | 2026-10-31 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Reviewed | 2026-11-27 |
 
 </details>
 
 ---
 
-### <a id="b-050"></a>[🐞 B-050](#top)
-
-**Investigate delayed AI replies against a changed editor draft**
-
-| Status | Priority | Effort | Remaining | Procedures | Decisions |
-|---|---|---|---|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟡 Medium | 1.5 h | — | — |
-
-💻 **→** Close once the fix's PR has merged on green CI.
-
-| | |
-|---|---|
-| **Issue** | `AiService.send` built the prompt from the draft at the time of asking but ran the answer's commands on the current draft: an answer arriving after another bando was opened, or after an edit, changed that bando or overwrote the edit. Reproduced 2026-11-26. |
-| **Reproduce** | Hold an AI completion, switch or edit the bando, then release the deferred reply in a service test. |
-| **Check** | A stale reply cannot modify another bando or silently overwrite intervening edits; unchanged-draft responses still apply through undo. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-050.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md); [#295](https://github.com/voidbrain/openbando/pull/295) |
-| Opened | 2026-10-31 |
-| Verification | Reproduced and fixed 2026-11-26 in `ai.service.spec.ts` (unit, service level) |
-| Reviewed | 2026-11-26 |
-
-</details>
-
----
-
-### <a id="b-051"></a>[🐞 B-051](#top)
-
-**Investigate an Auto-sync result after changing its video/log pair**
-
-| Status | Priority | Effort | Remaining | Procedures | Decisions |
-|---|---|---|---|:---:|:---:|
-| 🟡 Implemented | 🔶 P2 | 🟡 Medium | 1.5 h | — | — |
-
-💻 **→** Close once the fix's PR has merged on green CI.
-
-| | |
-|---|---|
-| **Issue** | Auto-sync scanned the flight and video it started with, but `applySync` stored the offset under the pair selected when the scan ended: choosing another flight during the scan synced that flight with the old result. Reproduced 2026-11-26. |
-| **Reproduce** | Hold an Auto-sync scan, load a different video or select another flight, then release the scan. |
-| **Check** | Old work cannot store an offset or diagnostics on the new pair; cancellation cleans decoding resources and busy state. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-051.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](audits/2026-10-31-full-openbando.md); [#296](https://github.com/voidbrain/openbando/pull/296) |
-| Opened | 2026-10-31 |
-| Verification | Reproduced and fixed 2026-11-26 in `e2e/autosync-pair.e2e.ts` (Chromium) |
-| Reviewed | 2026-11-26 |
-
-</details>
-
----
-
-### <a id="b-059"></a>[🐞 B-059](#top)
-
-**Playwright specs and Angular specs are type-checked in CI**
-
-| Status | Priority | Effort | Remaining | Procedures | Decisions |
-|---|---|---|---|:---:|:---:|
-| 🔴 Open | 🔶 P2 | 🟢 Small | 0 h | — | — |
-
-💻 **→** Close once the PR merges on green CI.
-
-| | |
-|---|---|
-| **Issue** | The 23 Playwright specs and their helpers (`e2e/contrast.ts` among them) were in no `tsconfig`, and the Angular spec files were outside the CI type check (it ran `tsconfig.app.json`, which excludes `*.spec.ts`). Playwright and Vitest strip types without checking them, so a wrong call in a test ran unchecked. Found by the coordinator's dormant-checks sweep, 2026-11-26 (T4, T5; proposals 5 and 9). |
-| **Reproduce** | On `main` `87e96f2`: `.github/workflows/ci.yml` Type check runs `tsconfig.app.json` and three tool folders only; no `tsconfig` names `e2e/`. |
-| **Check** | CI's Type check also runs `tsc -p tsconfig.spec.json --noEmit` and `tsc -p tsconfig.e2e.json` (new, like bricks' `tsconfig.e2e.json`); both pass on the branch. Both found no error when added (2026-11-26), so no test changed. |
-
-<details>
-<summary>Next action, estimates and PR history</summary>
-
-[Full notes & evidence](work/records/B-059.md)
-
-| Field | Value |
-|---|---|
-| PR / evidence | [#298](https://github.com/voidbrain/openbando/pull/298) |
-| Opened | 2026-11-26 |
-| Verification | Pending |
-| Reviewed | 2026-11-26 |
-
-</details>
-
----
 ## Features and limitations
 
 ### <a id="f-001"></a>[✨ F-001](#top)
@@ -737,10 +642,10 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#298](https://github.com/voidbrain/openbando/pull/298) |
+| PR / evidence | [#298](https://github.com/voidbrain/openbando/pull/298) (CI 45797342863 green) |
 | Opened | 2026-11-26 |
-| Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Verification | Unit/integration · 2026-11-27 · F-055-T01 and F-055-T02 verified in #298 CI 45797342863 (coverage enforced, architecture review current); Documentation · Pending (F-055-T03) |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -768,10 +673,10 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#299](https://github.com/voidbrain/openbando/pull/299) (plan); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
+| PR / evidence | [#299](https://github.com/voidbrain/openbando/pull/299) (plan, CI 45807006746 green); [report](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-26-nerv-practices-transfer.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Reviewed | 2026-11-27 |
 
 </details>
 
@@ -799,10 +704,10 @@ Current work ledger, reviewed 26 November 2026 against main `cbf2beb` (#292; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | [#300](https://github.com/voidbrain/openbando/pull/300) (plan); [review page](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-shared-assets/gauntlet-openbando.md); owner decision 2026-11-26 |
+| PR / evidence | [#300](https://github.com/voidbrain/openbando/pull/300) (plan, CI 45845127211 green); [#303](https://github.com/voidbrain/openbando/pull/303) (coordinator prefix, CI 45872243680 green); [review page](https://github.com/voidbrain/coordinator/blob/main/docs/reviews/2026-11-shared-assets/gauntlet-openbando.md); owner decision 2026-11-26 |
 | Opened | 2026-11-26 |
 | Verification | Pending |
-| Reviewed | 2026-11-26 |
+| Reviewed | 2026-11-27 |
 
 </details>
 

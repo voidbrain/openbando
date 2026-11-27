@@ -1758,3 +1758,111 @@ Closed after reading every job of the listed runs with `npm run ci:status`.
 </details>
 
 ---
+
+## Closed 2026-11-27
+
+### B-050
+
+**Investigate delayed AI replies against a changed editor draft**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P2 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: #295 merged at d02f0b3, CI 45790352219 green (check, e2e 1–4, race-browser).
+
+| | |
+|---|---|
+| **Issue** | `AiService.send` built the prompt from the draft at the time of asking but ran the answer's commands on the current draft: an answer arriving after another bando was opened, or after an edit, changed that bando or overwrote the edit. Reproduced 2026-11-26. |
+| **Reproduce** | Hold an AI completion, switch or edit the bando, then release the deferred reply in a service test. |
+| **Check** | A stale reply cannot modify another bando or silently overwrite intervening edits; unchanged-draft responses still apply through undo. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: #295 merged at d02f0b3, CI 45790352219 green (check, e2e 1–4, race-browser). 2026-11-26 (B-050-T01): reproduced. `ai.service.spec.ts` holds the model's answer, opens another bando or renames the building by hand, then releases it: before the fix the answer renamed the other bando's building and overwrote the hand rename (2 of 3 cases failed, committed first). Cause: no check that the draft was still the one the question was asked about. Fix: `send` applies nothing when `editor.draft()` is no longer the draft it read (every edit and every load sets a new draft), and the chat says so; an unchanged draft still applies as one undo step. Next: close after the PR merges on green CI.
+
+Earlier: Write the deferred-completion regression to confirm or refute the stale-response hypothesis; fix only if reproduced. Source review · 2026-10-31 · async boundary identified; reproduction and fix not established
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](../audits/2026-10-31-full-openbando.md); [#295](https://github.com/voidbrain/openbando/pull/295) |
+| Opened | 2026-10-31 |
+| Verification | Unit/integration · 2026-11-27 · Test: src/app/services/ai.service.spec.ts passed in #295 CI 45790352219 |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
+
+### B-051
+
+**Investigate an Auto-sync result after changing its video/log pair**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P2 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: #296 merged at 87e96f2, CI 45793007572 green (check, e2e 1–4, race-browser).
+
+| | |
+|---|---|
+| **Issue** | Auto-sync scanned the flight and video it started with, but `applySync` stored the offset under the pair selected when the scan ended: choosing another flight during the scan synced that flight with the old result. Reproduced 2026-11-26. |
+| **Reproduce** | Hold an Auto-sync scan, load a different video or select another flight, then release the scan. |
+| **Check** | Old work cannot store an offset or diagnostics on the new pair; cancellation cleans decoding resources and busy state. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: #296 merged at 87e96f2, CI 45793007572 green (check, e2e 1–4, race-browser). 2026-11-26 (B-051-T01): reproduced in the browser. `e2e/autosync-pair.e2e.ts` starts Auto-sync on the demo flight and video, loads another flight while it scans and waits for the scan to end: before the fix the offset was stored as `abando-sync:demo.mp4:…|other.csv` (committed first, failing). Cause: nothing tied the scan to its pair. Fix: a new video or flight (`VideoService.restoreSync`) stops the scan in progress; the stopped scan stores nothing, shows no result, says so in a toast, and its decoding video is paused and released and `busy` cleared. The showcase Auto-sync case still finds −0.68 s. Next: close after the PR merges on green CI.
+
+Earlier: Add a deferred-scan service/browser test to confirm or refute stale pair application; keep separate from the fixed saved-offset leak B-047. Source review · 2026-10-31 · async boundary identified; reproduction and fix not established
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#276](https://github.com/voidbrain/openbando/pull/276); [Full audit](../audits/2026-10-31-full-openbando.md); [#296](https://github.com/voidbrain/openbando/pull/296) |
+| Opened | 2026-10-31 |
+| Verification | Browser/accessibility · 2026-11-27 · Test: e2e/autosync-pair.e2e.ts passed in #296 CI 45793007572 |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
+
+### B-059
+
+**Playwright specs and Angular specs are type-checked in CI**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P2 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: #298 merged at 1787292, CI 45797342863 green (check, e2e 1–4, race-browser).
+
+| | |
+|---|---|
+| **Issue** | The 23 Playwright specs and their helpers (`e2e/contrast.ts` among them) were in no `tsconfig`, and the Angular spec files were outside the CI type check (it ran `tsconfig.app.json`, which excludes `*.spec.ts`). Playwright and Vitest strip types without checking them, so a wrong call in a test ran unchecked. Found by the coordinator's dormant-checks sweep, 2026-11-26 (T4, T5; proposals 5 and 9). |
+| **Reproduce** | On `main` `87e96f2`: `.github/workflows/ci.yml` Type check runs `tsconfig.app.json` and three tool folders only; no `tsconfig` names `e2e/`. |
+| **Check** | CI's Type check also runs `tsc -p tsconfig.spec.json --noEmit` and `tsc -p tsconfig.e2e.json` (new, like bricks' `tsconfig.e2e.json`); both pass on the branch. Both found no error when added (2026-11-26), so no test changed. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: #298 merged at 1787292, CI 45797342863 green (check, e2e 1–4, race-browser). 2026-11-26: owner accepted every fix of the dormant-checks sweep in chat ("Accept all fixes"). B-059-T01 implemented: `tsconfig.e2e.json` (27 files: specs, recordings, helpers, `playwright.config.ts`) and the spec config added to the CI type check; both pass with no error. Closes when the PR merges on green CI.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#298](https://github.com/voidbrain/openbando/pull/298) |
+| Opened | 2026-11-26 |
+| Verification | Unit/integration · 2026-11-27 · No test: CI type-check configuration gap, verified by Type check step in #298 CI 45797342863 |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
