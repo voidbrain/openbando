@@ -4,7 +4,7 @@
   "parent": "B-051",
   "title": "Deferred-scan test for an Auto-sync result after changing its pair",
   "goal": "Add a deferred-scan service or browser test to confirm or refute stale pair application; fix only if reproduced",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "A test confirms or refutes stale pair application; a fix only with a failing test first"
   ],
@@ -30,10 +30,10 @@
   ],
   "effort": {
     "size": "medium",
-    "estimate": "1.5 h agent",
-    "basis": "Same shape as B-050 on the Auto-sync service. Guess for the fix part. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). Estimate, not a measurement.",
-    "reviewed": "2026-11-26",
-    "agentHours": 1.5,
+    "estimate": "0 remaining",
+    "basis": "Same shape as B-050 on the Auto-sync service. Guess for the fix part. Estimated 2026-11-26 from the record's scope at the harness 10.21.3 reconcile; no calibration samples exist yet (first hour estimates here). No actual: reconciled in a later session without job timing. Closed 2026-11-27.",
+    "reviewed": "2026-11-27",
+    "agentHours": 0,
     "ownerHours": 0,
     "baselineAgentHours": 1.5,
     "estimateAgentHours": 1.5

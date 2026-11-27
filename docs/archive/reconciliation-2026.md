@@ -73,3 +73,7 @@ Completed documentation and backlog changes, with PR links and verification evid
 2026-11-24: #286 (harness v10.8.1) merged on green CI (run 45300151877). F-053 added ([#287](https://github.com/voidbrain/openbando/pull/287)): a proposal to rebuild a bando as a point cloud from a flight video, with the blackbox and GPS giving scale and place.
 
 2026-11-24: [#287](https://github.com/voidbrain/openbando/pull/287) (F-053 proposal) merged on green CI (run 45352748147). F-053's first trial route (telemetry poses and in-browser depth) measured: fast, not traceable; the record names the next route.
+
+## 2026-11-27 — main `1c7ef9b`
+
+PRs #293–#303 merged on green CI. Closed B-050 (#295), B-051 (#296), F-054 (#297), B-059 (#298) and F-055-T01/T02 (#298); B-045 (#294) awaits owner check; F-056 (#299) and F-057 (#300, #303) planned; #293, #301, #302 harness reconciles (no record).
