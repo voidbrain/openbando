@@ -166,6 +166,37 @@ Current work ledger, reviewed 27 November 2026 against main `1c7ef9b` (#302; CI 
 
 ---
 
+### <a id="b-060"></a>[🐞 B-060](#top)
+
+**The live index refuses the 2026 archive at F-020**
+
+| Status | Priority | Effort | Remaining | Procedures | Decisions |
+|---|---|---|---|:---:|:---:|
+| 🟡 Implemented | 🔹 P3 | 🟢 Small | 0 h | — | — |
+
+💻 **→** Closes when the PR merges on green CI and the index build on main, with the coordinator's tool at harness v10.25.1, reports no problem row.
+
+| | |
+|---|---|
+| **Issue** | The coordinator's live index refused `docs/archive/backlog-2026.md` with "openbando:F-020: unsupported multiple/missing summary rows": the harness and maintenance table after F-020 (four 🔵 change rows, closed 29 October) has no heading of its own, so readers took it as part of F-020. |
+| **Reproduce** | On `main` `45bf5b2`: `node ~/Projects/coordinator/tools/backlog-index.mjs build --db /tmp/ob.sqlite --repo openbando --source .` then `dump --db /tmp/ob.sqlite`: one problem row, the message above. |
+| **Check** | The same build on the committed fix, with `solution.mjs` from harness v10.25.1 (project-harness:B-131: an archive's legacy tables before the record layout no longer fail the whole file), reports no problem row (`"problems": []`). Archive lines unchanged: the fix only adds a `## Closed 2026-10-29, continued` heading and a dated correction note before the table. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+[Full notes & evidence](work/records/B-060.md)
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#305](https://github.com/voidbrain/openbando/pull/305); owner request 2026-11-27 (chat "yep") |
+| Opened | 2026-11-27 |
+| Verification | Pending |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
 ## Features and limitations
 
 ### <a id="f-001"></a>[✨ F-001](#top)

@@ -273,6 +273,10 @@ Closed after reading every job of [#159 CI](https://github.com/voidbrain/openban
 
 </details>
 
+## Closed 2026-10-29, continued
+
+Correction 2026-11-27 (B-060): this heading was added afterwards. Without it the harness and maintenance table below, whose four 🔵 rows are changes, not records, read as part of F-020 above, so the live index (`tools/backlog-index.mjs`, harness 10.25.0) refused this archive ("openbando:F-020: unsupported multiple/missing summary rows"). Archive lines never change: the heading only ends F-020 before the table. Everything below it still closed on 29 October.
+
 **Harness and maintenance — closed 29 October**
 
 Closed after reading every job of each PR's CI with `npm run ci:status`. Lesson recorded: stacked PRs (#160, #161) merged into feature branches without CI and needed #162 to reach main; PRs now target main.
