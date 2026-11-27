@@ -4,7 +4,7 @@
   "parent": "B-060",
   "title": "End F-020 before the harness and maintenance table in the 2026 archive",
   "goal": "The live index reads the 2026 archive with no problem row; no archive line changes",
-  "status": "implemented",
+  "status": "closed",
   "acceptance": [
     "The coordinator index build on the committed branch reports no problem row",
     "check:backlog passes: archive lines only added"
@@ -27,8 +27,8 @@
   ],
   "effort": {
     "size": "small",
-    "estimate": "0.25 h agent",
-    "basis": "One inserted heading and a correction note, checked by the index build. Estimated 2026-11-27.",
+    "estimate": "0 remaining",
+    "basis": "One inserted heading and a correction note, checked by the index build. Estimated 2026-11-27. Closed 2026-11-27.",
     "reviewed": "2026-11-27",
     "agentHours": 0,
     "ownerHours": 0,

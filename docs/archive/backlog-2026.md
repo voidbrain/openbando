@@ -1870,3 +1870,37 @@ Earlier: Add a deferred-scan service/browser test to confirm or refute stale pai
 </details>
 
 ---
+
+### B-060
+
+**The live index refuses the 2026 archive at F-020**
+
+| Signal | Priority | Status | Effort |
+|:---:|---|---|---|
+| 🔵 | ◻️ P3 | Closed | 🟢 Small |
+
+💻 **→ Human action required: No**<br />Closed 2026-11-27: #305 merged on green CI (main 9390745, CI 45967377381); the coordinator's index build on main (harness v10.25.3 tools) reports 0 problem rows, 90 records.
+
+| | |
+|---|---|
+| **Issue** | The coordinator's live index refused `docs/archive/backlog-2026.md` with "openbando:F-020: unsupported multiple/missing summary rows": the harness and maintenance table after F-020 (four 🔵 change rows, closed 29 October) has no heading of its own, so readers took it as part of F-020. |
+| **Reproduce** | On `main` `45bf5b2`: `node ~/Projects/coordinator/tools/backlog-index.mjs build --db /tmp/ob.sqlite --repo openbando --source .` then `dump --db /tmp/ob.sqlite`: one problem row, the message above. |
+| **Check** | The same build on the committed fix, with `solution.mjs` from harness v10.25.1 (project-harness:B-131: an archive's legacy tables before the record layout no longer fail the whole file), reports no problem row (`"problems": []`). Archive lines unchanged: the fix only adds a `## Closed 2026-10-29, continued` heading and a dated correction note before the table. |
+
+<details>
+<summary>Next action, estimates and PR history</summary>
+
+**Next action / closure evidence:** Closed 2026-11-27: #305 merged on green CI (main 9390745, CI 45967377381); the coordinator's index build on main (harness v10.25.3 tools) reports 0 problem rows, 90 records. 2026-11-27: B-060-T01 implemented. No test file: an archive data fix, checked by the index build above (one problem row before, none after, run on the committed branch); the coordinator's own fix of the same kind was coordinator#121. With the coordinator's 10.25.0 tool the F-020 problem goes and the next one shows: "unheaded IDs have no supported record headings" (the 27–29 October legacy tables, which this repository's closure rules keep as they are); that is the reader's, fixed in project-harness:B-131 (v10.25.1). Closes when the PR merges on green CI and the build reports no problem row.
+
+**Estimates:** No remaining effort.
+
+| Field | Value |
+|---|---|
+| PR / evidence | [#305](https://github.com/voidbrain/openbando/pull/305); owner request 2026-11-27 (chat "yep") |
+| Opened | 2026-11-27 |
+| Verification | Index build · 2026-11-27 · node ~/Projects/coordinator/tools/backlog-index.mjs build on main 9390745: problems [] (one before the fix) |
+| Reviewed | 2026-11-27 |
+
+</details>
+
+---
