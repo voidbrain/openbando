@@ -189,7 +189,7 @@ Current work ledger, reviewed 27 November 2026 against main `1c7ef9b` (#302; CI 
 
 | Field | Value |
 |---|---|
-| PR / evidence | Owner request 2026-11-27 (chat "yep") |
+| PR / evidence | [#305](https://github.com/voidbrain/openbando/pull/305); owner request 2026-11-27 (chat "yep") |
 | Opened | 2026-11-27 |
 | Verification | Pending |
 | Reviewed | 2026-11-27 |
