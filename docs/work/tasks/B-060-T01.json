@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "id": "B-060-T01",
+  "parent": "B-060",
+  "title": "End F-020 before the harness and maintenance table in the 2026 archive",
+  "goal": "The live index reads the 2026 archive with no problem row; no archive line changes",
+  "status": "implemented",
+  "acceptance": [
+    "The coordinator index build on the committed branch reports no problem row",
+    "check:backlog passes: archive lines only added"
+  ],
+  "dependsOn": [],
+  "resources": [
+    "docs/archive/backlog-2026.md",
+    "docs/work/records/B-060.md"
+  ],
+  "capabilities": [
+    "bounded-edit"
+  ],
+  "privacy": "No personal data",
+  "validation": [
+    "node ~/Projects/coordinator/tools/backlog-index.mjs build --db /tmp/ob.sqlite --repo openbando --source .",
+    "npm run check:backlog"
+  ],
+  "escalation": [
+    "Never change or remove an archive line already on main"
+  ],
+  "effort": {
+    "size": "small",
+    "estimate": "0.25 h agent",
+    "basis": "One inserted heading and a correction note, checked by the index build. Estimated 2026-11-27.",
+    "reviewed": "2026-11-27",
+    "agentHours": 0,
+    "ownerHours": 0,
+    "baselineAgentHours": 0.25,
+    "estimateAgentHours": 0.25
+  }
+}
